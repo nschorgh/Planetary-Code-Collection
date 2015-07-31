@@ -1,0 +1,11 @@
+&stuff
+Tmean=192, Tampl=20,
+pfrost=0.2,
+nz=50, zfac=1.1, zmax=10.,
+thIn = 250.,
+rhoc = 1200000.,
+porosity = 0.4,  
+tmax=100000.,  ! earth years
+Diff=4.e-4,
+timestep=200. /
+
