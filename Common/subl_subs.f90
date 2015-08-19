@@ -4,7 +4,7 @@ function sublrate(T)
   real(8),intent(IN) :: T
   real(8) sublrate
   real(8), parameter :: pi=3.141592653589793, kB = 1.38065e-23
-  real(8), parameter :: mu = 18.015*1.6605e-27
+  real(8), parameter :: mu = 18.015*1.66054e-27
   real(8), external :: psv
 
   ! crystalline ice
@@ -51,7 +51,7 @@ real(8) function sublrate_argon(T)
   implicit none
   real(8),intent(IN) :: T
   real(8), parameter :: pi=3.1415926535897932
-  real(8), parameter :: mu = 39.962*1.6605e-27, kB = 1.38065e-23
+  real(8), parameter :: mu = 39.962*1.66054e-27, kB = 1.38065e-23
   ! Argon
   real(8), parameter :: A=-7814.5, B=+7.5741   ! Argon, Ict Vol 3
   real(8), parameter :: sigma0 = 8.42e18   ! (1623/(40*1.66e-27))**(2./3.)  
