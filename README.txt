@@ -29,13 +29,14 @@ generalorbit.f:
 	distance, longitude, and declination of the sun from orbital elements
 
 conductionQ.f:
-	1D thermal conduction with heterogeneous thermal properties and flux/radiation boundary condition, semi-implicit solver
+	1D thermal conduction with heterogeneous thermal properties and flux/radiation boundary condition, 
+	semi-implicit solver
 
 julday.for: 
 	from Numerical Recipes (C), but without the pause statement
 
 tridag.f: 
-	from Numerical Recipes (&copy;), without stop and pause statements, NMAX=1000
+	from Numerical Recipes (C), without stop and pause statements, NMAX=1000
 
 derivs.f90: 
 	first and second derivatives on irregular grid
@@ -51,7 +52,7 @@ asteroid_thermal.f90:
 	main program
 
 oneasteroid_thermal1d.f90: 
-	1D diffusion of temperture for asteroid
+	1D diffusion of temperature for asteroid
 
 insolonly.f90:
 	insolation only
@@ -129,7 +130,7 @@ mars_mapiqh2v.f90:
 *Fast Method for Subsurface Ice Dynamics (on Mars)*
 
 fast_modules.f90:
-	numerically accelerated routines for growth and depletion of subsurfac ice, Fortran modules
+	numerically accelerated routines for growth and depletion of subsurface ice, Fortran modules
 
 fast_subs_univ.f90:
 	numerically accelerated routines for growth and depletion of subsurface ice, general subroutines
@@ -186,16 +187,16 @@ shadows.f90:
 	main program; calculates horizons
 
 fieldofviews.f90:
-	main program; calculates horizons and field of views</td><td>
+	main program; calculates horizons and field of views
 
 cratersQ_snapshot.f90:
-	main program; instanteneous surface temperature with 3D shadowing and reflections
+	main program; instantaneous surface temperature with 3D shadowing and reflections
 
 cratersQ_moon.f90:
-	main program; surface temperature with 3D shadowing and reflections</td>
+	main program; surface temperature with 3D shadowing and reflections
 
 topos.f90:
-	input topography information</td><td>
+	input topography information
 
 crater_modules.f90: 
 	interface definitions
@@ -221,16 +222,17 @@ topo40.xyz:
 
 
 
-ACKNOWLEDGEMENTS:
+ACKNOWLEDGMENTS:
 
 2006: Troy Hudson discovered a grid-point offset in conductionT and conductionQ, which has been corrected.
 
 2005: Thanks to Mischa Kreslavsky for providing correct formulas for energy balance on a slope.
 
-* Many Thanks to Andy Vaught for developing an open-source Fortran 95
-compiler (www.g95.org).  The early versions of this code were developed with this compiler.
+* Many Thanks to Andy Vaught for developing an open-source Fortran 95 compiler (www.g95.org).  The early versions of this code were developed with this compiler.
 
-2001: Samar Khatiwala has invented an elegant implementation of the upper radiation boundary condition for a Crank-Nicolson method
+2001: Samar Khatiwala has invented an elegant implementation of the upper radiation boundary condition for the Crank-Nicolson method.
+
+SUPPORT: This code development was supported by NASA, Caltech, and the University of Hawaii. And, undoubtedly, some parts were written without support.
 
 -NS
 

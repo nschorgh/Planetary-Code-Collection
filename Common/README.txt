@@ -1,11 +1,67 @@
-Common subroutines and functions 
+Common/
 
+Common Subroutines and Functions
+================================
 
-* These have no modules and use no modules,
-unless that module is only used in its own source file.
+* These have no modules and use no modules, unless that module is only used in its own source file.
 
 * No main programs in this directory either.
 
-* Instructions for subroutines from Numerical Recipes:
-- tridag.for  NMAX=1000, remove stop and pause statements
-- julday.for  remove pause statement
+
+
+FILES
+
+flux_noatm.f90: 
+	Insolation on horizontal or sloped surface without atmosphere
+
+psv.f: 
+	vapor pressure of H2O
+
+psvco2.f: 
+       	vapor pressure of CO2
+
+generalorbit.f: 
+	distance, longitude, and declination of the sun from orbital elements
+
+conductionQ.f:
+	1D thermal conduction with heterogeneous thermal properties and 
+	flux/radiation boundary condition, semi-implicit solver
+
+conductionT.f:
+	1D thermal conduction with heterogeneous thermal properties and 
+	upper temperature boundary condition, semi-implicit solver
+
+grids.f: 
+	creates appropriate 1D grids, calculates thermal properties of soil with ice
+
+vapordiffusioni.f:
+	Diffusion of water vapor with phase transitions on irregular grid, explicit solver
+
+adsorption.f:
+	amount of adsorbed H2O and more
+
+derivs.f90: 
+	first and second derivatives on irregular grid
+
+subl_subs.f90:
+	parametrizations of sublimation rates
+
+
+
+3RD PARTY FUNCTIONS AND SUBROUTINES FROM NUMERICAL RECIPES(C)
+
+tridag.f: 
+	from Numerical Recipes (C), without stop and pause statements, NMAX=1000
+
+julday.for: 
+	Julian date, from Numerical Recipes (C), but without the pause statement
+
+ran2.for: 
+	uniform random number generator from Numerical Recipes (C), change real to real(8)
+
+gasdev.for: 
+	generates gaussian distribution, from Numerical Recipes, change real to real(8)
+
+hpsort.for:
+	Heapsort from Numerical Recipes (C), also returns array of indices
+
