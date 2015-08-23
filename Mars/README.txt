@@ -80,5 +80,6 @@ lats.ph:
 
 
 
-makefile
+makefile:
+	shows file dependencies
 

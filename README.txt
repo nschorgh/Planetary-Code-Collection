@@ -57,9 +57,9 @@ Mars/mapgrid.dat
 
 *Fast Method for Subsurface Ice Dynamics*
 
-Mars/stabgrow_fast.f90: (main)
-Mars/exper_fast.f90: (main)
-Mars/mars_fast.f90: (main)
+Mars/stabgrow_fast.f90: (main program)
+Mars/exper_fast.f90: (main program)
+Mars/mars_fast.f90: (main program)
 Mars/fast_modules.f90
 Mars/fast_subs_univ.f90
 Mars/fast_subs_exper.f90
@@ -115,7 +115,6 @@ Craters/fieldofview_subs.f90
 Craters/model_subs.f90
 Common/hpsort.for
 Craters/topo40.xyz
-
 
 
 

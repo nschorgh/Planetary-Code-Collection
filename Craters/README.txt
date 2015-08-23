@@ -3,7 +3,6 @@ Craters/
 Shadowing, illumination, and scattering on 3D topography
 ========================================================
 
-
 shadows.f90:
 	main program; calculates horizons
 
@@ -38,6 +37,7 @@ topo40.xyz:
 	example input topography
 
 makefile:
+	shows file dependencies
 
 
 
