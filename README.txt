@@ -17,7 +17,7 @@ This program collection contains
 
 *Mars Thermal Model*
 
-Mars/mars_thermal1d.f: (main)
+Mars/mars_thermal1d.f: (main program)
 Mars/flux.f: 
 Mars/marsorbit.f:
 modeldescription.pdf: Notes on Numerics (see Part 1)
@@ -31,18 +31,18 @@ Mars/input.par
 
 *Vapor Diffusion Model*
 
-Mars/exper_thermal1d.f: (main)
-Common/vapordiffusioni.f:
-Common/adsorption.f:
+Mars/exper_thermal1d.f: (main program)
+Common/vapordiffusioni.f
+Common/adsorption.f
 modeldescription.pdf: Notes on Numerics (see Part 2)
-Mars/exper.par:
+Mars/exper.par
 
 
 *Equilibrium Ice Table (on Mars)*
 
-Mars/mars_mapi.f: (main)
-Mars/mars_mapt2.f: (main)
-Mars/mars_mapiqh2v.f90: (main)
+Mars/mars_mapi.f: (main program)
+Mars/mars_mapt2.f: (main program)
+Mars/mars_mapiqh2v.f90: (main program)
 Mars/jsub.f
 Mars/jsubv.f90
 Common/conductionQ.f
@@ -81,8 +81,8 @@ Mars/lats.ph
 *Basic Thermal Model for Asteroids*
 
 Asteroid/asteroid_thermal.f90: (main program)
-Asteroid/oneasteroid_thermal1d.f90: 
-Asteroid/insolonly.f90: 
+Asteroid/oneasteroid_thermal1d.f90
+Asteroid/insolonly.f90 
 Common/flux_noatm.f90
 Common/conductionQ.f
 Common/tridag.for
@@ -92,21 +92,21 @@ Common/generalorbit.f
 
 *Monte-Carlo Model for Surface-bounded Exosphere*
 
-Exosphere/moon4.f90: (main)
-Exosphere/montecarlo.f90:
-Exosphere/geogrid.f90:
-Exosphere/geogrid_D.f90:
-Common/subl_subs.f90:
-Common/gasdev.for:
-Common/ran2.for:
+Exosphere/moon4.f90: (main program)
+Exosphere/montecarlo.f90
+Exosphere/geogrid.f90
+Exosphere/geogrid_D.f90
+Common/subl_subs.f90
+Common/gasdev.for
+Common/ran2.for
 
 
 *Shadowing and illumination*
 
-Craters/shadows.f90: (main)
-Craters/fieldofviews.f90: (main)
-Craters/cratersQ_snapshot.f90: (main)
-Craters/cratersQ_moon.f90: (main)
+Craters/shadows.f90: (main program)
+Craters/fieldofviews.f90: (main program)
+Craters/cratersQ_snapshot.f90: (main program)
+Craters/cratersQ_moon.f90: (main program)
 Craters/topos.f90
 Craters/crater_modules.f90
 Craters/crater_common.f90

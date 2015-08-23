@@ -16,6 +16,8 @@ geogrid.f90:
 geogrid_D.f90:
 	a different geographic grid
 
+makefile:
+	shows file dependencies
 
 
 
