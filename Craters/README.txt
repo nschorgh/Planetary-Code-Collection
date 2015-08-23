@@ -34,7 +34,7 @@ fieldofview_subs.f90:
 model_subs.f90: 
 	subroutines for cratersQ_*
 
-hpsort.for: 
+Common/hpsort.for: 
 	heapsort, Numerical Recipes(C)
 
 topo40.xyz: 
@@ -42,6 +42,6 @@ topo40.xyz:
 
 makefile:
 
-Some requuired functions and subroutines are found in Common/
+Some required functions and subroutines are found in Common/
 
 

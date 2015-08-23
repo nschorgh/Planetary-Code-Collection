@@ -1,4 +1,4 @@
-Code Collection
+Planetary Code Collection
 
 by Norbert Schorghofer
 
@@ -29,8 +29,8 @@ generalorbit.f:
 	distance, longitude, and declination of the sun from orbital elements
 
 conductionQ.f:
-	1D thermal conduction with heterogeneous thermal properties and flux/radiation boundary condition, 
-	semi-implicit solver
+	1D thermal conduction with heterogeneous thermal properties and 
+	flux/radiation boundary condition, semi-implicit solver
 
 julday.for: 
 	from Numerical Recipes (C), but without the pause statement
@@ -70,7 +70,8 @@ marsorbit.f:
 	position of the sun as seen from Mars; data from Allison & McEwen (2000)
 
 conductionT.f:
-	1D thermal conduction with heterogeneous thermal properties and temperature boundary condition, semi-implicit solver
+	1D thermal conduction with heterogeneous thermal properties and 
+	temperature boundary condition, semi-implicit solver
 
 tprofile.m: 
 	Matlab script that compares temperature profile with  analytic solution
@@ -79,7 +80,8 @@ modeldescription.pdf:
 	Notes on Numerics (see Part 1)
 
 mars_thermal1d.f: 
-	1D diffusion of temperature for Mars; prototype example of how to call conductionQ/T with seasonal CO2 frost cover
+	1D diffusion of temperature for Mars; 
+	prototype example of how to call conductionQ/T with seasonal CO2 frost cover
 
 input.par: 
 	Example input file for mars_thermal1d.f
@@ -89,7 +91,7 @@ input.par:
 *Vapor Diffusion Model*
 
 vapordiffusioni.f:
-	Diffusion of water vapor with phase transitions on irregular grid, explicit solver, (adsorption is turned off)
+	Diffusion of water vapor with phase transitions on irregular grid, explicit solver
 
 adsorption.f:
 	amount of adsorbed H2O and more
@@ -98,7 +100,8 @@ modeldescription.pdf:
 	Notes on Numerics (see Part 2)
 
 exper_thermal1d.f:
-	1D diffusion of temperature and optionally also vapor with prescribed surface temperature
+	1D diffusion of temperature and optionally also water vapor with prescribed 
+	surface temperature
 
 exper.par:
 	Example input file for exper_thermal1d.f
@@ -114,7 +117,8 @@ jsubv.f90:
 	vectorized version of jsub, includes emission from one surface to another
 
 mars_mapi.f:
-	determines equilibrium ice table depth for a list of locations (such as the entire globe); contains leftover Numerical Recipes code (C)
+	determines equilibrium ice table depth for a list of locations (such as the entire 
+	globe); contains leftover Numerical Recipes code (C)
 
 mapgrid.dat:
 	Example input file for mars_mapi.f
@@ -130,10 +134,12 @@ mars_mapiqh2v.f90:
 *Fast Method for Subsurface Ice Dynamics (on Mars)*
 
 fast_modules.f90:
-	numerically accelerated routines for growth and depletion of subsurface ice, Fortran modules
+	numerically accelerated routines for growth and depletion of subsurface ice, 
+	Fortran modules
 
 fast_subs_univ.f90:
-	numerically accelerated routines for growth and depletion of subsurface ice, general subroutines
+	numerically accelerated routines for growth and depletion of subsurface ice, 
+	general subroutines
 
 fast_subs_exper.f90:
 	numerically accelerated routines for growth and depletion of subsurface ice
@@ -162,62 +168,33 @@ lats.ph:
 
 *Monte-Carlo Model for Surface-bounded Exosphere*
 
-moon4.f90:
-	main program; event driven Monte Carlo model for ballistic hops of water molecules on the lunar surface
+Exosphere/moon4.f90:
+	main program; event driven Monte Carlo model for ballistic hops of 
+	water molecules on the lunar surface
 
-montecarlo.f90:
+Exosphere/montecarlo.f90:
 	ballistic hops, event scheduler
 
-subl_subs.f90:
+Exosphere/geogrid.f90:
+	everything specific to the geographic grid
+
+Exosphere/geogrid_D.f90:
+	a different geographic grid
+
+Common/subl_subs.f90:
 	miscellaneous physical parametrizations
 
-geogrid.f90:
-
-gasdev.for:
+Common/gasdev.for:
 	Gaussian probability distribution, Numerical Recipes(C)
 
-ran2.for:
+Common/ran2.for:
 	random number generator, Numerical Recipes(C)
 
 
 
 *Shadowing and illumination*
 
-shadows.f90:
-	main program; calculates horizons
-
-fieldofviews.f90:
-	main program; calculates horizons and field of views
-
-cratersQ_snapshot.f90:
-	main program; instantaneous surface temperature with 3D shadowing and reflections
-
-cratersQ_moon.f90:
-	main program; surface temperature with 3D shadowing and reflections
-
-topos.f90:
-	input topography information
-
-crater_modules.f90: 
-	interface definitions
-
-crater_common.f90: 
-	common routines
-
-shadow_subs.f90: 
-	subroutines for shadows
-
-fieldofview_subs.f90: 
-	subroutines for fieldofviews
-
-model_subs.f90: 
-	subroutines for cratersQ_*
-
-hpsort.for: 
-	heapsort, Numerical Recipes(C)
-
-topo40.xyz: 
-	example input topography
+see Craters/README.txt
 
 
 
@@ -230,10 +207,9 @@ ACKNOWLEDGMENTS:
 
 * Many Thanks to Andy Vaught for developing an open-source Fortran 95 compiler (www.g95.org).  The early versions of this code were developed with this compiler.
 
-2001: Samar Khatiwala has invented an elegant implementation of the upper radiation boundary condition for the Crank-Nicolson method.
+2001: Samar Khatiwala invented an elegant implementation of the upper radiation boundary condition for the Crank-Nicolson method.
 
-SUPPORT: This code development was supported by NASA, Caltech, and the University of Hawaii. And, undoubtedly, some parts were written without support.
+SUPPORT: This code development was supported by NASA, Caltech, and the University of Hawaii. Undoubtedly, some parts were written without support.
 
--NS
 
 
