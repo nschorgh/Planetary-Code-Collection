@@ -12,189 +12,110 @@ This program collection contains
 * a 3D model of shadowing, illumination, and scattering.
 
 
-==Basic Models for Planetary Surfaces==
-
-*General Purpose*
-
-flux_noatm.f90: 
-	Insolation on horizontal or sloped surface without atmosphere
-
-psv.f: 
-	vapor pressure of H2O
-
-psvco2.f: 
-       	vapor pressure of CO2
-
-generalorbit.f: 
-	distance, longitude, and declination of the sun from orbital elements
-
-conductionQ.f:
-	1D thermal conduction with heterogeneous thermal properties and 
-	flux/radiation boundary condition, semi-implicit solver
-
-julday.for: 
-	from Numerical Recipes (C), but without the pause statement
-
-tridag.f: 
-	from Numerical Recipes (C), without stop and pause statements, NMAX=1000
-
-derivs.f90: 
-	first and second derivatives on irregular grid
-
-grids.f: 
-	creates appropriate 1D grids, calculates thermal properties of soil with ice
-
-
-
-*Basic Thermal Model*
-
-asteroid_thermal.f90: 
-	main program
-
-oneasteroid_thermal1d.f90: 
-	1D diffusion of temperature for asteroid
-
-insolonly.f90:
-	insolation only
-
-
 
 ==Mars Subsurface Ice Model (M-SIM)==
 
 *Mars Thermal Model*
 
-flux.f: 
-	Insolation on horizontal or sloped surface with a poor man's Mars atmosphere
-
-marsorbit.f:
-	position of the sun as seen from Mars; data from Allison & McEwen (2000)
-
-conductionT.f:
-	1D thermal conduction with heterogeneous thermal properties and 
-	temperature boundary condition, semi-implicit solver
-
-tprofile.m: 
-	Matlab script that compares temperature profile with  analytic solution
-
-modeldescription.pdf:
-	Notes on Numerics (see Part 1)
-
-mars_thermal1d.f: 
-	1D diffusion of temperature for Mars; 
-	prototype example of how to call conductionQ/T with seasonal CO2 frost cover
-
-input.par: 
-	Example input file for mars_thermal1d.f
-
+Mars/mars_thermal1d.f: (main)
+Mars/flux.f: 
+Mars/marsorbit.f:
+modeldescription.pdf: Notes on Numerics (see Part 1)
+Common/conductionQ.f
+Common/conductionT.f
+Common/tridag.for
+Common/grids.f
+Common/psvco2.f
+Mars/input.par
 
 
 *Vapor Diffusion Model*
 
-vapordiffusioni.f:
-	Diffusion of water vapor with phase transitions on irregular grid, explicit solver
-
-adsorption.f:
-	amount of adsorbed H2O and more
-
-modeldescription.pdf:
-	Notes on Numerics (see Part 2)
-
-exper_thermal1d.f:
-	1D diffusion of temperature and optionally also water vapor with prescribed 
-	surface temperature
-
-exper.par:
-	Example input file for exper_thermal1d.f
-
+Mars/exper_thermal1d.f: (main)
+Common/vapordiffusioni.f:
+Common/adsorption.f:
+modeldescription.pdf: Notes on Numerics (see Part 2)
+Mars/exper.par:
 
 
 *Equilibrium Ice Table (on Mars)*
 
-jsub.f:
-	net flux between ice table and surface, includes thermal model
-
-jsubv.f90:
-	vectorized version of jsub, includes emission from one surface to another
-
-mars_mapi.f:
-	determines equilibrium ice table depth for a list of locations (such as the entire 
-	globe); contains leftover Numerical Recipes code (C)
-
-mapgrid.dat:
-	Example input file for mars_mapi.f
-
-mars_mapt2.f:
-	calls jsub for a list of locations (such as the entire globe)
-
-mars_mapiqh2v.f90:
-	version of mars_mapi that uses jsubv and slope coupling, configured for cluster
+Mars/mars_mapi.f: (main)
+Mars/mars_mapt2.f: (main)
+Mars/mars_mapiqh2v.f90: (main)
+Mars/jsub.f
+Mars/jsubv.f90
+Common/conductionQ.f
+Common/conductionT.f
+Common/tridag.for
+Common/grids.f
+Common/julday.for
+Common/psv.f
+Common/psvco2.f
+Mars/mapgrid.dat
 
 
+*Fast Method for Subsurface Ice Dynamics*
 
-*Fast Method for Subsurface Ice Dynamics (on Mars)*
-
-fast_modules.f90:
-	numerically accelerated routines for growth and depletion of subsurface ice, 
-	Fortran modules
-
-fast_subs_univ.f90:
-	numerically accelerated routines for growth and depletion of subsurface ice, 
-	general subroutines
-
-fast_subs_exper.f90:
-	numerically accelerated routines for growth and depletion of subsurface ice
-
-fast_subs_mars.f90:
-	numerically accelerated routines for growth and depletion of subsurface ice
-
-stabgrow_fast.f90:
-	numerically accelerated growth of pore ice
-
-exper_fast.f90:
-	numerically accelerated growth and depletion of subsurface ice
-
-input_fast.par:
-	Example input file for stabgrow_fast.f90 and exper_fast.f90
-
-mars_fast.f90:
-	numerically accelerated growth and depletion of subsurface ice
-
-lats.ph:
-	Example input file for mars_fast.f90
+Mars/stabgrow_fast.f90: (main)
+Mars/exper_fast.f90: (main)
+Mars/mars_fast.f90: (main)
+Mars/fast_modules.f90
+Mars/fast_subs_univ.f90
+Mars/fast_subs_exper.f90
+Mars/fast_subs_mars.f90
+Common/conductionQ.f
+Common/conductionT.f
+Common/tridag.for
+Common/grids.f
+Common/generalorbit.f
+Common/psv.f
+Common/psvco2.f
+Common/derivs.f90
+Mars/input_fast.par
+Mars/lats.ph
 
 
+==Other Models for Planetary Surfaces==
 
-==Lunar Models==
+*Basic Thermal Model for Asteroids*
+
+Asteroid/asteroid_thermal.f90: (main program)
+Asteroid/oneasteroid_thermal1d.f90: 
+Asteroid/insolonly.f90: 
+Common/flux_noatm.f90
+Common/conductionQ.f
+Common/tridag.for
+Common/grids.f
+Common/generalorbit.f
+
 
 *Monte-Carlo Model for Surface-bounded Exosphere*
 
-Exosphere/moon4.f90:
-	main program; event driven Monte Carlo model for ballistic hops of 
-	water molecules on the lunar surface
-
+Exosphere/moon4.f90: (main)
 Exosphere/montecarlo.f90:
-	ballistic hops, event scheduler
-
 Exosphere/geogrid.f90:
-	everything specific to the geographic grid
-
 Exosphere/geogrid_D.f90:
-	a different geographic grid
-
 Common/subl_subs.f90:
-	miscellaneous physical parametrizations
-
 Common/gasdev.for:
-	Gaussian probability distribution, Numerical Recipes(C)
-
 Common/ran2.for:
-	random number generator, Numerical Recipes(C)
-
 
 
 *Shadowing and illumination*
 
-see Craters/README.txt
+Craters/shadows.f90: (main)
+Craters/fieldofviews.f90: (main)
+Craters/cratersQ_snapshot.f90: (main)
+Craters/cratersQ_moon.f90: (main)
+Craters/topos.f90
+Craters/crater_modules.f90
+Craters/crater_common.f90
+Craters/shadow_subs.f90
+Craters/fieldofview_subs.f90
+Craters/model_subs.f90
+Common/hpsort.for
+Craters/topo40.xyz
+
 
 
 
