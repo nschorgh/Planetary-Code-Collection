@@ -34,12 +34,6 @@ conductionT.f:
 grids.f: 
 	creates appropriate 1D grids, calculates thermal properties of soil with ice
 
-vapordiffusioni.f:
-	Diffusion of water vapor with phase transitions on irregular grid, explicit solver
-
-adsorption.f:
-	amount of adsorbed H2O and more
-
 derivs.f90: 
 	first and second derivatives on irregular grid
 

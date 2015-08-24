@@ -18,24 +18,25 @@ This program collection contains
 *Mars Thermal Model*
 
 Mars/mars_thermal1d.f: (main program)
-Mars/flux.f: 
-Mars/marsorbit.f:
-modeldescription.pdf: Notes on Numerics (see Part 1)
+Mars/flux.f
+Mars/marsorbit.f
 Common/conductionQ.f
 Common/conductionT.f
 Common/tridag.for
 Common/grids.f
 Common/psvco2.f
 Mars/input.par
+Documentation: modeldescription.pdf (see Part 1)
 
 
 *Vapor Diffusion Model*
 
 Mars/exper_thermal1d.f: (main program)
-Common/vapordiffusioni.f
-Common/adsorption.f
-modeldescription.pdf: Notes on Numerics (see Part 2)
+Mars/vapordiffusioni.f
+Mars/adsorption.f
 Mars/exper.par
+Documentation: modeldescription.pdf (see Part 2)
+Documentation: N. Schorghofer & O. Aharonson. J. Geophys. Res. 110, E05003 (2005), Appendices
 
 
 *Equilibrium Ice Table (on Mars)*
@@ -45,6 +46,7 @@ Mars/mars_mapt2.f: (main program)
 Mars/mars_mapiqh2v.f90: (main program)
 Mars/jsub.f
 Mars/jsubv.f90
+Mars/marsorbit.f
 Common/conductionQ.f
 Common/conductionT.f
 Common/tridag.for
@@ -74,6 +76,7 @@ Common/psvco2.f
 Common/derivs.f90
 Mars/input_fast.par
 Mars/lats.ph
+Documentation: N. Schorghofer. Icarus 208, 598-607 (2010)
 
 
 ==Other Models for Planetary Surfaces==
@@ -88,6 +91,7 @@ Common/conductionQ.f
 Common/tridag.for
 Common/grids.f
 Common/generalorbit.f
+Documentation: modeldescription.pdf (see Part 1)
 
 
 *Monte-Carlo Model for Surface-bounded Exosphere*
@@ -99,6 +103,7 @@ Exosphere/geogrid_D.f90
 Common/subl_subs.f90
 Common/gasdev.for
 Common/ran2.for
+Documentation: None
 
 
 *Shadowing and illumination*
@@ -115,7 +120,7 @@ Craters/fieldofview_subs.f90
 Craters/model_subs.f90
 Common/hpsort.for
 Craters/topo40.xyz
-
+Documentation: None
 
 
 

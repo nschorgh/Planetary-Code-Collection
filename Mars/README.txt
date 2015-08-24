@@ -27,6 +27,13 @@ exper.par:
 	Example input file for exper_thermal1d.f
 
 
+vapordiffusioni.f:
+	Diffusion of water vapor with phase transitions on irregular grid, explicit solver
+
+adsorption.f:
+	amount of adsorbed H2O and more
+
+
 
 jsub.f:
 	net flux between ice table and surface, includes thermal model
