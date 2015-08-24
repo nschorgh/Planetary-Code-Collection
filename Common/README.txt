@@ -44,7 +44,7 @@ subl_subs.f90:
 
 3RD PARTY FUNCTIONS AND SUBROUTINES FROM NUMERICAL RECIPES(C)
 
-tridag.f: 
+tridag.for: 
 	from Numerical Recipes (C), without stop and pause statements, NMAX=1000
 
 julday.for: 
@@ -54,7 +54,7 @@ ran2.for:
 	uniform random number generator from Numerical Recipes (C), change real to real(8)
 
 gasdev.for: 
-	generates gaussian distribution, from Numerical Recipes, change real to real(8)
+	generates gaussian distribution, from Numerical Recipes (C)s, change real to real(8)
 
 hpsort.for:
 	Heapsort from Numerical Recipes (C), also returns array of indices

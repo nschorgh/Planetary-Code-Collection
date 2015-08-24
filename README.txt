@@ -26,7 +26,7 @@ Common/tridag.for
 Common/grids.f
 Common/psvco2.f
 Mars/input.par
-Documentation: modeldescription.pdf (see Part 1)
+Documentation: Common/modeldescription.pdf (Part 1)
 
 
 *Vapor Diffusion Model*
@@ -35,8 +35,8 @@ Mars/exper_thermal1d.f: (main program)
 Mars/vapordiffusioni.f
 Mars/adsorption.f
 Mars/exper.par
-Documentation: modeldescription.pdf (see Part 2)
-Documentation: N. Schorghofer & O. Aharonson. J. Geophys. Res. 110, E05003 (2005), Appendices
+Documentation: Common/modeldescription.pdf (Part 2)
+Documentation: Schorghofer, N. & Aharonson, O. J. Geophys. Res. 110, E05003 (2005), Appendices
 
 
 *Equilibrium Ice Table (on Mars)*
@@ -76,7 +76,7 @@ Common/psvco2.f
 Common/derivs.f90
 Mars/input_fast.par
 Mars/lats.ph
-Documentation: N. Schorghofer. Icarus 208, 598-607 (2010)
+Documentation: Schorghofer, N. Icarus 208, 598-607 (2010)
 
 
 ==Other Models for Planetary Surfaces==
@@ -91,7 +91,7 @@ Common/conductionQ.f
 Common/tridag.for
 Common/grids.f
 Common/generalorbit.f
-Documentation: modeldescription.pdf (see Part 1)
+Documentation: Common/modeldescription.pdf (Part 1)
 
 
 *Monte-Carlo Model for Surface-bounded Exosphere*
