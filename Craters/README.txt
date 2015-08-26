@@ -25,13 +25,13 @@ crater_common.f90:
 	common routines
 
 shadow_subs.f90: 
-	subroutines for shadows
+	subroutines for program shadows
 
 fieldofview_subs.f90: 
-	subroutines for fieldofviews
+	subroutines for program fieldofviews
 
 model_subs.f90: 
-	subroutines for cratersQ_*
+	subroutines for programs cratersQ_*
 
 topo40.xyz: 
 	example input topography
