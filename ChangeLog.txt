@@ -1,0 +1,32 @@
+ChangeLog
+
+9 Jul 2015: restructered lunar exosphere model, so geographic grid can be swapped out
+
+1 Jun 2015: added 3D model of shadowing and illumination (incl. reflection and thermal emission) on planetary surfaces, unfortunately without any documentation whatsoever; this code is computationally much slower than it could be, but good enough for small topographies
+
+5 Feb 2015: added lunar Monte Carlo model for exospheric transport of water molecules
+
+3/4 Jun 2014: changed NMAX=2000 to NMAX=1000 almost everywhere
+
+31 May 2014: added a few simple routines for thermal modeling of asteroids; reorganized webpage
+
+4 Sep 2011: better implementation of "mode 2" ice growth, affecting fast_subs_mars.f90 and fast_subs_univ.f90
+
+25 Aug 2011: generalizations to mars_fast.f90, fast_modules.f90, and fast_subs_mars.f90
+
+20 Jul 2011: technical updates (generalizations) to grids.f, jsub.f, mars_mapt2.f, and mars_mapi.f
+
+28 Mar 2010: updated fast_subs_mars.f90; icelayer_mars has been parallelized, but parallelization is disabled by default; fewer calls to conductionT in ajsub_mars
+
+27 Mar 2010: minor polish of the very old program mars_thermal1d.f
+
+9 Feb 2010: grids.f has an additional subroutine and the default for the parametrization of thermal conductivity has changed.
+
+4 Feb 2010: From now on, old versions will be archived in directory OldVersions.
+
+2 Jan 2010: routines for fast method have been added. Their filenames contain the string fast.
+
+Summer 2009: switched from g95/g77 to gfortran compiler.
+
+31 Oct 2008: added deriv1_onesided to derivs.f90
+
