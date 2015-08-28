@@ -13,11 +13,12 @@ insolonly.f90:
 	Insolation only, very simple
 
 
-Asynchronously Coupled Model of Ice Loss, Temperature, and Impact Stirring on Astroids
-======================================================================================
+Asynchronously Coupled Model of Ice Loss, Temperature, and Impact Stirring on Asteroids
+=======================================================================================
 
 asteroid_fast2.f90: 
-       	main program; Asynchronously coupled model of ice loss, temperature, and impact stirring on asteroids
+       	main program; Asynchronously coupled model of ice loss, temperature, and 
+	impact stirring on asteroids
 
 impactstirring.f90:
 	Model of ice homogenization due to impact stirring,

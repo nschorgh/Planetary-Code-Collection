@@ -3,9 +3,7 @@ CFLAGS = -O3 -Wall
 LFLAGS = -O3 -Wall
 
 #CC = ifort
-#C90 = ifort
 #CFLAGS = -O3 -warn all  -warn notruncated_source
-#C90FLAGS = -O3 -warn all
 #LFLAGS = -O3 -warn all
 
 

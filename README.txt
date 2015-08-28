@@ -25,6 +25,7 @@ Common/conductionT.f
 Common/tridag.for
 Common/grids.f
 Common/psvco2.f
+Common/julday.for
 Mars/input.par
 Documentation: Common/modeldescription.pdf (Part 1)
 
@@ -36,7 +37,7 @@ Mars/vapordiffusioni.f
 Mars/adsorption.f
 Mars/exper.par
 Documentation: Common/modeldescription.pdf (Part 2)
-Documentation: Schorghofer, N. & Aharonson, O. J. Geophys. Res. 110, E05003 (2005), Appendices
+Documentation: Schorghofer, N. & Aharonson, O. (2005) J. Geophys. Res. 110, E05003, Appendices
 
 
 *Equilibrium Ice Table (on Mars)*
@@ -76,7 +77,7 @@ Common/psvco2.f
 Common/derivs.f90
 Mars/input_fast.par
 Mars/lats.ph
-Documentation: Schorghofer, N. Icarus 208, 598-607 (2010)
+Documentation: Schorghofer, N. (2010) Icarus 208, 598-607
 
 
 ==Other Models for Planetary Surfaces==
