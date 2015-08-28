@@ -40,7 +40,7 @@ Documentation: Common/modeldescription.pdf (Part 2)
 Documentation: Schorghofer, N. & Aharonson, O. (2005) J. Geophys. Res. 110, E05003, Appendices
 
 
-*Equilibrium Ice Table (on Mars)*
+*Equilibrium Ice Table*
 
 Mars/mars_mapi.f: (main program)
 Mars/mars_mapt2.f: (main program)
