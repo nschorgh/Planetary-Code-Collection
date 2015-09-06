@@ -3,9 +3,27 @@
 ! x (longitude), y (latitude), status (on surface or in flight), 
 ! time (until it arrives on surface or until it will leave the surface)
 
+module exo_species
+  real(8), parameter :: mmass = 18.015   ! H2O
+  !real(8), parameter :: mmass = 19.021   ! HDO
+  !real(8), parameter :: mmass = 17.007   ! OH
+  !real(8), parameter :: mmass = 4.0026   ! He-4
+  !real(8), parameter :: mmass = 39.962   ! Ar-40
+
+  ! photodissociation time scale at 1 AU
+  !real(8), parameter :: taudissoc = 20.*3600.  ! Potter & delDuca (1964)
+  real(8), parameter :: taudissoc = 1/12.6e-6  ! Crovisier (1989)
+  !real(8), parameter :: taudissoc = 1/23.0e-6  ! Crovisier (1989), active sun
+  !real(8), parameter :: taudissoc = 1.9e7  ! He, Killen & Ip (1999)
+  !real(8), parameter :: taudissoc = 3.2e6  ! Ar, Killen & Ip (1999)
+
+  ! this module is only used here
+end module exo_species
+
+
 subroutine hop1(p_r, p_s, p_t, idum, Tsurf, Q)
   ! ballistic flight of one particle
-  use body, only : g, Rmoon, semia
+  use body, only: g, Rmoon, semia
   use exo_species 
   implicit none
   real(8), intent(INOUT) :: p_r(2) ! (1)=longitude  (2)=latitude

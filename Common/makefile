@@ -9,11 +9,7 @@ LFLAGS = -O3 -Wall
 
 common: generalorbit.o flux_noatm.o conductionQ.o conductionT.o \
 	tridag.o grids.o psv.o derivs.o psvco2.o subl_subs.o \
-	vapordiffusioni.o adsorption.o julday.o gasdev.o ran2.o \
-	hpsort.o makefile
-
-julday.o: julday.for makefile   # NR routine without pause statement
-	$(CC) $(CFLAGS) -c julday.for
+	julday.o gasdev.o ran2.o hpsort.o makefile
 
 %.o:	%.f makefile
 	$(CC) $(CFLAGS) -c $<

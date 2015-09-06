@@ -8,12 +8,13 @@ LFLAGS = -O3 -Wall
 
 SR = ~/Thermal/ThermalLibF/Common/
 
-moon4: geogrid.o moon4.o montecarlo.o makefile 
+moon4: geogrid.o body.o moon4.o montecarlo.o makefile 
 	make -C $(SR) common
 	$(CC) $(LFLAGS) moon4.f90 montecarlo.o geogrid.o \
 	$(SR)flux_noatm.o $(SR)conductionQ.o $(SR)tridag.o \
-	$(SR)grids.o $(SR)psv.o $(SR)subl_subs.o $(SR)gasdev.o $(SR)ran2.o
-# make sure modules in moon4 are recompiled
+	$(SR)grids.o $(SR)psv.o $(SR)subl_subs.o \
+	$(SR)gasdev.o $(SR)ran2.o
+
 # modules in geogrid.f90 as well as in moon4.f90
 
 %.o:	%.f makefile
@@ -22,7 +23,7 @@ moon4: geogrid.o moon4.o montecarlo.o makefile
 %.o:	%.for makefile
 	$(CC) $(CFLAGS) -c $<
 
-%.o:	%.f90 makefile
+%.o:	%.f90 body.f90 makefile
 	$(CC) $(CFLAGS) -c $< 
 
 

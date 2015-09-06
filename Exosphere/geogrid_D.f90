@@ -6,6 +6,7 @@ module grid
   real(8), parameter :: pi=3.1415926535897932, d2r=pi/180.
   real(8) dlon, dlat
   integer nlon, nlat2
+  private nlat2
   parameter (dlon=1, nlon=360) 
   parameter (dlat=0.5, nlat2=180)
   integer, parameter :: nlat=2*nlat2
@@ -37,11 +38,12 @@ integer function inbox(r)
   kx = nint(r(1)/dlon+0.5)
   ky = nint((90.-r(2))/dlat+0.5)
   if (r(2)==-90.) ky=nlat  ! roundoff issue
-  if (kx>nlon) kx=kx-nlon
+  !if (kx>nlon) kx=kx-nlon
+  do while (kx>nlon); kx=kx-nlon; enddo
   inbox = kx + (ky-1)*nlon
   if (ky<1 .or. ky>nlat) then
      print *,'inbox: Index ky is out of bound',ky,r(2)
-     !stop
+     !stop 
   endif
   if (kx<1 .or. kx>nlon) then
      print *,'inbox: Index kx is out of bound',kx,r(1)
@@ -79,7 +81,7 @@ end subroutine k2lonlat
 
 subroutine areas(dA)
   ! areas of surface elements
-  use grid, only : pi,d2r,dlat,dlon,veclen
+  use grid, only: pi,d2r,dlat,dlon,veclen
   implicit none
   real(8), intent(OUT) :: dA(veclen)
   integer k
@@ -90,3 +92,24 @@ subroutine areas(dA)
      dA(k) = dlat*dlon*d2r**2*cos(lat)
   enddo
 end subroutine areas
+
+
+subroutine writeglobe(unit,Tsurf)
+  use grid, only: nlon, nlat
+  implicit none
+  integer, intent(IN) :: unit
+  real(8), intent(IN) :: Tsurf(*)
+  integer i,j,k
+  real(8) longitude(nlon), latitude(nlat)
+
+  ! set up lon-lat grid
+  call lonlatgrid(longitude,latitude)
+
+  do j=1,nlat
+     do i=1,nlon
+        k = i + (j-1)*nlon 
+        write(unit,100) longitude(i),latitude(j),Tsurf(k)
+     enddo
+  enddo
+100 format (f5.1,1x,f6.2,1x,f7.3)
+end subroutine writeglobe

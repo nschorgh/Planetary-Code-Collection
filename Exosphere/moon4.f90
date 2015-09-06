@@ -1,55 +1,9 @@
-module body
-  ! physical properties of the body 
-
-  ! Moon
-  real(8), parameter :: solarDay=86400.*29.53  ! (s)
-  real(8), parameter :: g=1.62, Rmoon=1737.e3
-  real(8), parameter :: dtsec=3600.  ! thermal model time step (s)
-  real(8), parameter :: semia=1.  ! (AU)
-  real(8), parameter :: zmax=0.5   ! domain depth for 1D thermal model, if used
-  real(8), parameter :: albedo=0.11, emiss=0.95
-  !real(8), parameter :: albedo=0.1, emiss=1.
-  real(8), parameter :: Fgeotherm=0.018  ! Langseth et al. (1976)  (W/m^2)
-
-  ! Mercury
-  !real(8), parameter :: solarDay=4222.6*3600., semia=0.3871
-  !real(8), parameter :: g=3.7, Rmoon=2440e3
-  !real(8), parameter :: dtsec=3600.*12.
-  !real(8), parameter :: zmax=1.5
-  !real(8), parameter :: albedo=0.07, emiss=0.9
-  !real(8), parameter :: Fgeotherm=0.
-
-  ! Ceres
-  !real(8), parameter :: solarDay=9.075*3600., semia=2.77
-  !real(8), parameter :: g=0.27, Rmoon=480e3  !(975x909km)
-  !real(8), parameter :: dtsec=600. 
-  !real(8), parameter :: albedo=0.09, emiss=0.9
-  !real(8), parameter :: zmax=0.5, Fgeotherm=0.
-end module body
-
-
-module exo_species
-  real(8), parameter :: mmass = 18.015   ! H2O
-  !real(8), parameter :: mmass = 19.021   ! HDO
-  !real(8), parameter :: mmass = 17.007   ! OH
-  !real(8), parameter :: mmass = 4.0026   ! He-4
-  !real(8), parameter :: mmass = 39.962   ! Ar-40
-
-  ! photodissociation time scale at 1 AU
-  !real(8), parameter :: taudissoc = 20.*3600.  ! Potter & delDuca (1964)
-  real(8), parameter :: taudissoc = 1/12.6e-6  ! Crovisier (1989)
-  !real(8), parameter :: taudissoc = 1/23.0e-6  ! Crovisier (1989), active sun
-  !real(8), parameter :: taudissoc = 1.9e7  ! He, Killen & Ip (1999)
-  !real(8), parameter :: taudissoc = 3.2e6  ! Ar, Killen & Ip (1999)
-end module exo_species
-
-
 program allofmoon
 !***********************************************************************
 ! surface temperatures of the Moon and migration of H2O
 !***********************************************************************
   use grid
-  use body, only : solarDay, dtsec, Rmoon
+  use body, only: solarDay, dtsec, Rmoon
   implicit none
 
   integer, parameter :: Np=2000000  ! maximum number of computational particles
@@ -59,7 +13,7 @@ program allofmoon
   integer :: idum=-92309   ! random number seed
   real(8) tmax, time, tequil
   real(8), dimension(veclen) :: Tsurf, Qn, sigma 
-  real(8) residencetime, HAi 
+  real(8) residencetime, HAi
   character(10) ext
 
   real(8), dimension(np,2) :: p_r ! longitude(1) and latitude(2)
@@ -67,16 +21,17 @@ program allofmoon
   real(8), dimension(np) :: p_t ! time
   integer, dimension(np) :: p_n ! # of hops (diagnostic only)
 
-  logical, external :: incoldtrap
   integer, external :: inbox, totalnr
-  real(8), external :: flux_noatm, residence_time, ran2
+  real(8), external :: residence_time
+  real(8), external :: flux_noatm, ran2
   
-  ! if you use Diviner surface temperature maps as input
+  ! if used with Diviner surface temperature maps as input
   !integer, parameter :: NT=708  ! tied to timestep of 708/(29.53*86400.) = 3596 sec
   !real(8) lon(nlon),lat(nlat),Tbig(nlon,nlat,24)
 
   ! equilibration time for thermal model in solar days
-  tequil=10.
+  tequil=10.  ! model T
+  !tequil=0.  ! Diviner T
 
   ! run time for hopping+thermal model in solar days
   tmax=4.
@@ -126,8 +81,8 @@ program allofmoon
      if (time>tmax*solarDay) exit
 
      !-- Temperature
-     call SurfaceTemperature(dtsec,HAi,time,Tsurf,Qn)
-     !call interpTmaps(nlon,nlat,NT,n,lon,Tbig,Tsurf,Qn)
+     call SurfaceTemperature(dtsec,HAi,time,Tsurf,Qn) ! model T
+     !call interpTmaps(nlon,nlat,NT,n,lon,Tbig,Tsurf,Qn) ! Diviner T
      if (n<0) cycle   ! skip remainder
 
      ! some output
@@ -154,7 +109,6 @@ program allofmoon
         call writeglobe(20,Tsurf)
      endif
 
-     !write(ext,'(i6)') n
      write(ext,'(i0.4)') n
      call deblank(ext)
      !open(unit=27,file='particles.'//ext,status='unknown',action='write')
@@ -205,33 +159,6 @@ program allofmoon
 end program allofmoon
 
 
-subroutine writeglobe(unit,Tsurf)
-  use grid, only: nlon, nlat, veclen
-  implicit none
-  integer, intent(IN) :: unit
-  real(8), intent(IN) :: Tsurf(*)
-  integer i,j,k
-  real(8) longitude(nlon), latitude(nlat)
-
-  ! set up lon-lat grid
-  call lonlatgrid(longitude,latitude)
-
-  if (veclen==nlon*nlat+2) write(unit,100) 0.,90.,Tsurf(1)
-  do j=1,nlat
-     do i=1,nlon
-        if (veclen==nlon*nlat+2) then
-           k = 1 + i + (j-1)*nlon 
-        else
-           k = i + (j-1)*nlon 
-        endif
-        write(unit,100) longitude(i),latitude(j),Tsurf(k)
-     enddo
-  enddo
-  if (veclen==nlon*nlat+2) write(unit,100) 0.,-90.,Tsurf(veclen)
-100 format (f5.1,1x,f6.2,1x,f7.3)
-end subroutine writeglobe
-
-
 subroutine deblank(chr)
 ! deblank string
 ! posted by James Giles at comp.lang.fortran on 3 August 2003.
@@ -258,8 +185,8 @@ end subroutine deblank
 
 subroutine SurfaceTemperature(dtsec,HAi,time,Tsurf,Qn)
   ! surface temperature model
-  use body, only : solarDay, zmax, Fgeotherm, semia, albedo, emiss
-  use grid, only : VECLEN
+  use body, only: solarDay, zmax, Fgeotherm, semia, albedo, emiss
+  use grid, only: VECLEN
   implicit none
   real(8), intent(IN) :: dtsec, HAi, time
   real(8), intent(INOUT) :: Tsurf(veclen)
@@ -346,8 +273,8 @@ end subroutine SurfaceTemperature
 
 
 subroutine particles2sigma(Np, p_r, p_s, sigma)
-  use grid
-  use body, only : Rmoon
+  use grid, only: veclen
+  use body, only: Rmoon
   implicit none
   integer, intent(IN) :: Np, p_s(Np)
   real(8), intent(IN) :: p_r(Np,2)
@@ -387,4 +314,3 @@ subroutine particles2sigma(Np, p_r, p_s, sigma)
   write(40,'(999999(1x,g11.5))') sigma
   close(40)
 end subroutine particles2sigma
-

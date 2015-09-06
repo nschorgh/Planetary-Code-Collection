@@ -6,9 +6,8 @@ module grid
   real(8) dlon, dlat
   integer nlon, nlat2
   !parameter (dlon=7.5, nlon=48) 
-  !parameter (dlat=2., nlat2=45)
-
   parameter (dlon=1, nlon=360) 
+
   !parameter (dlat=0.5, nlat2=180)
   parameter (dlat=2., nlat2=45)
 
@@ -80,7 +79,7 @@ end subroutine k2lonlat
 
 subroutine areas(dA)
   ! areas of surface elements
-  use grid, only : pi,d2r,dlat,dlon,veclen
+  use grid, only: pi,d2r,dlat,dlon,veclen
   implicit none
   real(8), intent(OUT) :: dA(veclen)
   integer k
@@ -93,3 +92,26 @@ subroutine areas(dA)
   enddo
   dA(veclen) = dA(1)
 end subroutine areas
+
+
+subroutine writeglobe(unit,Tsurf)
+  use grid, only: nlon, nlat, veclen
+  implicit none
+  integer, intent(IN) :: unit
+  real(8), intent(IN) :: Tsurf(*)
+  integer i,j,k
+  real(8) longitude(nlon), latitude(nlat)
+
+  ! set up lon-lat grid
+  call lonlatgrid(longitude,latitude)
+
+  write(unit,100) 0.,90.,Tsurf(1)
+  do j=1,nlat
+     do i=1,nlon
+        k = 1 + i + (j-1)*nlon
+        write(unit,100) longitude(i),latitude(j),Tsurf(k)
+     enddo
+  enddo
+  write(unit,100) 0.,-90.,Tsurf(veclen)
+100 format (f5.1,1x,f6.2,1x,f7.3)
+end subroutine writeglobe

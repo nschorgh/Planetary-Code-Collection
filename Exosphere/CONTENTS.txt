@@ -16,6 +16,9 @@ geogrid.f90:
 geogrid_D.f90:
 	a different geographic grid
 
+body.f90:
+	module with body specific parameters
+
 makefile:
 	shows file dependencies
 
