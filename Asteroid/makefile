@@ -15,6 +15,11 @@ asteroid_thermal: asteroid_thermal.f90 asteroid_thermal.o \
 	$(SR)flux_noatm.o $(SR)conductionQ.o $(SR)tridag.o \
 	$(SR)grids.o $(SR)generalorbit.o insolonly.o -o $@
 
+test1: testgardening1.o impactstirring.o makefile
+	make -C $(SR) common
+	$(CC) $(LFLAGS) impactstirring.o testgardening1.o \
+	$(SR)ran2.o $(SR)grids.o 
+
 %.o:	%.f makefile
 	$(CC) $(CFLAGS) -c $<
 
