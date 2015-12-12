@@ -42,7 +42,7 @@ subroutine icelayer_asteroid(bigstep,NP,thIn,z,porosity,Tinit, &
 
      ! assign/update property profiles
      porefill(:) = sigma(:,k)/(porosity(:)*icedensity)
-     call assignthermalproperties(nz,thIn,spread(Tnominal,1,nz),porosity,ti,rhocv,porefill)
+     call assignthermalproperties(nz,thIn,Tnominal,porosity,ti,rhocv,porefill)
      diam = 100e-6
      Diff0 = vapordiffusivity(diam,porosity(1),Tnominal) ! surface
      do j=1,nz
@@ -69,7 +69,7 @@ subroutine icelayer_asteroid(bigstep,NP,thIn,z,porosity,Tinit, &
            stop 'D_EFF PROBLEM'
         endif
      endif
-     call impactstirring(nz,z(:),bigstep,sigma(:,k))
+     ! call impactstirring(nz,z(:),bigstep,sigma(:,k))  ! turn impact stiring on and off here
      call icechanges(nz,z(:),typeP,avrho(:),ypp(:),Deff,bigstep,Jp,zdepthP(k),sigma(:,k))
      where(sigma<0.) sigma=0.
      do j=1,nz
@@ -363,7 +363,7 @@ end subroutine compactoutput
 
 
 
-subroutine assignthermalproperties(nz,thIn,T,porosity,ti,rhocv,porefill)
+subroutine assignthermalproperties(nz,thIn,Tnom,porosity,ti,rhocv,porefill)
 !*********************************************************
 ! assign thermal properties of soil
 !*********************************************************
@@ -371,20 +371,32 @@ subroutine assignthermalproperties(nz,thIn,T,porosity,ti,rhocv,porefill)
   use allinterfaces, only : heatcapacity
   implicit none
   integer, intent(IN) :: nz
-  real(8), intent(IN) :: thIn, T(nz), porosity(nz)
+  real(8), intent(IN) :: thIn, Tnom, porosity(nz)
   real(8), intent(OUT) :: ti(nz), rhocv(nz)
   real(8), intent(IN), optional :: porefill(nz)
   real(8), parameter :: rhodry = 2400  ! bulk density
+  real(8), parameter :: kbulk = 2. ! conductivity for zero porosity dry rock
   real(8), parameter :: kice=4.6, cice=1145   ! 140K
   !real(8), parameter :: kice=4.3, cice=1210   ! 150K
   integer j
-  real(8) cdry, k(nz)
+  real(8) cdry  ! heat capacity of dry regolith
+  real(8) k(nz)  ! thermal conductivity
+  real(8) phi0, k0
 
+  if (minval(porosity)<0. .or. maxval(porosity)>0.8) then
+     print *,'Error: unreasonable porosity',minval(porosity),maxval(porosity)
+     stop
+  endif
+
+  cdry = heatcapacity(Tnom)
+  phi0 = porosity(1)
   do j=1,nz
-     cdry = heatcapacity(T(j))
-     k(j) = thIn**2/(rhodry*cdry)  ! thermal conductivity
      rhocv(j) = (1.-porosity(j))*rhodry*cdry
-     k(j) = thIn**2/rhocv(j)
+     k(j) = thIn**2/rhocv(j) 
+     if (porosity(j)<phi0) then  ! weighted harmonic mean of k and kbulk
+        k0 = thIn**2/rhocv(1) 
+        k(j) = 1./( (porosity(j)/phi0)/k(j) + (1-porosity(j)/phi0)/kbulk)
+     endif
   enddo
   if (present(porefill)) then
      do j=1,nz

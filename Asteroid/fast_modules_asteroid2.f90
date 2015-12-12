@@ -27,8 +27,11 @@ module body
   real(8) zmax  ! domain depth
 
   ! (1) Ceres
-  !parameter(semia = 2.76750591, ecc = 0.075822766)
-  parameter(semia = 2.76750591, ecc = 0.0)
+  parameter(semia = 2.76750591)
+  !parameter(ecc = 0.075822766)  ! current
+  !parameter(ecc = 0.0)
+  parameter(ecc = 0.117)  ! proper
+
   parameter(Trot = 9.074170/24., solarDay = 9.074170*3600.)
   parameter(emiss = 0.95d0)
   parameter(solsperyear = 4442.501)
@@ -40,7 +43,7 @@ module body
   ! parameters for thermal model
   real(8), parameter :: dt = 0.01  ! in units of solar days
   real(8), parameter :: Fgeotherm = 0.
-  integer, parameter :: EQUILTIME = 5 ! (orbits)
+  integer, parameter :: EQUILTIME = 20 ! (orbits)
 end module body
 
 
@@ -138,10 +141,10 @@ module allinterfaces
   end interface
 
   interface
-     subroutine assignthermalproperties(nz,thIn,T,porosity,ti,rhocv,porefill)
+     subroutine assignthermalproperties(nz,thIn,Tnom,porosity,ti,rhocv,porefill)
        implicit none
        integer, intent(IN) :: nz
-       real(8), intent(IN) :: thIn, T(nz), porosity(nz)
+       real(8), intent(IN) :: thIn, Tnom, porosity(nz)
        real(8), intent(OUT) :: ti(nz), rhocv(nz)
        real(8), intent(IN), optional :: porefill(nz)
      end subroutine assignthermalproperties

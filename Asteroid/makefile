@@ -15,6 +15,18 @@ asteroid_thermal: asteroid_thermal.f90 asteroid_thermal.o \
 	$(SR)flux_noatm.o $(SR)conductionQ.o $(SR)tridag.o \
 	$(SR)grids.o $(SR)generalorbit.o insolonly.o -o $@
 
+# Modules: body.mod miscparameters.mod allinterfaces.mod
+# The following depend on modules:
+#       asteroid_fast2, fast_subs_asteroid2
+
+asteroid_fast: fast_modules_asteroid2.f90 fast_modules_asteroid2.o \
+	asteroid_fast2.o fast_subs_asteroid2.o impactstirring.o makefile 
+	make -C $(SR) common
+	$(CC) $(LFLAGS) asteroid_fast2.f90 fast_subs_asteroid2.f90 \
+	$(SR)flux_noatm.o $(SR)conductionQ.o $(SR)tridag.o \
+	$(SR)grids.o $(SR)generalorbit.o $(SR)psv.o \
+	$(SR)derivs.o impactstirring.o $(SR)ran2.o -o $@
+
 test1: testgardening1.o impactstirring.o makefile
 	make -C $(SR) common
 	$(CC) $(LFLAGS) impactstirring.o testgardening1.o \
@@ -33,7 +45,7 @@ test1: testgardening1.o impactstirring.o makefile
 .PHONY: clean 
 
 clean:
-	rm -f  *.o  a.out  *.o90  *.mod  asteroid_thermal
+	rm -f  *.o  a.out  *.o90  *.mod  asteroid_thermal asteroid_fast
 
 
 

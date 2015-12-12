@@ -36,10 +36,14 @@ program asteroid_fast
   enddo
   close(21)
 
-  ! parameters that never change
-  tstart = 1e6  ! Earth years
+  !tstart = 1e6  ! Earth years
   tstart = 4.5e9  ! Earth years
   timestep = 1e5  ! Earth years
+  zdepthP(:) = 0.  ! initial ice depth
+
+  ! (1) Ceres
+  eps = 4.*d2r 
+  omega = 0.
 
   ! set eternal grid
   call setgrid(nz,z,zmax,zfac)
@@ -47,14 +51,16 @@ program asteroid_fast
   write(30,'(999(f8.5,1x))') z(1:nz)
   close(30)
 
-  ! initial ice depth and ice content
-  zdepthP(:) = 0.
+  ! porosity can decrease with depth, but should be constant within stirring depth
   porosity(:) = 0.4d0   ! dry porosity
+  do i=1,nz
+     !if (z(i)>0.5) porosity(i) = porosity(i) + (z(i)-0.5)/40.*(1-porosity(1))
+     !if (porosity(i)<0.) porosity(i)=0.
+  enddo
   forall (i=1:nz) sigma(i,:) = porosity(i)*icedensity
-
-  ! (1) Ceres
-  eps = 4.*d2r 
-  omega = 0.
+  open(unit=30,file='poro.'//ext,action='write',status='unknown')
+  write(30,'(999(f7.5,1x))') porosity(1:nz)
+  close(30)
 
   print *,'RUNNING FAST ASTEROID MODEL'
   print *,'Starting at time',tstart,'years'
@@ -67,7 +73,7 @@ program asteroid_fast
   do k=1,NP
      if (NP>1) print *,'  Site ',k
      print *,'  Latitude (deg)',latitude(k)
-     call outputskindepths(nz,z,zmax,porosity)
+     call outputskindepths(nz,z,zmax,porosity,thIn)
      print *,'  Initial ice depth=',zdepthP(k)
      print *
   enddo
@@ -146,24 +152,22 @@ end program asteroid_fast
 
 
 
-subroutine outputskindepths(nz,z,zmax,porosity)
+subroutine outputskindepths(nz,z,zmax,porosity,thIn)
   ! diagnostics only
   use constants, only : pi, NMAX 
   use body, only : solarDay, solsperyear, Tnominal
   use allinterfaces
   implicit none
   integer, intent(IN) :: nz
-  real(8), intent(IN) :: z(NMAX),zmax,porosity(nz)
+  real(8), intent(IN) :: z(NMAX),zmax,porosity(nz),thIn
   integer i
   real(8) delta, stretch, newrhoc, newti, rhoc
-  real(8), dimension(nz) :: ti, rhocv, T, porefill
-  real(8) :: thIn = 15.
+  real(8), dimension(nz) :: ti, rhocv, porefill
 
-  T = spread(Tnominal,1,nz)
-  call assignthermalproperties(nz,thIn,T,porosity,ti,rhocv)
+  call assignthermalproperties(nz,thIn,Tnominal,porosity,ti,rhocv)
   rhoc = rhocv(1)
   porefill = 1.
-  call assignthermalproperties(nz,thIn,T,porosity,ti,rhocv,porefill)
+  call assignthermalproperties(nz,thIn,Tnominal,porosity,ti,rhocv,porefill)
   newti = ti(1); newrhoc = rhocv(1)
 
   delta = thIn/rhoc*sqrt(solarDay/pi)

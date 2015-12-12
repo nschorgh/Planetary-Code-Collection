@@ -6,8 +6,8 @@
 
 module filemanager 
   implicit none
-  ! NSx = # pixels in x-direction
-  ! NSy = # pixels in y-direction 
+  ! NSx = # pixels in x-direction (longitude)
+  ! NSy = # pixels in y-direction (latitude)
   ! dx, dy = horizontal resolution (meter)
   ! RMAX = max radius of consideration (meter)
 
@@ -17,7 +17,7 @@ module filemanager
 
   integer, parameter :: NSx=40, NSy=40
   character(len=*), parameter :: fileext = 'topo40'
-  !integer, parameter :: NSx=81, NSy=81
+  integer, parameter :: NSx=81, NSy=81
   !character(len=*), parameter :: fileext = 'topo81'
   !integer, parameter :: NSx=80, NSy=80
   !character(len=*), parameter :: fileext = 'boulder'
@@ -27,7 +27,7 @@ module filemanager
   !character(len = *), parameter :: fileext = 'summit_large'
   !real(8), parameter :: dx=10., dy=10., RMAX=2e3
   
-  !integer, parameter :: NSx=71, NSy=81  ! x=lon, y=lat
+  !integer, parameter :: NSx=71, NSy=81 
   !character(len = *), parameter :: fileext = 'summit_small'
   !real(8), parameter :: dx=10., dy=10., RMAX=2e3
 
@@ -35,17 +35,21 @@ module filemanager
   !character(len = *), parameter :: fileext = 'summit_very'
   !real(8), parameter :: dx=10., dy=10., RMAX=2e3
 
-  !integer, parameter :: NSx=800, NSy=700  ! x=lon, y=lat
+  !integer, parameter :: NSx=800, NSy=700  
   !character(len = *), parameter :: fileext = 'summitregion'
   !real(8), parameter :: dx=4.4971, dy=4.4971, RMAX=2e3
 
-  !integer, parameter :: NSx=400, NSy=350  ! x=lon, y=lat
+  !integer, parameter :: NSx=400, NSy=350  
   !character(len = *), parameter :: fileext = 'summitregion_9m'
   !real(8), parameter :: dx=8.9941, dy=8.9941, RMAX=2e3
 
-  !integer, parameter :: NSx=220, NSy=230  ! x=lon, y=lat
+  !integer, parameter :: NSx=220, NSy=230  
   !character(len = *), parameter :: fileext = 'summitregion_9m_smaller'
   !real(8), parameter :: dx=8.9941, dy=8.9941, RMAX=1e3
+
+  !integer, parameter :: NSx=150, NSy=180 
+  !character(len = *), parameter :: fileext = 'rsl4'
+  !real(8), parameter :: dx=4., dy=4., RMAX=1e3
 
   logical, parameter :: verbose=.false.
 
@@ -54,6 +58,8 @@ module filemanager
   !integer, parameter :: nz=40
   real(8), parameter :: solarDay = 29.53*86400., Fgeotherm = 0.029  ! The Moon
   integer, parameter :: nz=25
+  !real(8), parameter :: solarDay = 88775.244, Fgeotherm = 0.028  ! Mars
+  !integer, parameter :: nz=80 ! to be checked
 end module filemanager
 
 

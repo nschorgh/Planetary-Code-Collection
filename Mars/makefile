@@ -8,10 +8,10 @@ LFLAGS = -O3 -Wall
 
 SR = ~/Thermal/ThermalLibF/Common/
 
-exper_thermal: exper_thermal1d.o makefile
+exper_thermal: exper_thermal1d.o vapordiffusioni.o makefile
 	make -C $(SR) common
 	$(CC) $(LFLAGS) exper_thermal1d.o $(SR)conductionT.o $(SR)tridag.o \
-	$(SR)vapordiffusioni.o $(SR)psv.o $(SR)grids.o 
+	vapordiffusioni.o $(SR)psv.o $(SR)grids.o 
 
 mars_thermal: mars_thermal1d.o marsorbit.o flux.o makefile
 	make -C $(SR) common
@@ -58,6 +58,8 @@ mars_fast: fast_modules.o mars_fast.o fast_subs_univ.o fast_subs_mars.o \
 	$(SR)grids.o $(SR)psv.o $(SR)derivs.o fast_subs_univ.o \
 	flux.o $(SR)conductionQ.o $(SR)psvco2.o $(SR)generalorbit.o \
 	fast_subs_mars.o -o $@
+
+common-mars: marsorbit.o vapordiffusioni.o flux.o 
 
 %.o:	%.f makefile
 	$(CC) $(CFLAGS) -c $<

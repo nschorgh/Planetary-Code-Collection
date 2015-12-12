@@ -249,12 +249,15 @@ module allinterfaces
      end subroutine compactoutput
   end interface
 
+  ! model_subsurface.f90
   interface
      subroutine subsurfaceconduction(T,Tsurf,dtsec,Qn,Qnp1,emiss)
        implicit none
        integer, parameter :: NMAX=1000
        real(8), intent(INOUT) :: T(NMAX), Tsurf
        real(8), intent(IN) :: dtsec,Qn,Qnp1,emiss
+       real(8), save :: ti(NMAX), rhocv(NMAX), z(NMAX)
+       logical, save :: first = .true.
      end subroutine subsurfaceconduction
   end interface
 
@@ -284,9 +287,22 @@ module allinterfaces
        integer NMAX
        parameter (NMAX=1000)
        integer, intent(IN) :: nz
-       real(8), intent(IN) :: z(NMAX), dt, Qn, Qnp1, ti(NMAX),rhoc(NMAX), emiss, Fgeotherm
-       real(8), intent(INOUT) :: T(NMAX), Tsurf
-       real(8), intent(OUT) :: Fsurf
+       real*8, intent(IN) :: z(NMAX), dt, Qn, Qnp1, ti(NMAX),rhoc(NMAX), emiss, Fgeotherm
+       real*8, intent(INOUT) :: T(NMAX), Tsurf
+       real*8, intent(OUT) :: Fsurf
      end subroutine conductionQ
   end interface
+
+  interface
+     subroutine conductionT(nz,z,dt,T,Tsurf,Tsurfp1,ti,rhoc,Fgeotherm,Fsurf)
+      implicit none
+      integer NMAX
+      parameter (NMAX=1000)
+      integer, intent(IN) :: nz
+      real*8, intent(IN) :: z(NMAX), dt, T(NMAX), Tsurf, Tsurfp1, ti(NMAX), rhoc(NMAX)
+      real*8, intent(IN) :: Fgeotherm
+      real*8, intent(OUT) :: Fsurf
+    end subroutine conductionT
+ end interface
+
 end module allinterfaces
