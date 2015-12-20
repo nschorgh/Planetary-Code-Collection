@@ -1,11 +1,10 @@
 !*****************************************************
 ! Subroutines for fast asteroid method
 ! written by Norbert Schorghofer 2014-2015
-! adopted from fast Mars model
 !*****************************************************
 
 
-subroutine icelayer_asteroid(bigstep,NP,thIn,z,porosity,Tinit, &
+subroutine icelayer_asteroid(bigstep,NP,z,porosity,Tinit, &
      & zdepthP,sigma,Tmean1,Tmean3,Tmin,Tmax,latitude,albedo,ecc,omega,eps,S0)
 !*************************************************************************
 ! bigstep = time step [Earth years]
@@ -17,8 +16,8 @@ subroutine icelayer_asteroid(bigstep,NP,thIn,z,porosity,Tinit, &
   use allinterfaces, except_this_one => icelayer_asteroid
   implicit none
   integer, intent(IN) :: NP
-  real(8), intent(IN) :: bigstep 
-  real(8), intent(IN) :: thIn, z(NMAX), porosity(nz)
+  real(8), intent(IN) :: bigstep
+  real(8), intent(IN) :: z(NMAX), porosity(nz)
   logical, intent(IN) :: Tinit
   real(8), intent(INOUT) :: sigma(nz,NP), zdepthP(NP), Tmean1(NP), Tmean3(NP)
   real(8), intent(OUT) :: Tmin(NP), Tmax(NP)
@@ -42,10 +41,11 @@ subroutine icelayer_asteroid(bigstep,NP,thIn,z,porosity,Tinit, &
 
      ! assign/update property profiles
      porefill(:) = sigma(:,k)/(porosity(:)*icedensity)
-     call assignthermalproperties(nz,thIn,Tnominal,porosity,ti,rhocv,porefill)
-     diam = 100e-6
+     call assignthermalproperties(nz,z,Tnominal,porosity,ti,rhocv,porefill)
+     diam = 100e-6  ! assumed mean-free-path in mantle
      Diff0 = vapordiffusivity(diam,porosity(1),Tnominal) ! surface
      do j=1,nz
+        if (z(j)>0.5) diam=1e-3  ! coarser below 0.5m
         Diff(j) = vapordiffusivity(diam,porosity(j),Tnominal) 
         if (sigma(j,k)>0.) then
            porefill(j) = sigma(j,k)/(porosity(j)*icedensity)
@@ -69,7 +69,7 @@ subroutine icelayer_asteroid(bigstep,NP,thIn,z,porosity,Tinit, &
            stop 'D_EFF PROBLEM'
         endif
      endif
-     ! call impactstirring(nz,z(:),bigstep,sigma(:,k))  ! turn impact stiring on and off here
+     call impactstirring(nz,z(:),bigstep,sigma(:,k))  ! turn impact stiring on and off here
      call icechanges(nz,z(:),typeP,avrho(:),ypp(:),Deff,bigstep,Jp,zdepthP(k),sigma(:,k))
      where(sigma<0.) sigma=0.
      do j=1,nz
@@ -363,15 +363,16 @@ end subroutine compactoutput
 
 
 
-subroutine assignthermalproperties(nz,thIn,Tnom,porosity,ti,rhocv,porefill)
+subroutine assignthermalproperties(nz,z,Tnom,porosity,ti,rhocv,porefill)
 !*********************************************************
 ! assign thermal properties of soil
+! specify thermal interia profile here
 !*********************************************************
   use body, only : icedensity
   use allinterfaces, only : heatcapacity
   implicit none
   integer, intent(IN) :: nz
-  real(8), intent(IN) :: thIn, Tnom, porosity(nz)
+  real(8), intent(IN) :: z(nz), Tnom, porosity(nz)
   real(8), intent(OUT) :: ti(nz), rhocv(nz)
   real(8), intent(IN), optional :: porefill(nz)
   real(8), parameter :: rhodry = 2400  ! bulk density
@@ -381,7 +382,7 @@ subroutine assignthermalproperties(nz,thIn,Tnom,porosity,ti,rhocv,porefill)
   integer j
   real(8) cdry  ! heat capacity of dry regolith
   real(8) k(nz)  ! thermal conductivity
-  real(8) phi0, k0
+  real(8) thIn
 
   if (minval(porosity)<0. .or. maxval(porosity)>0.8) then
      print *,'Error: unreasonable porosity',minval(porosity),maxval(porosity)
@@ -389,14 +390,15 @@ subroutine assignthermalproperties(nz,thIn,Tnom,porosity,ti,rhocv,porefill)
   endif
 
   cdry = heatcapacity(Tnom)
-  phi0 = porosity(1)
+  thIn = 15.
   do j=1,nz
      rhocv(j) = (1.-porosity(j))*rhodry*cdry
+     if (z(j)>0.5) thIn=50.
      k(j) = thIn**2/rhocv(j) 
-     if (porosity(j)<phi0) then  ! weighted harmonic mean of k and kbulk
-        k0 = thIn**2/rhocv(1) 
-        k(j) = 1./( (porosity(j)/phi0)/k(j) + (1-porosity(j)/phi0)/kbulk)
-     endif
+     !if (porosity(j)<phi0) then  ! weighted harmonic mean of k and kbulk
+     !   k0 = thIn**2/rhocv(1) 
+     !   k(j) = 1./( (porosity(j)/phi0)/k(j) + (1-porosity(j)/phi0)/kbulk)
+     !endif
   enddo
   if (present(porefill)) then
      do j=1,nz
@@ -427,6 +429,21 @@ elemental function heatcapacity(T)
   c = -0.034*T**0.5 + 0.008*T - 0.0002*T**1.5
   heatcapacity = c*1000   ! J/(g K) -> J/(kg K)
 end function heatcapacity
+
+
+
+elemental function conductivity(T)
+  implicit none
+  real(8), intent(IN) :: T
+  real(8) conductivity
+  real(8) A, B
+
+  A = 0.001; B = 3e-11     ! D= 100um based on Sakatani et al. (2012)
+  !A = 0.003; B = 1.5e-10   ! D= 1mm based on Sakatani et al. (2012)
+  !A = 0.01; B = 2e-9       ! D= 1cm
+
+  conductivity = A + B*T**3
+end function conductivity
 
 
 

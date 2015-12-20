@@ -19,7 +19,6 @@ program asteroid_fast
   real(8), dimension(NP) :: latitude, albedo, zdepthP
   real(8), dimension(NP) :: Tmean1, Tmean3, Tmin, Tmax
   character(4) ext
-  real(8), parameter :: thIn = 15.
 
   ! latitudes
   if (iargc() /= 1) then
@@ -41,8 +40,8 @@ program asteroid_fast
   timestep = 1e5  ! Earth years
   zdepthP(:) = 0.  ! initial ice depth
 
-  ! (1) Ceres
-  eps = 4.*d2r 
+  eps = 4.*d2r   ! (1) Ceres
+  !eps = 75.*d2r   ! Elst-Pizarro
   omega = 0.
 
   ! set eternal grid
@@ -54,7 +53,7 @@ program asteroid_fast
   ! porosity can decrease with depth, but should be constant within stirring depth
   porosity(:) = 0.4d0   ! dry porosity
   do i=1,nz
-     !if (z(i)>0.5) porosity(i) = porosity(i) + (z(i)-0.5)/40.*(1-porosity(1))
+     !if (z(i)>0.5) porosity(i) = porosity(i) - (z(i)-0.5)/40.*porosity(1)
      !if (porosity(i)<0.) porosity(i)=0.
   enddo
   forall (i=1:nz) sigma(i,:) = porosity(i)*icedensity
@@ -68,12 +67,11 @@ program asteroid_fast
   print *,'Spinup',SPINUPN,spinupfac
   print *,'eps=',eps/d2r,'ecc=',ecc,'omega=',omega/d2r
   print *,'Number of sites=',NP
-  print *,'Thermal inertia=',thIn
   print *,'Site specific parameters:'
   do k=1,NP
      if (NP>1) print *,'  Site ',k
      print *,'  Latitude (deg)',latitude(k)
-     call outputskindepths(nz,z,zmax,porosity,thIn)
+     call outputskindepths(nz,z,zmax,porosity)
      print *,'  Initial ice depth=',zdepthP(k)
      print *
   enddo
@@ -89,7 +87,7 @@ program asteroid_fast
 
   print *,'Equilibrating initial temperature'
   !icetime = -tstart
-  call icelayer_asteroid(0d0,NP,thIn,z,porosity,.true., &
+  call icelayer_asteroid(0d0,NP,z,porosity,.true., &
        &        zdepthP,sigma,Tmean1,Tmean3,Tmin,Tmax,latitude,albedo, &
        &        ecc,omega,eps,faintsun(icetime))
   do k=1,NP
@@ -107,7 +105,7 @@ program asteroid_fast
   do i=1,SPINUPN
      bigstep = spinupfac**i/bssum*timestep
      icetime = icetime + bigstep
-     call icelayer_asteroid(bigstep,NP,thIn,z,porosity,.false., &
+     call icelayer_asteroid(bigstep,NP,z,porosity,.false., &
           & zdepthP,sigma,Tmean1,Tmean3,Tmin,Tmax,latitude,albedo, &
           & ecc,omega,eps,faintsun(icetime))
      print *,i,'of',SPINUPN,'  ',bigstep,zdepthP,omega/d2r
@@ -124,7 +122,7 @@ program asteroid_fast
   print *,icetime
   do 
      icetime = icetime + timestep
-     call icelayer_asteroid(timestep,NP,thIn,z,porosity,.false., &
+     call icelayer_asteroid(timestep,NP,z,porosity,.false., &
           & zdepthP,sigma,Tmean1,Tmean3,Tmin,Tmax,latitude,albedo, &
           & ecc,omega,eps,faintsun(icetime))
      do k=1,NP
@@ -152,23 +150,24 @@ end program asteroid_fast
 
 
 
-subroutine outputskindepths(nz,z,zmax,porosity,thIn)
+subroutine outputskindepths(nz,z,zmax,porosity)
   ! diagnostics only
   use constants, only : pi, NMAX 
   use body, only : solarDay, solsperyear, Tnominal
   use allinterfaces
   implicit none
   integer, intent(IN) :: nz
-  real(8), intent(IN) :: z(NMAX),zmax,porosity(nz),thIn
+  real(8), intent(IN) :: z(NMAX), zmax, porosity(nz)
   integer i
   real(8) delta, stretch, newrhoc, newti, rhoc
-  real(8), dimension(nz) :: ti, rhocv, porefill
+  real(8) rhocv(nz), ti(nz), porefill(nz), thIn
 
-  call assignthermalproperties(nz,thIn,Tnominal,porosity,ti,rhocv)
-  rhoc = rhocv(1)
+  call assignthermalproperties(nz,z,Tnominal,porosity,ti,rhocv)
+  thIn = ti(1); rhoc=rhocv(1)
+  print *,'Thermal inertia=',thIn
   porefill = 1.
-  call assignthermalproperties(nz,thIn,Tnominal,porosity,ti,rhocv,porefill)
-  newti = ti(1); newrhoc = rhocv(1)
+  call assignthermalproperties(nz,z,Tnominal,porosity,ti,rhocv,porefill)
+  newti = ti(1); newrhoc=rhocv(1)
 
   delta = thIn/rhoc*sqrt(solarDay/pi)
   stretch = (newti/thIn)*(rhoc/newrhoc)

@@ -31,16 +31,21 @@ module body
   !parameter(ecc = 0.075822766)  ! current
   !parameter(ecc = 0.0)
   parameter(ecc = 0.117)  ! proper
-
   parameter(Trot = 9.074170/24., solarDay = 9.074170*3600.)
-  parameter(emiss = 0.95d0)
   parameter(solsperyear = 4442.501)
-  parameter(nz=160, zfac=1.05d0, zmax=20.)  ! Ceres
+  parameter(emiss = 0.95d0)
+  parameter(nz=160, zfac=1.05d0, zmax=20.)  ! thIn=15
 
+  ! 133P/Elst-Pizarro
+  !parameter(semia=3.163, ecc=0.159)  ! proper
+  !parameter(Trot=3.471/24., solarDay=3.471*3600.)
+  !parameter(solsperyear=14192)
+  !parameter(emiss = 0.95d0)
+  !parameter(nz=160, zfac=1.05d0, zmax=20.) 
+  
   real(8), parameter :: Tnominal = 140.   ! for Diff and Tinit
   real(8), parameter :: icedensity = 931.  ! 140K
 
-  ! parameters for thermal model
   real(8), parameter :: dt = 0.01  ! in units of solar days
   real(8), parameter :: Fgeotherm = 0.
   integer, parameter :: EQUILTIME = 20 ! (orbits)
@@ -61,14 +66,14 @@ module allinterfaces
   end interface
 
   interface
-     subroutine icelayer_asteroid(bigstep,NP,thIn,z,porosity,Tinit, &
+     subroutine icelayer_asteroid(bigstep,NP,z,porosity,Tinit, &
           & zdepthP,sigma,Tmean1,Tmean3,Tmin,Tmax,latitude,albedo,ecc,omega,eps,S0)
        use constants, only : d2r, NMAX
        use body, only : icedensity, Tnominal, nz
        implicit none
        integer, intent(IN) :: NP
        real(8), intent(IN) :: bigstep
-       real(8), intent(IN) :: thIn, z(NMAX), porosity(nz)
+       real(8), intent(IN) :: z(NMAX), porosity(nz)
        real(8), intent(INOUT) :: sigma(nz,NP), zdepthP(NP), Tmean1(NP), Tmean3(NP)
        real(8), intent(OUT) :: Tmin(NP), Tmax(NP)
        real(8), intent(IN) :: latitude(NP), albedo(NP), ecc, omega, eps, S0
@@ -141,10 +146,10 @@ module allinterfaces
   end interface
 
   interface
-     subroutine assignthermalproperties(nz,thIn,Tnom,porosity,ti,rhocv,porefill)
+     subroutine assignthermalproperties(nz,z,Tnom,porosity,ti,rhocv,porefill)
        implicit none
        integer, intent(IN) :: nz
-       real(8), intent(IN) :: thIn, Tnom, porosity(nz)
+       real(8), intent(IN) :: z(nz), Tnom, porosity(nz)
        real(8), intent(OUT) :: ti(nz), rhocv(nz)
        real(8), intent(IN), optional :: porefill(nz)
      end subroutine assignthermalproperties
@@ -156,6 +161,14 @@ module allinterfaces
        real(8), intent(IN) :: T
        real(8) heatcapacity
      end function heatcapacity
+  end interface
+
+  interface
+     elemental function conductivity(T)
+       implicit none
+       real(8), intent(IN) :: T
+       real(8) conductivity
+     end function conductivity
   end interface
 
   interface
