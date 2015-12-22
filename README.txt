@@ -8,6 +8,7 @@ This program collection contains
 * an explicit subsurface vapor diffusion and deposition model,
 * models for the equilibrium ice table on Mars,
 * fast method for subsurface-atmosphere vapor exchange for Mars,
+* a fast (asynchronous) model for ice retreat on asteroids
 * a Monte-Carlo model for ballistic hops in the lunar exosphere, and
 * a 3D model of shadowing, illumination, and scattering.
 
@@ -107,7 +108,7 @@ Common/ran2.for
 Documentation: None
 
 
-*Shadowing and illumination*
+*Shadowing and Illumination*
 
 Craters/shadows.f90: (main program)
 Craters/fieldofviews.f90: (main program)
@@ -122,6 +123,24 @@ Craters/model_subs.f90
 Common/hpsort.for
 Craters/topo40.xyz
 Documentation: None
+
+
+*Asynchronous Model for Temperature, Impact Stirring, and Ice Loss on Asteroids*
+
+Asteroid/asteroid_fast2.f90: (main program)
+Asteroid/fast_modules_asteroid2.f90
+Asteroid/fast_subs_asteroid2.f90 
+Asteroid/impactstirring.f90
+Common/flux_noatm.f90
+Common/conductionQ.f
+Common/tridag.for
+Common/grids.f
+Common/generalorbit.f
+Common/psv.o
+Common/derivs.o
+Common/ran2.o
+Asteroid/lats.0
+Documentation: Schorghofer, N. (2016) submitted to Icarus
 
 
 
