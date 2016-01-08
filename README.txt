@@ -144,6 +144,10 @@ Documentation: Schorghofer, N. (2016) submitted to Icarus
 
 
 
+NOTE: Third party source code (from Numerical Recipes) is not included in this distribution. These are files ending with .for.  Most of this code will not work without them.  Contact me if you cannot find them elsewhere.
+
+
+
 ACKNOWLEDGMENTS:
 
 2006: Troy Hudson discovered a grid-point offset in conductionT and conductionQ, which has been corrected.

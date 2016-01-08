@@ -25,4 +25,6 @@ module body
   !real(8), parameter :: dtsec=600. 
   !real(8), parameter :: albedo=0.09, emiss=0.9
   !real(8), parameter :: zmax=0.5, Fgeotherm=0.
+
+  real(8), parameter :: vescape=sqrt(2*g*Rmoon)
 end module body

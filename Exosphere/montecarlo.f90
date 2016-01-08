@@ -23,7 +23,7 @@ end module exo_species
 
 subroutine hop1(p_r, p_s, p_t, idum, Tsurf, Q)
   ! ballistic flight of one particle
-  use body, only: g, Rmoon, semia
+  use body, only: g, Rmoon, semia, vescape
   use exo_species 
   implicit none
   real(8), intent(INOUT) :: p_r(2) ! (1)=longitude  (2)=latitude
@@ -34,9 +34,8 @@ subroutine hop1(p_r, p_s, p_t, idum, Tsurf, Q)
 
   real(8) d,v(3),lat,buf,az,cosaz,sinph2,cosph2,cosdlon,dlon
   real(8) u,flighttime,destr_rate
-  real(8) gamma,vspeed,sin2theta
+  real(8) alpha,vspeed
   real(8), parameter :: pi=3.1415926535897932, d2r=pi/180.
-  real(8), parameter :: vescape=sqrt(2*g*Rmoon)
   integer, external :: inbox
   real(8), external :: ran2
   real(8), external :: gasdev  ! gaussian with unit variance
@@ -62,12 +61,14 @@ subroutine hop1(p_r, p_s, p_t, idum, Tsurf, Q)
   d = 2/g*v(3)*sqrt(v(1)**2+v(2)**2)  ! distance for constant g
   if (vspeed>0.4*vescape) then  ! use non-uniform gravity formula
   !if (d>0.1*Rmoon) then
-     gamma = (vspeed/vescape)**2
+     !gamma = (vspeed/vescape)**2
      ! theta = zenith angle of launch velocity
-     sin2theta = 2*v(3)*sqrt(v(1)**2+v(2)**2)/vspeed**2
+     !sin2theta = 2*v(3)*sqrt(v(1)**2+v(2)**2)/vspeed**2
      ! derived from an equation in Vogel (1966)
-     d = 2*Rmoon*atan(sin2theta/(1/gamma-sin2theta**2))
-     flighttime = flighttime*(1+4./3.*gamma)  ! 1st order correction
+     !d = 2*Rmoon*atan(sin2theta/(1/gamma-sin2theta**2))
+     !flighttime = flighttime*(1+4./3.*gamma)  ! 1st order correction
+     alpha = atan(sqrt(v(1)**2+v(2)**2)/v(3))  ! angle from zenith
+     call nonuniformgravity(vspeed,alpha,d,flighttime)
   endif
   az = atan2(v(2),v(1))
   !write(70,*) d,az   ! for statistical tests
@@ -333,3 +334,26 @@ logical function incoldtrap(p_r)
   !if (insidecoldtrap(p_r)>0) incoldtrap = .TRUE.
 end function incoldtrap
 
+
+subroutine nonuniformgravity(vspeed,alpha,d,t)
+  ! ballistic travel distance and flighttime for non-uniform gravity
+  ! not suitable for small velocities due to roundoff
+  use body
+  implicit none
+  real(8), intent(IN) :: vspeed
+  real(8), intent(IN) :: alpha  ! zenith angle of launch velocity
+  real(8), intent(OUT) :: d, t  ! distance and flighttime
+  real(8), parameter :: pi=3.1415926535897932
+  real(8) gamma, a, ecc, Ep
+
+  gamma = (vspeed/vescape)**2
+  a = Rmoon/2./(1-gamma)
+  ecc = sqrt(1-4*(1-gamma)*gamma*sin(alpha)**2)
+  d = 2*Rmoon*acos(1/ecc*(1-2*gamma*sin(alpha)**2))
+  Ep = pi - 2*atan(sqrt((1-ecc)/(1+ecc))/tan(d/(4*Rmoon)))
+  if (ecc>1.-1d-5) then
+     d = Rmoon*4*gamma*sin(alpha)
+     Ep = pi - 2*atan(sqrt((1-gamma)/gamma))
+  endif
+  t = 2*sqrt(2*a**3/Rmoon/vescape**2)*(Ep+ecc*sin(Ep))
+end subroutine nonuniformgravity
