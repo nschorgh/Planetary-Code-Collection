@@ -47,7 +47,7 @@ subroutine hop1(p_r, p_s, p_t, idum, Tsurf, Q)
   v(2) = gasdev(idum)*buf
   v(3) = abs(gasdev(idum))*buf
 
-  ! v(1) = v(1) - 2*Rmoon*pi/siderealDay*cos(p_r(2)*d2r)  ! Coriolis, check sign
+  ! v(1) = v(1) - 2*Rmoon*pi/siderealDay*cos(p_r(2)*d2r)  ! Coriolis
   vspeed = sqrt(sum(v(:)**2))
   if (vspeed>vescape) then  ! grav. escape
      p_s = -2  ! destroyed by escape
@@ -57,7 +57,7 @@ subroutine hop1(p_r, p_s, p_t, idum, Tsurf, Q)
 
   ! molecule moves on plane that goes through center of sphere/body
   ! ground track is thus part of a great circle
-  flighttime = 2*v(3)/g   ! constant g
+  flighttime = 2*v(3)/g   ! time of flight for constant g
   d = 2/g*v(3)*sqrt(v(1)**2+v(2)**2)  ! distance for constant g
   if (vspeed>0.4*vescape) then  ! use non-uniform gravity formula
   !if (d>0.1*Rmoon) then
@@ -90,7 +90,7 @@ subroutine hop1(p_r, p_s, p_t, idum, Tsurf, Q)
      ! longitude does not matter 
      p_r(1) = 0.  ! just in case
   endif
-  ! p_r(1) = p_r(1) + flighttime/siderealDay*360.  ! Coriolis, check sign
+  ! p_r(1) = p_r(1) + flighttime/siderealDay*360.  ! Coriolis
     
   if (p_r(2)>90. .or. p_r(2)<-90) then
      print *,'hop1: this cannot happen',p_r(2)
@@ -103,7 +103,7 @@ subroutine hop1(p_r, p_s, p_t, idum, Tsurf, Q)
   p_t = p_t + flighttime
 
   ! in-flight destruction
-  if (Q>0.) then  ! dayside
+  if (Q>0. .and. taudissoc>0.) then  ! dayside
      u=ran2(idum)  ! between 0 and 1
      !if (u<0.004) then ! 0.4%
      destr_rate = flighttime/(taudissoc*semia**2) ! photodissociation
@@ -140,6 +140,26 @@ function residence_time2(T,sigma)
   residence_time2 = residence_time2/frac
   if (T==0.) residence_time2 = 1e32
 end function residence_time2
+
+
+function residence_timeR(T)
+  ! residence time with probability distribution
+  implicit none
+  real(8), intent(IN) :: T
+  real(8) residence_timeR
+  real(8), parameter :: sigma0 = 1e19  ! H2O
+  real(8), external :: sublrate, ran2
+  real(8) tau, y
+  integer, save :: idum=-4578
+  
+  tau = sigma0/sublrate(T)
+  y  = ran2(idum)
+  residence_timeR = -tau/log(y)  ! gives P(t)=tau/t^2 e^(-tau/t),  <1/t>=1/tau
+  if (T==0.) residence_timeR = 1e32
+  !residence_time = 0. ! Ar, He, (noncondensible species)
+  ! Integrate[tau/t^2 Exp[-tau/t],{t,0,Infinity},Assumptions->tau>0] = 1
+  ! Integrate[tau/t^3 Exp[-tau/t],{t,0,Infinity},Assumptions->tau>0] = 1/tau
+end function residence_timeR
 
 
 subroutine montecarlo(Np,idum,p_r,p_s,p_t,p_n,Tsurf,dtsec,cc_trapped,Q) 
@@ -225,7 +245,7 @@ subroutine production(Np,p_r,p_s,idum,Tsurf,newcc)
            if (Tsurf(k)>360.) exit
         enddo
 
-        ! uniform
+        ! global
         !p_r(i,1) = 360.*ran2(idum)
         !p_r(i,2) = 180.*(ran2(idum)-0.5)
         !k = inbox(p_r(i,:))
@@ -322,7 +342,8 @@ logical function incoldtrap(p_r)
   !if (abs(p_r(2))> 90-2.24) incoldtrap = .TRUE.  ! 14460 km^2
 
   ! MERCURY
-  !if (p_r(2)< -90+2.75) incoldtrap = .TRUE.  ! 43000 km^2 south  Chabot et al. (2012)
+  ! 7000 km^2 PSR south of 85S, Chabot et al. (2012) = 0.019% of the hemisphere
+  !if (abs(p_r(2))> 90-1.11) incoldtrap = .TRUE. 
 
   !if (abs(p_r(2)) > 85.) then
   !   ! this only works for f<0.38%

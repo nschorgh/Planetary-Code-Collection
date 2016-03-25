@@ -82,7 +82,7 @@ program cratersQ_snapshot
      enddo
      Qabs(:,:)=(1.-albedo(:,:))*(Qn(:,:)+Qrefl(:,:))+emiss*(QIR+QIRre)  ! Q absorbed
      
-     Tsurf = (Qabs/sigSB)**0.25
+     Tsurf = (Qabs/sigSB/emiss)**0.25
 
      print *,'Iteration',n,Qshadow1,Qshadow2
   enddo

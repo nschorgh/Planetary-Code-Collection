@@ -150,6 +150,8 @@ NOTE: Third party source code (from Numerical Recipes) is not included in this d
 
 ACKNOWLEDGMENTS:
 
+Mar 2016: Thanks to Lior Rubanenko for a bug report in cratersQ_*
+
 2006: Troy Hudson discovered a grid-point offset in conductionT and conductionQ, which has been corrected.
 
 2005: Thanks to Mischa Kreslavsky for providing correct formulas for energy balance on a slope.

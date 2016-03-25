@@ -42,7 +42,7 @@ subroutine icelayer_asteroid(bigstep,NP,z,porosity,Tinit, &
      ! assign/update property profiles
      porefill(:) = sigma(:,k)/(porosity(:)*icedensity)
      call assignthermalproperties(nz,z,Tnominal,porosity,ti,rhocv,porefill)
-     diam = 100e-6  ! assumed mean-free-path in mantle
+     diam = 100e-6  ! assumed grain size
      Diff0 = vapordiffusivity(diam,porosity(1),Tnominal) ! surface
      do j=1,nz
         if (z(j)>0.5) diam=1e-3  ! coarser below 0.5m
