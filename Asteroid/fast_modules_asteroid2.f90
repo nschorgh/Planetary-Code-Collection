@@ -7,7 +7,7 @@ module constants
   ! miscellaneous parameters that are very constant
   real(8), parameter :: pi=3.1415926535897932, d2r=pi/180.
   integer, parameter :: NMAX=1000
-  real(8), parameter :: sigSB=5.67051e-8
+  real(8), parameter :: sigSB=5.6704e-8
   real(8), parameter :: kB=1.38065e-23
 end module constants
 

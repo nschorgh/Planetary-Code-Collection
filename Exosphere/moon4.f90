@@ -194,7 +194,7 @@ subroutine SurfaceTemperature(dtsec,HAi,time,Tsurf,Qn)
 
   integer, parameter :: NMAX=1000
   real(8), parameter :: pi=3.1415926535897932, d2r=pi/180.
-  real(8), parameter :: sigSB=5.67051d-8
+  real(8), parameter :: sigSB=5.6704d-8
   real(8), parameter :: zero=0.
 
   real(8), save :: ti(NMAX), rhocv(NMAX), z(NMAX)

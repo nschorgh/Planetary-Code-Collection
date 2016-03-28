@@ -20,8 +20,9 @@ subroutine insolonly(latitude,a,omega,ecc,eps,Trot,Q0mean,Qmean,Q4mean)
      Q0 = flux_noatm(Rau,decl,latitude,0d0,0d0,0d0)
      HA = mod(edays/Trot,1.d0)*2.*pi
      Q = flux_noatm(Rau,decl,latitude,HA,0d0,0d0)
+
+     Q0mean = Q0mean + Q0
      if (Q>0.) then
-        Q0mean = Q0mean + Q0
         Qmean = Qmean + Q   ! thIn = infinity
         Q4mean = Q4mean + Q**0.25  ! thIn = 0
      endif

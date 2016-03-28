@@ -21,8 +21,8 @@ module body
   !real(8), parameter :: Fgeotherm=0.
 
   ! Ceres
-  !real(8), parameter :: solarDay=9.075*3600., semia=2.77
-  !real(8), parameter :: siderealDay=9.075*3600.
+  !real(8), parameter :: solarDay=9.076*3600., semia=2.77
+  !real(8), parameter :: siderealDay=9.07417*3600.
   !real(8), parameter :: g=0.27, Rmoon=480e3  !(975x909km)
   !real(8), parameter :: dtsec=600. 
   !real(8), parameter :: albedo=0.09, emiss=0.9

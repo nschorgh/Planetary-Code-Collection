@@ -28,8 +28,7 @@ c     T = orbital period (days)
       T = sqrt(4*pi**2/(6.674e-11*1.989e30)*(a*149.598e9)**3)/86400.
 
 c     M = mean anomaly (radians)
-      M = -omega + 2.*pi*edays/T   ! bad for roundoff when edays is large
-      !M = 2.*pi*edays/T  ! M=0 at perihelion
+      M = 2.*pi*edays/T  ! M=0 at perihelion
 
 c     E = eccentric anomaly 
 c     solve M = E - ecc*sin(E) by newton method
