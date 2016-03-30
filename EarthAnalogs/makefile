@@ -8,14 +8,11 @@ LFLAGS = -O3 -Wall
 
 SR = ~/Thermal/ThermalLibF/Common/
 
-moon4: geogrid.o body.o moon4.o montecarlo.o makefile 
+insol_earth: topos.o crater_modules.o insol_earth.o mk_atmosphere.o \
+	sunpos.o makefile
 	make -C $(SR) common
-	$(CC) $(LFLAGS) moon4.f90 montecarlo.o geogrid.o \
-	$(SR)flux_noatm.o $(SR)conductionQ.o $(SR)tridag.o \
-	$(SR)grids.o $(SR)psv.o $(SR)subl_subs.o \
-	$(SR)gasdev.o $(SR)ran2.o
-
-# modules in geogrid.f90 as well as in moon4.f90
+	$(CC) $(LFLAGS) topos.o insol_earth.o mks_atmosphere.o \
+	sunpos.o 
 
 %.o:	%.f makefile
 	$(CC) $(CFLAGS) -c $<
@@ -23,14 +20,14 @@ moon4: geogrid.o body.o moon4.o montecarlo.o makefile
 %.o:	%.for makefile
 	$(CC) $(CFLAGS) -c $<
 
-%.o:	%.f90 body.f90 makefile
+%.o:	%.f90 makefile
 	$(CC) $(CFLAGS) -c $< 
 
 
 .PHONY: clean 
 
 clean:
-	rm -f  *.o  a.out  *.mod
+	rm -f  *.o  a.out  *.o  *.mod 
 
 
 

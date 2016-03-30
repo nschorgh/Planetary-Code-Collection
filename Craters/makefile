@@ -46,7 +46,7 @@ cratersQ_moon: topos.o crater_modules.o cratersQ_moon.o model_subs.o \
 .PHONY: clean 
 
 clean:
-	rm -f  *.o  a.out  *.o90  *.mod \
+	rm -f  *.o  a.out  *.mod \
 	shadows fieldofviews cratersQ_snapshot cratersQ_moon
 
 

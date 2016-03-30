@@ -1,0 +1,19 @@
+EarthAnalogs/
+
+Irradiance models for terrestrial analogs
+=========================================
+
+(in progress)
+
+sunpos.f90:
+	position of the Sun from location on Earth
+
+mk_atmosphere.f90:
+	subroutine for 1D atmosphere for Mauna Kea
+
+makefile:
+	shows file dependencies
+
+
+
+

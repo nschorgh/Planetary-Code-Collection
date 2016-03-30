@@ -45,7 +45,7 @@ test1: testgardening1.o impactstirring.o makefile
 .PHONY: clean 
 
 clean:
-	rm -f  *.o  a.out  *.o90  *.mod  asteroid_thermal asteroid_fast
+	rm -f  *.o a.out  *.mod asteroid_thermal asteroid_fast
 
 
 
