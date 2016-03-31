@@ -9,10 +9,10 @@ program allofmoon
   integer, parameter :: Np=2000000  ! maximum number of computational particles
 
   integer n, i, nequil, k
-  integer cc(6), cc_old(6), alive, cc_prod, cc_prod_total, cc_trapped, cc_destroyed
+  integer cc(6), cc_prod, cc_prod_total, ccc(4)
   integer :: idum=-92309   ! random number seed
   real(8) tmax, time, tequil
-  real(8), dimension(veclen) :: Tsurf, Qn, sigma 
+  real(8), dimension(veclen) :: Tsurf, Qn !, sigma 
   real(8) residencetime, HAi
   character(10) ext
 
@@ -50,7 +50,7 @@ program allofmoon
 
   HAi = 0.  ! noon
 
-  cc_trapped=0; cc_destroyed=0
+  ccc(:)=0
   cc_prod_total=0
   p_n(:) = 0
 
@@ -88,10 +88,10 @@ program allofmoon
      ! some output
      call totalnrs(np,p_s,cc)
      print *,time/3600.,'One hour call',sum(cc(1:2))
-     write(30,*) time/3600.,cc(1:2),cc_trapped
+     write(30,*) time/3600.,cc(1:2),ccc(1:4),cc_prod_total
 
      ! create new particles
-     call production(Np,p_r,p_s,idum,Tsurf,cc_prod)
+     call production(Np,p_r,p_s,p_n,idum,Tsurf,cc_prod)
      !cc_prod = 0
      cc_prod_total = cc_prod_total + cc_prod
 
@@ -122,36 +122,26 @@ program allofmoon
      !endif
 
      ! 1 hour of hopping
-     alive = count(p_s>=0)
-     call totalnrs(Np,p_s,cc_old)
-     call montecarlo(np,idum,p_r,p_s,p_t,p_n,Tsurf,dtsec,cc_trapped,Qn)
+     call montecarlo(np,idum,p_r,p_s,p_t,p_n,Tsurf,dtsec,ccc,Qn)
      !call destruction(np,p_r,p_s,p_t,idum,dtsec,veclen,sigma)
-     cc_destroyed = cc_destroyed + alive - count(p_s>=0)
 
      call totalnrs(Np,p_s,cc)
-     cc = cc-cc_old
-     !write(52,*) cc_prod,cc(3:6)
 
   enddo
 !50 continue
   call writeparticles(51,Np,p_r,p_s,p_t,p_n)
-  call particles2sigma(Np,p_r,p_s,sigma)
+  !call particles2sigma(Np,p_r,p_s,sigma)
   call writeglobe(21,Tsurf)
 
   call totalnrs(Np,p_s,cc)
   print *,'# particles on surface',cc(1)
   print *,'# particles in flight',cc(2)
-  print *,'# particles destroyed, photo',cc(3)
-  print *,'# particles destroyed, escape',cc(4)
-  print *,'# particles destroyed',cc(3)+cc(4),cc_destroyed-cc_trapped
-  print *,'# particles coldtrapped',cc(5)+cc(6),cc_trapped
+  print *,'# particles destroyed, photo',ccc(1)
+  print *,'# particles destroyed, escape',ccc(2)
+  print *,'# particles coldtrapped',ccc(3)+ccc(4),ccc(3)+ccc(4)
   print *,'# particles produced',cc_prod_total
-  !print *,'# ',Np,cc(3),cc(4),cc(5)+cc(6),cc(5),cc(6)
+  print *,'# active particles',sum(cc(1:6)),Np
   print *,'# produced / surface density ',cc_prod_total,cc_prod_total/(4*pi*Rmoon**2)
-
-  !print *, HAi, &
-  !     & 'N=',count(p_s<=-3 .and. p_r(:,2)>0.), &
-  !     & 'S=',count(p_s<=-3 .and. p_r(:,2)<0.)
 
   close(20); close(21)
   close(30)

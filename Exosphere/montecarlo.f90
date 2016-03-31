@@ -23,7 +23,7 @@ end module exo_species
 
 subroutine hop1(p_r, p_s, p_t, idum, Tsurf, Q)
   ! ballistic flight of one particle
-  use body, only: g, Rmoon, semia, vescape
+  use body, only: g, Rmoon, semia, vescape, siderealDay
   use exo_species 
   implicit none
   real(8), intent(INOUT) :: p_r(2) ! (1)=longitude  (2)=latitude
@@ -33,8 +33,7 @@ subroutine hop1(p_r, p_s, p_t, idum, Tsurf, Q)
   real(8), intent(IN) :: Tsurf, Q
 
   real(8) d,v(3),lat,buf,az,cosaz,sinph2,cosph2,cosdlon,dlon
-  real(8) u,flighttime,destr_rate
-  real(8) alpha,vspeed
+  real(8) u,flighttime,destr_rate,vspeed,alpha
   real(8), parameter :: pi=3.1415926535897932, d2r=pi/180.
   integer, external :: inbox
   real(8), external :: ran2
@@ -70,6 +69,7 @@ subroutine hop1(p_r, p_s, p_t, idum, Tsurf, Q)
      alpha = atan(sqrt(v(1)**2+v(2)**2)/v(3))  ! angle from zenith
      call nonuniformgravity(vspeed,alpha,d,flighttime)
   endif
+  !write(70,*) 'flighttime',flighttime,d  ! for flighttime statistics
   az = atan2(v(2),v(1))
   !write(70,*) d,az   ! for statistical tests
   cosaz = v(2)/sqrt(v(1)**2+v(2)**2)
@@ -96,8 +96,7 @@ subroutine hop1(p_r, p_s, p_t, idum, Tsurf, Q)
      print *,'hop1: this cannot happen',p_r(2)
      !stop
   endif
-  if (p_r(1)>360.) p_r(1)=p_r(1)-360.
-  if (p_r(1)<0.) p_r(1)=p_r(1)+360.
+  p_r(1)=modulo(p_r(1),360.)   ! 0 <= p_r(1) < 360.
   
   p_s = 1
   p_t = p_t + flighttime
@@ -124,7 +123,7 @@ function residence_time(T)
   residence_time = sigma0/sublrate(T) 
   residence_time = residence_time*400   ! 0.1 monolayers (see S&A, 2014)
   if (T==0.) residence_time = 1e32
-  !residence_time = 0. ! Ar, He
+  !residence_time = 0. ! Ar, He, (noncondensible species)
 end function residence_time
 
 
@@ -162,12 +161,12 @@ function residence_timeR(T)
 end function residence_timeR
 
 
-subroutine montecarlo(Np,idum,p_r,p_s,p_t,p_n,Tsurf,dtsec,cc_trapped,Q) 
+subroutine montecarlo(Np,idum,p_r,p_s,p_t,p_n,Tsurf,dtsec,ccc,Q) 
   ! called once an hour
   implicit none
   integer, intent(IN) :: np
   real(8), intent(IN) :: Tsurf(*), dtsec, Q(*)
-  integer, intent(INOUT) :: idum, p_s(np), p_n(np), cc_trapped
+  integer, intent(INOUT) :: idum, p_s(np), p_n(np), ccc(4)
   real(8), intent(INOUT) :: p_r(np,2), p_t(np)
   integer i, k
   real(8) residencetime
@@ -190,15 +189,17 @@ subroutine montecarlo(Np,idum,p_r,p_s,p_t,p_n,Tsurf,dtsec,cc_trapped,Q)
            k = inbox(p_r(i,:))
            !write(70,*) i,p_r(i,:), p_s(i), p_t(i), Tsurf(k), Q(k)
            call hop1(p_r(i,:),p_s(i),p_t(i),idum,Tsurf(k),Q(k)) 
+           if (p_s(i)==-1) ccc(1)=ccc(1)+1
+           if (p_s(i)==-2) ccc(2)=ccc(2)+1
            p_n(i) = p_n(i)+1
         case(1) ! landing
            k = inbox(p_r(i,:))
            if (incoldtrap(p_r(i,:))) then
-              !p_s(i)=-3
               !p_s(i)=-100-insidecoldtrap(p_r(i,:))
               if (p_r(i,2)>0.) p_s(i)=-3
               if (p_r(i,2)<0.) p_s(i)=-4
-              cc_trapped = cc_trapped+1
+              if (p_s(i)==-3) ccc(3)=ccc(3)+1
+              if (p_s(i)==-4) ccc(4)=ccc(4)+1 
               p_t(i)=residence_time(100.d0)
               cycle
            endif
@@ -219,12 +220,12 @@ subroutine montecarlo(Np,idum,p_r,p_s,p_t,p_n,Tsurf,dtsec,cc_trapped,Q)
 end subroutine montecarlo
 
 
-subroutine production(Np,p_r,p_s,idum,Tsurf,newcc)
+subroutine production(Np,p_r,p_s,p_n,idum,Tsurf,newcc)
   ! continuous production
   implicit none
   integer, intent(IN) :: Np
   real(8), intent(INOUT) :: p_r(Np,2)
-  integer, intent(INOUT) :: p_s(Np), idum
+  integer, intent(INOUT) :: p_s(Np), p_n(Np), idum
   real(8), intent(IN) :: Tsurf(*)
   integer, intent(OUT) :: newcc
   integer i, k
@@ -236,6 +237,7 @@ subroutine production(Np,p_r,p_s,idum,Tsurf,newcc)
   do i=1,Np
      if (p_s(i)<0) then
         p_s(i)=0
+        p_n(i)=0
 
         ! in subsolar region
         do 
@@ -319,31 +321,41 @@ subroutine totalnrs(Np,p_s,cc)
   cc(2) = count(p_s==1)   ! inflight
   cc(3) = count(p_s==-1)  ! destroyed, photo
   cc(4) = count(p_s==-2)  ! destroyed, escape
-  cc(5) = count(p_s==-3)  ! coldtrapped
+  cc(5) = count(p_s==-3)  ! coldtrapped, north
   cc(6) = count(p_s==-4)  ! coldtrapped, south
-  !cc(5) = count(p_s<=-3)  ! coldtrapped
 end subroutine totalnrs
 
 
 logical function incoldtrap(p_r)
   implicit none
   real(8), intent(IN) :: p_r(2)
+  real(8), parameter :: pi=3.1415926535897932, d2r=pi/180.
   !real(8) u,f
-  integer, external :: insidecoldtrap, ran2
+  !integer, external :: insidecoldtrap, ran2
   !integer, save :: idum = -999
 
   incoldtrap = .FALSE.
 
+  ! approx. relative area of spherical cap (a*pi/180)**2/2, a=sqrt(2*F)*180/pi
+  ! approx. relative area of spherical cap 1-cos(a*pi/180), a=acos(1-F)*180/pi
+
   ! MOON
-  ! Mazarico et al.(2011) cold trap areas
-  ! approx. area of spherical cap (1737.1*a)**2*pi 
-  if (p_r(2)> +90-2.11) incoldtrap = .TRUE.  ! 12866 km^2
-  if (p_r(2)< -90+2.36) incoldtrap = .TRUE.  ! 16055 km^2
-  !if (abs(p_r(2))> 90-2.24) incoldtrap = .TRUE.  ! 14460 km^2
+  ! Mazarico et al.(2011)
+  if (p_r(2)> +90-2.11) incoldtrap = .TRUE.  ! 12866 km^2, 0.068%
+  if (p_r(2)< -90+2.36) incoldtrap = .TRUE.  ! 16055 km^2, 0.085%
+  !if (abs(p_r(2))> 90-2.24) incoldtrap = .TRUE.  ! 14460 km^2, 0.076%
+  ! dlat = 0.076e-2/cos(85.*d2r)
+  !if (abs(p_r(2))>85.-dlat/2 .and. abs(p_r(2))<85.+dlat/2.) incoldtrap = .TRUE.
 
   ! MERCURY
-  ! 7000 km^2 PSR south of 85S, Chabot et al. (2012) = 0.019% of the hemisphere
-  !if (abs(p_r(2))> 90-1.11) incoldtrap = .TRUE. 
+  ! 28,000 km^2 PSR south of 85S, Chabot et al. (2012) = 0.075% of the hemisphere
+  !if (abs(p_r(2))> 90-2.2) incoldtrap = .TRUE. 
+
+  ! CERES
+  !if (p_r(2)> +90-2.92) incoldtrap = .TRUE.  ! 0.13% of hemisphere
+  !if (p_r(2)< -90+2.92) incoldtrap = .TRUE.  ! 0.13% of hemisphere
+  ! dlat = 0.13e-2/cos(80.*d2r)
+  !if (abs(p_r(2))>80.-dlat/2 .and. abs(p_r(2))<80.+dlat/2.) incoldtrap = .TRUE.
 
   !if (abs(p_r(2)) > 85.) then
   !   ! this only works for f<0.38%
@@ -377,4 +389,8 @@ subroutine nonuniformgravity(vspeed,alpha,d,t)
      Ep = pi - 2*atan(sqrt((1-gamma)/gamma))
   endif
   t = 2*sqrt(2*a**3/Rmoon/vescape**2)*(Ep+ecc*sin(Ep))
+  if (1-2*gamma*sin(alpha)**2 > ecc) then ! otherwise d=NaN
+     d = 0.
+     t = 0.
+  endif
 end subroutine nonuniformgravity
