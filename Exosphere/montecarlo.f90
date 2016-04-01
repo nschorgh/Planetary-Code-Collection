@@ -23,7 +23,7 @@ end module exo_species
 
 subroutine hop1(p_r, p_s, p_t, idum, Tsurf, Q)
   ! ballistic flight of one particle
-  use body, only: g, Rmoon, semia, vescape, siderealDay
+  use body, only: g, Rbody, semia, vescape, siderealDay
   use exo_species 
   implicit none
   real(8), intent(INOUT) :: p_r(2) ! (1)=longitude  (2)=latitude
@@ -46,7 +46,7 @@ subroutine hop1(p_r, p_s, p_t, idum, Tsurf, Q)
   v(2) = gasdev(idum)*buf
   v(3) = abs(gasdev(idum))*buf
 
-  ! v(1) = v(1) - 2*Rmoon*pi/siderealDay*cos(p_r(2)*d2r)  ! Coriolis
+  ! v(1) = v(1) - 2*Rbody*pi/siderealDay*cos(p_r(2)*d2r)  ! Coriolis
   vspeed = sqrt(sum(v(:)**2))
   if (vspeed>vescape) then  ! grav. escape
      p_s = -2  ! destroyed by escape
@@ -59,12 +59,12 @@ subroutine hop1(p_r, p_s, p_t, idum, Tsurf, Q)
   flighttime = 2*v(3)/g   ! time of flight for constant g
   d = 2/g*v(3)*sqrt(v(1)**2+v(2)**2)  ! distance for constant g
   if (vspeed>0.4*vescape) then  ! use non-uniform gravity formula
-  !if (d>0.1*Rmoon) then
+  !if (d>0.1*Rbody) then
      !gamma = (vspeed/vescape)**2
      ! theta = zenith angle of launch velocity
      !sin2theta = 2*v(3)*sqrt(v(1)**2+v(2)**2)/vspeed**2
      ! derived from an equation in Vogel (1966)
-     !d = 2*Rmoon*atan(sin2theta/(1/gamma-sin2theta**2))
+     !d = 2*Rbody*atan(sin2theta/(1/gamma-sin2theta**2))
      !flighttime = flighttime*(1+4./3.*gamma)  ! 1st order correction
      alpha = atan(sqrt(v(1)**2+v(2)**2)/v(3))  ! angle from zenith
      call nonuniformgravity(vspeed,alpha,d,flighttime)
@@ -74,12 +74,12 @@ subroutine hop1(p_r, p_s, p_t, idum, Tsurf, Q)
   !write(70,*) d,az   ! for statistical tests
   cosaz = v(2)/sqrt(v(1)**2+v(2)**2)
   lat = p_r(2)*d2r
-  sinph2 = sin(d/Rmoon)*cos(lat)*cosaz + sin(lat)*cos(d/Rmoon)
+  sinph2 = sin(d/Rbody)*cos(lat)*cosaz + sin(lat)*cos(d/Rbody)
   !write(70,*) asin(sinph2)/d2r-p_r(2)   
   p_r(2) = asin(sinph2)/d2r
   cosph2 = sqrt(1.-sinph2**2)
   if (cosph2/=0) then  ! not on pole
-     cosdlon= (cos(d/Rmoon)*cos(lat)-sin(lat)*sin(d/Rmoon)*cosaz)/cosph2
+     cosdlon= (cos(d/Rbody)*cos(lat)-sin(lat)*sin(d/Rbody)*cosaz)/cosph2
      if (cosdlon>+1.) cosdlon=+1.  ! roundoff
      if (cosdlon<-1.) cosdlon=-1.  ! roundoff
      dlon = acos(cosdlon)
@@ -229,7 +229,7 @@ subroutine production(Np,p_r,p_s,p_n,idum,Tsurf,newcc)
   real(8), intent(IN) :: Tsurf(*)
   integer, intent(OUT) :: newcc
   integer i, k
-  integer, parameter :: NPROD = 4000
+  integer, parameter :: NPROD = 2000
   integer, external :: inbox
   real(8), external :: ran2
 
@@ -242,15 +242,19 @@ subroutine production(Np,p_r,p_s,p_n,idum,Tsurf,newcc)
         ! in subsolar region
         do 
            p_r(i,1) = 360.*ran2(idum)
-           p_r(i,2) = 40.*(ran2(idum)-0.5)
+           p_r(i,2) = 20*(2*ran2(idum)-1.)
            k = inbox(p_r(i,:))
            if (Tsurf(k)>360.) exit
         enddo
 
         ! global
         !p_r(i,1) = 360.*ran2(idum)
-        !p_r(i,2) = 180.*(ran2(idum)-0.5)
+        !p_r(i,2) = 90.*(2*ran2(idum)-1.)
         !k = inbox(p_r(i,:))
+
+        ! in equatorial region
+        !p_r(i,1) = 360.*ran2(idum)
+        !p_r(i,2) = 40*(2*ran2(idum)-1.)
 
         newcc = newcc+1
      endif
@@ -344,7 +348,7 @@ logical function incoldtrap(p_r)
   if (p_r(2)> +90-2.11) incoldtrap = .TRUE.  ! 12866 km^2, 0.068%
   if (p_r(2)< -90+2.36) incoldtrap = .TRUE.  ! 16055 km^2, 0.085%
   !if (abs(p_r(2))> 90-2.24) incoldtrap = .TRUE.  ! 14460 km^2, 0.076%
-  ! dlat = 0.076e-2/cos(85.*d2r)
+  ! dlat = 0.076e-2/cos(85.*d2r)/d2r
   !if (abs(p_r(2))>85.-dlat/2 .and. abs(p_r(2))<85.+dlat/2.) incoldtrap = .TRUE.
 
   ! MERCURY
@@ -354,7 +358,7 @@ logical function incoldtrap(p_r)
   ! CERES
   !if (p_r(2)> +90-2.92) incoldtrap = .TRUE.  ! 0.13% of hemisphere
   !if (p_r(2)< -90+2.92) incoldtrap = .TRUE.  ! 0.13% of hemisphere
-  ! dlat = 0.13e-2/cos(80.*d2r)
+  ! dlat = 0.13e-2/cos(80.*d2r)/d2r
   !if (abs(p_r(2))>80.-dlat/2 .and. abs(p_r(2))<80.+dlat/2.) incoldtrap = .TRUE.
 
   !if (abs(p_r(2)) > 85.) then
@@ -380,15 +384,15 @@ subroutine nonuniformgravity(vspeed,alpha,d,t)
   real(8) gamma, a, ecc, Ep
 
   gamma = (vspeed/vescape)**2
-  a = Rmoon/2./(1-gamma)
+  a = Rbody/2./(1-gamma)
   ecc = sqrt(1-4*(1-gamma)*gamma*sin(alpha)**2)
-  d = 2*Rmoon*acos(1/ecc*(1-2*gamma*sin(alpha)**2))
-  Ep = pi - 2*atan(sqrt((1-ecc)/(1+ecc))/tan(d/(4*Rmoon)))
+  d = 2*Rbody*acos(1/ecc*(1-2*gamma*sin(alpha)**2))
+  Ep = pi - 2*atan(sqrt((1-ecc)/(1+ecc))/tan(d/(4*Rbody)))
   if (ecc>1.-1d-5) then
-     d = Rmoon*4*gamma*sin(alpha)
+     d = Rbody*4*gamma*sin(alpha)
      Ep = pi - 2*atan(sqrt((1-gamma)/gamma))
   endif
-  t = 2*sqrt(2*a**3/Rmoon/vescape**2)*(Ep+ecc*sin(Ep))
+  t = 2*sqrt(2*a**3/Rbody/vescape**2)*(Ep+ecc*sin(Ep))
   if (1-2*gamma*sin(alpha)**2 > ecc) then ! otherwise d=NaN
      d = 0.
      t = 0.

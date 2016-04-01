@@ -6,7 +6,7 @@ LFLAGS = -O3 -Wall
 #CFLAGS = -O3 -warn all  -warn notruncated_source
 #LFLAGS = -O3 -warn all
 
-SR = ~/Thermal/ThermalLibF/Common/
+SR = ../Common/
 
 asteroid_thermal: asteroid_thermal.f90 asteroid_thermal.o \
 	oneasteroid_thermal1d.o insolonly.o makefile 

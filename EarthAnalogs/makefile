@@ -6,7 +6,7 @@ LFLAGS = -O3 -Wall
 #CFLAGS = -O3 -warn all  -warn notruncated_source
 #LFLAGS = -O3 -warn all
 
-SR = ~/Thermal/ThermalLibF/Common/
+SR = ../Common/
 
 insol_earth: topos.o crater_modules.o insol_earth.o mk_atmosphere.o \
 	sunpos.o makefile

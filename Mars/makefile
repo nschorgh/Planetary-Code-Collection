@@ -6,7 +6,7 @@ LFLAGS = -O3 -Wall
 #CFLAGS = -O3 -warn all  -warn notruncated_source
 #LFLAGS = -O3 -warn all
 
-SR = ~/Thermal/ThermalLibF/Common/
+SR = ../Common/
 
 exper_thermal: exper_thermal1d.o vapordiffusioni.o makefile
 	make -C $(SR) common

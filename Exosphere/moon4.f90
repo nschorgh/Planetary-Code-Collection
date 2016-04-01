@@ -3,7 +3,7 @@ program allofmoon
 ! surface temperatures of the Moon and migration of H2O
 !***********************************************************************
   use grid
-  use body, only: solarDay, dtsec, Rmoon
+  use body, only: solarDay, dtsec, Rbody
   implicit none
 
   integer, parameter :: Np=2000000  ! maximum number of computational particles
@@ -138,10 +138,10 @@ program allofmoon
   print *,'# particles in flight',cc(2)
   print *,'# particles destroyed, photo',ccc(1)
   print *,'# particles destroyed, escape',ccc(2)
-  print *,'# particles coldtrapped',ccc(3)+ccc(4),ccc(3)+ccc(4)
+  print *,'# particles coldtrapped',ccc(3),ccc(4),ccc(3)+ccc(4)
   print *,'# particles produced',cc_prod_total
   print *,'# active particles',sum(cc(1:6)),Np
-  print *,'# produced / surface density ',cc_prod_total,cc_prod_total/(4*pi*Rmoon**2)
+  print *,'# produced / surface density ',cc_prod_total,cc_prod_total/(4*pi*Rbody**2)
 
   close(20); close(21)
   close(30)
@@ -204,8 +204,8 @@ subroutine SurfaceTemperature(dtsec,HAi,time,Tsurf,Qn)
   ! toy orbit
   decl = 0.
   sunR = semia
-  ! less toy, but still toy
-  !eps = 1.54*d2r    ! lunar obliquity to ecliptic
+  ! better orbit 
+  !eps = 1.54*d2r 
   !ecc=0.; omega=0.
   !call generalorbit(time/86400.,semia,ecc,omega,eps,Ls,decl,sunR)
 
@@ -264,7 +264,7 @@ end subroutine SurfaceTemperature
 
 subroutine particles2sigma(Np, p_r, p_s, sigma)
   use grid, only: veclen
-  use body, only: Rmoon
+  use body, only: Rbody
   implicit none
   integer, intent(IN) :: Np, p_s(Np)
   real(8), intent(IN) :: p_r(Np,2)
@@ -287,11 +287,11 @@ subroutine particles2sigma(Np, p_r, p_s, sigma)
   enddo
 
   call areas(dA)
-  dA = dA*Rmoon**2
+  dA = dA*Rbody**2
 
   sigma(:) = nr0(:)/dA(:)
   !sigma(:) = nr1(:)/dA(:)  
-  !print *,'total area',sum(dA)/(4*pi*Rmoon**2)  ! test
+  !print *,'total area',sum(dA)/(4*pi*Rbody**2)  ! test
   totalnr0 = sum(nr0(:))
   totalnr1 = sum(nr1(:))
   !print *,'total # particles in particles2sigma:',Np,totalnr0  ! for checking purposes

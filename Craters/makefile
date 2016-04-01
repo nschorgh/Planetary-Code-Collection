@@ -6,7 +6,7 @@ LFLAGS = -O3 -Wall
 #CFLAGS = -O3 -warn all  -warn notruncated_source
 #LFLAGS = -O3 -warn all
 
-SR = ~/Thermal/ThermalLibF/Common/
+SR = ../Common/
 
 shadows: topos.o crater_modules.o shadows.o shadow_subs.o  \
 	crater_common.o hpsort.o makefile
