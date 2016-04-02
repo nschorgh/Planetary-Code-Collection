@@ -1,4 +1,4 @@
-program allofmoon
+program exospherebody
 !***********************************************************************
 ! surface temperatures of airless body with H2O exosphere
 !***********************************************************************
@@ -6,15 +6,14 @@ program allofmoon
   use body, only: solarDay, dtsec, Rbody
   implicit none
 
-  integer, parameter :: Np=2000000  ! maximum number of computational particles
+  integer, parameter :: Np=40000  ! maximum number of computational particles
 
   integer n, i, nequil, k
   integer cc(6), cc_prod, cc_prod_total, ccc(4)
   integer :: idum=-92309   ! random number seed
   real(8) tmax, time, tequil
-  real(8), dimension(veclen) :: Tsurf, Qn !, sigma 
+  real(8), dimension(veclen) :: Tsurf, Qn
   real(8) residencetime, HAi
-  character(10) ext
 
   real(8), dimension(np,2) :: p_r ! longitude(1) and latitude(2)
   integer, dimension(np) :: p_s ! status 0=on surface, 1=inflight, <0= destroyed or trapped
@@ -23,18 +22,13 @@ program allofmoon
 
   integer, external :: inbox, totalnr
   real(8), external :: residence_time
-  real(8), external :: flux_noatm, ran2
+  real(8), external :: flux_noatm
   
-  ! if used with Diviner surface temperature maps as input
-  !integer, parameter :: NT=708  ! tied to timestep of 708/(29.53*86400.) = 3596 sec
-  !real(8) lon(nlon),lat(nlat),Tbig(nlon,nlat,24)
-
   ! equilibration time for thermal model in solar days
-  tequil=10.  ! model T
-  !tequil=0.  ! Diviner T
+  tequil=15.
 
   ! run time for hopping+thermal model in solar days
-  tmax=4.
+  tmax=4442.*1.5
   !tmax=2./29.53
   !tmax = 2*86400./solarDay
 
@@ -43,8 +37,8 @@ program allofmoon
 
   print *,'Model parameters:'
   print *,'Time step=',dtsec,'sec'
-  print *,'Equilibration time',tequil,' lunar days'
-  print *,'Maximum time',tmax,' lunar days',tmax*solarDay/(86400.*365.242),' years'
+  print *,'Equilibration time',tequil,' solar days'
+  print *,'Maximum time',tmax,' solar days',tmax*solarDay/(86400.*365.242),' years'
   print *,'grid size',nlon,'x',nlat,'veclen=',veclen
   print *,'number of molecules',np
 
@@ -69,12 +63,6 @@ program allofmoon
   open(unit=50,file='particles',status='unknown',action='write')
   open(unit=51,file='particles_end',status='unknown',action='write')
 
-  ! if you work with real coldtrap contours
-  !call readcontours
-  
-  ! if Diviner surface temperatures are read in
-  !call readTmaps(nlon,nlat,lon,lat,Tbig)
-
   !-------loop over time steps 
   do n=-nequil,1000000
      time =(n+1)*dtsec   ! time at n+1 
@@ -82,12 +70,11 @@ program allofmoon
 
      !-- Temperature
      call SurfaceTemperature(dtsec,HAi,time,Tsurf,Qn) ! model T
-     !call interpTmaps(nlon,nlat,NT,n,lon,Tbig,Tsurf,Qn) ! Diviner T
      if (n<0) cycle   ! skip remainder
 
      ! some output
      call totalnrs(np,p_s,cc)
-     print *,time/3600.,'One hour call',sum(cc(1:2))
+     print *,time/3600.,'Ten minute call',sum(cc(1:2))
      write(30,*) time/3600.,cc(1:2),ccc(1:4),cc_prod_total
 
      ! create new particles
@@ -109,18 +96,6 @@ program allofmoon
         call writeglobe(20,Tsurf)
      endif
 
-     write(ext,'(i0.4)') n
-     call deblank(ext)
-     !open(unit=27,file='particles.'//ext,status='unknown',action='write')
-     !call writeparticles(27,np,p_r,p_s,p_t,p_n)
-     !close(27)
-     !open(unit=28,file='tsurf.'//ext,status='unknown',action='write')
-     !call writeglobe(28,Tsurf)
-     !close(28)
-     !if (time>(tmax-1.)*solarDay) then
-     !   call particles2sigma(Np,p_r,p_s,sigma)
-     !endif
-
      ! 1 hour of hopping
      call montecarlo(np,idum,p_r,p_s,p_t,p_n,Tsurf,dtsec,ccc,Qn)
      !call destruction(np,p_r,p_s,p_t,idum,dtsec,veclen,sigma)
@@ -130,7 +105,6 @@ program allofmoon
   enddo
 !50 continue
   call writeparticles(51,Np,p_r,p_s,p_t,p_n)
-  !call particles2sigma(Np,p_r,p_s,sigma)
   call writeglobe(21,Tsurf)
 
   call totalnrs(Np,p_s,cc)
@@ -141,36 +115,12 @@ program allofmoon
   print *,'# particles coldtrapped',ccc(3),ccc(4),ccc(3)+ccc(4)
   print *,'# particles produced',cc_prod_total
   print *,'# active particles',sum(cc(1:6)),Np
-  print *,'# produced / surface density ',cc_prod_total,cc_prod_total/(4*pi*Rbody**2)
+  !print *,'# produced / surface density ',cc_prod_total,cc_prod_total/(4*pi*Rbody**2)
 
   close(20); close(21)
   close(30)
   close(40); close(41)
-end program allofmoon
-
-
-subroutine deblank(chr)
-! deblank string
-! posted by James Giles at comp.lang.fortran on 3 August 2003.
-  implicit none
-  character(*), intent(inout) :: chr
-  integer i, j, istart
-  
-  istart = index(chr, " ")
-  if (istart == 0) return   ! no blanks in the argument
-  
-  j = istart-1  ! just before the first blank.
-  
-  do i = istart, len(trim(chr))
-     if (chr(i:i) /= " ") then
-        j = j+1
-        chr(j:j) = chr(i:i)
-     endif
-  end do
-  
-  if(j < len(chr)) chr(j+1:) = " "  ! clear the rest of the string
-  return
-end subroutine deblank
+end program exospherebody
 
 
 subroutine SurfaceTemperature(dtsec,HAi,time,Tsurf,Qn)
@@ -197,21 +147,16 @@ subroutine SurfaceTemperature(dtsec,HAi,time,Tsurf,Qn)
   integer k, i
   real(8) thIn, rhoc, delta, decl, Qnp1, sunR
   real(8) lon,lat,HA,geof,Tmean,Fsurf
-  !real(8) eps, ecc, omega, Ls
-
+  real(8) eps, ecc, omega, Ls
+  parameter(ecc = 0.075822766, eps = 4.*d2r, omega=301.*d2r) ! Ceres
   real(8), external :: flux_noatm
 
-  ! toy orbit
-  decl = 0.
-  sunR = semia
-  ! better orbit 
-  !eps = 1.54*d2r 
-  !ecc=0.; omega=0.
-  !call generalorbit(time/86400.,semia,ecc,omega,eps,Ls,decl,sunR)
+  call generalorbit(time/86400.,semia,ecc,omega,eps,Ls,decl,sunR)
 
   ! initialization
   if (FirstCall) then
-     thIn= 50.;  rhoc=1000000.
+     !thIn= 50.;  rhoc=1000000.  
+     thIn= 15.;  rhoc=1200.*500.  ! Ceres
      delta = thIn/rhoc*sqrt(solarDay/pi)  ! skin depth
 
      print *,'Thermal model parameters:'
@@ -238,7 +183,7 @@ subroutine SurfaceTemperature(dtsec,HAi,time,Tsurf,Qn)
 
      do k=1,veclen
         call k2lonlat(k,lon,lat)
-        geof = cos(lat)/pi
+        geof = max(cos(lat),cos(lat+eps/2),cos(lat-eps/2))/pi
         Tmean=(1370*(1.-albedo)*geof/sigSB)**0.25 - 10.
         if (.not. Tmean>0.) Tmean=(Fgeotherm/sigSB)**0.25  ! fixes nan and zero
         T(1:nz,k) = Tmean
@@ -260,47 +205,3 @@ subroutine SurfaceTemperature(dtsec,HAi,time,Tsurf,Qn)
 
   FirstCall = .FALSE.
 end subroutine SurfaceTemperature
-
-
-subroutine particles2sigma(Np, p_r, p_s, sigma)
-  use grid, only: veclen
-  use body, only: Rbody
-  implicit none
-  integer, intent(IN) :: Np, p_s(Np)
-  real(8), intent(IN) :: p_r(Np,2)
-  real(8), intent(OUT) :: sigma(veclen)
-  integer i, k, nr0(veclen), nr1(veclen), totalnr0, totalnr1
-  real(8) dA(veclen)
-  logical, save :: FirstCall = .TRUE.
-  integer, external :: inbox
-
-  nr0(:)=0;  nr1(:)=0
-  do i=1,Np
-     if (p_s(i)==0) then
-        k = inbox(p_r(i,:))
-        nr0(k) = nr0(k)+1
-     endif
-     if (p_s(i)==1) then
-        k = inbox(p_r(i,:))
-        nr1(k) = nr1(k)+1
-     endif
-  enddo
-
-  call areas(dA)
-  dA = dA*Rbody**2
-
-  sigma(:) = nr0(:)/dA(:)
-  !sigma(:) = nr1(:)/dA(:)  
-  !print *,'total area',sum(dA)/(4*pi*Rbody**2)  ! test
-  totalnr0 = sum(nr0(:))
-  totalnr1 = sum(nr1(:))
-  !print *,'total # particles in particles2sigma:',Np,totalnr0  ! for checking purposes
-  if (FirstCall) then 
-     open(unit=40,file='sigma.dat',action='write')
-     FirstCall = .FALSE.
-  else
-     open(unit=40,file='sigma.dat',action='write',position='append')
-  endif
-  write(40,'(999999(1x,g11.5))') sigma
-  close(40)
-end subroutine particles2sigma

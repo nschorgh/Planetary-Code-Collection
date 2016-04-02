@@ -15,6 +15,13 @@ moon4: geogrid.o body.o moon4.o montecarlo.o makefile
 	$(SR)grids.o $(SR)psv.o $(SR)subl_subs.o \
 	$(SR)gasdev.o $(SR)ran2.o
 
+ceres_exo: geogrid.o body.o ceres_exo.o montecarlo.o makefile 
+	make -C $(SR) common
+	$(CC) $(LFLAGS) ceres_exo.o montecarlo.o geogrid.o \
+	$(SR)flux_noatm.o $(SR)conductionQ.o $(SR)tridag.o \
+	$(SR)grids.o $(SR)psv.o $(SR)subl_subs.o \
+	$(SR)gasdev.o $(SR)ran2.o $(SR)generalorbit.o
+
 # module in geogrid.f90 
 
 %.o:	%.f makefile
