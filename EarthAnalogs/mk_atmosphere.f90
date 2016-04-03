@@ -1,7 +1,7 @@
 
 real(8) function mk_atmosphere(Z,I0,D0)
   ! returns direct and indirect irradiance on Mauna Kea in W/m^2
-  ! Nunez (1980), J. Biogeogr. 7, 173-186; paper full of typos
+  ! Nunez (1980), J. Biogeogr. 7, 173-186; corrected typos
   implicit none
   real(8), intent(IN) :: Z  ! solar zenith angle (radians)
   real(8), intent(OUT) :: I0  ! clear-sky direct irradiance (unitless fraction) = transmittance
@@ -60,15 +60,15 @@ real(8) function mk_atmosphere(Z,I0,D0)
   !print *,Z,psi_wa,psi_ws,psi_rs,psi_ds
   !print *,Z,m,I0,D0,mk_atmosphere
 
-  ! Sensible heat flux (depends on U)
+! Sensible heat flux (depends on U)
 
-  ! Long-wave downward radiation
+! Long-wave downward radiation
   ! effective atmospheric emissivity 
   !wmbar = w/0.98  ! cm -> mbar
   !eatm = 0.62*(wmbar)**0.08     ! Staley & Jurica (1972). J. Appl. Meteor. 11, 349-356
   !eatm = 0.605 + 0.048*(wmbar)**0.5  ! Brunt's equation
   !Tatm = 273+4    ! temperature of the atmosphere at 2m height
-  !I_LW = eatm*5.67e-8*Tatm**4   ! multiply this with surface emissivity
+  !I_LW = eatm*5.6704e-8*Tatm**4   ! multiply this with surface emissivity
   !I_LW = I_LW*(sky view)
 
   ! annual mean cloud frequency 
