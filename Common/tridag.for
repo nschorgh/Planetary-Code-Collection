@@ -8,14 +8,12 @@ C================================================
       INTEGER j
       REAL*8 bet,gam(NMAX)
       if(b(1).eq.0.) then
-         print *, 'tridag: rewrite equations'
-         stop
+         stop 'tridag: rewrite equations'
       endif 
-      if(n.gt.NMAX) then
-         print *, 'tridag: too many points, set NMAX>',n
-     &        ,' and recompile'
-         stop
-      endif 
+c      if(n.gt.NMAX) then
+c         print *, 'tridag: too many points, set NMAX>',n
+c         stop
+c      endif 
       bet=b(1)
       u(1)=r(1)/bet
       do 11 j=2,n
@@ -29,4 +27,4 @@ c        if(bet.eq.0.)pause 'tridag failed'
 12    continue
       return
       END
-
+C  (C) Copr. 1986-92 Numerical Recipes Software 0(9p#31&#5(+.

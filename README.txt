@@ -145,7 +145,7 @@ Documentation: Schorghofer, N. (2016) submitted to Icarus
 
 
 
-NOTE: Third party source code (from Numerical Recipes) is not included in this distribution. These are files ending with .for.  Most of this code will not work without them.  Contact me if you cannot find them elsewhere.
+NOTE: Third party source code from Numerical Recipes is included in this distribution, but is covered by a separate copyright. These are files ending with .for.  Most of this code will not work without them. 
 
 
 
