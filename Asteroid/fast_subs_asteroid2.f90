@@ -285,7 +285,7 @@ subroutine icechanges(nz,z,typeP,avrho,ypp,Deff,bigstep,Jp,zdepthP,sigma)
   buf = (Deff*avrho(typeP)+zdepthP*Jp)/sigma(typeP)
   !zdepthPnew = sqrt(2*buf*bigdtsec + zdepthP**2)
   zdepthPnew = sqrt(2*buf*(bigdtsec-dtcorr) + zdepthP**2)
-  newtypeP = gettypeP(zdepthPnew,nz,z)
+  newtypeP = gettype(zdepthPnew,nz,z)
   if (newtypeP>typeP+1) then  ! take two half steps
      print *,'# icechanges: half step',typeP,newtypeP,sigma(typeP),sigma(newtypeP),zdepthPnew
      !dtstep = bigdtsec/2.  ! half the time step
@@ -293,11 +293,11 @@ subroutine icechanges(nz,z,typeP,avrho,ypp,Deff,bigstep,Jp,zdepthP,sigma)
 
      buf = (Deff*avrho(typeP)+zdepthP*Jp)/sigma(typeP)
      zdepthPnew = sqrt(2*buf*dtstep + zdepthP**2)  ! 1st half
-     newtypeP = gettypeP(zdepthPnew,nz,z)
+     newtypeP = gettype(zdepthPnew,nz,z)
   
      buf = (Deff*avrho(newtypeP)+zdepthPnew*Jp)/sigma(newtypeP)
      zdepthPnew = sqrt(2*buf*dtstep + zdepthPnew**2) ! 2nd half
-     newtypeP = gettypeP(zdepthPnew,nz,z)
+     newtypeP = gettype(zdepthPnew,nz,z)
   endif
   write(6,*) '# advance of ice table',typeP,zdepthP,newtypeP,zdepthPnew
 
@@ -506,16 +506,16 @@ subroutine dzvector(nz,z,dz)
 end subroutine dzvector
 
 
-integer function gettypeP(zdepthP,nz,z)
+integer function gettype(zdepth,nz,z)
   implicit none
   integer, intent(IN) :: nz
-  real(8), intent(IN) :: zdepthP, z(nz)
+  real(8), intent(IN) :: zdepth, z(nz)
   integer j
-  gettypeP = -9 
+  gettype = -9 
   do j=1,nz
-     if (z(j)>zdepthP) then
-        gettypeP = j  
+     if (z(j)>zdepth) then
+        gettype = j  
         exit
      endif
   enddo
-end function gettypeP
+end function gettype

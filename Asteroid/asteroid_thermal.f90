@@ -18,8 +18,7 @@ module body
   parameter(emiss=0.95)  
 
   ! Ceres
-  parameter(a=2.76750591, ecc = 0.07582, Trot=9.07417/24.)
-  !parameter(a=2.76750591, ecc = 0.0, Trot=9.07417/24.)
+  parameter(a = 2.76750591, ecc = 0.07582, Trot = 9.076/24.)  ! synodic
 
   ! 133 P/Elst-Pizarro
   !parameter(a = 3.1609, ecc=0.1617, Trot=3.471/24.)
@@ -51,7 +50,7 @@ program asteroid
   real(8), external :: flux_noatm, flux2T, a2Torb
 
   ! Ceres
-  eps = 3.*d2r; omega = 329.*d2r  ! ???
+  eps = 4.*d2r; omega = 301.*d2r 
   albedo = 0.09
   !albedo = 0.24  ! bright spot
 
@@ -61,7 +60,7 @@ program asteroid
 
   latitude = 0.*d2r
 
-  print *,'a=',a,'ecc=',ecc,'omega=',omega
+  print *,'a=',a,'ecc=',ecc,'omega=',omega/d2r
   print *,'Latitude=',latitude/d2r,'obliquity=',eps/d2r
   write(6,'(1x,a7,1x,f5.3)') 'Albedo=',albedo
 

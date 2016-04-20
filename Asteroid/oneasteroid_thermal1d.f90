@@ -24,6 +24,7 @@ subroutine oneasteroid(latitude, omega, eps, albedo, thIn, Qmean, Tmean, Tmin, T
   dt = Torb/nr*86400
   print *,'dt=',dt/3600.,'hours','  Trot=',Trot*24.,'hours'
   ti(:) = thIn
+  ! for one-layer model the value of rho*c does not matter
   !rhoc(:) = 500.*500.
   rhoc(:) = 930*1300. ! solid ice
   delta1 = thIn/rhoc(1)*sqrt(Trot*86400/pi)  ! Trot has meaning of solar day

@@ -11,11 +11,11 @@ program asteroid_fast
 
   ! parameters that never change
   tstart = 4.5e9  ! Earth years
-  !tstart = 2.5e9
+  !tstart = 2.0e9
   timestep = 1e5  ! Earth years
   !timestep = 0.5e5
 
-  omega = 0.
+  omega = 301.
 
   print *,'RUNNING FAST ASTEROID MODEL'
   print *,'Starting at time',tstart,'years'
@@ -44,7 +44,7 @@ program asteroid_fast
      icetime = icetime + timestep
      print *,icetime
      if (any(-icetime == (/ 4.498d9, 4.450d9, 4d9 /))) then
-     !if (any(-icetime == (/ 2.499d9, 2.49d9, 2.4d9 /))) then
+     !if (any(-icetime == 2.0d9 - (/ 0.002d9, 0.05d9, 0.5d9 /))) then
         timestep = 10.*timestep
         print *,'# Icreasing time step 10-fold'
      endif

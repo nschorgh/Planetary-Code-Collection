@@ -31,8 +31,8 @@ module body
   !parameter(ecc = 0.075822766)  ! current
   !parameter(ecc = 0.0)
   parameter(ecc = 0.117)  ! proper
-  parameter(Trot = 9.074170/24., solarDay = 9.074170*3600.)
-  parameter(solsperyear = 4442.501)
+  parameter(Trot = 9.074170/24., solarDay = 9.076*3600.)
+  parameter(solsperyear = 4446.)
   parameter(emiss = 0.95d0)
   parameter(nz=160, zfac=1.05d0, zmax=20.)  ! thIn=15
 
@@ -224,11 +224,11 @@ module allinterfaces
   end interface
 
   interface
-     integer function gettypeP(zdepthP,nz,z)
+     integer function gettype(zdepth,nz,z)
        implicit none
        integer, intent(IN) :: nz
-       real(8), intent(IN) :: zdepthP, z(nz)
-     end function gettypeP
+       real(8), intent(IN) :: zdepth, z(nz)
+     end function gettype
   end interface
 
   ! Common/*.f90
