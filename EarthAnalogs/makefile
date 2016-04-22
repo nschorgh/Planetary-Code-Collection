@@ -11,7 +11,7 @@ SR = ../Common/
 insol_earth: topos.o crater_modules.o insol_earth.o mk_atmosphere.o \
 	sunpos.o makefile
 	make -C $(SR) common
-	$(CC) $(LFLAGS) topos.o insol_earth.o mks_atmosphere.o \
+	$(CC) $(LFLAGS) topos.o insol_earth.o mk_atmosphere.o \
 	sunpos.o 
 
 %.o:	%.f makefile

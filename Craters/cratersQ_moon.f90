@@ -4,13 +4,14 @@ program cratersQ_Moon
 !
 !             zero thermal inertia, Earth orbit
 !  
-!   written by Norbert Schorghofer 2010-2015  
+!   written by Norbert Schorghofer 2010-2016 
 !****************************************************************************
   use filemanager
   use allinterfaces
   implicit none
   real(8), parameter :: pi=3.1415926535897932, d2r=pi/180.
   real(8), parameter :: sigSB = 5.6704e-8  
+  real(8), parameter :: solarDay = 29.53*86400.
 
   integer nsteps, n, i, j, nm, k, CCMAX, iii, jjj, nm2
   real(8) tmax, dt, latitude, dtsec
@@ -23,7 +24,7 @@ program cratersQ_Moon
   real(4), dimension(:,:,:), allocatable :: dO12  
   real(8), dimension(NSx,NSy) :: Tsurf, Qvis, skysize, Qabs, albedo, QIRin, QIRre
   real(8) Qmeans(NSx,NSy,4)
-  real(8), dimension(NSx,NSy) :: Qmax1, Qmax2, Tmean, Tmaxi, Tbottom, Tb, Tmaxi2
+  real(8), dimension(NSx,NSy) :: Qmax1, Qmax2, Tmean, Tmaxi, Tb, Tmaxi2
   real(8), allocatable :: T(:,:,:), Qnm1(:,:)  ! subsurface
   logical, parameter :: reflection=.true., subsurface=.false.
   
@@ -49,7 +50,7 @@ program cratersQ_Moon
 
   latitude=latitude*d2r
   Tsurf=0.; Qrefl=0.; QIRre=0.  
-  Qmeans=0.; Tmean=0.; Tbottom=0.; nm=0
+  Qmeans=0.; Tmean=0.; nm=0
   Qmax1=0.; Qmax2=0.; 
   Tmaxi=0.; Tmaxi2=0.
   Tb=0.; nm2=0
@@ -78,8 +79,8 @@ program cratersQ_Moon
      HA=2.*pi*mod(sdays,1.)   ! hour angle
      call equatorial2horizontal(Decl,latitude,HA,sinbeta,azSun)
 
-     print *,sdays,n,HA
-     
+     print *,sdays,n,HA/d2r,asin(sinbeta)/d2r,azSun/d2r
+
      do i=2,NSx-1
         do j=2,NSy-1
            call gethorizon(i,j,azSun,smax,.FALSE.)
@@ -127,7 +128,7 @@ program cratersQ_Moon
         ! main part
         do i=2,NSx-1
            do j=2,NSy-1
-              call subsurfaceconduction(T(i,j,:),Tsurf(i,j),dtsec,Qnm1(i,j),Qabs(i,j),emiss)
+              call subsurfaceconduction(T(i,j,:),Tsurf(i,j),dtsec,Qnm1(i,j),Qabs(i,j),emiss,solarDay)
            enddo
         enddo
         Qnm1 = Qabs
@@ -149,7 +150,6 @@ program cratersQ_Moon
         elsewhere (Tsurf>Tmaxi2)
            Tmaxi2=Tsurf
         end where
-        if (subsurface) Tbottom=Tbottom+T(:,:,nz)
         nm=nm+1
      endif
 
@@ -159,34 +159,36 @@ program cratersQ_Moon
   if (subsurface) deallocate(T, Qnm1)
   
   Qmeans=Qmeans/nm
-  Tmean=Tmean/nm; Tbottom=Tbottom/nm
+  Tmean=Tmean/nm
 
   open(unit=21,file='qmean.dat',status='unknown',action='write')
+  open(unit=22,file='qinst.dat',status='unknown',action='write')
   do i=2,NSx-1
      do j=2,NSy-1
-        write(21,'(2(i4,1x),f9.2,2x,f6.4,5(1x,f6.1),4(1x,f5.1))') &
-             & i,j,h(i,j),surfaceSlope(i,j),Qmeans(i,j,1),Qmax2(i,j),Qmeans(i,j,2:4), &
-             & Tmean(i,j),Tmaxi(i,j),Tmaxi2(i,j),Tbottom(i,j)
-        write(22,'(2(i4,1x),f9.2,2x,f6.4,5(1x,f6.1),1x,f5.1)') &  ! instantaneous values
-             & i,j,h(i,j),surfaceSlope(i,j),Qn(i,j),Qmax2(i,j), &
-             & Qabs(i,j),Qir(i,j),Qrefl(i,j),Tsurf(i,j)
+        write(21,'(2(i4,1x),f9.2,2x,f6.4,4(1x,f6.1),1x,f5.1,2(1x,f6.1),1x,f5.1)') &
+             & i,j,h(i,j),surfaceSlope(i,j),Qmeans(i,j,1:4), &
+             & Tmean(i,j),Qmax1(i,j),Qmax2(i,j),Tmaxi(i,j)
+        write(22,'(2(i4,1x),f9.2,2x,f6.4,4(1x,f6.1),1x,f5.1)') &  ! instanteneous values
+             & i,j,h(i,j),surfaceSlope(i,j),Qn(i,j),Qabs(i,j),Qir(i,j),Qrefl(i,j), &
+             & Tsurf(i,j)
      enddo
   enddo
   close(21)
-
+  close(22)
 end program cratersQ_Moon
  
 
 
-subroutine subsurfaceconduction(T,Tsurf,dtsec,Qn,Qnp1,emiss)
+subroutine subsurfaceconduction(T,Tsurf,dtsec,Qn,Qnp1,emiss,solarDay)
   ! 1d subsurface conduction
   use allinterfaces, only : conductionQ
-  use filemanager, only : solarDay, Fgeotherm, nz
   implicit none
   integer, parameter :: NMAX=1000, Ni=5
   real(8), parameter :: pi=3.1415926535897932
+  real(8), parameter :: Fgeotherm = 0.029
+  integer, parameter :: nz=25
   real(8), intent(INOUT) :: T(NMAX), Tsurf
-  real(8), intent(IN) :: dtsec,Qn,Qnp1,emiss
+  real(8), intent(IN) :: dtsec,Qn,Qnp1,emiss,solarDay
   integer i, k
   real(8) zmax, zfac, Fsurf, Tinit, delta
   real(8) Tsurfold, Told(1:nz), Qarti, Qartiold 

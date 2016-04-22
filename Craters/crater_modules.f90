@@ -12,16 +12,6 @@ module allinterfaces
      end subroutine readdem
   end interface
 
-  interface
-     subroutine readdem_ll(NSx,NSy,fileext,lon,lat,h,az,el,NrAz)
-       implicit none
-       integer, intent (IN) :: NSx,NSy,NrAz
-       character*(*), intent(IN) :: fileext
-       real(8), dimension(NSx,NSy), intent(OUT) :: lon,lat,h
-       real(8), dimension(NSx,NSy,NrAz), intent(OUT), optional :: az,el
-     end subroutine readdem_ll
-  end interface
-
   ! begin shadows_subs.f90
   interface
      pure subroutine findonehorizon(h,i0,j0,azRay,smax)
@@ -50,58 +40,6 @@ module allinterfaces
      end function diffangle
   end interface
 
-  ! begin shadows_subs_ll.f90  (not including interfaces as in shadows_subs)
-  interface
-     pure subroutine horizontaldistance_ll(distance,i1,j1,i2,j2,lon,lat,heightreduction)
-       use filemanager_ll, only : NSx,NSy
-       implicit none
-       real(8), intent(OUT) :: distance,heightreduction
-       integer, intent(IN) :: i1,j1,i2,j2
-       real(8), dimension(NSx,NSy), intent(IN) :: lon,lat
-     end subroutine horizontaldistance_ll
-  end interface
-
-  interface
-     pure function azimuth_ll(i1,j1,i2,j2,lon,lat)
-       use filemanager_ll, only : NSx,NSy
-       implicit none
-       real(8) azimuth_ll
-       integer, intent(IN) :: i1,j1,i2,j2
-       real(8), dimension(NSx,NSy), intent(IN) :: lon,lat
-     end function azimuth_ll
-  end interface
-
-  interface
-     pure subroutine findonehorizon_ll(lon,lat,h,i0,j0,azRay,smax)
-       ! finds horizon for one azimuth ray
-       use filemanager_ll
-       implicit none
-       integer, intent(IN) :: i0,j0
-       real(8), intent(IN), dimension(NSx,NSy) :: lon,lat,h
-       real(8), intent(IN) :: azRay
-       real(8), intent(OUT) :: smax
-     end subroutine findonehorizon_ll
-  end interface
-
-  interface
-     function shadowheight_ll(lon,lat,h,i0,j0,azRay,del,el)
-       ! finds height of shadow above surface for one azimuth ray
-       use filemanager
-       implicit none
-       integer, intent(IN) :: i0,j0
-       real(8), intent(IN), dimension(NSx,NSy) :: lon,lat,h,del,el
-       real(8), intent(IN) :: azRay
-       real(8) shadowheight_ll
-     end function shadowheight_ll
-  end interface
-
-  interface
-     elemental function interp1(x1,x2,z1,z2)
-       implicit none
-       real(8), intent(IN) :: x1,x2,z1,z2
-       real(8) interp1
-     end function interp1
-  end interface
 
   ! begin fieldofview_subs.f90
   interface
@@ -137,7 +75,6 @@ module allinterfaces
        real(8) distanceonsphere
      end function distanceonsphere
   end interface
-  
 
   interface
      subroutine refinevisibility(i0,j0,h,visibility)
@@ -186,7 +123,7 @@ module allinterfaces
      end subroutine difftopo1
   end interface
 
-  ! begin model_subs.f90 (selected)
+  ! begin model_subs.f90
   interface
      subroutine gethorizon(i0,j0,azSun,smax,first)
        use filemanager
@@ -249,18 +186,6 @@ module allinterfaces
      end subroutine compactoutput
   end interface
 
-  ! model_subsurface.f90
-  interface
-     subroutine subsurfaceconduction(T,Tsurf,dtsec,Qn,Qnp1,emiss)
-       implicit none
-       integer, parameter :: NMAX=1000
-       real(8), intent(INOUT) :: T(NMAX), Tsurf
-       real(8), intent(IN) :: dtsec,Qn,Qnp1,emiss
-       real(8), save :: ti(NMAX), rhocv(NMAX), z(NMAX)
-       logical, save :: first = .true.
-     end subroutine subsurfaceconduction
-  end interface
-
   ! begin mk_atmosphere.f90
   interface
      real(8) function mk_atmosphere(Z,I0,D0)
@@ -271,6 +196,17 @@ module allinterfaces
      end function mk_atmosphere
   end interface
   
+  ! begin cratersQ_mars_p.f90
+  interface
+     elemental function flux_mars(R,decl,latitude,HA,albedo, &
+          &   fracir,fracdust,surfaceSlope,azFac,smax)
+       implicit none
+       real(8) flux_mars
+       real(8), intent(IN) :: R,decl,latitude,HA,albedo,fracIR,fracDust
+       real(8), intent(IN) :: surfaceSlope,azFac,smax
+     end function flux_mars
+  end interface
+
   ! Fortran 77 programs
   interface
      subroutine hpsort(n,ra,ind)

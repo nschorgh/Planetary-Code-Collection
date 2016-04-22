@@ -11,6 +11,9 @@ sunpos.f90:
 mk_atmosphere.f90:
 	subroutine for 1D atmosphere for Mauna Kea
 
+insol_earth.f90:
+	main program; short-wavelength irradiance with topography
+
 makefile:
 	shows file dependencies
 

@@ -51,40 +51,12 @@ module filemanager
   !character(len = *), parameter :: fileext = 'rsl4'
   !real(8), parameter :: dx=4., dy=4., RMAX=1e3
 
+  !integer, parameter :: NSx=128, NSy=128
+  !character(len = *), parameter :: fileext = 'moongauss3.rms=0.5'
+  !real(8), parameter :: dx=1., dy=1., RMAX=1e5
+
   logical, parameter :: verbose=.false.
-
-  ! For subsurface model
-  !real(8), parameter :: solarDay = 86400., Fgeotherm = 0.065  ! Earth
-  !integer, parameter :: nz=40
-  real(8), parameter :: solarDay = 29.53*86400., Fgeotherm = 0.029  ! The Moon
-  integer, parameter :: nz=25
-  !real(8), parameter :: solarDay = 88775.244, Fgeotherm = 0.028  ! Mars
-  !integer, parameter :: nz=80 ! to be checked
 end module filemanager
-
-
-
-module filemanager_ll
-  implicit none
-  ! NSx = # pixels in lon-direction
-  ! Nsy = # pixels in lat-direction 
-  ! RMAX = max radius of consideration (meter)
-  ! PER = longitude coordinate periodic or not
-
-  !integer, parameter :: NSx=1440, Nsy=60    ! whole
-  integer, parameter :: NSx=720, Nsy=60    ! half
-  !character(*), parameter :: fileext = '/Users/norbert/Moon/Herschel/topo4s_combined.txt'
-  !character(*), parameter :: fileext = '/Users/norbert/Moon/Herschel/Data/topo4s_combined_2009-10-09.txt'
-  character(*), parameter :: fileext = '/Users/norbert/Moon/Herschel/Data/topo4s_combined_2013-07-29.txt'
-
-  !integer, parameter :: NSx=5760, Nsy=240  ! whole
-  !integer, parameter :: NSx=2880, Nsy=240  ! half
-  !character(len=*), parameter :: fileext = '/Users/norbert/Moon/Herschel/tmp16s_combined.txt'
-
-  logical, parameter :: verbose=.FALSE.
-  logical, parameter :: PER=.FALSE.
-  real(8), parameter :: Rbody = 1737.1e3, RMAX=250e3  ! Moon
-end module filemanager_ll
 
 
 
@@ -102,29 +74,4 @@ subroutine readdem(NSx,NSy,h,fileext)
   enddo
   close(20)
 end subroutine readdem
-
-
-
-!subroutine readdem_ll(NSx,NSy,fileext,lon,lat,h,az,el,NrAz)
-subroutine readdem_ll(NSx,NSy,fileext,lon,lat,h)
-  ! read elevations on lon-lat grid
-  implicit none
-  integer, intent(IN) :: NSx,NSy !,NrAz
-  character*(*), intent(IN) :: fileext
-  real(8), dimension(NSx,NSy), intent(OUT) :: h,lon,lat
-  !real(8), dimension(NSx,NSy,NrAz), intent(OUT), optional :: az,el
-  integer i, j, ierr
-  open(unit=20,file=fileext,status='old',action='read',iostat=ierr)
-  if (ierr>0) then
-     print *,fileext
-     stop 'readdem_ll: input file not found'
-  endif
-  do j=1,NSy
-     do i=1,NSx
-        read(20,*) lon(i,j),lat(i,j),h(i,j)
-        !read(20,*) lon(i,j),lat(i,j),h(i,j),az(i,j,:),el(i,j,:)
-     enddo
-  enddo
-  close(20)
-end subroutine readdem_ll
 

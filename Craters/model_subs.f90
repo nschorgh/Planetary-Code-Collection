@@ -1,14 +1,15 @@
 subroutine gethorizon(i0,j0,azSun,smax,first)
+  ! returns elevation of horizon along azimuth azSun
   use filemanager
   implicit none
   integer, intent(IN) :: i0,j0
   real(8), intent(IN) :: azSun
-  real(8), intent(OUT) :: smax
+  real(8), intent(OUT) :: smax  ! angle
   logical, intent(IN) :: first 
   integer i,j,ia,ja,k
   integer, parameter :: nres=360  ! # azimuth values
   real(8), parameter :: pi=3.1415926535897932
-  real(8), dimension(NSx,NSy,nres+1), save :: s
+  real(8), dimension(NSx,NSy,nres+1), save :: s ! angles
   real(8) a, daz
 
   if (first) then
@@ -86,8 +87,8 @@ elemental subroutine equatorial2horizontal(decl,latitude,HA,sinbeta,azimuth)
   cosbeta = sqrt(1-sinbeta**2)
   buf = (sin(decl)-sin(latitude)*sinbeta)/(cos(latitude)*cosbeta)
   ! buf can be NaN if cosbeta = 0
-  if (buf>+1.) buf=+1.;  ! damn roundoff
-  if (buf<-1.) buf=-1.;  ! damn roundoff
+  if (buf>+1.) buf=+1.  ! damn roundoff
+  if (buf<-1.) buf=-1.  ! damn roundoff
   azimuth = acos(buf)
   if (sin(HA)>=0) azimuth=2*pi-azimuth  
 end subroutine equatorial2horizontal
@@ -115,7 +116,7 @@ elemental real(8) function flux_wgeom(R,sinbeta,azSun,surfaceSlope,azFac,smax)
   ! theta = 90 minus incidence angle for sloped surface
   sintheta = cos(surfaceSlope)*sinbeta - &
        &     sin(surfaceSlope)*cosbeta*cos(azSun-azFac)
-  if (cosbeta==0.) sintheta = cos(surfaceSlope)*sinbeta ! doesn't use azimuths
+  if (cosbeta==0.) sintheta = cos(surfaceSlope)*sinbeta ! does not use azimuths
 
 !-shadowing
   sintheta = max(sintheta,0.d0)  ! self-shadowing
