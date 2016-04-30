@@ -6,14 +6,15 @@ subroutine gethorizon(i0,j0,azSun,smax,first)
   real(8), intent(IN) :: azSun
   real(8), intent(OUT) :: smax  ! angle
   logical, intent(IN) :: first 
-  integer i,j,ia,ja,k
+  integer i,j,ia,ja,k,ierr
   integer, parameter :: nres=360  ! # azimuth values
   real(8), parameter :: pi=3.1415926535897932
   real(8), dimension(NSx,NSy,nres+1), save :: s ! angles
   real(8) a, daz
 
   if (first) then
-     open(unit=20,file='horizons.'//fileext,status='old',action='read')
+     open(unit=20,file='Data/horizons.'//fileext,status='old',action='read',iostat=ierr)
+     if (ierr>0) stop 'gethorizon: Input file not found'
      do i=2,NSx-1
         do j=2,NSy-1
            read(20,*) ia,ja,s(i,j,1:nres)

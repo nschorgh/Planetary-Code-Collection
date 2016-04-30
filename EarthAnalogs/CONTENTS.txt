@@ -19,4 +19,7 @@ makefile:
 
 
 
+To compile in a single directory, you might want to copy subroutines from Craters/.
+
+
 

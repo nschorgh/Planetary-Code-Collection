@@ -14,14 +14,16 @@ pure subroutine findonehorizon(h,i0,j0,azRay,smax)
   smax=0.
   cc=0
   do i=2,NSx-1
-     !if (dx*abs(i-i0)>RMAX) cycle  ! to save computational cost
-     if (horizontaldistance(i,1,i0,1)>RMAX) cycle  ! to save computational cost
+     !if (dx*abs(i-i0)>RMAX) cycle  ! saves computations
+     if (horizontaldistance(i,1,i0,1)>RMAX) cycle  ! saves computations
+     if (sin(azRay)*(i-i0) < 0.) cycle  ! saves computations
      do j=2,NSy-1
         if (i==i0 .and. j==j0) cycle
         !r = sqrt(dx*dx*(i-i0)**2+dy*dy*(j-j0)**2)
         r = horizontaldistance(i,j,i0,j0)
-        if (r>RMAX) cycle  ! to save computational cost
+        if (r>RMAX) cycle  ! saves computations
         az = azimuth(i0,j0,i,j)
+        if (cos(azRay)*(j-j0) > 0.) cycle  ! saves compuations
 
         d1=diffangle(az,azRay)
         if (d1==0.) then  ! grid point lies on ray
@@ -175,4 +177,5 @@ subroutine findonehorizon_wsort(h,i0,j0,azRay,smax,visibility)
      endif
   enddo
 end subroutine findonehorizon_wsort
+
 

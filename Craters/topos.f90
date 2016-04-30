@@ -15,10 +15,10 @@ module filemanager
   !character(len=*), parameter :: fileext = 'topo20'
   !real(8), parameter :: dx=5., dy=5., RMAX=1e35
 
-  !integer, parameter :: NSx=40, NSy=40
-  !character(len=*), parameter :: fileext = 'topo40'
-  integer, parameter :: NSx=81, NSy=81
-  character(len=*), parameter :: fileext = 'topo81'
+  integer, parameter :: NSx=40, NSy=40
+  character(len=*), parameter :: fileext = 'topo40'
+  !integer, parameter :: NSx=81, NSy=81
+  !character(len=*), parameter :: fileext = 'topo81'
   !integer, parameter :: NSx=80, NSy=80
   !character(len=*), parameter :: fileext = 'boulder'
   real(8), parameter :: dx=5., dy=5., RMAX=1e35

@@ -117,7 +117,7 @@ subroutine getskysize(skysize)
   real(8), parameter :: pi=3.1415926535897932, d2r=pi/180.
   integer, parameter :: nres=360   ! # of azimuths
   real(8) smax(nres)
-  integer i, j, ii, jj
+  integer i, j, ii, jj, ierr
   real(8), intent(OUT) :: skysize(NSx,NSy) 
 
   ! azimuth in degrees east of north, 0=north facing, 0...2*pi
@@ -125,8 +125,9 @@ subroutine getskysize(skysize)
   print *,'# azimuth rays = ',nres
   write(*,*) 'Nx=',NSx,'Ny=',NSy,'File=',fileext
   
-  print *,'...reading file horizons file ...'
-  open(unit=21,file='horizons.'//fileext,status='old',action='read')
+  print *,'...reading horizons file ...'
+  open(unit=21,file='Data/horizons.'//fileext,status='old',action='read',iostat=ierr)
+  if (ierr>0) stop 'skysize: Input file not found'
   
   do i=2,NSx-1
      do j=2,NSy-1

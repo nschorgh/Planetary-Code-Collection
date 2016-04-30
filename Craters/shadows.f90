@@ -4,7 +4,7 @@ program cratershadows
 ! written by Norbert Schorghofer 2010-2015  
 !***********************************************************************
   !use omp_lib
-  use filemanager, only : NSx,NSy,fileext
+  use filemanager, only : NSx,NSy,fileext,dx,dy,RMAX
   use allinterfaces
   implicit none
   real(8), parameter :: pi=3.1415926535897932, d2r=pi/180.
@@ -24,8 +24,11 @@ program cratershadows
 
   call readdem(NSx,NSy,h,fileext)
   print *,'...finished reading topography... ',fileext
+  print *,'# domain size =',NSx*dx,'x',NSy*dy
   print *,'# azimuth rays = ',nres
-  
+  print *,'# fully sampled radius =',min(dx,dy)*nres/(2*pi)
+  print *,'# cutoff radius RMAX =',RMAX  
+
   if (narg==0) then  ! serial implementation
      print *,'...creating file horizons.dat...'
      open(unit=21,file='horizons.dat',status='unknown',action='write')
