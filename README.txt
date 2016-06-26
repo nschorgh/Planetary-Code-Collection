@@ -137,11 +137,23 @@ Common/conductionQ.f
 Common/tridag.for
 Common/grids.f
 Common/generalorbit.f
-Common/psv.o
-Common/derivs.o
-Common/ran2.o
+Common/psv.f
+Common/derivs.f90
+Common/ran2.f
 Asteroid/lats.0
-Documentation: Schorghofer, N. (2016) submitted to Icarus
+Documentation: Schorghofer, N. (2016) Icarus 276, 88-95.
+
+
+*Irradiance Model for Terrestrial Analog*
+
+EarthAnalogs/insol_earth.f90: (main program)
+EarthAnalogs/mk_atmosphere.f90
+EarthAnalogs/sunpos.f90
+Craters/topos.f90
+Craters/crater_modules.f90 
+Craters/crater_common.f90
+Craters/model_subs.f90
+
 
 
 

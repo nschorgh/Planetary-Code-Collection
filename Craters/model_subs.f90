@@ -1,6 +1,6 @@
 subroutine gethorizon(i0,j0,azSun,smax,first)
   ! returns elevation of horizon along azimuth azSun
-  use filemanager
+  use filemanager, only : NSx, NSy, fileext
   implicit none
   integer, intent(IN) :: i0,j0
   real(8), intent(IN) :: azSun
@@ -188,35 +188,4 @@ subroutine getmaxfieldsize(NSx,NSy,fileext,maxsize,type)
   enddo
   close(20)
 end subroutine getmaxfieldsize
-
-
-
-subroutine getinversefieldofview(NSx,NSy,fileext,cc,ia,ja,dO2,CCMAX)
-  implicit none
-  integer, intent(IN) :: NSx, NSy
-  character(len=*), intent(IN) :: fileext
-  integer, intent(IN) :: CCMAX
-  integer, intent(OUT) :: cc(NSx,NSy)
-  integer(2), intent(OUT), dimension(NSx,NSy,CCMAX) :: ia, ja
-  real(4), intent(OUT), dimension(NSx,NSy,CCMAX) :: dO2
-  real(8) mysize
-  integer i, j, k, i0_2, j0_2, ierr
-
-  open(20,file='inversefoviews.'//fileext,status='old',action='read',iostat=ierr)
-  if (ierr>0) stop 'getinversefiledofview: input file not found'
-  do i=2,NSx-1
-     do j=2,NSy-1
-        read(20,'(2(i5,1x),i6,1x,f7.5,1x)',advance='no') & ! format must match
-             & i0_2,j0_2,cc(i,j),mysize
-        if (i/=i0_2 .or. j/=j0_2) stop 'getinversefoviews: wrong data order'
-        if (cc(i,j)>CCMAX) stop 'getfieldofview: not enough memory allocated'
-        do k=1,cc(i,j)
-           read(20,'(2(i5,1x),g10.4,1x)',advance='no') & ! format must match
-                & ia(i,j,k),ja(i,j,k),dO2(i,j,k)
-        enddo
-        read(20,'()')
-     enddo
-  enddo
-  close(20)
-end subroutine getinversefieldofview
 
