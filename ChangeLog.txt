@@ -1,10 +1,12 @@
 ChangeLog
 
-19 Dec 2015: Release v1.1.0  doi: 10.5281/zenodo.35566
+3 Apr 2016: Release v1.1.1  doi:10.5281/zenodo.48851
+
+19 Dec 2015: Release v1.1.0  doi:10.5281/zenodo.35566
 
 19 Dec 2015: final version of asynchronous model for ice loss from asteroids
 
-22 Oct 2015: Release v1.0
+22 Oct 2015: Release v1.0  doi:10.5281/zenodo.32616
 
 Aug 2015: moved to GitHub
 

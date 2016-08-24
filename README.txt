@@ -4,13 +4,13 @@ by Norbert Schorghofer
 
 
 This program collection contains
-* a semi-implicit one-dimensional thermal model for planetary surfaces,
-* an explicit subsurface vapor diffusion and deposition model,
-* models for the equilibrium ice table on Mars,
-* fast method for subsurface-atmosphere vapor exchange for Mars,
-* a fast (asynchronous) model for ice retreat on asteroids
-* a Monte-Carlo model for ballistic hops in the lunar exosphere, and
-* a 3D model of shadowing, illumination, and scattering.
+* semi-implicit one-dimensional thermal model for planetary surfaces
+* an explicit subsurface vapor diffusion and deposition model
+* models for the equilibrium ice table on Mars
+* fast method for subsurface-atmosphere vapor exchange for Mars
+* fast (asynchronous) model for ice retreat on asteroids
+* Monte-Carlo model for ballistic hops in the lunar exosphere
+* 3D model of shadowing, illumination, and scattering
 
 
 
@@ -111,18 +111,18 @@ Documentation: None
 
 *Shadowing and Illumination*
 
-Craters/shadows.f90: (main program)
-Craters/fieldofviews.f90: (main program)
-Craters/cratersQ_snapshot.f90: (main program)
-Craters/cratersQ_moon.f90: (main program)
-Craters/topos.f90
-Craters/crater_modules.f90
-Craters/crater_common.f90
-Craters/shadow_subs.f90
-Craters/fieldofview_subs.f90
-Craters/model_subs.f90
+Topo3D/shadows.f90: (main program)
+Topo3D/fieldofviews.f90: (main program)
+Topo3D/cratersQ_snapshot.f90: (main program)
+Topo3D/cratersQ_moon.f90: (main program)
+Topo3D/topos.f90
+Topo3D/crater_modules.f90
+Topo3D/crater_common.f90
+Topo3D/shadow_subs.f90
+Topo3D/fieldofview_subs.f90
+Topo3D/model_subs.f90
 Common/hpsort.for
-Craters/topo40.xyz
+Topo3D/topo40.xyz
 Documentation: None
 
 
@@ -149,10 +149,10 @@ Documentation: Schorghofer, N. (2016) Icarus 276, 88-95.
 EarthAnalogs/insol_earth.f90: (main program)
 EarthAnalogs/mk_atmosphere.f90
 EarthAnalogs/sunpos.f90
-Craters/topos.f90
-Craters/crater_modules.f90 
-Craters/crater_common.f90
-Craters/model_subs.f90
+Topo3D/topos.f90
+Topo3D/crater_modules.f90 
+Topo3D/crater_common.f90
+Topo3D/model_subs.f90
 
 
 

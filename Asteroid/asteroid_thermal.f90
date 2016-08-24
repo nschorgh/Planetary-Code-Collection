@@ -51,7 +51,7 @@ program asteroid
 
   ! Ceres
   eps = 4.*d2r; omega = 301.*d2r 
-  albedo = 0.09
+  albedo = 0.034
   !albedo = 0.24  ! bright spot
 
   ! 133 P/Elst-Pizarro
