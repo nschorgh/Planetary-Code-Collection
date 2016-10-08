@@ -4,11 +4,10 @@ module allinterfaces
 
   ! begin topos.f90
   interface
-     subroutine readdem(NSx,NSy,h,fileext)
+     subroutine readdem(h)
+       use filemanager
        implicit none
-       integer, intent(IN) :: NSx,NSy
        real(8), intent(OUT) :: h(NSx,NSy)
-       character(len=*), intent(IN) :: fileext
      end subroutine readdem
   end interface
 
@@ -152,9 +151,9 @@ module allinterfaces
   end interface
 
   interface
-     elemental real(8) function flux_wgeom(R,sinbeta,azSun,surfaceSlope,azFac,smax)
+     elemental real(8) function flux_wshad(R,sinbeta,azSun,surfaceSlope,azFac,smax)
        real(8), intent(IN) :: R,azSun,sinbeta,surfaceSlope,azFac,smax
-     end function flux_wgeom
+     end function flux_wshad
   end interface
 
   interface

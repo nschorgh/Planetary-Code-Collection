@@ -22,7 +22,7 @@ program cratershadows
   !write (*,'(a,i8)') 'The number of processors available = ', omp_get_num_procs()
   !write (*,'(a,i8)') 'The number of threads available    = ', omp_get_max_threads()
 
-  call readdem(NSx,NSy,h,fileext)
+  call readdem(h)
   print *,'...finished reading topography... ',fileext
   print *,'# domain size =',NSx*dx,'x',NSy*dy
   print *,'# azimuth rays = ',nres

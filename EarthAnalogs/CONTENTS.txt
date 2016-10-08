@@ -14,6 +14,10 @@ mk_atmosphere.f90:
 insol_earth.f90:
 	main program; short-wavelength irradiance with topography
 
+insol_flat.f90:
+	main program; calculates short-wavelength solar irradiance
+	at flat location on Earth analogues to insol_earth.f90
+
 makefile:
 	shows file dependencies
 

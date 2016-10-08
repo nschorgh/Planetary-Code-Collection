@@ -96,7 +96,7 @@ end subroutine equatorial2horizontal
 
 
 
-elemental real(8) function flux_wgeom(R,sinbeta,azSun,surfaceSlope,azFac,smax)
+elemental real(8) function flux_wshad(R,sinbeta,azSun,surfaceSlope,azFac,smax)
 !***********************************************************************
 !   flux:  program to calculate incoming solar flux without atmosphere
 !     R: distance from sun (AU)
@@ -126,8 +126,8 @@ elemental real(8) function flux_wgeom(R,sinbeta,azSun,surfaceSlope,azFac,smax)
   if (sinbeta<sin(smax)) sintheta=0. 
 
 !-intensity
-  flux_wgeom = sintheta*So/(R**2)
-end function flux_wgeom
+  flux_wshad = sintheta*So/(R**2)
+end function flux_wshad
 
 
 

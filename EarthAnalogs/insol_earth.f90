@@ -24,8 +24,10 @@ program insol_earth
   real(8), parameter :: zero=0.
   logical, parameter :: atmosphere=.true.
 
-  dtmin=15. 
+  !dtmin=15. 
+  dtmin=10.
   tmax = 365.+1
+  !tmax = 60.
   latitude = 19.821; longitude = -155.468  ! Mauna Kea summit
   ! azimuth in degrees east of north, 0=north facing
 
@@ -33,7 +35,8 @@ program insol_earth
   nsteps=int(tmax*1440./dtmin)       ! calculate total number of timesteps
 
   ! start time in UTC = HST-10
-  udtTime = cTime(2012,3,1,0.,0.,0.) ! 14:00 HST 
+  udtTime = cTime(2013,1,1,0.,0.,0.) ! 14:00 HST 
+  !udtTime = cTime(2012,5,20,0.,0.,0.) ! 14:00 HST 
   
   write(*,*) 'Starting time',udtTime
   write(*,*) 'Time step=',dtmin,'(min)  Max number of steps=',nsteps
@@ -41,7 +44,7 @@ program insol_earth
   write(*,*) 'Nx=',NSx,'Ny=',NSy,'File=',fileext
   write(*,*) 'Atmosphere',atmosphere
   
-  call readdem(NSx,NSy,h,fileext)
+  call readdem(h)
   call difftopo(NSx,NSy,h,dx,dy,surfaceSlope,azFac)
 
   Qmax=0.; Qmeans=0.; Qrefm=0.
@@ -67,20 +70,21 @@ program insol_earth
      do i=2,NSx-1
         do j=2,NSy-1
            call gethorizon(i,j,azSun,smax,.FALSE.)
-           Qn(i,j)=flux_wgeom(R,sinbeta,azSun,surfaceSlope(i,j),azFac(i,j),smax)
+           Qn(i,j)=flux_wshad(R,sinbeta,azSun,surfaceSlope(i,j),azFac(i,j),smax)
         enddo
      enddo
-     Qref=flux_wgeom(R,sinbeta,azSun,zero,zero,zero)
+     Qref=flux_wshad(R,sinbeta,azSun,zero,zero,zero)
 
      if (atmosphere) then
         unsd = mk_atmosphere(dZenithAngle*d2r,I0,D0)
-        S0=1365./R**2  ! must be the same as in flux_wgeom
+        S0=1365./R**2  ! must be the same as in flux_wshad
         Qn(:,:) = Qn(:,:)*I0 + S0*D0*skysize(:,:)/(2*pi)
         Qref = Qref*I0 + S0*D0
      endif
 
      if (edays>tmax-365) then
      !if (edays>tmax-1.) then
+     !if (udtTime%iMonth==6) then
         Qmeans = Qmeans + Qn
         where (Qn>Qmax) Qmax=Qn
         Qrefm = Qrefm + Qref
@@ -126,7 +130,7 @@ subroutine getskysize(skysize)
   write(*,*) 'Nx=',NSx,'Ny=',NSy,'File=',fileext
   
   print *,'...reading horizons file ...'
-  open(unit=21,file='Data/horizons.'//fileext,status='old',action='read',iostat=ierr)
+  open(unit=21,file='horizons.'//fileext,status='old',action='read',iostat=ierr)
   if (ierr>0) stop 'skysize: Input file not found'
   
   do i=2,NSx-1

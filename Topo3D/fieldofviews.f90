@@ -10,8 +10,7 @@ program fieldofviews
 !
 ! written by Norbert Schorghofer 2010-2015  
 !*****************************************************************************
-  !use omp_lib
-  use filemanager
+  use filemanager, only : NSx,NSy
   use allinterfaces
   implicit none
   real(8), parameter :: pi=3.1415926535897932, d2r=pi/180.
@@ -26,7 +25,7 @@ program fieldofviews
   narg = COMMAND_ARGUMENT_COUNT()
   print *,'narg=',narg
   
-  call readdem(NSx,NSy,h,fileext)
+  call readdem(h)
   print *,'...finished reading topography...'
 
   if (narg==0) then  ! serial implementation

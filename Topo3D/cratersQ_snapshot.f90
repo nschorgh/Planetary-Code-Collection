@@ -28,7 +28,7 @@ program cratersQ_snapshot
   azSun = 180.*d2r
   betaSun = 10.*d2r
 
-  call readdem(NSx,NSy,h,fileext)
+  call readdem(h)
   call difftopo(NSx,NSy,h,dx,dy,surfaceSlope,azFac)
 
   print *,'...reading horizons file...'
@@ -47,7 +47,7 @@ program cratersQ_snapshot
      do j=2,NSy-1
         call gethorizon(i,j,azSun,smax,.FALSE.)
         !smax = 0.
-        Qn(i,j)=flux_wgeom(R,sin(betaSun),azSun,surfaceSlope(i,j),azFac(i,j),smax)
+        Qn(i,j)=flux_wshad(R,sin(betaSun),azSun,surfaceSlope(i,j),azFac(i,j),smax)
      enddo
   enddo
 
