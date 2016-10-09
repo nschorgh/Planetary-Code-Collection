@@ -28,7 +28,7 @@ Common/grids.f
 Common/psvco2.f
 Common/julday.for
 Mars/input.par
-Documentation: Common/modeldescription.pdf (Part 1)
+Documentation: User Guide Part 1
 
 
 *Vapor Diffusion Model*
@@ -37,7 +37,7 @@ Mars/exper_thermal1d.f: (main program)
 Mars/vapordiffusioni.f
 Mars/adsorption.f
 Mars/exper.par
-Documentation: Common/modeldescription.pdf (Part 2)
+Documentation: User Guide Part 2
 Documentation: Schorghofer, N. & Aharonson, O. (2005) J. Geophys. Res. 110, E05003, Appendices
 
 
@@ -93,7 +93,7 @@ Common/conductionQ.f
 Common/tridag.for
 Common/grids.f
 Common/generalorbit.f
-Documentation: Common/modeldescription.pdf (Part 1)
+Documentation: User Guide Part 1
 
 
 *Monte-Carlo Model for Surface-bounded Exosphere*
@@ -107,6 +107,7 @@ Common/subl_subs.f90
 Common/gasdev.for
 Common/ran2.for
 Documentation: None
+Documentation: User Guide Part 5
 
 
 *Shadowing and Illumination*
@@ -147,13 +148,14 @@ Documentation: Schorghofer, N. (2016) Icarus 276, 88-95.
 *Irradiance Model for Terrestrial Analog*
 
 EarthAnalogs/insol_earth.f90: (main program)
+EarthAnalogs/insol_flat.f90: (simple main program)
 EarthAnalogs/mk_atmosphere.f90
 EarthAnalogs/sunpos.f90
 Topo3D/topos.f90
 Topo3D/crater_modules.f90 
 Topo3D/crater_common.f90
 Topo3D/model_subs.f90
-
+Documentation: User Guide Part 6.1
 
 
 
