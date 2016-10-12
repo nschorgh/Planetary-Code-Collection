@@ -3,8 +3,6 @@ EarthAnalogs/
 Irradiance models for terrestrial analogs
 =========================================
 
-(in progress)
-
 sunpos.f90:
 	position of the Sun from location on Earth
 
@@ -17,6 +15,10 @@ insol_earth.f90:
 insol_flat.f90:
 	main program; calculates short-wavelength solar irradiance
 	at flat location on Earth analogues to insol_earth.f90
+
+cratersQ_earth_static.f90:
+ 	main program; calculates SW insolation with shadowing and reflections  
+       with Mauna Kea atmosphere; static solution with mean insolation
 
 makefile:
 	shows file dependencies

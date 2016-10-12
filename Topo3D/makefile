@@ -21,16 +21,17 @@ fieldofviews: topos.o crater_modules.o fieldofviews.o crater_common.o \
 	hpsort.o fieldofview_subs.o shadow_subs.o -o $@
 
 cratersQ_snapshot: topos.o crater_modules.o cratersQ_snapshot.o \
-	model_subs.o crater_common.o makefile
+	model_subs.o crater_common.o flux_wshad.o makefile
 	make -C $(SR) common
 	$(CC) $(LFLAGS) cratersQ_snapshot.o topos.o model_subs.o \
-	crater_common.o $(SR)grids.o $(SR)conductionQ.o $(SR)tridag.o -o $@
+	crater_common.o $(SR)grids.o $(SR)conductionQ.o $(SR)tridag.o \
+	flux_wshad.o -o $@
 
 cratersQ_moon: topos.o crater_modules.o cratersQ_moon.o model_subs.o \
-	crater_common.o makefile
+	crater_common.o flux_wshad.o makefile
 	make -C $(SR) common
 	$(CC) $(LFLAGS) cratersQ_moon.o crater_common.o $(SR)generalorbit.o \
-	topos.o model_subs.o $(SR)grids.o $(SR)conductionQ.o \
+	topos.o model_subs.o $(SR)grids.o $(SR)conductionQ.o flux_wshad.o \
 	$(SR)tridag.o -o $@
 
 %.o:	%.f makefile
