@@ -20,12 +20,10 @@ cratersQ_earth_static.f90:
  	main program; calculates SW insolation with shadowing and reflections  
        with Mauna Kea atmosphere; static solution with mean insolation
 
+(several symoblic links to subroutiens in Topo3D/)
+
 makefile:
 	shows file dependencies
-
-
-
-To compile in a single directory, you might want to copy subroutines from Topo3D/.
 
 
 

@@ -9,7 +9,7 @@ This program collection contains
 * models for the equilibrium ice table on Mars
 * fast method for subsurface-atmosphere vapor exchange for Mars
 * fast (asynchronous) model for ice retreat on asteroids
-* Monte-Carlo model for ballistic hops in the lunar exosphere
+* Monte-Carlo model for ballistic hops in the exosphere of the Moon and Ceres
 * 3D model of shadowing, illumination, and scattering
 
 
