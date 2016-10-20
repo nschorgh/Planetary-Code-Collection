@@ -26,7 +26,6 @@ program insol_earth
 
 
   dtmin=10.
-  !dtmin=5.
   tmax = 365.+1
   latitude = 19.821; longitude = -155.468  ! Mauna Kea summit
   ! azimuth in degrees east of north, 0=north facing

@@ -13,7 +13,7 @@ subroutine gethorizon(i0,j0,azSun,smax,first)
   real(8) a, daz
 
   if (first) then
-     open(unit=20,file='Data/horizons.'//fileext,status='old',action='read',iostat=ierr)
+     open(unit=20,file='horizons.'//fileext,status='old',action='read',iostat=ierr)
      if (ierr>0) stop 'gethorizon: Input file not found'
      do i=2,NSx-1
         do j=2,NSy-1
