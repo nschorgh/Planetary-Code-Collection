@@ -6,9 +6,19 @@
 module exo_species
   real(8), parameter :: mmass = 18.015   ! H2O
   !real(8), parameter :: mmass = 19.021   ! HDO
-  !real(8), parameter :: mmass = 17.007   ! OH
+  !real(8), parameter :: mmass = 2.0159   ! H2
   !real(8), parameter :: mmass = 4.0026   ! He-4
+  !real(8), parameter :: mmass = 16.0425  ! CH4
+  !real(8), parameter :: mmass = 17.007   ! OH
+  !real(8), parameter :: mmass = 20.18    ! Ne
+  !real(8), parameter :: mmass = 22.990   ! Na
+  !real(8), parameter :: mmass = 28.01    ! CO
+  !real(8), parameter :: mmass = 28.013   ! N2
+  !real(8), parameter :: mmass = 35.97    ! Ar-36
   !real(8), parameter :: mmass = 39.962   ! Ar-40
+  !real(8), parameter :: mmass = 39.098   ! K
+  !real(8), parameter :: mmass = 44.01    ! CO2
+  !real(8), parameter :: mmass = 64.06    ! SO2
 
   ! photodissociation time scale at 1 AU
   !real(8), parameter :: taudissoc = 20.*3600.  ! Potter & delDuca (1964)
@@ -16,9 +26,24 @@ module exo_species
   !real(8), parameter :: taudissoc = 1/23.0e-6  ! Crovisier (1989), active sun
   !real(8), parameter :: taudissoc = 1.9e7  ! He, Killen & Ip (1999)
   !real(8), parameter :: taudissoc = 3.2e6  ! Ar, Killen & Ip (1999)
+  ! Huebner et al. (1992), quite sun
+  !real(8), parameter :: taudissoc = 1/1.5e-7 ! H2
+  !real(8), parameter :: taudissoc = 1/5.2e-8 ! He
+  !real(8), parameter :: taudissoc = 1/7.6e-6 ! CH4
+  !real(8), parameter :: taudissoc = 1/7.5e-6 ! OH
+  !real(8), parameter :: taudissoc = 1/1.0e-6 ! N2
+  !real(8), parameter :: taudissoc = 1/5.92e-6 ! Na  
+  !real(8), parameter :: taudissoc = 1/3.1e-7 ! Ar
+  !real(8), parameter :: taudissoc = 1/2.2e-5 ! K
+  !real(8), parameter :: taudissoc = 1/2.0e-6 ! CO2
+  !real(8), parameter :: taudissoc = 1/2.1e-4 ! SO2
+  !real(8), parameter :: taudissoc = 1/1.8e-4 ! NH3
+  !real(8), parameter :: taudissoc = 1/1.5e-6 ! Xe
 
   ! this module is only used here
 end module exo_species
+
+
 
 
 subroutine hop1(p_r, p_s, p_t, idum, Tsurf, Q)
@@ -128,6 +153,7 @@ end function residence_time
 
 
 function residence_time2(T,sigma)
+  ! residence time that is density dependent
   implicit none
   real(8), intent(IN) :: T, sigma
   real(8) residence_time2
@@ -344,7 +370,7 @@ logical function incoldtrap(p_r)
   ! approx. relative area of spherical cap 1-cos(a*pi/180), a=acos(1-F)*180/pi
 
   ! MOON
-  ! Mazarico et al.(2011)
+  ! Mazarico et al. (2011)
   if (p_r(2)> +90-2.11) incoldtrap = .TRUE.  ! 12866 km^2, 0.068%
   if (p_r(2)< -90+2.36) incoldtrap = .TRUE.  ! 16055 km^2, 0.085%
   !if (abs(p_r(2))> 90-2.24) incoldtrap = .TRUE.  ! 14460 km^2, 0.076%
