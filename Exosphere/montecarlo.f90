@@ -10,6 +10,7 @@ module exo_species
   !real(8), parameter :: mmass = 4.0026   ! He-4
   !real(8), parameter :: mmass = 16.0425  ! CH4
   !real(8), parameter :: mmass = 17.007   ! OH
+  !real(8), parameter :: mmass = 17.03    ! NH3
   !real(8), parameter :: mmass = 20.18    ! Ne
   !real(8), parameter :: mmass = 22.990   ! Na
   !real(8), parameter :: mmass = 28.01    ! CO
@@ -19,6 +20,8 @@ module exo_species
   !real(8), parameter :: mmass = 39.098   ! K
   !real(8), parameter :: mmass = 44.01    ! CO2
   !real(8), parameter :: mmass = 64.06    ! SO2
+  !real(8), parameter :: mmass = 131.3    ! Xe
+  !real(8), parameter :: mmass = 222.     ! Rn
 
   ! photodissociation time scale at 1 AU
   !real(8), parameter :: taudissoc = 20.*3600.  ! Potter & delDuca (1964)
@@ -31,13 +34,13 @@ module exo_species
   !real(8), parameter :: taudissoc = 1/5.2e-8 ! He
   !real(8), parameter :: taudissoc = 1/7.6e-6 ! CH4
   !real(8), parameter :: taudissoc = 1/7.5e-6 ! OH
+  !real(8), parameter :: taudissoc = 1/1.8e-4 ! NH3
+  !real(8), parameter :: taudissoc = 1/5.92e-6 ! Na
   !real(8), parameter :: taudissoc = 1/1.0e-6 ! N2
-  !real(8), parameter :: taudissoc = 1/5.92e-6 ! Na  
   !real(8), parameter :: taudissoc = 1/3.1e-7 ! Ar
   !real(8), parameter :: taudissoc = 1/2.2e-5 ! K
   !real(8), parameter :: taudissoc = 1/2.0e-6 ! CO2
   !real(8), parameter :: taudissoc = 1/2.1e-4 ! SO2
-  !real(8), parameter :: taudissoc = 1/1.8e-4 ! NH3
   !real(8), parameter :: taudissoc = 1/1.5e-6 ! Xe
 
   ! this module is only used here

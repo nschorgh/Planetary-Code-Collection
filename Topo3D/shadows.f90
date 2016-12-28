@@ -1,9 +1,8 @@
-program cratershadows
+program toposhadows
 !***********************************************************************
 ! calculates horizon for every location and every azimuth
-! written by Norbert Schorghofer 2010-2015  
+! written by Norbert Schorghofer 2010-2015
 !***********************************************************************
-  !use omp_lib
   use filemanager, only : NSx,NSy,fileext,dx,dy,RMAX
   use allinterfaces
   implicit none
@@ -13,14 +12,10 @@ program cratershadows
   real(8) h(NSx,NSy), azSun, smax(nres)
   character(5) extc
 
-  narg = command_argument_count()
+  narg = COMMAND_ARGUMENT_COUNT()
   print *,'narg=',narg
   
   ! azimuth in degrees east of north, 0=north facing, 0...2*pi
-
-  ! setenv OMP_NUM_THREADS 8
-  !write (*,'(a,i8)') 'The number of processors available = ', omp_get_num_procs()
-  !write (*,'(a,i8)') 'The number of threads available    = ', omp_get_max_threads()
 
   call readdem(h)
   print *,'...finished reading topography... ',fileext
@@ -69,4 +64,4 @@ program cratershadows
 
   end if
   close(21)
-end program cratershadows
+end program toposhadows

@@ -6,13 +6,12 @@ pure subroutine findonehorizon(h,i0,j0,azRay,smax)
   integer, intent(IN) :: i0,j0
   real(8), intent(IN) :: h(NSx,NSy),azRay
   real(8), intent(OUT) :: smax
-  integer i,j,k,in,jn,cc
+  integer i,j,k,in,jn
   real(8) az,az_neighbor,t,r,r_neighbor,rcut,s,hcut,d1,d2,d3
   integer, parameter :: ex(8) = (/ 1, 1, 0, -1, -1, -1, 0, 1 /)
   integer, parameter :: ey(8) = (/ 0, 1, 1, 1, 0, -1, -1, -1 /)
 
   smax=0.
-  cc=0
   do i=2,NSx-1
      !if (dx*abs(i-i0)>RMAX) cycle  ! saves computations
      if (horizontaldistance(i,1,i0,1)>RMAX) cycle  ! saves computations
@@ -23,11 +22,10 @@ pure subroutine findonehorizon(h,i0,j0,azRay,smax)
         r = horizontaldistance(i,j,i0,j0)
         if (r>RMAX) cycle  ! saves computations
         az = azimuth(i0,j0,i,j)
-        if (cos(azRay)*(j-j0) > 0.) cycle  ! saves compuations
+        if (cos(azRay)*(j-j0) > 0.) cycle  ! saves computations
 
         d1=diffangle(az,azRay)
         if (d1==0.) then  ! grid point lies on ray
-           cc=cc+1
            s = (h(i,j)-h(i0,j0))/r
            if (s>smax) smax=s
            cycle
@@ -46,7 +44,6 @@ pure subroutine findonehorizon(h,i0,j0,azRay,smax)
 
            if (d1+d2<=d3+1e-5) then  
               if (d1>0.5*d3 .and. d3>1.e-6) cycle ! try this
-              cc=cc+1
               !r_neighbor = sqrt(dx*dx*(in-i0)**2+dy*dy*(jn-j0)**2)
               r_neighbor = horizontaldistance(in,jn,i0,j0)
               ! edge between h1,i0,j0 and h2,in,jn
@@ -89,6 +86,7 @@ subroutine findonehorizon_wsort(h,i0,j0,azRay,smax,visibility)
   integer, intent(IN) :: i0,j0
   real(8), intent(IN) :: h(NSx,NSy),azRay
   real(8), intent(OUT) :: smax
+  logical, intent(INOUT) :: visibility(NSx,NSy)
   integer i,j,k,in,jn,cc
   integer, parameter :: CCMAX = 5*(NSx+NSy) ! max # of elements on azimuth ray
   real(8) az,az_neighbor,t,r,r_neighbor,hcut,d1,d2,d3
@@ -97,7 +95,6 @@ subroutine findonehorizon_wsort(h,i0,j0,azRay,smax,visibility)
   integer, dimension(CCMAX) :: celli, cellj, arr
   integer, parameter :: ex(8) = (/ 1, 1, 0, -1, -1, -1, 0, 1 /)
   integer, parameter :: ey(8) = (/ 0, 1, 1, 1, 0, -1, -1, -1 /)
-  logical, intent(INOUT) :: visibility(NSx,NSy)
 
   cc=0
   smax=0.
