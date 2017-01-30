@@ -10,7 +10,7 @@ flux.f:
 marsorbit.f:
 	position of the sun as seen from Mars; data from Allison & McEwen (2000)
 
-mars_thermal1d.f: 
+mars_thermal1d.f: (main program)
 	1D diffusion of temperature for Mars; 
 	prototype example of how to call conductionQ/T with seasonal CO2 frost cover
 
@@ -19,7 +19,7 @@ input.par:
 
 
 
-exper_thermal1d.f:
+exper_thermal1d.f: (main program)
 	1D diffusion of temperature and optionally also water vapor with prescribed 
 	surface temperature (for laboratory setting)
 
@@ -41,17 +41,17 @@ jsub.f:
 jsubv.f90:
 	vectorized version of jsub, includes emission from one surface to another
 
-mars_mapi.f:
+mars_mapi.f: (main program)
 	determines equilibrium ice table depth for a list of locations (such as the entire 
 	globe); contains leftover Numerical Recipes code (C)
 
 mapgrid.dat:
 	Example input file for mars_mapi.f
 
-mars_mapt2.f:
+mars_mapt2.f: (main program)
 	calls jsub for a list of locations (such as the entire globe)
 
-mars_mapiqh2v.f90:
+mars_mapiqh2v.f90: (main program)
 	version of mars_mapi that uses jsubv and slope coupling, configured for cluster
 
 
@@ -70,16 +70,16 @@ fast_subs_exper.f90:
 fast_subs_mars.f90:
 	numerically accelerated routines for growth and depletion of subsurface ice
 
-stabgrow_fast.f90:
+stabgrow_fast.f90:(main program)
 	numerically accelerated growth of pore ice
 
-exper_fast.f90:
+exper_fast.f90: (main program)
 	numerically accelerated growth and depletion of subsurface ice
 
 input_fast.par:
 	Example input file for stabgrow_fast.f90 and exper_fast.f90
 
-mars_fast.f90:
+mars_fast.f90: (main program)
 	numerically accelerated growth and depletion of subsurface ice
 
 lats.ph:

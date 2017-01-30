@@ -33,6 +33,16 @@ module allinterfaces
   end interface
 
   interface
+     subroutine findonehorizon_allaz(h,i0,j0,naz,smax)
+       use filemanager, only : NSx,NSy,RMAX
+       implicit none
+       integer, intent(IN) :: i0,j0,naz
+       real(8), intent(IN) :: h(NSx,NSy)
+       real(8), intent(OUT) :: smax(naz)
+     end subroutine findonehorizon_allaz
+  end interface
+
+  interface
      elemental function diffangle(a1,a2)
        real(8) diffangle
        real(8), intent(IN) :: a1,a2

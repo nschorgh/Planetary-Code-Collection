@@ -3,17 +3,17 @@ Topo3D/
 Shadowing, illumination, and scattering on 3D topography
 ========================================================
 
-shadows.f90:
-	main program; calculates horizons
+shadows.f90: (main program)
+	calculates horizons
 
-fieldofviews.f90:
-	main program; calculates horizons and field of views
+fieldofviews.f90: (main program)
+	calculates horizons and field of views
 
-cratersQ_snapshot.f90:
-	main program; instantaneous surface temperature with 3D shadowing and reflections
+cratersQ_snapshot.f90: (main program)
+	instantaneous surface temperature with 3D shadowing and reflections
 
-cratersQ_moon.f90:
-	main program; surface temperature with 3D shadowing and reflections
+cratersQ_moon.f90: (main program)
+	surface temperature with 3D shadowing and reflections
 
 topos.f90:
 	input topography information

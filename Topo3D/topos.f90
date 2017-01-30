@@ -42,10 +42,10 @@ module filemanager
   !integer, parameter :: NSx=400, NSy=350  
   !character(len = *), parameter :: fileext = 'summitregion_9m'
   !real(8), parameter :: dx=8.9941, dy=8.9941, RMAX=2e3
-
-  !integer, parameter :: NSx=220, NSy=230  
-  !character(len = *), parameter :: fileext = 'summitregion_9m_smaller'
-  !real(8), parameter :: dx=8.9941, dy=8.9941, RMAX=1e3
+  
+  !integer, parameter :: NSx=950, NSy=700  
+  !character(len = *), parameter :: fileext = 'summitregion3'
+  !real(8), parameter :: dx=4.4971, dy=4.4971, RMAX=4e3
 
   !integer, parameter :: NSx=150, NSy=180 
   !character(len = *), parameter :: fileext = 'rsl4'

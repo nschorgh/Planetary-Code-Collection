@@ -6,6 +6,10 @@ LFLAGS = -O3 -Wall
 #CFLAGS = -O3 -warn all  -warn notruncated_source
 #LFLAGS = -O3 -warn all
 
+#CC = pgfortran
+#CFLAGS = -fast
+#LFLAGS = -fast
+
 
 common: generalorbit.o flux_noatm.o conductionQ.o conductionT.o \
 	tridag.o grids.o psv.o derivs.o psvco2.o subl_subs.o \

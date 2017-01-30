@@ -3,12 +3,12 @@ Exosphere/
 Monte-Carlo Model for Surface-bounded Exosphere
 ===============================================
 
-moon4.f90:
-	main program; event driven Monte Carlo model for ballistic hops of 
+moon4.f90: (main program)
+	event driven Monte Carlo model for ballistic hops of 
 	water molecules on the lunar surface
 
-ceres_exo.f90:
-	main program; event driven Monte Carlo model for ballistic hops of 
+ceres_exo.f90: (main program)
+	event driven Monte Carlo model for ballistic hops of 
 	water molecules on the Cerean surface
 
 montecarlo.f90:

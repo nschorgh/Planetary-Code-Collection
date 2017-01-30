@@ -7,11 +7,12 @@ pure subroutine findonehorizon(h,i0,j0,azRay,smax)
   real(8), intent(IN) :: h(NSx,NSy),azRay
   real(8), intent(OUT) :: smax
   integer i,j,k,in,jn
-  real(8) az,az_neighbor,t,r,r_neighbor,rcut,s,hcut,d1,d2,d3
+  real(8) az,az_neighbor,t,r,r_neighbor,rcut,s,hcut,d1,d2,d3,maxsep
   integer, parameter :: ex(8) = (/ 1, 1, 0, -1, -1, -1, 0, 1 /)
   integer, parameter :: ey(8) = (/ 0, 1, 1, 1, 0, -1, -1, -1 /)
 
   smax=0.
+  maxsep = horizontaldistance(1,1,2,2)
   do i=2,NSx-1
      !if (dx*abs(i-i0)>RMAX) cycle  ! saves computations
      if (horizontaldistance(i,1,i0,1)>RMAX) cycle  ! saves computations
@@ -25,6 +26,7 @@ pure subroutine findonehorizon(h,i0,j0,azRay,smax)
         if (cos(azRay)*(j-j0) > 0.) cycle  ! saves computations
 
         d1=diffangle(az,azRay)
+        if (r*d1*3.1416 > maxsep*3) cycle   ! saves computations
         if (d1==0.) then  ! grid point lies on ray
            s = (h(i,j)-h(i0,j0))/r
            if (s>smax) smax=s
@@ -176,3 +178,88 @@ subroutine findonehorizon_wsort(h,i0,j0,azRay,smax,visibility)
 end subroutine findonehorizon_wsort
 
 
+subroutine findonehorizon_allaz(h,i0,j0,naz,smax)
+! finds horizon for all azimuth rays
+  use filemanager, only : NSx,NSy,RMAX
+  use allinterfaces, only : horizontaldistance, azimuth, diffangle
+  implicit none
+  integer, intent(IN) :: i0,j0,naz
+  real(8), intent(IN) :: h(NSx,NSy)
+  real(8), intent(OUT) :: smax(naz)
+  integer i,j,k,in,jn,ak,ak1,ak2
+  real(8) az,az_neighbor,t,r,r_neighbor,rcut,s,hcut,d1,d2,d3
+  integer, parameter :: ex(8) = (/ 1, 1, 0, -1, -1, -1, 0, 1 /)
+  integer, parameter :: ey(8) = (/ 0, 1, 1, 1, 0, -1, -1, -1 /)
+  real(8) f,azRay(naz)
+  real(8), parameter :: pi=3.1415926535897931
+
+  f = naz/(2*pi)
+  
+  ! azimuth to integer mapping
+  do ak=1,naz
+     azRay(ak) = (ak-1)/f
+     ! inverse mapping:  ak = azRay*f+1
+  enddo
+  
+  smax(:)=0.
+  do i=2,NSx-1
+     if (horizontaldistance(i,1,i0,1)>RMAX) cycle  ! saves computations
+     do j=2,NSy-1
+        if (i==i0 .and. j==j0) cycle
+        r = horizontaldistance(i,j,i0,j0)
+        if (r>RMAX) cycle  ! saves computations
+        az = azimuth(i0,j0,i,j)  ! az should go from -pi ... pi
+
+        if (floor(az*f)==ceiling(az*f)) then  ! grid point lies on ray
+           ak=nint(az*f)+1
+           s = (h(i,j)-h(i0,j0))/r
+           if (s>smax(ak)) smax(ak)=s
+           cycle
+        endif
+
+        do k=1,8
+           in = i+ex(k)
+           jn = j+ey(k)
+           if (in==i0 .and. jn==j0) cycle
+           az_neighbor = azimuth(i0,j0,in,jn)
+
+           ak1=-9; ak2=-9
+           if (az >= az_neighbor) then 
+              ak1 = floor(az*f)+1
+              ak2 = ceiling(az_neighbor*f)+1
+           else
+              ak1 = ceiling(az*f)+1
+              ak2 = floor(az_neighbor*f)+1
+           endif
+           if (ak1<=0) ak1 = ak1+naz  ! negative azimuth
+           if (ak2<=0) ak2 = ak2+naz  ! negative azimuth
+           !if (ak1<=0 .or. ak2<=0 .or. ak1>naz .or. ak2>naz) error stop 'index out of bound'
+
+           d3=diffangle(az,az_neighbor)
+           do ak=ak1,ak2 ! must be at least 1 step
+              !print *,az,az_neighbor,ak1,ak2
+              d1=diffangle(az,azRay(ak))
+              d2=diffangle(az_neighbor,azRay(ak))
+
+              if (d1+d2<=d3+1.d-5) then
+                 if (d1>=1.0*d3 .and. d3>1.d-6) cycle ! DIFFERENT
+                 !r_neighbor = sqrt(dx*dx*(in-i0)**2+dy*dy*(jn-j0)**2)
+                 r_neighbor = horizontaldistance(in,jn,i0,j0)
+                 ! edge between h1,i0,j0 and h2,in,jn
+                 if (d3>1.d-6) then
+                    t = d1/d3  ! approximation
+                 else
+                    t = 0.5  ! dirty fix
+                 endif
+                 hcut = h(i,j)*(1-t)+h(in,jn)*t
+                 rcut = r*(1-t)+r_neighbor*t
+                 s = (hcut-h(i0,j0))/rcut
+                 if (s>smax(ak)) smax(ak)=s
+              endif
+              
+           end do  ! end ak loop
+        end do ! end of k loop
+        
+     enddo ! end of j loop
+  enddo ! end of i loop
+end subroutine findonehorizon_allaz

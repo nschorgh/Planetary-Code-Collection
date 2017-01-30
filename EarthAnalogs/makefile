@@ -17,11 +17,11 @@ insol_flat: sunpos.o insol_flat.o mk_atmosphere.o flux_wshad.o makefile
 	$(CC) $(LFLAGS) sunpos.o insol_flat.o mk_atmosphere.o flux_wshad.o
 
 cratersQ_earth: topos.o crater_modules.o sunpos.o cratersQ_earth.o sunpos.o \
-	model_subs.o crater_common.o mk_atmosphere.o makefile
+	model_subs.o crater_common.o mk_atmosphere.o flux_wshad.o makefile
 	make -C $(SR) common
 	$(CC) $(LFLAGS) cratersQ_earth.o $(SR)generalorbit.o topos.o \
 	model_subs.o crater_common.o sunpos.o mk_atmosphere.o \
-	$(SR)grids.o $(SR)conductionQ.o $(SR)tridag.o flux_shad.o 
+	$(SR)grids.o $(SR)conductionQ.o $(SR)tridag.o flux_wshad.o 
 
 cratersQ_earth_static: topos.o crater_modules.o sunpos.o crater_common.o \
 	cratersQ_earth_static.o mk_atmosphere.o model_subs.o flux_wshad.o \

@@ -3,8 +3,7 @@ Asteroid/
 Basic Thermal Model for Astroid Surfaces
 ========================================
 
-asteroid_thermal.f90:
-	main program	
+asteroid_thermal.f90: (main program)
 
 oneasteroid_thermal1d.f90:
 	1D diffusion of temperture for airless body
@@ -16,8 +15,8 @@ insolonly.f90:
 Asynchronously Coupled Model of Ice Loss, Temperature, and Impact Stirring on Asteroids
 =======================================================================================
 
-asteroid_fast2.f90: 
-       	main program; Asynchronously coupled model of ice loss, temperature, 
+asteroid_fast2.f90: (main program)
+       	Asynchronously coupled model of ice loss, temperature, 
 	and impact stirring on asteroids
 
 impactstirring.f90:
