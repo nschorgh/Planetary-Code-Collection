@@ -1,5 +1,7 @@
 ChangeLog
 
+20 Oct 2016: Release v1.1.2  doi:10.5281/zenodo.162490
+
 9 Oct 2016: First version of User Guide
 
 3 Apr 2016: Release v1.1.1  doi:10.5281/zenodo.48851

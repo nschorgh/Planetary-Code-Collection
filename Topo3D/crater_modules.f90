@@ -195,6 +195,16 @@ module allinterfaces
      end subroutine compactoutput
   end interface
 
+  interface
+     subroutine getskysize(skysize)
+       use filemanager
+       implicit none
+       real(8), parameter :: pi=3.1415926535897932, d2r=pi/180.
+       integer, parameter :: nres=360   ! # of azimuths
+       real(8), intent(OUT) :: skysize(NSx,NSy)
+     end subroutine getskysize
+  end interface
+
   ! begin mk_atmosphere.f90
   interface
      real(8) function mk_atmosphere(Z,I0,D0)

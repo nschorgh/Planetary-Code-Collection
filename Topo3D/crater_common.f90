@@ -94,3 +94,40 @@ subroutine compactoutput(unit,value,nr)
   enddo
   write(unit,"('')")
 end subroutine compactoutput
+
+
+
+subroutine getskysize(skysize)
+!***********************************************************************
+!   reads horizons file and calculates sky size (approximation only)
+!***********************************************************************
+  use filemanager, only : NSx,NSy,fileext
+  use allinterfaces, except_this_one => getskysize
+  implicit none
+  real(8), parameter :: pi=3.1415926535897932, d2r=pi/180.
+  integer, parameter :: nres=360   ! # of azimuths
+  real(8) smax(nres)
+  integer i, j, ii, jj, ierr
+  real(8), intent(OUT) :: skysize(NSx,NSy) 
+
+  ! azimuth in degrees east of north, 0=north facing, 0...2*pi
+
+  print *,'# azimuth rays = ',nres
+  write(*,*) 'Nx=',NSx,'Ny=',NSy,'File=',fileext
+  
+  print *,'...reading horizons file ...'
+  open(unit=21,file='Data/horizons.'//fileext,status='old',action='read',iostat=ierr)
+  if (ierr>0) stop 'skysize: Input file not found'
+  
+  do i=2,NSx-1
+     do j=2,NSy-1
+        read(21,*) ii,jj,smax(:)
+        if (ii/=i .or. jj/=j) stop 'index mismatch'
+        skysize(i,j) = sum(atan(smax))*2*pi/nres
+        !print *,i,j,skysize(i,j),atan(maxval(smax))/d2r
+     enddo
+  enddo
+  skysize = 2*pi - skysize
+
+  close(21)
+end subroutine getskysize

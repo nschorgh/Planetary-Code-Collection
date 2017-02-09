@@ -107,7 +107,7 @@ Common/subl_subs.f90
 Common/gasdev.for
 Common/ran2.for
 Documentation: None
-Documentation: User Guide Part 5
+Documentation: User Guide Part 6
 
 
 *Shadowing and Illumination*
@@ -124,7 +124,7 @@ Topo3D/fieldofview_subs.f90
 Topo3D/model_subs.f90
 Common/hpsort.for
 Topo3D/topo40.xyz
-Documentation: None
+Documentation: User Guide Part 5
 
 
 *Asynchronous Model for Temperature, Impact Stirring, and Ice Loss on Asteroids*
@@ -155,7 +155,7 @@ Topo3D/topos.f90
 Topo3D/crater_modules.f90 
 Topo3D/crater_common.f90
 Topo3D/model_subs.f90
-Documentation: User Guide Part 6.1
+Documentation: User Guide Parts 4.1 & 5.2-5.4
 
 
 
