@@ -3,7 +3,7 @@ program allofmoon
 ! surface temperatures of airless body with H2O exosphere
 !***********************************************************************
   use grid
-  use body, only: solarDay, dtsec, Rbody
+  use body, only: solarDay, dtsec, Rmoon => Rbody
   implicit none
 
   integer, parameter :: Np=2000000  ! maximum number of computational particles
@@ -91,7 +91,7 @@ program allofmoon
      write(30,*) time/3600.,cc(1:2),ccc(1:4),cc_prod_total
 
      ! create new particles
-     call production(Np,p_r,p_s,p_n,idum,Tsurf,cc_prod)
+     call production(Np,p_r,p_s,p_n,idum,cc_prod,Tsurf)
      !cc_prod = 0
      cc_prod_total = cc_prod_total + cc_prod
 
@@ -141,7 +141,7 @@ program allofmoon
   print *,'# particles coldtrapped',ccc(3),ccc(4),ccc(3)+ccc(4)
   print *,'# particles produced',cc_prod_total
   print *,'# active particles',sum(cc(1:6)),Np
-  print *,'# produced / surface density ',cc_prod_total,cc_prod_total/(4*pi*Rbody**2)
+  print *,'# produced / surface density ',cc_prod_total,cc_prod_total/(4*pi*Rmoon**2)
 
   close(20); close(21)
   close(30)
@@ -205,7 +205,7 @@ subroutine SurfaceTemperature(dtsec,HAi,time,Tsurf,Qn)
   decl = 0.
   sunR = semia
   ! better orbit 
-  !eps = 1.54*d2r 
+  !eps = 1.54*d2r    ! lunar obliquity to ecliptic 
   !ecc=0.; omega=0.
   !call generalorbit(time/86400.,semia,ecc,omega,eps,Ls,decl,sunR)
 
@@ -263,6 +263,7 @@ end subroutine SurfaceTemperature
 
 
 subroutine particles2sigma(Np, p_r, p_s, sigma)
+  ! calculates areal density sigma from particle coordinates
   use grid, only: veclen
   use body, only: Rbody
   implicit none
@@ -295,12 +296,48 @@ subroutine particles2sigma(Np, p_r, p_s, sigma)
   totalnr0 = sum(nr0(:))
   totalnr1 = sum(nr1(:))
   !print *,'total # particles in particles2sigma:',Np,totalnr0  ! for checking purposes
+
+  !where(sigma>maxsigma) maxsigma=sigma
+  
   if (FirstCall) then 
      open(unit=40,file='sigma.dat',action='write')
      FirstCall = .FALSE.
+     !maxsigma=0.
   else
      open(unit=40,file='sigma.dat',action='write',position='append')
   endif
   write(40,'(999999(1x,g11.5))') sigma
   close(40)
 end subroutine particles2sigma
+
+
+subroutine fallmap(unit, fall)
+  ! optional analysis
+  use body, only: Rmoon => Rbody
+  use grid
+  implicit none
+  integer, intent(IN) :: unit, fall(veclen)
+  integer i,j,k
+  real(8) sigma(veclen), dA(veclen)
+  real(8) longitude(nlon), latitude(nlat)
+
+  call areas(dA)
+  dA = dA*Rmoon**2
+
+  sigma(:) = fall(:)/dA(:)
+
+  call lonlatgrid(longitude,latitude)
+
+  write(unit,110) 0.,90.,sigma(1)
+  do j=1,nlat
+     do i=1,nlon
+        k = 1 + i + (j-1)*nlon 
+        write(unit,110) longitude(i),latitude(j),sigma(k)
+     enddo
+  enddo
+  write(unit,110) 0.,-90.,sigma(veclen)
+110 format (f5.1,1x,f6.2,1x,g10.4)
+
+  print *,'Total area',sum(dA)
+end subroutine fallmap
+

@@ -1,6 +1,6 @@
 CC = gfortran
-CFLAGS = -O3 -Wall
-LFLAGS = -O3 -Wall
+CFLAGS = -O3 -Wall  # -fopenmp
+LFLAGS = -O3 -Wall  # -fopenmp
 
 #CC = ifort
 #CFLAGS = -O3 -warn all  -warn notruncated_source

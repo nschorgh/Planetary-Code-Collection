@@ -88,12 +88,6 @@ subroutine hop1(p_r, p_s, p_t, idum, Tsurf, Q)
   d = 2/g*v(3)*sqrt(v(1)**2+v(2)**2)  ! distance for constant g
   if (vspeed>0.4*vescape) then  ! use non-uniform gravity formula
   !if (d>0.1*Rbody) then
-     !gamma = (vspeed/vescape)**2
-     ! theta = zenith angle of launch velocity
-     !sin2theta = 2*v(3)*sqrt(v(1)**2+v(2)**2)/vspeed**2
-     ! derived from an equation in Vogel (1966)
-     !d = 2*Rbody*atan(sin2theta/(1/gamma-sin2theta**2))
-     !flighttime = flighttime*(1+4./3.*gamma)  ! 1st order correction
      alpha = atan(sqrt(v(1)**2+v(2)**2)/v(3))  ! angle from zenith
      call nonuniformgravity(vspeed,alpha,d,flighttime)
   endif
@@ -249,14 +243,14 @@ subroutine montecarlo(Np,idum,p_r,p_s,p_t,p_n,Tsurf,dtsec,ccc,Q)
 end subroutine montecarlo
 
 
-subroutine production(Np,p_r,p_s,p_n,idum,Tsurf,newcc)
+subroutine production(Np,p_r,p_s,p_n,idum,newcc,Tsurf)
   ! continuous production
   implicit none
   integer, intent(IN) :: Np
   real(8), intent(INOUT) :: p_r(Np,2)
   integer, intent(INOUT) :: p_s(Np), p_n(Np), idum
-  real(8), intent(IN) :: Tsurf(*)
   integer, intent(OUT) :: newcc
+  real(8), intent(IN) :: Tsurf(*)
   integer i, k
   integer, parameter :: NPROD = 2000
   integer, external :: inbox
@@ -276,11 +270,13 @@ subroutine production(Np,p_r,p_s,p_n,idum,Tsurf,newcc)
            if (Tsurf(k)>360.) exit
         enddo
 
-        ! global
-        !p_r(i,1) = 360.*ran2(idum)
-        !p_r(i,2) = 90.*(2*ran2(idum)-1.)
-        !k = inbox(p_r(i,:))
-
+        ! global and uniform
+        !do 
+        !   p_r(i,1) = 360.*ran2(idum)
+        !   p_r(i,2) = r2d*asin(2*ran2(idum)-1.)
+        !   if (.not.incoldtrap(p_r(i,:))) exit
+        !enddo
+        
         ! in equatorial region
         !p_r(i,1) = 360.*ran2(idum)
         !p_r(i,2) = 40*(2*ran2(idum)-1.)
@@ -359,7 +355,7 @@ subroutine totalnrs(Np,p_s,cc)
 end subroutine totalnrs
 
 
-logical function incoldtrap(p_r)
+pure logical function incoldtrap(p_r)
   implicit none
   real(8), intent(IN) :: p_r(2)
   real(8), parameter :: pi=3.1415926535897932, d2r=pi/180.
@@ -389,13 +385,6 @@ logical function incoldtrap(p_r)
   !if (p_r(2)< -90+2.92) incoldtrap = .TRUE.  ! 0.13% of hemisphere
   ! dlat = 0.13e-2/cos(80.*d2r)/d2r
   !if (abs(p_r(2))>80.-dlat/2 .and. abs(p_r(2))<80.+dlat/2.) incoldtrap = .TRUE.
-
-  !if (abs(p_r(2)) > 85.) then
-  !   ! this only works for f<0.38%
-  !   u=ran2(idum)  ! between 0 and 1
-  !   f = 0.1/100/0.003805302  ! (1-cos(5*d2r))
-  !   if (u<f) incoldtrap = .TRUE.
-  !endif
 
   !if (insidecoldtrap(p_r)>0) incoldtrap = .TRUE.
 end function incoldtrap

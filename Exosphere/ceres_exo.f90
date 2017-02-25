@@ -78,7 +78,7 @@ program exospherebody
      write(30,*) time/3600.,cc(1:2),ccc(1:4),cc_prod_total
 
      ! create new particles
-     call production(Np,p_r,p_s,p_n,idum,Tsurf,cc_prod)
+     call production(Np,p_r,p_s,p_n,idum,cc_prod,Tsurf)
      !cc_prod = 0
      cc_prod_total = cc_prod_total + cc_prod
 
