@@ -7,7 +7,7 @@ sunpos.f90:
 	position of the Sun from location on Earth
 
 mk_atmosphere.f90:
-	subroutine for 1D atmosphere for Mauna Kea
+	subroutine for 0D atmosphere for Mauna Kea
 
 insol_earth.f90: (main program)
 	short-wavelength irradiance with topography

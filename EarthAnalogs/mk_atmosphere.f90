@@ -1,7 +1,6 @@
-
 real(8) function mk_atmosphere(Z,I0,D0)
   ! returns direct and indirect irradiance on Mauna Kea in W/m^2
-  ! Nunez (1980), J. Biogeogr. 7, 173-186; corrected typos
+  ! in part based on Nunez (1980), J. Biogeogr. 7, 173-186; corrected typos
   implicit none
   real(8), intent(IN) :: Z  ! solar zenith angle (radians)
   real(8), intent(OUT) :: I0  ! clear-sky direct irradiance (unitless fraction) = transmittance
