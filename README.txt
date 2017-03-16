@@ -57,6 +57,8 @@ Common/julday.for
 Common/psv.f
 Common/psvco2.f
 Mars/mapgrid.dat
+Documentation: Users Guide Section 3.1
+Documentation: Schorghofer, N. & Aharonson, O. (2005) J. Geophys. Res. 110, E05003
 
 
 *Fast Method for Subsurface Ice Dynamics*

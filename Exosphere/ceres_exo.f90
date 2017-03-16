@@ -52,9 +52,8 @@ program exospherebody
   !p_t(:)=0.;  p_s(:)=0    ! all particles on surface
   p_t(:)=1d99; p_s(:)=-9   ! no particles
   !do i=1,np
-     !p_r(i,1)=360.*ran2(idum); 
-     !p_r(i,1)=0.
-     !p_r(i,2)=0.; 
+     !p_r(i,1)=360.*ran2(idum)
+     !p_r(i,2)=0.
   !enddo
 
   open(unit=20,file='Tsurface',status='unknown',action='write')
@@ -98,7 +97,6 @@ program exospherebody
 
      ! 1 hour of hopping
      call montecarlo(np,idum,p_r,p_s,p_t,p_n,Tsurf,dtsec,ccc,Qn)
-     !call destruction(np,p_r,p_s,p_t,idum,dtsec,veclen,sigma)
 
      call totalnrs(Np,p_s,cc)
 
@@ -115,7 +113,6 @@ program exospherebody
   print *,'# particles coldtrapped',ccc(3),ccc(4),ccc(3)+ccc(4)
   print *,'# particles produced',cc_prod_total
   print *,'# active particles',sum(cc(1:6)),Np
-  !print *,'# produced / surface density ',cc_prod_total,cc_prod_total/(4*pi*Rbody**2)
 
   close(20); close(21)
   close(30)
@@ -125,6 +122,7 @@ end program exospherebody
 
 subroutine SurfaceTemperature(dtsec,HAi,time,Tsurf,Qn)
   ! surface temperature model
+  ! use omp_lib
   use body, only: solarDay, zmax, Fgeotherm, semia, albedo, emiss
   use grid, only: VECLEN
   implicit none
@@ -152,10 +150,10 @@ subroutine SurfaceTemperature(dtsec,HAi,time,Tsurf,Qn)
   real(8), external :: flux_noatm
 
   call generalorbit(time/86400.,semia,ecc,omega,eps,Ls,decl,sunR)
-
+  !write(32,*) time/3600.,Ls/d2r
+  
   ! initialization
   if (FirstCall) then
-     !thIn= 50.;  rhoc=1000000.  
      thIn= 15.;  rhoc=1200.*500.  ! Ceres
      delta = thIn/rhoc*sqrt(solarDay/pi)  ! skin depth
 
@@ -193,6 +191,7 @@ subroutine SurfaceTemperature(dtsec,HAi,time,Tsurf,Qn)
      enddo
   end if
 
+  !$OMP PARALLEL DO PRIVATE(lon,lat,HA,Qnp1,Fsurf)
   do k=1,veclen
      call k2lonlat(k,lon,lat)
      ! longitude of morning terminator = -time/solarDay + lon + HAi ??
@@ -202,6 +201,7 @@ subroutine SurfaceTemperature(dtsec,HAi,time,Tsurf,Qn)
           & Tsurf(k),Fgeotherm,Fsurf)
      Qn(k)=Qnp1
   enddo
+  !$OMP END PARALLEL DO
 
   FirstCall = .FALSE.
 end subroutine SurfaceTemperature

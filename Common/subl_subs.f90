@@ -72,9 +72,10 @@ real(8) function sublrate_co2(T)
   real(8),intent(IN) :: T
   real(8), parameter :: pi=3.141592653589793, kB = 1.38065e-23
   real(8), parameter :: mu = 44.01*1.66054e-27
-  real(8), external :: psvco2
+  real(8) psvco2
 
-  sublrate_co2 = psvco2(T)/sqrt(2*pi*kB*T*mu);
+  psvco2 = exp(23.3494 - 3182.48/T)*100. ! see psvco2.f for details
+  sublrate_co2 = psvco2/sqrt(2*pi*kB*T*mu);
 end function sublrate_co2
 
 
