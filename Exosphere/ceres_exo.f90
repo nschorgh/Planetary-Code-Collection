@@ -1,5 +1,6 @@
 program exospherebody
-!***********************************************************************
+
+  !***********************************************************************
 ! surface temperatures of airless body with H2O exosphere
 !***********************************************************************
   use grid
@@ -182,7 +183,7 @@ subroutine SurfaceTemperature(dtsec,HAi,time,Tsurf,Qn)
      do k=1,veclen
         call k2lonlat(k,lon,lat)
         geof = max(cos(lat),cos(lat+eps/2),cos(lat-eps/2))/pi
-        Tmean=(1370*(1.-albedo)*geof/sigSB)**0.25 - 10.
+        Tmean=(1370/semia**2*(1.-albedo)*geof/sigSB)**0.25 - 10.
         if (.not. Tmean>0.) Tmean=(Fgeotherm/sigSB)**0.25  ! fixes nan and zero
         T(1:nz,k) = Tmean
         Tsurf(k) = Tmean

@@ -170,12 +170,13 @@ function residence_timeR(T)
   real(8), intent(IN) :: T
   real(8) residence_timeR
   real(8), parameter :: sigma0 = 1e19  ! H2O
-  real(8), external :: sublrate, ran2
+  real(8), external :: sublrate, ran2, restime_species
   real(8) tau, y
   integer, save :: idum=-4578
   
-  tau = sigma0/sublrate(T)
-  y  = ran2(idum)
+  tau = sigma0/sublrate(T)  ! H2O
+  ! tau = restime_species(T)
+  y = ran2(idum)
   residence_timeR = -tau/log(y)  ! gives P(t)=tau/t^2 e^(-tau/t),  <1/t>=1/tau
   if (T==0.) residence_timeR = 1e32
   !residence_time = 0. ! Ar, He, (noncondensible species)
