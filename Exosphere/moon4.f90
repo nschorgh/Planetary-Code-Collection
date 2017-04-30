@@ -65,7 +65,7 @@ program allofmoon
 
   open(unit=20,file='Tsurface',status='unknown',action='write')
   open(unit=21,file='Tsurface_end',status='unknown',action='write')
-  open(unit=30,file='series',status='unknown',action='write')
+  open(unit=30,file='series',status='unknown',action='write')  ! time series
   open(unit=50,file='particles',status='unknown',action='write')
   open(unit=51,file='particles_end',status='unknown',action='write')
 
@@ -123,7 +123,6 @@ program allofmoon
 
      ! 1 hour of hopping
      call montecarlo(np,idum,p_r,p_s,p_t,p_n,Tsurf,dtsec,ccc,Qn)
-     !call destruction(np,p_r,p_s,p_t,idum,dtsec,veclen,sigma)
 
      call totalnrs(Np,p_s,cc)
 

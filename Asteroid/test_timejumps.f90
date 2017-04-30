@@ -46,7 +46,7 @@ program asteroid_fast
      if (any(-icetime == (/ 4.498d9, 4.450d9, 4d9 /))) then
      !if (any(-icetime == 2.0d9 - (/ 0.002d9, 0.05d9, 0.5d9 /))) then
         timestep = 10.*timestep
-        print *,'# Icreasing time step 10-fold'
+        print *,'# Increasing time step 10-fold'
      endif
      if (icetime>=0.) exit
      omega = mod(omega + 36.,360.)  ! sweep

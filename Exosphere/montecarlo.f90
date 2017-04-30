@@ -290,34 +290,36 @@ subroutine production(Np,p_r,p_s,p_n,idum,newcc,Tsurf)
 end subroutine production
 
 
-subroutine destruction(Np,p_r,p_s,p_t,idum,dtsec,veclen,sigma)
+subroutine destruction(Np,p_r,p_s,p_t,idum,dtsec,Q,sigma)
   ! destruction on the surface by space weathering
+  use body, only : semia
   implicit none
-  integer, intent(IN) :: Np, veclen
+  integer, intent(IN) :: Np
   real(8), intent(IN) :: p_r(Np,2)
   integer, intent(INOUT) :: p_s(Np)
   real(8), intent(INOUT) :: p_t(Np)
   integer, intent(INOUT) :: idum
-  real(8), intent(IN) :: dtsec, sigma(veclen)
+  real(8), intent(IN) :: dtsec, Q(*)
+  real(8), intent(IN), optional :: sigma(*)
 
   integer k, i
   real(8) u, drate
   real(8), parameter :: sigma0 = 1e19
-  real(8) Diso, Ds  ! destruction rate, molecules/m^2/s
+  real(8) Diso ! isotropic destruction rate, molecules/m^2/s
   integer, external :: inbox
   real(8), external :: ran2
 
-  Diso = 1e11 ! isotropic destruction rate  1 t/m^2/Ga = 1e12 molec/m^2/s
-  Ds = 1e8*1e4*0. ! times cos(incangle)
-
+  Diso = 1e12/semia**2  ! Lanzerotti & Brown (1981)
+  
+  drate = Diso/sigma0 ! for less than a monolayer
+  
   do i=1,Np
      if (p_s(i)==0) then
-        u = ran2(idum)
         k = inbox(p_r(i,:))
-        if (sigma(k)<=sigma0) then
-          drate = Diso/sigma0 
-        else
-          drate = Diso*sigma(k)/sigma0**2
+        if (Q(k)<=0.) cycle  ! no solar wind
+        u = ran2(idum)
+        if (present(sigma)) then
+           if (sigma(k)>sigma0) drate = Diso*sigma(k)/sigma0**2
         endif
         if (u<drate*dtsec) then
            p_s(i) = -1  ! destroyed
@@ -367,7 +369,7 @@ pure logical function incoldtrap(p_r)
   incoldtrap = .FALSE.
 
   ! approx. relative area of spherical cap (a*pi/180)**2/2, a=sqrt(2*F)*180/pi
-  ! approx. relative area of spherical cap 1-cos(a*pi/180), a=acos(1-F)*180/pi
+  ! relative area of spherical cap 1-cos(a*pi/180), a=acos(1-F)*180/pi
 
   ! MOON
   ! Mazarico et al. (2011)
