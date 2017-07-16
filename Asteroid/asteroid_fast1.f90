@@ -1,8 +1,9 @@
-program asteroid_fast
-!***********************************************************************
+program asteroid_fast1
+!*************************************************************************
 ! Asynchronously coupled model of temperature and ice retreat on asteroids
-! written by Norbert Schorghofer 2012-2015
-!***********************************************************************
+! no void spaces
+! simplified version of asteroid_fast2    2016-2017
+!*************************************************************************
   use constants, only : pi, d2r, NMAX
   use body, only : nz, zfac, zmax, ecc, icedensity
   use allinterfaces
@@ -14,9 +15,9 @@ program asteroid_fast
   parameter(SPINUPN=20, spinupfac=2.)
   integer i, k, earliest, iargc, ierr
   real(8) tstart  ! (earth) years
-  real(8) z(NMAX), icetime, timestep, sigma(nz,NP)
-  real(8) bigstep, bssum, omega, eps, porosity(nz)
-  real(8), dimension(NP) :: latitude, albedo, zdepthP
+  real(8) z(NMAX), icetime, timestep
+  real(8) bigstep, bssum, omega, eps, porosity, icefrac
+  real(8), dimension(NP) :: latitude, albedo, zdepthT
   real(8), dimension(NP) :: Tmean1, Tmean3, Tmin, Tmax
   character(4) ext
 
@@ -35,13 +36,12 @@ program asteroid_fast
   enddo
   close(21)
 
-  !tstart = 1e6  ! Earth years
   tstart = 4.5e9  ! Earth years
-  timestep = 1e5  ! Earth years
-  zdepthP(:) = 0.  ! initial ice depth
+  timestep = 2e5  ! Earth years
+  zdepthT(:) = 0.  ! initial ice depth
 
-  eps = 4.*d2r   ! (1) Ceres
-  !eps = 75.*d2r   ! Elst-Pizarro
+  eps = 4.*d2r   ! (1) Ceres, current
+  eps = 12.*d2r   ! (1) Ceres, average
   omega = 0.*d2r
 
   ! set eternal grid
@@ -51,15 +51,9 @@ program asteroid_fast
   close(30)
 
   ! porosity can decrease with depth, but should be constant within stirring depth
-  porosity(:) = 0.4d0   ! dry porosity
-  do i=1,nz
-     !if (z(i)>0.5) porosity(i) = porosity(i) - (z(i)-0.5)/40.*porosity(1)
-     !if (porosity(i)<0.) porosity(i)=0.
-  enddo
-  forall (i=1:nz) sigma(i,:) = porosity(i)*icedensity
-  open(unit=30,file='poro.'//ext,action='write',status='unknown')
-  write(30,'(999(f7.5,1x))') porosity(1:nz)
-  close(30)
+  !porosity = 0.4d0   ! dry porosity
+  porosity = 0.23d0
+  icefrac  = porosity
 
   print *,'RUNNING FAST ASTEROID MODEL'
   print *,'Starting at time',tstart,'years'
@@ -71,8 +65,9 @@ program asteroid_fast
   do k=1,NP
      if (NP>1) print *,'  Site ',k
      print *,'  Latitude (deg)',latitude(k)
-     call outputskindepths(nz,z,zmax,porosity)
-     print *,'  Initial ice depth=',zdepthP(k)
+     call outputskindepths(nz,z,zmax,porosity,icefrac)
+     print *,'  Initial ice depth=',zdepthT(k)
+     print *,'  Porosity=',porosity,' Ice fraction=',icefrac
      print *
   enddo
   call outputmoduleparameters
@@ -80,21 +75,18 @@ program asteroid_fast
 
   open(unit=34,file='subout.'//ext,action='write',status='unknown')
   open(unit=37,file='depths.'//ext,action='write',status='unknown')
-  open(unit=36,file='icecontent.'//ext,action='write',status='unknown')
 
   earliest = nint(tstart/timestep)
   icetime = -earliest*timestep
 
   print *,'Equilibrating initial temperature'
   !icetime = -tstart
-  call icelayer_asteroid(0d0,NP,z,porosity,.true., &
-       &        zdepthP,sigma,Tmean1,Tmean3,Tmin,Tmax,latitude,albedo, &
+  call icelayer_asteroid(0d0,NP,z,porosity,icefrac,.true., &
+       &        zdepthT,Tmean1,Tmean3,Tmin,Tmax,latitude,albedo, &
        &        ecc,omega,eps,faintsun(icetime))
   do k=1,NP
-     write(37,501) icetime,latitude(k),zdepthP(k), &
+     write(37,501) icetime,latitude(k),zdepthT(k), &
           &  Tmean1(k),Tmean3(k),Tmin(k),Tmax(k)
-     write(36,'(f12.0,2x,f7.3,2x)',advance='no') icetime,latitude(k)
-     call compactoutput(36,sigma(1:nz,k),nz)
   enddo
 
   icetime = - earliest*timestep
@@ -105,13 +97,13 @@ program asteroid_fast
   do i=1,SPINUPN
      bigstep = spinupfac**i/bssum*timestep
      icetime = icetime + bigstep
-     call icelayer_asteroid(bigstep,NP,z,porosity,.false., &
-          & zdepthP,sigma,Tmean1,Tmean3,Tmin,Tmax,latitude,albedo, &
+     call icelayer_asteroid(bigstep,NP,z,porosity,icefrac,.false., &
+          & zdepthT,Tmean1,Tmean3,Tmin,Tmax,latitude,albedo, &
           & ecc,omega,eps,faintsun(icetime))
-     print *,i,'of',SPINUPN,'  ',bigstep,zdepthP,omega/d2r
+     print *,i,'of',SPINUPN,'  ',bigstep,zdepthT,omega/d2r
      do k=1,NP
         ! variables were evaluated at previous time step
-        write(37,501) icetime,latitude(k),zdepthP(k), &
+        write(37,501) icetime,latitude(k),zdepthT(k), &
              & Tmean1(k),Tmean3(k),Tmin(k),Tmax(k)
      enddo
      omega = mod(omega + 36.*d2r,2*pi)  ! sweep
@@ -122,19 +114,18 @@ program asteroid_fast
   print *,icetime
   do 
      icetime = icetime + timestep
-     call icelayer_asteroid(timestep,NP,z,porosity,.false., &
-          & zdepthP,sigma,Tmean1,Tmean3,Tmin,Tmax,latitude,albedo, &
+     call icelayer_asteroid(timestep,NP,z,porosity,icefrac,.false., &
+          & zdepthT,Tmean1,Tmean3,Tmin,Tmax,latitude,albedo, &
           & ecc,omega,eps,faintsun(icetime))
      do k=1,NP
         ! variables were evaluated at previous time step
-        write(37,501) icetime,latitude(k),zdepthP(k), &
+        write(37,501) icetime,latitude(k),zdepthT(k), &
              & Tmean1(k),Tmean3(k),Tmin(k),Tmax(k)
-        write(36,'(f12.0,2x,f7.3,2x)',advance='no') icetime,latitude(k)
-        call compactoutput(36,sigma(1:nz,k),nz)
      enddo
      print *,icetime
-     if (any(-icetime == (/ 4.498d9, 4.450d9, 4d9 /))) then   ! with 1e5
-     !if (any(-icetime == (/ 4.498d9, 4.460d9, 4d9 /))) then   ! with 2e5
+     !if (any(-icetime == (/ 4.498d9, 4.450d9, 4d9 /))) then  ! with 1e5
+     if (any(-icetime == (/ 4.498d9, 4.460d9, 4d9 /))) then   ! with 2e5
+     !if (any(-icetime == 2.0d9 - (/ 0.002d9, 0.05d9, 0.5d9 /))) then
         timestep = 10.*timestep
      endif
      if (icetime>=0.) exit
@@ -142,32 +133,30 @@ program asteroid_fast
   enddo
 
   close(34)
-  close(36)
   close(37)
 
-501 format (f12.0,2x,f7.3,2x,2x,f11.5,4(2x,f6.2)) 
+501 format (f12.0,2x,f7.3,4x,f12.6,4(2x,f6.2)) 
 
-end program asteroid_fast
+end program asteroid_fast1
 
 
 
-subroutine outputskindepths(nz,z,zmax,porosity)
+subroutine outputskindepths(nz,z,zmax,porosity,icefrac)
   ! diagnostics only
   use constants, only : pi, NMAX 
   use body, only : solarDay, solsperyear, Tnominal
   use allinterfaces
   implicit none
   integer, intent(IN) :: nz
-  real(8), intent(IN) :: z(NMAX), zmax, porosity(nz)
+  real(8), intent(IN) :: z(NMAX), zmax, porosity, icefrac
   integer i
   real(8) delta, stretch, newrhoc, newti, rhoc
-  real(8) rhocv(nz), ti(nz), porefill(nz), thIn
+  real(8) rhocv(nz), ti(nz), thIn
 
-  call assignthermalproperties(nz,z,Tnominal,porosity,ti,rhocv)
+  call assignthermalproperties1(nz,z,Tnominal,porosity,ti,rhocv)
   thIn = ti(1); rhoc=rhocv(1)
   print *,'Thermal inertia=',thIn
-  porefill = 1.
-  call assignthermalproperties(nz,z,Tnominal,porosity,ti,rhocv,porefill)
+  call assignthermalproperties1(nz,z,Tnominal,porosity,ti,rhocv,icefrac,0.d0)
   newti = ti(1); newrhoc=rhocv(1)
 
   delta = thIn/rhoc*sqrt(solarDay/pi)

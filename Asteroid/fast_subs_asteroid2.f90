@@ -31,13 +31,8 @@ subroutine icelayer_asteroid(bigstep,NP,z,porosity,Tinit, &
 
   do k=1,NP   ! big loop over sites
 
-     typeP = -9
-     do j=1,nz
-        if (z(j)>zdepthP(k)) then
-           typeP = j 
-           exit
-        endif
-     enddo
+     typeP = gettype(zdepthP(k),nz,z)
+     if (zdepthP(k)<0.) typeP=-9
 
      ! assign/update property profiles
      porefill(:) = sigma(:,k)/(porosity(:)*icedensity)
@@ -69,7 +64,7 @@ subroutine icelayer_asteroid(bigstep,NP,z,porosity,Tinit, &
            stop 'D_EFF PROBLEM'
         endif
      endif
-     call impactstirring(nz,z(:),bigstep,sigma(:,k))  ! turn impact stiring on and off here
+     !call impactstirring(nz,z(:),bigstep,sigma(:,k))  ! turn impact stiring on and off here
      call icechanges(nz,z(:),typeP,avrho(:),ypp(:),Deff,bigstep,Jp,zdepthP(k),sigma(:,k))
      where(sigma<0.) sigma=0.
      do j=1,nz
