@@ -41,7 +41,6 @@ program asteroid_fast1
   zdepthT(:) = 0.  ! initial ice depth
 
   eps = 4.*d2r   ! (1) Ceres, current
-  eps = 12.*d2r   ! (1) Ceres, average
   omega = 0.*d2r
 
   ! set eternal grid
@@ -51,8 +50,7 @@ program asteroid_fast1
   close(30)
 
   ! porosity can decrease with depth, but should be constant within stirring depth
-  !porosity = 0.4d0   ! dry porosity
-  porosity = 0.23d0
+  porosity = 0.4d0   ! dry porosity
   icefrac  = porosity
 
   print *,'RUNNING FAST ASTEROID MODEL'

@@ -42,7 +42,7 @@ module body
 
   real(8), parameter :: dt = 0.01  ! in units of solar days
   real(8), parameter :: Fgeotherm = 0.
-  integer, parameter :: EQUILTIME = 20 ! (orbits)
+  integer, parameter :: EQUILTIME = 10 ! (orbits)
 end module body
 
 
