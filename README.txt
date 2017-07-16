@@ -134,6 +134,9 @@ Asteroid/asteroid_fast2.f90: (main program)
 Asteroid/fast_modules_asteroid2.f90
 Asteroid/fast_subs_asteroid2.f90 
 Asteroid/impactstirring.f90
+Asteroid/asteroid_fast1.f90: (main program)
+Asteroid/fast_modules_asteroid1.f90
+Asteroid/fast_subs_asteroid1.f90 
 Common/flux_noatm.f90
 Common/conductionQ.f
 Common/tridag.for
@@ -142,6 +145,7 @@ Common/generalorbit.f
 Common/psv.f
 Common/derivs.f90
 Common/ran2.f
+Common/subl_subs.f90
 Asteroid/lats.0
 Documentation: Schorghofer, N. (2016) Icarus 276, 88-95.
 

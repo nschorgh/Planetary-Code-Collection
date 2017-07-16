@@ -24,14 +24,23 @@ impactstirring.f90:
 	for use with "fast" model
 
 fast_modules_asteroid2.f90:
-	modules for fast method
+	modules
 
 fast_subs_asteroid2.f90:
-	subroutines and functions for fast method
+	subroutines and functions
 
 testgardening1.f90
 
 test_timejumps.f90
 
+asteroid_fast1.f90: (main program)
+       	Asynchronously coupled model of ice loss and temperature
+	on asteroids; simplified version of asteroid_fast2
+
+fast_modules_asteroid1.f90:
+	modules
+
+fast_subs_asteroid1.f90:
+	subroutines and functions
 
 
