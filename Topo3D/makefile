@@ -34,6 +34,13 @@ cratersQ_moon: topos.o crater_modules.o cratersQ_moon.o model_subs.o \
 	topos.o model_subs.o $(SR)grids.o $(SR)conductionQ.o flux_wshad.o \
 	$(SR)tridag.o -o $@
 
+test: topos.o crater_modules.o test_shadows1pt.o shadow_subs.o crater_common.o \
+	topos.o hpsort.o multigrid.o makefile
+	make -C $(SR) common
+	$(CC) $(LFLAGS) topos.o test_shadows1pt.o shadow_subs.o hpsort.o \
+	crater_common.o multigrid.o 
+
+
 %.o:	%.f makefile
 	$(CC) $(CFLAGS) -c $<
 

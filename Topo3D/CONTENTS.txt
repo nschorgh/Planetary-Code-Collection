@@ -33,6 +33,12 @@ fieldofview_subs.f90:
 model_subs.f90: 
 	subroutines for programs cratersQ_*
 
+multigrid.f90:
+	subroutines for multigrid acceleration
+
+test_shadows1pt.f90: (main program)
+	test shadow calculations
+
 topo40.xyz: 
 	example input topography
 

@@ -14,12 +14,10 @@ pure subroutine findonehorizon(h,i0,j0,azRay,smax)
   smax=0.
   maxsep = horizontaldistance(1,1,2,2)
   do i=2,NSx-1
-     !if (dx*abs(i-i0)>RMAX) cycle  ! saves computations
      if (horizontaldistance(i,1,i0,1)>RMAX) cycle  ! saves computations
      if (sin(azRay)*(i-i0) < 0.) cycle  ! saves computations
      do j=2,NSy-1
         if (i==i0 .and. j==j0) cycle
-        !r = sqrt(dx*dx*(i-i0)**2+dy*dy*(j-j0)**2)
         r = horizontaldistance(i,j,i0,j0)
         if (r>RMAX) cycle  ! saves computations
         az = azimuth(i0,j0,i,j)
@@ -44,12 +42,11 @@ pure subroutine findonehorizon(h,i0,j0,azRay,smax)
            d2=diffangle(az_neighbor,azRay)
            d3=diffangle(az,az_neighbor)
 
-           if (d1+d2<=d3+1e-5) then  
-              if (d1>0.5*d3 .and. d3>1.e-6) cycle ! try this
-              !r_neighbor = sqrt(dx*dx*(in-i0)**2+dy*dy*(jn-j0)**2)
+           if (d1+d2<=d3+1.d-5) then  
+              if (d1>0.5*d3 .and. d3>1.d-6) cycle ! try this
               r_neighbor = horizontaldistance(in,jn,i0,j0)
               ! edge between h1,i0,j0 and h2,in,jn
-              if (d3>1.e-6) then
+              if (d3>1.d-6) then
                  t = d1/d3  ! approximation
               else
                  t = 0.5  ! dirty fix
@@ -178,7 +175,8 @@ subroutine findonehorizon_wsort(h,i0,j0,azRay,smax,visibility)
 end subroutine findonehorizon_wsort
 
 
-subroutine findonehorizon_allaz(h,i0,j0,naz,smax)
+
+subroutine findallhorizon(h,i0,j0,naz,smax)
 ! finds horizon for all azimuth rays
   use filemanager, only : NSx,NSy,RMAX
   use allinterfaces, only : horizontaldistance, azimuth, diffangle
@@ -186,7 +184,7 @@ subroutine findonehorizon_allaz(h,i0,j0,naz,smax)
   integer, intent(IN) :: i0,j0,naz
   real(8), intent(IN) :: h(NSx,NSy)
   real(8), intent(OUT) :: smax(naz)
-  integer i,j,k,in,jn,ak,ak1,ak2
+  integer i,j,k,in,jn,ak,ak1,ak2,buf,akak
   real(8) az,az_neighbor,t,r,r_neighbor,rcut,s,hcut,d1,d2,d3
   integer, parameter :: ex(8) = (/ 1, 1, 0, -1, -1, -1, 0, 1 /)
   integer, parameter :: ey(8) = (/ 0, 1, 1, 1, 0, -1, -1, -1 /)
@@ -223,7 +221,6 @@ subroutine findonehorizon_allaz(h,i0,j0,naz,smax)
            if (in==i0 .and. jn==j0) cycle
            az_neighbor = azimuth(i0,j0,in,jn)
 
-           ak1=-9; ak2=-9
            if (az >= az_neighbor) then 
               ak1 = floor(az*f)+1
               ak2 = ceiling(az_neighbor*f)+1
@@ -231,13 +228,16 @@ subroutine findonehorizon_allaz(h,i0,j0,naz,smax)
               ak1 = ceiling(az*f)+1
               ak2 = floor(az_neighbor*f)+1
            endif
-           if (ak1<=0) ak1 = ak1+naz  ! negative azimuth
-           if (ak2<=0) ak2 = ak2+naz  ! negative azimuth
-           !if (ak1<=0 .or. ak2<=0 .or. ak1>naz .or. ak2>naz) error stop 'index out of bound'
+           if (ak1==naz/2 .and. ak2<0) ak2 = ak2+naz
+           if (ak2==naz/2 .and. ak1<0) ak1 = ak1+naz
+           if (ak2<ak1) then ! swap
+              buf=ak1; ak1=ak2; ak2=buf;
+           endif
+           if (ak1>naz .or. ak2>naz) error stop 'index out of bound'
 
            d3=diffangle(az,az_neighbor)
-           do ak=ak1,ak2 ! must be at least 1 step
-              !print *,az,az_neighbor,ak1,ak2
+           do akak=ak1,ak2
+              ak = akak; if (ak<=0) ak = ak+naz
               d1=diffangle(az,azRay(ak))
               d2=diffangle(az_neighbor,azRay(ak))
 
@@ -256,10 +256,10 @@ subroutine findonehorizon_allaz(h,i0,j0,naz,smax)
                  s = (hcut-h(i0,j0))/rcut
                  if (s>smax(ak)) smax(ak)=s
               endif
-              
+
            end do  ! end ak loop
         end do ! end of k loop
         
      enddo ! end of j loop
   enddo ! end of i loop
-end subroutine findonehorizon_allaz
+end subroutine findallhorizon

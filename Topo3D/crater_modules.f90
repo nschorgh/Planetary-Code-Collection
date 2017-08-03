@@ -1,4 +1,3 @@
-
 module allinterfaces
   ! interfaces from subroutines and functions
 
@@ -33,15 +32,15 @@ module allinterfaces
   end interface
 
   interface
-     subroutine findonehorizon_allaz(h,i0,j0,naz,smax)
+     subroutine findallhorizon(h,i0,j0,naz,smax)
        use filemanager, only : NSx,NSy,RMAX
        implicit none
        integer, intent(IN) :: i0,j0,naz
        real(8), intent(IN) :: h(NSx,NSy)
        real(8), intent(OUT) :: smax(naz)
-     end subroutine findonehorizon_allaz
+     end subroutine findallhorizon
   end interface
-
+  
   interface
      elemental function diffangle(a1,a2)
        real(8) diffangle
@@ -95,7 +94,6 @@ module allinterfaces
      end subroutine refinevisibility
   end interface
 
-  
   ! begin crater_common.f90
   interface
      elemental function horizontaldistance(i1,j1,i2,j2)
@@ -131,7 +129,19 @@ module allinterfaces
        real(8), intent(OUT) :: surfaceSlope,az
      end subroutine difftopo1
   end interface
+  
+  interface
+     subroutine getskysize(skysize)
+       use filemanager
+       implicit none
+       real(8), parameter :: pi=3.1415926535897932, d2r=pi/180.
+       integer, parameter :: nres=360   ! # of azimuths
+       real(8), intent(OUT) :: skysize(NSx,NSy)
+     end subroutine getskysize
+  end interface
+  
 
+  
   ! begin model_subs.f90
   interface
      subroutine gethorizon(i0,j0,azSun,smax,first)
@@ -195,16 +205,6 @@ module allinterfaces
      end subroutine compactoutput
   end interface
 
-  interface
-     subroutine getskysize(skysize)
-       use filemanager
-       implicit none
-       real(8), parameter :: pi=3.1415926535897932, d2r=pi/180.
-       integer, parameter :: nres=360   ! # of azimuths
-       real(8), intent(OUT) :: skysize(NSx,NSy)
-     end subroutine getskysize
-  end interface
-
   ! begin mk_atmosphere.f90
   interface
      real(8) function mk_atmosphere(Z,I0,D0)
@@ -259,5 +259,54 @@ module allinterfaces
       real*8, intent(OUT) :: Fsurf
     end subroutine conductionT
  end interface
+
+
+  ! begin multigrid.f90
+  interface
+     real(8) elemental function horizontaldistance1(x1,y1,x2,y2)
+       implicit none
+       real(8), intent(IN) :: x1,y1,x2,y2
+     end function horizontaldistance1
+  end interface
+  
+  interface
+     real(8) elemental function azimuth1(x1,y1,x2,y2)
+       implicit none
+       real(8), intent(IN) :: x1,y1,x2,y2
+     end function azimuth1
+  end interface
+
+  interface
+     pure subroutine findallhorizon_MG1(h,i0,j0,naz,smax)
+       use filemanager, only : NSx,NSy,dx,dy
+       implicit none
+       integer, intent(IN) :: i0,j0,naz
+       real(8), intent(IN) :: h(NSx,NSy)
+       real(8), intent(OUT) :: smax(naz)
+     end subroutine findallhorizon_MG1
+  end interface
+
+  interface
+     subroutine findallhorizon_MG3(h,h2,h3,i0,j0,naz,smax,RMG)
+       use filemanager, only : NSx,NSy,dx,dy
+       implicit none
+       integer, intent(IN) :: i0,j0,naz
+       real(8), intent(IN) :: h(NSx,NSy),h2(NSx/2,NSy/2),h3(NSx/4,NSy/4)
+       real(8), intent(IN) :: RMG
+       real(8), intent(OUT) :: smax(naz)
+     end subroutine findallhorizon_MG3
+  end interface
+
+  interface
+     subroutine horizon_MG_core(x0,y0,h00,naz,smax,i,j,h,P)
+       use filemanager, only : NSx,NSy,dx,dy
+       implicit none
+       real(8), intent(IN) :: x0,y0,h00  ! on fine grid
+       integer, intent(IN) :: naz
+       real(8), intent(INOUT) :: smax(naz)
+       integer, intent(IN) :: i,j,P  ! on fine or coarse grid
+       real(8), intent(IN) :: h(NSx/P,NSy/P) ! on fine or coarse grid
+     end subroutine horizon_MG_core
+  end interface
 
 end module allinterfaces
