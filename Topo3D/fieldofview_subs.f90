@@ -11,6 +11,7 @@ subroutine find3dangle(h,i0,j0,unit,visibility)
   integer, dimension(CCMAX) :: cellx, celly
   real(8), dimension(CCMAX) :: thetastack, phistack, dOstack
   real(8), dimension(4) :: hq,xq,yq,theta,phi  ! quadrangle centers
+  logical, parameter :: verbose = .false.
 
   cc=0
   do i=2,NSx-1
@@ -89,8 +90,8 @@ subroutine find3dangle(h,i0,j0,unit,visibility)
      write(unit,'(2(i5,1x),g10.4,1x)',advance='no') cellx(i),celly(i),dOstack(i)
   enddo
   write(unit,"('')")
-  if (minval(cellx(1:cc))<1 .or. minval(celly(1:cc))<1) stop 'Error in find3dangle: index out of boud'
-  if (maxval(cellx(1:cc))>NSx .or. maxval(celly(1:cc))>NSy) stop 'Error in find3dangle: index out of boud'
+  if (minval(cellx(1:cc))<1 .or. minval(celly(1:cc))<1) stop 'find3dangle: index out of boud'
+  if (maxval(cellx(1:cc))>NSx .or. maxval(celly(1:cc))>NSy) stop 'find3dangle: index out of boud'
 end subroutine find3dangle
 
 

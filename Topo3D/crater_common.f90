@@ -49,7 +49,7 @@ end function viewing_angle
 
 
 pure subroutine difftopo1(i,j,h,surfaceSlope,az)
-  ! calculate slopes and azimuths of surface elements
+  ! calculate slope and azimuth of surface element
   use filemanager, only : NSx,NSy,dx,dy
   implicit none
   integer, intent(IN) :: i,j
@@ -79,36 +79,19 @@ end subroutine difftopo1
 
 
 
-subroutine compactoutput(unit,value,nr)
-  ! output zeros without trailing zeros
-  implicit none
-  integer, intent(IN) :: unit,nr
-  real(8), intent(IN) :: value(nr)
-  integer j
-  do j=1,nr
-     if (value(j)==0.) then
-        write(unit,'(1x,f2.0)',advance='no') value(j)
-     else
-        write(unit,'(1x,f6.4)',advance='no') value(j)
-     endif
-  enddo
-  write(unit,"('')")
-end subroutine compactoutput
-
-
-
-subroutine getskysize(skysize)
+subroutine getskysize(skysize,fn)
 !***********************************************************************
 !   reads horizons file and calculates sky size (approximation only)
 !***********************************************************************
   use filemanager, only : NSx,NSy,fileext
   use allinterfaces, except_this_one => getskysize
   implicit none
+  character(len=*), intent(IN) :: fn
+  real(8), intent(OUT) :: skysize(NSx,NSy) 
   real(8), parameter :: pi=3.1415926535897932, d2r=pi/180.
   integer, parameter :: nres=360   ! # of azimuths
   real(8) smax(nres)
   integer i, j, ii, jj, ierr
-  real(8), intent(OUT) :: skysize(NSx,NSy) 
 
   ! azimuth in degrees east of north, 0=north facing, 0...2*pi
 
@@ -116,7 +99,7 @@ subroutine getskysize(skysize)
   write(*,*) 'Nx=',NSx,'Ny=',NSy,'File=',fileext
   
   print *,'...reading horizons file ...'
-  open(unit=21,file='Data/horizons.'//fileext,status='old',action='read',iostat=ierr)
+  open(unit=21,file=fn,status='old',action='read',iostat=ierr)
   if (ierr>0) stop 'skysize: Input file not found'
   
   do i=2,NSx-1

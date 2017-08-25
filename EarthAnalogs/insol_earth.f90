@@ -8,6 +8,7 @@ program insol_earth
   use filemanager
   use allinterfaces
   use dateformat
+  use newhorizons
   implicit none
   real(8), parameter :: pi=3.1415926535897932, d2r=pi/180.
 
@@ -51,7 +52,7 @@ program insol_earth
   daytime(:,:)=0.; alltime=0.
   
   print *,'...reading horizons file...'
-  call gethorizon(0,0,azSun,smax,.TRUE.)
+  call readhorizons
 
   print *,'...calculating...'
   ! loop over time steps 
@@ -67,7 +68,7 @@ program insol_earth
 
      do i=2,NSx-1
         do j=2,NSy-1
-           call gethorizon(i,j,azSun,smax,.FALSE.)
+           smax = getonehorizon(i,j,azSun)
            Qn(i,j)=flux_wshad(R,sinbeta,azSun,surfaceSlope(i,j),azFac(i,j),smax)
         enddo
      enddo
@@ -82,9 +83,9 @@ program insol_earth
         Qsw = Qn
      endif
      
-     if (edays>tmax-365.) then
-     !if (edays>tmax-1.) then
-     !if (udtTime%iMonth==6) then
+     if (edays>tmax-365.) then  ! one year
+     !if (edays>tmax-1.) then  ! one day
+     !if (udtTime%iMonth==6) then  ! June
         Qmeans = Qmeans + Qsw
         where (Qsw>Qmax) Qmax=Qsw
         Qrefm = Qrefm + Qref

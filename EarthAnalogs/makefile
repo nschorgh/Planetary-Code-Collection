@@ -8,16 +8,17 @@ LFLAGS = -O3 -Wall
 
 SR = ../Common/
 
-insol_earth: topos.o crater_modules.o sunpos.o insol_earth.o \
-	mk_atmosphere.o crater_common.o model_subs.o flux_wshad.o makefile
+insol_earth: topos.o crater_modules.o sunpos.o model_subs.o insol_earth.o \
+	mk_atmosphere.o crater_common.o flux_wshad.o makefile
 	$(CC) $(LFLAGS) topos.o insol_earth.o mk_atmosphere.o \
 	sunpos.o crater_common.o model_subs.o flux_wshad.o 
 
 insol_flat: sunpos.o insol_flat.o mk_atmosphere.o flux_wshad.o makefile
 	$(CC) $(LFLAGS) sunpos.o insol_flat.o mk_atmosphere.o flux_wshad.o
 
-cratersQ_earth: topos.o crater_modules.o sunpos.o cratersQ_earth.o sunpos.o \
-	model_subs.o crater_common.o mk_atmosphere.o flux_wshad.o makefile
+cratersQ_earth: topos.o crater_modules.o sunpos.o model_subs.o \
+	cratersQ_earth.o sunpos.o crater_common.o mk_atmosphere.o \
+	flux_wshad.o makefile
 	make -C $(SR) common
 	$(CC) $(LFLAGS) cratersQ_earth.o $(SR)generalorbit.o topos.o \
 	model_subs.o crater_common.o sunpos.o mk_atmosphere.o \

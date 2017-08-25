@@ -1,13 +1,13 @@
 program cratersQ_Moon
 !****************************************************************************
 !   cratersQ: program to calculate insolation with shadowing and reflections
-!
-!             zero thermal inertia, Earth orbit
+!             for airless body
 !  
 !   written by Norbert Schorghofer 2010-2016 
 !****************************************************************************
   use filemanager
   use allinterfaces
+  use newhorizons
   implicit none
   real(8), parameter :: pi=3.1415926535897932, d2r=pi/180.
   real(8), parameter :: sigSB = 5.6704e-8  
@@ -28,12 +28,12 @@ program cratersQ_Moon
   real(8), allocatable :: T(:,:,:), Qnm1(:,:)  ! subsurface
   logical, parameter :: reflection=.true., subsurface=.false.
   
-  dt=0.01; 
+  dt=0.01d0 
   tmax = 2.
   latitude = 87.
   ! azimuth in degrees east of north, 0=north facing
-  albedo(:,:) = 0.12
-  emiss = 0.95
+  albedo(:,:) = 0.12d0
+  emiss = 0.95d0
 
   ! set some constants
   nsteps=int(tmax/dt)       ! calculate total number of timesteps
@@ -56,11 +56,11 @@ program cratersQ_Moon
   Tb=0.; nm2=0
   
   print *,'...reading horizons file...'
-  call gethorizon(0,0,azSun,smax,.TRUE.)
+  call readhorizons('horizons.'//fileext)
 
   if (reflection) then
      print *,'...reading huge fieldofviews file...'
-     call getmaxfieldsize(NSx,NSy,fileext,CCMAX,1)
+     call getmaxfieldsize(NSx,NSy,fileext,CCMAX)
      print *,'... max field of view size=',CCMAX
      allocate(ii(NSx,NSy,CCMAX), jj(NSx,NSy,CCMAX), dO12(NSx,NSy,CCMAX))
      call getfieldofview(NSx,NSy,fileext,cc,ii,jj,dO12,skysize,CCMAX)
@@ -72,7 +72,6 @@ program cratersQ_Moon
   do n=0,nsteps-1
      sdays = (n+1)*dtsec/solarDay
      !print *,sdays
-     !print *,sdays,Tsurf(20,20)
      Decl=0.; R=1.
 
      ! for small landscapes these can be here
@@ -83,7 +82,7 @@ program cratersQ_Moon
 
      do i=2,NSx-1
         do j=2,NSy-1
-           call gethorizon(i,j,azSun,smax,.FALSE.)
+           smax = getonehorizon(i,j,azSun)
            Qn(i,j)=flux_wshad(R,sinbeta,azSun,surfaceSlope(i,j),azFac(i,j),smax)
         enddo
      enddo

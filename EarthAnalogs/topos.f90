@@ -47,7 +47,6 @@ module filemanager
   !character(len = *), parameter :: fileext = 'summit_haukea'
   !real(8), parameter :: dx=10., dy=10., RMAX=1e5
 
-  logical, parameter :: verbose=.false.
 end module filemanager
 
 

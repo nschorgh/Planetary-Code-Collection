@@ -139,21 +139,8 @@ module allinterfaces
        real(8), intent(OUT) :: skysize(NSx,NSy)
      end subroutine getskysize
   end interface
-  
 
-  
   ! begin model_subs.f90
-  interface
-     subroutine gethorizon(i0,j0,azSun,smax,first)
-       use filemanager
-       implicit none
-       integer, intent(IN) :: i0,j0
-       real(8), intent(IN) :: azSun
-       real(8), intent(OUT) :: smax
-       logical, intent(IN) :: first
-     end subroutine gethorizon
-  end interface
-
   interface
      pure subroutine difftopo(NSx,NSy,h,dx,dy,surfaceSlope,azFac)
        implicit none
@@ -189,9 +176,9 @@ module allinterfaces
   end interface
 
   interface
-     subroutine getmaxfieldsize(NSx,NSy,fileext,maxsize,type)
+     subroutine getmaxfieldsize(NSx,NSy,fileext,maxsize)
        implicit none
-       integer, intent(IN) :: NSx,NSy,type
+       integer, intent(IN) :: NSx,NSy
        character(len=*), intent(IN) :: fileext
        integer, intent(OUT) :: maxsize
      end subroutine getmaxfieldsize

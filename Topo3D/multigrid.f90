@@ -49,7 +49,7 @@ real(8) elemental function horizontaldistance1(x1,y1,x2,y2)
   implicit none
   real(8), intent(IN) :: x1,y1,x2,y2
   horizontaldistance1 = sqrt((x1-x2)**2+(y1-y2)**2)
-  !if (horizontaldistance1>0. .and. horizontaldistance1<1d-6) error stop 'nogood'
+  !if (horizontaldistance1>0. .and. horizontaldistance1<1d-6) stop 'nogood'
 end function horizontaldistance1
 
 
@@ -64,7 +64,7 @@ end function azimuth1
 
 
 subroutine findallhorizon_MG1(h,i0,j0,naz,smax)
-  ! test of horizon_MG_core (without use of multigrid)
+  ! find all horizon heights, without use of multigrid
   use filemanager, only : NSx,NSy,dx,dy
   use allinterfaces, only : horizon_MG_core
   implicit none
@@ -197,7 +197,7 @@ subroutine horizon_MG_core(x0,y0,h00,naz,smax,i,j,h,P)
      if (ak2<ak1) then ! swap
         buf=ak1; ak1=ak2; ak2=buf;
      endif
-     if (ak1>naz .or. ak2>naz) error stop 'index out of bound'
+     if (ak1>naz .or. ak2>naz) stop 'horizon_MG_core: index out of bound'
 
      d3=diffangle(az,az_neighbor)
      do akak=ak1,ak2
@@ -222,4 +222,5 @@ subroutine horizon_MG_core(x0,y0,h00,naz,smax,i,j,h,P)
         endif
      end do
   end do
+
 end subroutine horizon_MG_core

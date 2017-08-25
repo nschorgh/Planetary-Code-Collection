@@ -233,7 +233,7 @@ subroutine findallhorizon(h,i0,j0,naz,smax)
            if (ak2<ak1) then ! swap
               buf=ak1; ak1=ak2; ak2=buf;
            endif
-           if (ak1>naz .or. ak2>naz) error stop 'index out of bound'
+           if (ak1>naz .or. ak2>naz) stop 'findallhorizon: index out of bound'
 
            d3=diffangle(az,az_neighbor)
            do akak=ak1,ak2
@@ -263,3 +263,22 @@ subroutine findallhorizon(h,i0,j0,naz,smax)
      enddo ! end of j loop
   enddo ! end of i loop
 end subroutine findallhorizon
+
+
+
+subroutine compactoutput(unit,value,nr)
+  ! output zeros without trailing zeros
+  implicit none
+  integer, intent(IN) :: unit,nr
+  real(8), intent(IN) :: value(nr)
+  integer j
+  do j=1,nr
+     if (value(j)==0.) then
+        write(unit,'(1x,f2.0)',advance='no') value(j)
+     else
+        write(unit,'(1x,f6.4)',advance='no') value(j)
+     endif
+  enddo
+  write(unit,"('')")
+end subroutine compactoutput
+

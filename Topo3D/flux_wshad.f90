@@ -6,7 +6,7 @@ elemental real(8) function flux_wshad(R,sinbeta,azSun,surfaceSlope,azFac,smax)
 !     azSun: azimuth of Sun (radians east of north)
 !     surfaceSlope: >=0, (radians) 
 !     azFac: azimuth of topographic gradient (radians east of north)
-!     smax: maximum slope in direction of azimuth
+!     smax: elevation of horizon in direction of azimuth (radians)
 !***********************************************************************
   implicit none
   real(8), parameter :: So=1365.  ! solar constant
@@ -24,8 +24,7 @@ elemental real(8) function flux_wshad(R,sinbeta,azSun,surfaceSlope,azFac,smax)
 !-shadowing
   sintheta = max(sintheta,0.d0)  ! self-shadowing
   if (sinbeta<0.) sintheta=0.  ! horizontal horizon at infinity
-  !if (sinbeta<smax/sqrt(1.+smax**2)) sintheta=0.  ! shadowing, tan -> sin 
-  if (sinbeta<sin(smax)) sintheta=0. 
+  if (sinbeta<sin(smax)) sintheta=0.  ! shadowing
 
 !-intensity
   flux_wshad = sintheta*So/(R**2)

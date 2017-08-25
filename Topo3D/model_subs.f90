@@ -1,44 +1,55 @@
-subroutine gethorizon(i0,j0,azSun,smax,first)
-  ! returns elevation of horizon along azimuth azSun
-  use filemanager, only : NSx, NSy, fileext
+module newhorizons
+  ! privately stores horizon data
+  use filemanager, only : NSx, NSy
   implicit none
-  integer, intent(IN) :: i0,j0
-  real(8), intent(IN) :: azSun
-  real(8), intent(OUT) :: smax  ! angle
-  logical, intent(IN) :: first 
-  integer i,j,ia,ja,k,ierr
   integer, parameter :: nres=360  ! # azimuth values
-  real(8), parameter :: pi=3.1415926535897932
-  real(8), dimension(NSx,NSy,nres+1), save :: s ! angles
-  real(8) a, daz
+  real(8), dimension(NSx,NSy,nres+1), private :: s ! angles
 
-  if (first) then
-     open(unit=20,file='horizons.'//fileext,status='old',action='read',iostat=ierr)
-     if (ierr>0) stop 'gethorizon: Input file not found'
-     do i=2,NSx-1
-        do j=2,NSy-1
-           read(20,*) ia,ja,s(i,j,1:nres)
-           if (ia /= i .or. ja /= j) then
-              print *,i,j,ia,ja
-              stop 'gethorizon: inconsistent input values'
-           endif
-           s(i,j,nres+1) = s(i,j,1) !360 deg
-        enddo
-     enddo
-     s = atan(s)  ! slope -> angle
-  else ! interpolate
-     daz = 2*pi/real(nres)
-     k = floor(modulo(azSun,2*pi)/daz)
-     a = modulo(azSun,2*pi)/daz-k
-     if (k<0 .or. k>=nres) then
-        print *,'Error in gethorizon: impossible k value'
-     !   print *,'azSun=',azSun,'k=',k
-     !   stop 'gethorizon: impossible k value'
-     endif
-     smax = s(i0,j0,k+1)*(1.-a) + s(i0,j0,k+2)*a
-     !smax = atan(smax)   ! slope -> angle
-  endif
-end subroutine gethorizon
+contains
+  subroutine readhorizons(fn)
+    ! reads and stores all horizon elevations
+    implicit none
+    character(len=*), intent(IN) :: fn
+    integer i,j,ia,ja,ierr
+      
+    open(unit=20,file=fn,status='old',action='read',iostat=ierr)
+    if (ierr>0) stop 'gethorizon: Input file not found'
+    do i=2,NSx-1
+       do j=2,NSy-1
+          read(20,*) ia,ja,s(i,j,1:nres)
+          if (ia /= i .or. ja /= j) then
+             print *,i,j,ia,ja
+             stop 'gethorizon: inconsistent input values'
+          endif
+          s(i,j,nres+1) = s(i,j,1) !360 deg
+       enddo
+    enddo
+    s = atan(s)  ! slope -> angle
+    close(20)
+  end subroutine readhorizons
+    
+  elemental function getonehorizon(i0,j0,azSun)
+    ! returns elevation of horizon along azimuth azSun
+    implicit none
+    integer, intent(IN) :: i0,j0
+    real(8), intent(IN) :: azSun
+    real(8) getonehorizon  ! angle
+    real(8), parameter :: pi=3.1415926535897932
+    integer k
+    real(8) a, daz, smax
+    
+    daz = 2*pi/real(nres)
+    k = floor(modulo(azSun,2*pi)/daz)
+    a = modulo(azSun,2*pi)/daz-k
+    if (k<0 .or. k>=nres) then
+       !print *,'azSun=',azSun,'k=',k
+       !stop 'gethorizon: impossible k value'  ! impure
+    endif
+    smax = s(i0,j0,k+1)*(1.-a) + s(i0,j0,k+2)*a
+    getonehorizon = smax
+  end function getonehorizon
+
+end module newhorizons
 
 
 
@@ -127,22 +138,16 @@ end subroutine getfieldofview
 
 
 
-subroutine getmaxfieldsize(NSx,NSy,fileext,maxsize,type)
+subroutine getmaxfieldsize(NSx,NSy,fileext,maxsize)
   implicit none
-  integer, intent(IN) :: NSx,NSy,type
+  integer, intent(IN) :: NSx,NSy
   character(len=*), intent(IN) :: fileext
   integer, intent(OUT) :: maxsize
   integer cc, i, j, i0_2, j0_2, ierr
 
-  if (type==1) then
-     open(unit=20,file='fieldofviews.'//fileext,status='old',action='read',iostat=ierr)
-     if (ierr>0) stop 'getmaxfieldsize: input file not found'
-  elseif (type==2) then
-     open(20,file='inversefoviews.'//fileext,status='old',action='read',iostat=ierr)
-     if (ierr>0) stop 'getmaxfieldsize: input file not found'
-  else
-     stop 'no valid type'
-  end if
+  open(unit=20,file='fieldofviews.'//fileext,status='old',action='read',iostat=ierr)
+  if (ierr>0) stop 'getmaxfieldsize: input file not found'
+
   maxsize=0
   do i=2,NSx-1
      do j=2,NSy-1

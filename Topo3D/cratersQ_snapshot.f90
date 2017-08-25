@@ -7,6 +7,7 @@ program cratersQ_snapshot
 !***********************************************************************
   use filemanager
   use allinterfaces
+  use newhorizons
   implicit none
   real(8), parameter :: pi=3.1415926535897932, d2r=pi/180.
   real(8), parameter :: sigSB = 5.6704e-8  
@@ -32,10 +33,10 @@ program cratersQ_snapshot
   call difftopo(NSx,NSy,h,dx,dy,surfaceSlope,azFac)
 
   print *,'...reading horizons file...'
-  call gethorizon(0,0,azSun,smax,.TRUE.)
+  call readhorizons('horizon.'//fileext)
 
   print *,'...reading huge fieldofviews file...'
-  call getmaxfieldsize(NSx,NSy,fileext,CCMAX,1)
+  call getmaxfieldsize(NSx,NSy,fileext,CCMAX)
   print *,'... max field of view size=',CCMAX
   allocate(ii(NSx,NSy,CCMAX), jj(NSx,NSy,CCMAX), dO12(NSx,NSy,CCMAX))
   call getfieldofview(NSx,NSy,fileext,cc,ii,jj,dO12,skysize,CCMAX)
@@ -45,7 +46,7 @@ program cratersQ_snapshot
 
   do i=2,NSx-1
      do j=2,NSy-1
-        call gethorizon(i,j,azSun,smax,.FALSE.)
+        smax = getonehorizon(i,j,azSun)
         !smax = 0.
         Qn(i,j)=flux_wshad(R,sin(betaSun),azSun,surfaceSlope(i,j),azFac(i,j),smax)
      enddo

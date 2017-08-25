@@ -10,6 +10,7 @@ program cratersQ_earth
   use filemanager
   use allinterfaces
   use dateformat
+  use newhorizons
   implicit none
   real(8), parameter :: pi=3.1415926535897932, d2r=pi/180.
   real(8), parameter :: earthDay=86400.
@@ -62,11 +63,11 @@ program cratersQ_earth
   nm=0   
   
   print *,'...reading horizons file...'
-  call gethorizon(0,0,azSun,smax,.TRUE.)
+  call readhorizons
 
   if (reflection) then
      print *,'...reading huge fieldofviews file...'
-     call getmaxfieldsize(NSx,NSy,fileext,CCMAX,1)
+     call getmaxfieldsize(NSx,NSy,fileext,CCMAX)
      print *,'... max field of view size=',CCMAX
      allocate(ii(NSx,NSy,CCMAX), jj(NSx,NSy,CCMAX), dO12(NSx,NSy,CCMAX))
      call getfieldofview(NSx,NSy,fileext,cc,ii,jj,dO12,skysize,CCMAX)
@@ -88,7 +89,7 @@ program cratersQ_earth
 
      do i=2,NSx-1
         do j=2,NSy-1
-           call gethorizon(i,j,azSun,smax,.FALSE.)
+           smax = getonehorizon(i,j,azSun)
            Qn(i,j)=flux_wshad(R,sinbeta,azSun,surfaceSlope(i,j),azFac(i,j),smax)
         enddo
      enddo

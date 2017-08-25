@@ -8,8 +8,8 @@ LFLAGS = -O3 -Wall
 
 SR = ../Common/
 
-shadows: topos.o crater_modules.o shadows.o shadow_subs.o  \
-	crater_common.o hpsort.o makefile
+shadows: topos.o crater_modules.o shadows.o shadow_subs.o crater_common.o \
+	hpsort.o makefile
 	make -C $(SR) common
 	$(CC) $(LFLAGS) topos.o shadows.o shadow_subs.o hpsort.o \
 	crater_common.o -o $@
@@ -17,17 +17,15 @@ shadows: topos.o crater_modules.o shadows.o shadow_subs.o  \
 fieldofviews: topos.o crater_modules.o fieldofviews.o crater_common.o \
 	shadow_subs.o fieldofview_subs.o hpsort.o makefile
 	make -C $(SR) common
-	$(CC) $(LFLAGS) fieldofviews.o topos.o crater_common.o \
-	hpsort.o fieldofview_subs.o shadow_subs.o -o $@
+	$(CC) $(LFLAGS) fieldofviews.o topos.o crater_common.o hpsort.o \
+	fieldofview_subs.o shadow_subs.o -o $@
 
-cratersQ_snapshot: topos.o crater_modules.o cratersQ_snapshot.o \
-	model_subs.o crater_common.o flux_wshad.o makefile
-	make -C $(SR) common
+cratersQ_snapshot: topos.o crater_modules.o model_subs.o cratersQ_snapshot.o \
+	crater_common.o flux_wshad.o makefile
 	$(CC) $(LFLAGS) cratersQ_snapshot.o topos.o model_subs.o \
-	crater_common.o $(SR)grids.o $(SR)conductionQ.o $(SR)tridag.o \
-	flux_wshad.o -o $@
+	crater_common.o flux_wshad.o -o $@
 
-cratersQ_moon: topos.o crater_modules.o cratersQ_moon.o model_subs.o \
+cratersQ_moon: topos.o crater_modules.o model_subs.o cratersQ_moon.o \
 	crater_common.o flux_wshad.o makefile
 	make -C $(SR) common
 	$(CC) $(LFLAGS) cratersQ_moon.o crater_common.o $(SR)generalorbit.o \
