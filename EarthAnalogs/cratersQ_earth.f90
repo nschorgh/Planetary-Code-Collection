@@ -19,7 +19,7 @@ program cratersQ_earth
   integer nsteps, n, i, j, nm, k, CCMAX, iii, jjj
   real(8) tmax, edays, dtmin, latitude
   real(8) R, dZenithAngle, dAzimuth, longitude
-  real(8) azSun, sinbeta, smax, emiss, v
+  real(8) azSun, sinbeta, emax, emiss, v
   real(8), dimension(NSx,NSy) :: h, surfaceSlope, azFac
   real(8), dimension(NSx,NSy) :: Qn, QIR, Qrefl   ! incoming
   integer, dimension(NSx,NSy) :: cc
@@ -63,7 +63,7 @@ program cratersQ_earth
   nm=0   
   
   print *,'...reading horizons file...'
-  call readhorizons
+  call readhorizons('horizons.'//fileext)
 
   if (reflection) then
      print *,'...reading huge fieldofviews file...'
@@ -89,8 +89,8 @@ program cratersQ_earth
 
      do i=2,NSx-1
         do j=2,NSy-1
-           smax = getonehorizon(i,j,azSun)
-           Qn(i,j)=flux_wshad(R,sinbeta,azSun,surfaceSlope(i,j),azFac(i,j),smax)
+           emax = getonehorizon(i,j,azSun)
+           Qn(i,j)=flux_wshad(R,sinbeta,azSun,surfaceSlope(i,j),azFac(i,j),emax)
         enddo
      enddo
      Qref=flux_wshad(R,sinbeta,azSun,zero,zero,zero)

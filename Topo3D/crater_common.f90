@@ -79,38 +79,56 @@ end subroutine difftopo1
 
 
 
-subroutine getskysize(skysize,fn)
-!***********************************************************************
-!   reads horizons file and calculates sky size (approximation only)
-!***********************************************************************
-  use filemanager, only : NSx,NSy,fileext
-  use allinterfaces, except_this_one => getskysize
+pure function area_spherical_quadrangle(phi,theta)
+! area of two triangles on sphere
+  use allinterfaces, only : area_spherical_triangle
   implicit none
-  character(len=*), intent(IN) :: fn
-  real(8), intent(OUT) :: skysize(NSx,NSy) 
-  real(8), parameter :: pi=3.1415926535897932, d2r=pi/180.
-  integer, parameter :: nres=360   ! # of azimuths
-  real(8) smax(nres)
-  integer i, j, ii, jj, ierr
-
-  ! azimuth in degrees east of north, 0=north facing, 0...2*pi
-
-  print *,'# azimuth rays = ',nres
-  write(*,*) 'Nx=',NSx,'Ny=',NSy,'File=',fileext
+  real(8), intent(IN) :: phi(4), theta(4)
+  real(8) E1, E2, area_spherical_quadrangle
   
-  print *,'...reading horizons file ...'
-  open(unit=21,file=fn,status='old',action='read',iostat=ierr)
-  if (ierr>0) stop 'skysize: Input file not found'
-  
-  do i=2,NSx-1
-     do j=2,NSy-1
-        read(21,*) ii,jj,smax(:)
-        if (ii/=i .or. jj/=j) stop 'index mismatch'
-        skysize(i,j) = sum(atan(smax))*2*pi/nres
-        !print *,i,j,skysize(i,j),atan(maxval(smax))/d2r
-     enddo
-  enddo
-  skysize = 2*pi - skysize
+  E1 = area_spherical_triangle((/ phi(1), phi(2), phi(3) /), &
+       & (/ theta(1), theta(2), theta(3) /))
+  E2 = area_spherical_triangle((/ phi(3), phi(4), phi(1) /), &
+       & (/ theta(3), theta(4), theta(1) /))
 
-  close(21)
-end subroutine getskysize
+  area_spherical_quadrangle = E1 + E2
+end function area_spherical_quadrangle
+
+
+
+pure function area_spherical_triangle(phi,theta)
+  use allinterfaces, only : distanceonsphere
+  implicit none
+  real(8), intent(IN) :: phi(3), theta(3)
+  real(8) a,b,c
+  real(8) s, E, area_spherical_triangle, buf
+
+  a=distanceonsphere(phi(1),theta(1),phi(2),theta(2))
+  b=distanceonsphere(phi(2),theta(2),phi(3),theta(3))
+  c=distanceonsphere(phi(3),theta(3),phi(1),theta(1))
+
+  ! spherical excess
+  s = (a+b+c)/2.
+  buf=tan(s/2)*tan((s-a)/2.)*tan((s-b)/2.)*tan((s-c)/2.)
+  !buf=tan((a+b+c)/4.)*tan((-a+b+c)/4.)*tan((a-b+c)/4.)*tan((a+b-c)/4.)
+  if (buf<0.) buf=0.   ! roundoff
+  E=4*atan(sqrt(buf))
+
+  area_spherical_triangle = E
+end function area_spherical_triangle
+
+
+
+elemental function distanceonsphere(phi1,theta1,phi2,theta2)
+! spherical distance between two points in radians
+  implicit none
+  real(8), intent(IN) :: phi1,phi2,theta1,theta2  ! in radians
+  real(8) distanceonsphere, buf, lat1, lat2
+  real(8), parameter :: pi=3.1415926535897932
+  lat1=pi/2-theta1; lat2=pi/2-theta2
+
+  ! buf = square of half of cord length distance
+  buf = sin((lat1-lat2)/2.)**2+cos(lat1)*cos(lat2)*sin((phi1-phi2)/2.)**2
+  distanceonsphere = 2.*asin(sqrt(buf))
+  !distanceonsphere = 2.*atan2(sqrt(buf),sqrt(1-buf))
+end function distanceonsphere

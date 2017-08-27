@@ -12,15 +12,6 @@ module allinterfaces
 
   ! begin shadows_subs.f90
   interface
-     pure subroutine findonehorizon(h,i0,j0,azRay,smax)
-       use filemanager, only : NSx,NSy,RMAX
-       integer, intent(IN) :: i0,j0
-       real(8), intent(IN) :: h(NSx,NSy),azRay
-       real(8), intent(OUT) :: smax
-     end subroutine findonehorizon
-  end interface
-  
-  interface
      subroutine findonehorizon_wsort(h,i0,j0,azRay,smax,visibility)
        ! finds horizon and determines visibility for one azimuth ray
        use filemanager
@@ -48,6 +39,13 @@ module allinterfaces
      end function diffangle
   end interface
 
+  interface
+     subroutine compactoutput(unit,value,nr)
+       implicit none
+       integer, intent(IN) :: unit,nr
+       real(8), intent(IN) :: value(nr)
+     end subroutine compactoutput
+  end interface
 
   ! begin fieldofview_subs.f90
   interface
@@ -66,22 +64,6 @@ module allinterfaces
        real(8), intent(IN) :: x,y,z
        real(8), intent(OUT) :: theta,phi
      end subroutine xyz2thetaphi
-  end interface
-
-  interface
-     pure function area_spherical_quadrangle(phi,theta)
-       implicit none
-       real(8), intent(IN) :: phi(4), theta(4)
-       real(8) area_spherical_quadrangle
-     end function area_spherical_quadrangle
-  end interface
-
-  interface
-     elemental function distanceonsphere(phi1,theta1,phi2,theta2)
-       implicit none
-       real(8), intent(IN) :: phi1,phi2,theta1,theta2
-       real(8) distanceonsphere
-     end function distanceonsphere
   end interface
 
   interface
@@ -129,16 +111,30 @@ module allinterfaces
        real(8), intent(OUT) :: surfaceSlope,az
      end subroutine difftopo1
   end interface
-  
+ 
   interface
-     subroutine getskysize(skysize)
-       use filemanager
+     pure function area_spherical_quadrangle(phi,theta)
        implicit none
-       real(8), parameter :: pi=3.1415926535897932, d2r=pi/180.
-       integer, parameter :: nres=360   ! # of azimuths
-       real(8), intent(OUT) :: skysize(NSx,NSy)
-     end subroutine getskysize
+       real(8), intent(IN) :: phi(4), theta(4)
+       real(8) area_spherical_quadrangle
+     end function area_spherical_quadrangle
   end interface
+
+  interface
+     pure function area_spherical_triangle(phi,theta)
+       real(8), intent(IN) :: phi(3), theta(3)
+       real(8) area_spherical_triangle
+     end function area_spherical_triangle
+  end interface
+
+  interface
+     elemental function distanceonsphere(phi1,theta1,phi2,theta2)
+       implicit none
+       real(8), intent(IN) :: phi1,phi2,theta1,theta2
+       real(8) distanceonsphere
+     end function distanceonsphere
+  end interface
+
 
   ! begin model_subs.f90
   interface
@@ -185,24 +181,24 @@ module allinterfaces
   end interface
 
   interface
-     subroutine compactoutput(unit,value,nr)
+     subroutine getskysize(skysize,fn)
+       use filemanager
        implicit none
-       integer, intent(IN) :: unit,nr
-       real(8), intent(IN) :: value(nr)
-     end subroutine compactoutput
+       real(8), intent(OUT) :: skysize(NSx,NSy)
+       character(len=*), intent(IN) :: fn
+     end subroutine getskysize
   end interface
 
   ! begin mk_atmosphere.f90
   interface
      real(8) function mk_atmosphere(Z,I0,D0)
        implicit none
-       real(8), intent(IN) :: Z  ! solar zenith angle (radians)
-       real(8), intent(OUT) :: I0  ! clear-sky direct irradiance (unitless fraction) = transmittance
-       real(8), intent(OUT) :: D0  ! clear-sky diffuse irradiance (unitless fraction)
+       real(8), intent(IN) :: Z
+       real(8), intent(OUT) :: I0, D0
      end function mk_atmosphere
   end interface
   
-  ! begin cratersQ_mars_p.f90
+  ! begin cratersQ_mars.f90
   interface
      elemental function flux_mars(R,decl,latitude,HA,albedo, &
           &   fracir,fracdust,surfaceSlope,azFac,smax)
@@ -237,16 +233,23 @@ module allinterfaces
 
   interface
      subroutine conductionT(nz,z,dt,T,Tsurf,Tsurfp1,ti,rhoc,Fgeotherm,Fsurf)
-      implicit none
-      integer NMAX
-      parameter (NMAX=1000)
-      integer, intent(IN) :: nz
-      real*8, intent(IN) :: z(NMAX), dt, T(NMAX), Tsurf, Tsurfp1, ti(NMAX), rhoc(NMAX)
-      real*8, intent(IN) :: Fgeotherm
-      real*8, intent(OUT) :: Fsurf
-    end subroutine conductionT
- end interface
-
+       implicit none
+       integer NMAX
+       parameter (NMAX=1000)
+       integer, intent(IN) :: nz
+       real*8, intent(IN) :: z(NMAX), dt, T(NMAX), Tsurf, Tsurfp1, ti(NMAX), rhoc(NMAX)
+       real*8, intent(IN) :: Fgeotherm
+       real*8, intent(OUT) :: Fsurf
+     end subroutine conductionT
+  end interface
+  
+  interface
+     elemental function psv(T)
+       implicit none
+       real*8, intent(IN) :: T
+       real*8 psv
+     end function psv
+  end interface
 
   ! begin multigrid.f90
   interface

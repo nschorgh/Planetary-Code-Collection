@@ -6,7 +6,7 @@ subroutine find3dangle(h,i0,j0,unit,visibility)
   real(8), intent(IN) :: h(NSx,NSy)
   logical, intent(IN) :: visibility(NSx,NSy)
   integer i, j, k, cc
-  real(8) r, thetac, phic, dOh, skysize
+  real(8) r, thetac, phic, dOh, landsize
   integer, parameter :: CCMAX = NSx*NSy 
   integer, dimension(CCMAX) :: cellx, celly
   real(8), dimension(CCMAX) :: thetastack, phistack, dOstack
@@ -83,9 +83,9 @@ subroutine find3dangle(h,i0,j0,unit,visibility)
      enddo
   enddo
 
-  skysize = sum(dOstack(1:cc))   ! 2*pi- size of sky
+  landsize = sum(dOstack(1:cc))   ! 2*pi- size of sky
 
-  write(unit,'(2(i5,1x),i6,1x,f7.5,1x)',advance='no') i0, j0, cc, skysize
+  write(unit,'(2(i5,1x),i6,1x,f7.5,1x)',advance='no') i0, j0, cc, landsize
   do i=1,cc
      write(unit,'(2(i5,1x),g10.4,1x)',advance='no') cellx(i),celly(i),dOstack(i)
   enddo
@@ -103,67 +103,6 @@ elemental subroutine xyz2thetaphi(x,y,z,theta,phi)
   theta=acos(z/sqrt(x**2+y**2+z**2))
   phi=atan2(y,x)
 end subroutine xyz2thetaphi
-
-
-
-pure function area_spherical_quadrangle(phi,theta)
-! area of two triangles on sphere
-  implicit none
-  real(8), intent(IN) :: phi(4), theta(4)
-  real(8) E1, E2, area_spherical_quadrangle
-  interface
-     pure function area_spherical_triangle(phi,theta)
-       real(8), intent(IN) :: phi(3), theta(3)
-       real(8) area_spherical_triangle
-     end function area_spherical_triangle
-  end interface
-  
-  E1 = area_spherical_triangle((/ phi(1), phi(2), phi(3) /), &
-       & (/ theta(1), theta(2), theta(3) /))
-  E2 = area_spherical_triangle((/ phi(3), phi(4), phi(1) /), &
-       & (/ theta(3), theta(4), theta(1) /))
-
-  area_spherical_quadrangle = E1 + E2
-end function area_spherical_quadrangle
-
-
-
-pure function area_spherical_triangle(phi,theta)
-  use allinterfaces, only : distanceonsphere
-  implicit none
-  real(8), intent(IN) :: phi(3), theta(3)
-  real(8) a,b,c
-  real(8) s, E, area_spherical_triangle, buf
-
-  a=distanceonsphere(phi(1),theta(1),phi(2),theta(2))
-  b=distanceonsphere(phi(2),theta(2),phi(3),theta(3))
-  c=distanceonsphere(phi(3),theta(3),phi(1),theta(1))
-
-  ! spherical excess
-  s = (a+b+c)/2.
-  buf=tan(s/2)*tan((s-a)/2.)*tan((s-b)/2.)*tan((s-c)/2.)
-  !buf=tan((a+b+c)/4.)*tan((-a+b+c)/4.)*tan((a-b+c)/4.)*tan((a+b-c)/4.)
-  if (buf<0.) buf=0.   ! roundoff
-  E=4*atan(sqrt(buf))
-
-  area_spherical_triangle = E
-end function area_spherical_triangle
-
-
-
-elemental function distanceonsphere(phi1,theta1,phi2,theta2)
-! spherical distance between two points in radians
-  implicit none
-  real(8), intent(IN) :: phi1,phi2,theta1,theta2  ! in radians
-  real(8) distanceonsphere, buf, lat1, lat2
-  real(8), parameter :: pi=3.1415926535897932
-  lat1=pi/2-theta1; lat2=pi/2-theta2
-
-  ! buf = square of half of cord length distance
-  buf = sin((lat1-lat2)/2.)**2+cos(lat1)*cos(lat2)*sin((phi1-phi2)/2.)**2
-  distanceonsphere = 2.*asin(sqrt(buf))
-  !distanceonsphere = 2.*atan2(sqrt(buf),sqrt(1-buf))
-end function distanceonsphere
 
 
 

@@ -92,7 +92,7 @@ subroutine hop1(p_r, p_s, p_t, idum, Tsurf, Q)
      call nonuniformgravity(vspeed,alpha,d,flighttime)
   endif
   !write(70,*) 'flighttime',flighttime,d  ! for flighttime statistics
-  az = atan2(v(2),v(1))
+  !az = atan2(v(2),v(1))
   !write(70,*) d,az   ! for statistical tests
   cosaz = v(2)/sqrt(v(1)**2+v(2)**2)
   lat = p_r(2)*d2r

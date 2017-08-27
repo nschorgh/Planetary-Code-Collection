@@ -9,13 +9,14 @@ program insol_earth
   use allinterfaces
   use dateformat
   use newhorizons
+  !use omp_lib
   implicit none
   real(8), parameter :: pi=3.1415926535897932, d2r=pi/180.
 
   integer nsteps, n, i, j, nm
   real(8) tmax, edays, dtmin, latitude
   real(8) R, dZenithAngle, dAzimuth, longitude
-  real(8) azSun, sinbeta, smax
+  real(8) azSun, sinbeta, emax
   real(8), dimension(NSx,NSy) :: h, surfaceSlope, azFac
   real(8), dimension(NSx,NSy) :: Qn, Qsw   ! incoming
   real(8), dimension(NSx,NSy) :: Qmeans, Qmax, daytime
@@ -52,7 +53,7 @@ program insol_earth
   daytime(:,:)=0.; alltime=0.
   
   print *,'...reading horizons file...'
-  call readhorizons
+  call readhorizons('horizons.'//fileext)
 
   print *,'...calculating...'
   ! loop over time steps 
@@ -66,12 +67,14 @@ program insol_earth
      sinbeta = cos(dZenithAngle*d2r)
      azSun = dAzimuth*d2r
 
+     !$OMP PARALLEL DO private(emax)
      do i=2,NSx-1
         do j=2,NSy-1
-           smax = getonehorizon(i,j,azSun)
-           Qn(i,j)=flux_wshad(R,sinbeta,azSun,surfaceSlope(i,j),azFac(i,j),smax)
+           emax = getonehorizon(i,j,azSun)
+           Qn(i,j)=flux_wshad(R,sinbeta,azSun,surfaceSlope(i,j),azFac(i,j),emax)
         enddo
      enddo
+     !$OMP END PARALLEL DO
      Qref=flux_wshad(R,sinbeta,azSun,zero,zero,zero)
 
      if (atmosphere) then
