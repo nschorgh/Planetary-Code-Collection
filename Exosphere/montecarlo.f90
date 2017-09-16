@@ -60,7 +60,7 @@ subroutine hop1(p_r, p_s, p_t, idum, Tsurf, Q)
   integer, intent(INOUT) :: idum
   real(8), intent(IN) :: Tsurf, Q
 
-  real(8) d,v(3),lat,buf,az,cosaz,sinph2,cosph2,cosdlon,dlon
+  real(8) d,v(3),lat,buf,cosaz,sinph2,cosph2,cosdlon,dlon
   real(8) u,flighttime,destr_rate,vspeed,alpha
   real(8), parameter :: pi=3.1415926535897932, d2r=pi/180.
   integer, external :: inbox
@@ -143,7 +143,7 @@ function residence_time(T)
   real(8), parameter :: sigma0 = 1e19  ! H2O
   real(8), external :: sublrate
   residence_time = sigma0/sublrate(T) 
-  residence_time = residence_time*400   ! 0.1 monolayers (see S&A, 2014)
+  !residence_time = residence_time*400   ! 0.1 monolayers (see S&A, 2014)
   if (T==0.) residence_time = 1e32
   !residence_time = 0. ! Ar, He, (noncondensible species)
 end function residence_time
@@ -402,10 +402,10 @@ subroutine nonuniformgravity(vspeed,alpha,d,t)
   real(8), intent(IN) :: alpha  ! zenith angle of launch velocity
   real(8), intent(OUT) :: d, t  ! distance and flighttime
   real(8), parameter :: pi=3.1415926535897932
-  real(8) gamma, a, ecc, Ep
+  real(8) gamma, ecc, Ep
 
   gamma = (vspeed/vescape)**2
-  a = Rbody/2./(1-gamma)
+  !a = Rbody/2./(1-gamma)
   ecc = sqrt(1-4*(1-gamma)*gamma*sin(alpha)**2)
   d = 2*Rbody*acos(1/ecc*(1-2*gamma*sin(alpha)**2))
   Ep = pi - 2*atan(sqrt((1-ecc)/(1+ecc))/tan(d/(4*Rbody)))
@@ -413,7 +413,8 @@ subroutine nonuniformgravity(vspeed,alpha,d,t)
      d = Rbody*4*gamma*sin(alpha)
      Ep = pi - 2*atan(sqrt((1-gamma)/gamma))
   endif
-  t = 2*sqrt(2*a**3/Rbody/vescape**2)*(Ep+ecc*sin(Ep))
+  !t = 2*sqrt(2*a**3/Rbody/vescape**2)*(Ep+ecc*sin(Ep))
+  t = (Rbody/vescape)/(1-gamma)**1.5*(Ep+ecc*sin(Ep))
   if (1-2*gamma*sin(alpha)**2 > ecc) then ! otherwise d=NaN
      d = 0.
      t = 0.

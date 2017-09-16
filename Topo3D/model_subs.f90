@@ -159,3 +159,54 @@ subroutine getmaxfieldsize(NSx,NSy,fileext,maxsize)
   close(20)
 end subroutine getmaxfieldsize
 
+
+
+subroutine getskysize(skysize,fn)
+!***********************************************************************
+!   reads horizons file and calculates sky size (steradian)
+!***********************************************************************
+  use filemanager, only : NSx,NSy,fileext
+  use allinterfaces, except_this_one => getskysize
+  implicit none
+  character(len=*), intent(IN) :: fn
+  real(8), intent(OUT) :: skysize(NSx,NSy) 
+  real(8), parameter :: pi=3.1415926535897932, d2r=pi/180.
+  integer, parameter :: nres=180   ! # of azimuths
+  real(8) smax(nres)
+  integer i, j, ii, jj, ierr, k, kp1
+  real(8) phi(3), theta(3), dOmega, landsize0
+
+  ! azimuth in degrees east of north, 0=north facing, 0...2*pi
+
+  print *,'# azimuth rays = ',nres
+  write(*,*) 'Nx=',NSx,'Ny=',NSy,'File=',fileext
+  
+  print *,'...reading horizons file ...'
+  open(unit=21,file=fn,status='old',action='read',iostat=ierr)
+  if (ierr>0) stop 'skysize: Input file not found'
+  
+   do i=2,NSx-1
+     do j=2,NSy-1
+        read(21,*) ii,jj,smax(:)
+        if (ii/=i .or. jj/=j) stop 'index mismatch'
+
+        ! approximate
+        landsize0 = sum(atan(smax))*2*pi/nres
+
+        ! exact
+        skysize(i,j)=0
+        do k=1,nres
+           phi = (/ 0, 0, 1 /) *2*pi/nres
+           !kp1 = k+1; if (kp1>nres) kp1=kp1-nres
+           kp1 = mod(k,180)+1
+           theta = (/ 0.d0, atan(1/smax(k)), atan(1/smax(kp1)) /) ! from zenith
+           dOmega = area_spherical_triangle(phi,theta)
+           skysize(i,j) = skysize(i,j) + dOmega
+        enddo
+
+        !print *,i,j,2*pi-landsize0,skysize(i,j)
+     enddo
+  enddo
+
+  close(21)
+end subroutine getskysize

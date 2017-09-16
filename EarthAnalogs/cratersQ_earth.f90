@@ -72,7 +72,7 @@ program cratersQ_earth
      allocate(ii(NSx,NSy,CCMAX), jj(NSx,NSy,CCMAX), dO12(NSx,NSy,CCMAX))
      call getfieldofview(NSx,NSy,fileext,cc,ii,jj,dO12,skysize,CCMAX)
   endif
-  !if (subsurface) allocate(T(NSx,NSy,nz), Qnm1(NSx,NSy))
+  if (subsurface) allocate(T(NSx,NSy,nz), Qnm1(NSx,NSy))
   
   print *,'...calculating...'
   ! loop over time steps 

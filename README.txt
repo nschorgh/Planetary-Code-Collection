@@ -3,9 +3,9 @@ Planetary Code Collection
 by Norbert Schorghofer
 
 
-This program collection contains
+This program collection contains:
 * semi-implicit one-dimensional thermal model for planetary surfaces
-* an explicit subsurface vapor diffusion and deposition model
+* explicit subsurface vapor diffusion and deposition model
 * models for the equilibrium ice table on Mars
 * fast method for subsurface-atmosphere vapor exchange for Mars
 * fast (asynchronous) model for ice retreat on asteroids
@@ -98,37 +98,6 @@ Common/generalorbit.f
 Documentation: User Guide Part 1
 
 
-*Monte-Carlo Model for Surface-bounded Exosphere*
-
-Exosphere/moon4.f90: (main program)
-Exosphere/ceres_exo.f90: (main program)
-Exosphere/montecarlo.f90
-Exosphere/geogrid.f90
-Exosphere/geogrid_D.f90
-Common/subl_subs.f90
-Common/gasdev.for
-Common/ran2.for
-Documentation: User Guide Part 6
-
-
-*Shadowing and Illumination*
-
-Topo3D/shadows.f90: (main program)
-Topo3D/fieldofviews.f90: (main program)
-Topo3D/cratersQ_snapshot.f90: (main program)
-Topo3D/cratersQ_moon.f90: (main program)
-Topo3D/topos.f90
-Topo3D/crater_modules.f90
-Topo3D/crater_common.f90
-Topo3D/shadow_subs.f90
-Topo3D/fieldofview_subs.f90
-Topo3D/model_subs.f90
-Topo3D/multigrid.f90
-Common/hpsort.for
-Topo3D/topo40.xyz
-Documentation: User Guide Part 5
-
-
 *Asynchronous Model for Temperature, Impact Stirring, and Ice Loss on Asteroids*
 
 Asteroid/asteroid_fast2.f90: (main program)
@@ -157,6 +126,7 @@ EarthAnalogs/insol_earth.f90: (main program)
 EarthAnalogs/insol_flat.f90: (simple main program)
 EarthAnalogs/mk_atmosphere.f90
 EarthAnalogs/sunpos.f90
+EarthAnalogs/cratersQ_earth.f90: (main program)
 Topo3D/topos.f90
 Topo3D/crater_modules.f90 
 Topo3D/crater_common.f90
@@ -164,8 +134,39 @@ Topo3D/model_subs.f90
 Documentation: User Guide Sections 4.1 & 5.2-5.4
 
 
+*Shadowing and Illumination*
 
-NOTE: Third party source code from Numerical Recipes is included in this distribution, but is covered by a separate copyright. These are files ending with .for.  Most of this code will not work without them. 
+Topo3D/shadows.f90: (main program)
+Topo3D/fieldofviews.f90: (main program)
+Topo3D/cratersQ_snapshot.f90: (main program)
+Topo3D/cratersQ_moon.f90: (main program)
+Topo3D/topos.f90
+Topo3D/crater_modules.f90
+Topo3D/crater_common.f90
+Topo3D/shadow_subs.f90
+Topo3D/fieldofview_subs.f90
+Topo3D/model_subs.f90
+Topo3D/multigrid.f90
+Common/hpsort.for
+Topo3D/topo40.xyz
+Documentation: User Guide Part 5
+
+
+*Monte-Carlo Model for Surface-bounded Exosphere*
+
+Exosphere/moon4.f90: (main program)
+Exosphere/ceres_exo.f90: (main program)
+Exosphere/montecarlo.f90
+Exosphere/geogrid.f90
+Exosphere/geogrid_D.f90
+Common/subl_subs.f90
+Common/gasdev.for
+Common/ran2.for
+Documentation: User Guide Part 6
+
+
+
+NOTE: Third party source code from Numerical Recipes is covered by a separate copyright. These are files ending with .for.  Most of this code will not work without them. 
 
 
 
