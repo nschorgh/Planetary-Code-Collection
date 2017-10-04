@@ -25,7 +25,7 @@ subroutine oneasteroid(latitude, omega, eps, albedo, thIn, Qmean, Tmean, Tmin, T
   print *,'dt=',dt/3600.,'hours','  Trot=',Trot*24.,'hours'
   ti(:) = thIn
   ! for one-layer model the value of rho*c does not matter
-  !rhoc(:) = 500.*500.
+  !rhoc(:) = 2500.*(1-0.4)*400.
   rhoc(:) = 930*1300. ! solid ice
   delta1 = thIn/rhoc(1)*sqrt(Trot*86400/pi)  ! Trot has meaning of solar day
   delta2 = thIn/rhoc(1)*sqrt(Torb*86400/pi)
@@ -77,7 +77,7 @@ subroutine oneasteroid(latitude, omega, eps, albedo, thIn, Qmean, Tmean, Tmin, T
 
      call conductionQ(nz,z,dt,Q,Qp1,Temp,ti,rhoc,emiss,Tsurf,0.d0,Fsurf)
      Q = Qp1
-     if (n>(EQUILTIME-1)*nr) then
+     if (n>(EQUILTIME-1)*nr) then  ! annual average
         !if (n>=EQUILTIME*nr-100) write(71,*) edays,HA,Tsurf,Temp(nz),flux2T(Q)
         Qmean = Qmean+Q
         Tmean = Tmean+Tsurf
