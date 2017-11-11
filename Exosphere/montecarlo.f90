@@ -128,6 +128,7 @@ subroutine hop1(p_r, p_s, p_t, idum, Tsurf, Q)
      u=ran2(idum)  ! between 0 and 1
      !if (u<0.004) then ! 0.4%
      destr_rate = flighttime/(taudissoc*semia**2) ! photodissociation
+     if (destr_rate>0.2) destr_rate = 1-exp(-destr_rate)
      if (u < destr_rate) then
         p_s = -1  ! destroyed by photodissociation
         p_t = 1d100  ! never use again
@@ -216,7 +217,7 @@ subroutine montecarlo(Np,idum,p_r,p_s,p_t,p_n,Tsurf,dtsec,ccc,Q)
            if (p_s(i)==-1) ccc(1)=ccc(1)+1
            if (p_s(i)==-2) ccc(2)=ccc(2)+1
            p_n(i) = p_n(i)+1
-        case(1) ! landing
+        case(1)  ! landing
            k = inbox(p_r(i,:))
            if (incoldtrap(p_r(i,:))) then
               !p_s(i)=-100-insidecoldtrap(p_r(i,:))

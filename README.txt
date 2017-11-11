@@ -174,7 +174,7 @@ ACKNOWLEDGMENTS:
 
 Mar 2016: Thanks to Lior Rubanenko for a bug report in cratersQ_*
 
-2010 or earlier: Thanks to Oded Aharonson for a better and faster treatment of the frost/no-frost surface boundary condition
+2010, 2005: Thanks to Oded Aharonson for improvements on mars_mapiq* and a better treatment of the frost/no-frost surface boundary condition.
 
 2006: Troy Hudson discovered a grid-point offset in conductionT and conductionQ, which has been corrected.
 

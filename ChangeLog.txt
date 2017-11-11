@@ -1,5 +1,7 @@
 ChangeLog
 
+4 Oct 2017: Release v1.1.4  doi:10.5281/zenodo.1001854
+
 24 Aug 2017: gethorizon has been transformed into a module to allow elemental attribute, and thus parallelization
 
 2 Aug 2017: first implementation of multigrid method for horizons calculation
