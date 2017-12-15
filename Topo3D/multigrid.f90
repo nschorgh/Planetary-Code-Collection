@@ -182,6 +182,7 @@ subroutine horizon_MG_core(x0,y0,h00,naz,smax,i,j,h,P)
      in = i+ex(k)
      jn = j+ey(k)
      if (in>nx .or. jn>ny) cycle
+     if (in<1 .or. jn<1) cycle
      if (horizontaldistance1(x0,y0,in*dxl,jn*dyl) == 0.) cycle
      az_neighbor = azimuth1(x0,y0,in*dxl,jn*dyl)
 

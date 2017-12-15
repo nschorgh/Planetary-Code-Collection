@@ -9,10 +9,10 @@ LFLAGS = -O3 -Wall
 SR = ../Common/
 
 shadows: topos.o crater_modules.o shadows.o shadow_subs.o crater_common.o \
-	hpsort.o makefile
+	hpsort.o multigrid.o makefile
 	make -C $(SR) common
 	$(CC) $(LFLAGS) topos.o shadows.o shadow_subs.o hpsort.o \
-	crater_common.o -o $@
+	crater_common.o multigrid.o -o $@
 
 fieldofviews: topos.o crater_modules.o fieldofviews.o crater_common.o \
 	shadow_subs.o fieldofview_subs.o hpsort.o makefile

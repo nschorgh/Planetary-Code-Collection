@@ -2,7 +2,7 @@ module newhorizons
   ! privately stores horizon data
   use filemanager, only : NSx, NSy
   implicit none
-  integer, parameter :: nres=360  ! # azimuth values
+  integer, parameter :: nres=180  ! # azimuth values
   real(8), dimension(NSx,NSy,nres+1), private :: s ! angles
 
 contains

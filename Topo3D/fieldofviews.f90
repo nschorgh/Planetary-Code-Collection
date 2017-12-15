@@ -15,7 +15,7 @@ program fieldofviews
   implicit none
   real(8), parameter :: pi=3.1415926535897932, d2r=pi/180.
   integer i, j, k, ext, narg
-  integer, parameter :: nres=360   ! # of azimuths
+  integer, parameter :: nres=180   ! # of azimuths
   real(8) h(NSx,NSy), azSun, smax(nres)
   character(5) extc
   logical visibility(NSx,NSy)
@@ -33,7 +33,6 @@ program fieldofviews
      open(unit=21,file='horizons.dat',status='unknown',action='write')
      open(unit=22,file='fieldofviews.dat',status='unknown',action='write')
      print *,'Nsx=',nsx,'Nsy=',nsy,'# azimuths=',nres
-     !i=40; j=60;
      do i=2,NSx-1
         print *,i
         do j=2,NSy-1
@@ -64,7 +63,6 @@ program fieldofviews
            azSun = (360./real(nres))*(k-1)*d2r
            call findonehorizon_wsort(h,i,j,azSun,smax(k),visibility)
         enddo
-        !write(21,'(2(i4,1x),9999(1x,f6.4))') i,j,smax(:)
         write(21,'(2(i4,1x))',advance='no') i,j
         call compactoutput(21,smax,nres)
         call refinevisibility(i,j,h,visibility)

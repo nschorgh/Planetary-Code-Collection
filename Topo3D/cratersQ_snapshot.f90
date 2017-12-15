@@ -3,7 +3,7 @@ program cratersQ_snapshot
 !   cratersQ: program to calculate surface energy balance
 !             for given sun position  
 !
-!             zero thermal inertia, Earth orbit
+!             zero thermal inertia, no orbit
 !***********************************************************************
   use filemanager
   use allinterfaces

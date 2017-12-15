@@ -1,9 +1,3 @@
-
-! (1,1) = northwest corner
-! (NSx,1) = northeast corner
-! (1,NSy) = southwest corner
-! (NSx,NSy) = southeast corner
-
 module filemanager 
   implicit none
   ! NSx = # pixels in x-direction (longitude)
@@ -19,7 +13,6 @@ module filemanager
   character(len=*), parameter :: fileext = 'topo40'
   !integer, parameter :: NSx=81, NSy=81
   !character(len=*), parameter :: fileext = 'topo81'
-  !integer, parameter :: NSx=80, NSy=80
   !character(len=*), parameter :: fileext = 'boulder'
   real(8), parameter :: dx=5., dy=5., RMAX=1e35
 
@@ -29,10 +22,6 @@ module filemanager
   
   !integer, parameter :: NSx=71, NSy=81 
   !character(len = *), parameter :: fileext = 'summit_small'
-  !real(8), parameter :: dx=10., dy=10., RMAX=2e3
-
-  !integer, parameter :: NSx=901, NSy=801  
-  !character(len = *), parameter :: fileext = 'summit_very'
   !real(8), parameter :: dx=10., dy=10., RMAX=2e3
 
   !integer, parameter :: NSx=800, NSy=700  
@@ -58,9 +47,12 @@ module filemanager
 end module filemanager
 
 
-
 subroutine readdem(h)
   ! read DEM
+  ! (1,1) = northwest corner
+  ! (NSx,1) = northeast corner
+  ! (1,NSy) = southwest corner
+  ! (NSx,NSy) = southeast corner
   use filemanager
   implicit none
   real(8), intent(OUT) :: h(NSx,NSy)
