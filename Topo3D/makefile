@@ -32,6 +32,13 @@ cratersQ_moon: topos.o crater_modules.o model_subs.o cratersQ_moon.o \
 	topos.o model_subs.o $(SR)grids.o $(SR)conductionQ.o flux_wshad.o \
 	$(SR)tridag.o -o $@
 
+cratersQ_mars: topos.o crater_modules.o model_subs.o cratersQ_mars.o \
+	crater_common.o flux_mars.o makefile
+	make -C $(SR) common
+	$(CC) $(LFLAGS) cratersQ_mars.o crater_common.o $(SR)generalorbit.o \
+	topos.o model_subs.o $(SR)grids.o $(SR)conductionQ.o flux_mars.o \
+	$(SR)tridag.o $(SR)conductionT.o $(SR)psv.o -o $@
+
 test: topos.o crater_modules.o test_shadows1pt.o shadow_subs.o crater_common.o \
 	topos.o hpsort.o multigrid.o makefile
 	make -C $(SR) common
@@ -53,7 +60,7 @@ test: topos.o crater_modules.o test_shadows1pt.o shadow_subs.o crater_common.o \
 
 clean:
 	rm -f  *.o  a.out  *.mod \
-	shadows fieldofviews cratersQ_snapshot cratersQ_moon
+	shadows fieldofviews cratersQ_snapshot cratersQ_moon cratersQ_mars
 
 
 

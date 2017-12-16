@@ -13,10 +13,13 @@ cratersQ_snapshot.f90: (main program)
 	instantaneous surface temperature with 3D shadowing and reflections
 
 cratersQ_moon.f90: (main program)
-	surface temperature with 3D shadowing and reflections
+	surface temperature with 3D shadowing and reflections for airless body
+
+cratersQ_mars.f90: (main program)
+	surface temperature with 3D shadowing for Mars
 
 topos.f90:
-	input topography information
+	input, topography information
 
 crater_modules.f90: 
 	interface definitions
@@ -35,6 +38,12 @@ model_subs.f90:
 
 multigrid.f90:
 	subroutines for multigrid acceleration
+
+flux_wshad.f90:
+	incoming flux for airless body with distant horizon
+
+flux_mars.f90:
+	incoming flux with Mars atmosphere with distant horizon
 
 test_shadows1pt.f90: (main program)
 	test shadow calculations
