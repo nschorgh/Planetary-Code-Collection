@@ -140,12 +140,15 @@ Topo3D/shadows.f90: (main program)
 Topo3D/fieldofviews.f90: (main program)
 Topo3D/cratersQ_snapshot.f90: (main program)
 Topo3D/cratersQ_moon.f90: (main program)
+Topo3D/cratersQ_mars.f90: (main program)
 Topo3D/topos.f90
 Topo3D/crater_modules.f90
 Topo3D/crater_common.f90
 Topo3D/shadow_subs.f90
 Topo3D/fieldofview_subs.f90
 Topo3D/model_subs.f90
+Topo3D/flux_wshad.f90
+Topo3D/flux_mars.f90
 Topo3D/multigrid.f90
 Common/hpsort.for
 Topo3D/topo40.xyz

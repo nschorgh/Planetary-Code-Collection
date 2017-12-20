@@ -15,8 +15,8 @@ program fieldofviews
   implicit none
   real(8), parameter :: pi=3.1415926535897932, d2r=pi/180.
   integer i, j, k, ext, narg
-  integer, parameter :: nres=180   ! # of azimuths
-  real(8) h(NSx,NSy), azSun, smax(nres)
+  integer, parameter :: naz=180   ! # of azimuths
+  real(8) h(NSx,NSy), azSun, smax(naz)
   character(5) extc
   logical visibility(NSx,NSy)
 
@@ -32,18 +32,18 @@ program fieldofviews
      print *,'...creating files horizons.dat and fieldofviews.dat'
      open(unit=21,file='horizons.dat',status='unknown',action='write')
      open(unit=22,file='fieldofviews.dat',status='unknown',action='write')
-     print *,'Nsx=',nsx,'Nsy=',nsy,'# azimuths=',nres
+     print *,'Nsx=',nsx,'Nsy=',nsy,'# azimuths=',naz
      do i=2,NSx-1
         print *,i
         do j=2,NSy-1
            visibility(:,:) = .false.
-           do k=1,nres
-              azSun = 360./real(nres)*(k-1)*d2r
+           do k=1,naz
+              azSun = 360./real(naz)*(k-1)*d2r
               call findonehorizon_wsort(h,i,j,azSun,smax(k),visibility)
            enddo
            !write(21,'(2(i4,1x),9999(1x,f6.4))') i,j,smax(:)
            write(21,'(2(i4,1x))',advance='no') i,j
-           call compactoutput(21,smax,nres)
+           call compactoutput(21,smax,naz)
            call refinevisibility(i,j,h,visibility)
            call find3dangle(h,i,j,22,visibility)
         enddo
@@ -59,12 +59,12 @@ program fieldofviews
      open(unit=22,file='fieldofview.'//extc,status='unknown',action='write')
      do j=2,NSy-1
         visibility(:,:) = .false.
-        do k=1,nres
-           azSun = (360./real(nres))*(k-1)*d2r
+        do k=1,naz
+           azSun = (360./real(naz))*(k-1)*d2r
            call findonehorizon_wsort(h,i,j,azSun,smax(k),visibility)
         enddo
         write(21,'(2(i4,1x))',advance='no') i,j
-        call compactoutput(21,smax,nres)
+        call compactoutput(21,smax,naz)
         call refinevisibility(i,j,h,visibility)
         call find3dangle(h,i,j,22,visibility)
      enddo

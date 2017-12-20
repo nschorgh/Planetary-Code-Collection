@@ -1,5 +1,7 @@
 ChangeLog
 
+16 Dec 2017: first version of 3D illumination code for Mars
+
 4 Oct 2017: Release v1.1.4  doi:10.5281/zenodo.1001854
 
 24 Aug 2017: gethorizon has been transformed into a module to allow elemental attribute, and thus parallelization
@@ -26,7 +28,7 @@ Aug 2015: moved to GitHub
 
 9 Jul 2015: restructured lunar exosphere model, so geographic grid can be swapped out
 
-1 Jun 2015: added 3D model of shadowing and illumination (incl. reflection and thermal emission) on planetary surfaces, unfortunately without any documentation whatsoever; this code is computationally much slower than it could be, but good enough for small topographies
+1 Jun 2015: added 3D model of shadowing and illumination (incl. reflection and thermal emission) on planetary surfaces; good enough for small topographies
 
 5 Feb 2015: added lunar Monte Carlo model for exospheric transport of water molecules
 

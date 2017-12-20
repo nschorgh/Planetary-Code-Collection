@@ -108,7 +108,7 @@ end subroutine xyz2thetaphi
 
 subroutine refinevisibility(i0,j0,h,visibility)
 !***********************************************************************
-! refinevisibility: This correction is necessary, because azimuth rays 
+! refinevisibility: This correction is necessary because azimuth rays 
 !    for horizon calculation are not the same as azimuth rays connecting 
 !    surface elements
 !***********************************************************************

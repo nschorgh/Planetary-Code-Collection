@@ -253,6 +253,15 @@ module allinterfaces
 
   ! begin multigrid.f90
   interface
+     subroutine downsample(NSx,NSy,h,hhalf)
+       implicit none
+       integer, intent(IN) :: NSx,NSy
+       real(8), intent(IN) :: h(NSx,NSy)
+       real(8), intent(OUT) :: hhalf(NSx/2,NSy/2) ! new dimensions
+     end subroutine downsample
+  end interface
+
+  interface
      real(8) elemental function horizontaldistance1(x1,y1,x2,y2)
        implicit none
        real(8), intent(IN) :: x1,y1,x2,y2
@@ -285,6 +294,17 @@ module allinterfaces
        real(8), intent(IN) :: RMG
        real(8), intent(OUT) :: smax(naz)
      end subroutine findallhorizon_MG3
+  end interface
+
+  interface
+     subroutine findallhorizon_MG5(h,h2,h3,h4,h5,i0,j0,naz,smax,RMG)
+       use filemanager, only : NSx,NSy,dx,dy
+       implicit none
+       integer, intent(IN) :: i0,j0,naz
+       real(8), intent(IN) :: h(NSx,NSy),h2(NSx/2,NSy/2),h3(NSx/4,NSy/4),h4(NSx/8,NSy/8),h5(NSx/16,NSy/16)
+       real(8), intent(IN) :: RMG
+       real(8), intent(OUT) :: smax(naz)
+     end subroutine findallhorizon_MG5
   end interface
 
   interface

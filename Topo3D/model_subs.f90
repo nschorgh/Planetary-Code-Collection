@@ -2,8 +2,8 @@ module newhorizons
   ! privately stores horizon data
   use filemanager, only : NSx, NSy
   implicit none
-  integer, parameter :: nres=180  ! # azimuth values
-  real(8), dimension(NSx,NSy,nres+1), private :: s ! angles
+  integer, parameter :: naz=180  ! # azimuth values
+  real(8), dimension(NSx,NSy,naz+1), private :: s ! angles
 
 contains
   subroutine readhorizons(fn)
@@ -16,12 +16,12 @@ contains
     if (ierr>0) stop 'gethorizon: Input file not found'
     do i=2,NSx-1
        do j=2,NSy-1
-          read(20,*) ia,ja,s(i,j,1:nres)
+          read(20,*) ia,ja,s(i,j,1:naz)
           if (ia /= i .or. ja /= j) then
              print *,i,j,ia,ja
              stop 'gethorizon: inconsistent input values'
           endif
-          s(i,j,nres+1) = s(i,j,1) !360 deg
+          s(i,j,naz+1) = s(i,j,1) !360 deg
        enddo
     enddo
     s = atan(s)  ! slope -> angle
@@ -38,10 +38,10 @@ contains
     integer k
     real(8) a, daz, smax
     
-    daz = 2*pi/real(nres)
+    daz = 2*pi/real(naz)
     k = floor(modulo(azSun,2*pi)/daz)
     a = modulo(azSun,2*pi)/daz-k
-    if (k<0 .or. k>=nres) then
+    if (k<0 .or. k>=naz) then
        !print *,'azSun=',azSun,'k=',k
        !stop 'gethorizon: impossible k value'  ! impure
     endif
@@ -171,14 +171,14 @@ subroutine getskysize(skysize,fn)
   character(len=*), intent(IN) :: fn
   real(8), intent(OUT) :: skysize(NSx,NSy) 
   real(8), parameter :: pi=3.1415926535897932, d2r=pi/180.
-  integer, parameter :: nres=180   ! # of azimuths
-  real(8) smax(nres)
+  integer, parameter :: naz=180   ! # of azimuths
+  real(8) smax(naz)
   integer i, j, ii, jj, ierr, k, kp1
   real(8) phi(3), theta(3), dOmega, landsize0
 
   ! azimuth in degrees east of north, 0=north facing, 0...2*pi
 
-  print *,'# azimuth rays = ',nres
+  print *,'# azimuth rays = ',naz
   write(*,*) 'Nx=',NSx,'Ny=',NSy,'File=',fileext
   
   print *,'...reading horizons file ...'
@@ -191,13 +191,13 @@ subroutine getskysize(skysize,fn)
         if (ii/=i .or. jj/=j) stop 'index mismatch'
 
         ! approximate
-        landsize0 = sum(atan(smax))*2*pi/nres
+        landsize0 = sum(atan(smax))*2*pi/naz
 
         ! exact
         skysize(i,j)=0
-        do k=1,nres
-           phi = (/ 0, 0, 1 /) *2*pi/nres
-           !kp1 = k+1; if (kp1>nres) kp1=kp1-nres
+        do k=1,naz
+           phi = (/ 0, 0, 1 /) *2*pi/naz
+           !kp1 = k+1; if (kp1>naz) kp1=kp1-naz
            kp1 = mod(k,180)+1
            theta = (/ 0.d0, atan(1/smax(k)), atan(1/smax(kp1)) /) ! from zenith
            dOmega = area_spherical_triangle(phi,theta)

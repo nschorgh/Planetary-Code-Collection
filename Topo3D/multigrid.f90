@@ -49,7 +49,7 @@ real(8) elemental function horizontaldistance1(x1,y1,x2,y2)
   implicit none
   real(8), intent(IN) :: x1,y1,x2,y2
   horizontaldistance1 = sqrt((x1-x2)**2+(y1-y2)**2)
-  !if (horizontaldistance1>0. .and. horizontaldistance1<1d-6) stop 'nogood'
+  !if (horizontaldistance1>0. .and. horizontaldistance1<1d-6) stop
 end function horizontaldistance1
 
 

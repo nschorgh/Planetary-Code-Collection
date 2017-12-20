@@ -31,16 +31,21 @@ program cratersQ_Mars
   integer nsteps, n, i, j, nm, i0, j0, k
   real(8) tmax, dt, latitude, dtsec, buf
   real(8) HA, sdays, azSun, emax, sinbeta
-  real(8), dimension(NSx,NSy) :: h, surfaceSlope, azFac
-  real(8), dimension(NSx,NSy) :: Qn   ! incoming
-  real(8), dimension(NSx,NSy) :: Tsurf, albedo, Fsurf
-  real(8), dimension(NSx,NSy) :: Qmeans, Qmax, Tmean, Tmaxi, Tbottom
-  real(8), dimension(NSx,NSy) :: mmax, frosttime, maxfrosttime, Qnm1
+  real(8), allocatable, dimension(:,:) :: h, surfaceSlope, azFac
+  real(8), allocatable, dimension(:,:) :: Qn   ! incoming
+  real(8), allocatable, dimension(:,:) :: Tsurf, albedo, Fsurf
+  real(8), allocatable, dimension(:,:) :: Qmean, Qmax, Tmean, Tmaxi, Tbottom
+  real(8), allocatable, dimension(:,:) :: mmax, frosttime, maxfrosttime, Qnm1
   real(8), allocatable :: T(:,:,:)  ! subsurface
   real(8) Tsurfold
   logical, parameter :: subsurface=.false.  ! control panel
   integer, parameter, dimension(4) :: i00=(/ 41, 42, 44, 74/), j00=(/108, 108, 109, 155/)
   integer, parameter :: MARGIN=20  ! must be at least 1, saves time
+
+  allocate(h(NSx,NSy), surfaceSlope(NSx,NSy), azFac(NSx,NSy))
+  allocate(Qn(NSx,NSy), Tsurf(NSx,NSy), albedo(NSx,NSy), Fsurf(NSx,NSy))
+  allocate(Qmean(NSx,NSy), Qmax(NSx,NSy), Tmean(NSx,NSy), Tmaxi(NSx,NSy), Tbottom(NSx,NSy))
+  allocate(mmax(NSx,NSy), frosttime(NSx,NSy), maxfrosttime(NSx,NSy), Qnm1(NSx,NSy))
 
   ecc = 0.0934;  eps = 25.19*d2r;  omega = 250.87*d2r   ! today
   
@@ -70,7 +75,7 @@ program cratersQ_Mars
 
   latitude=latitude*d2r
   Tsurf=200.
-  Qmeans=0.; Tmean=0.; Tbottom=0.; nm=0
+  Qmean=0.; Tmean=0.; Tbottom=0.; nm=0
   Qmax=0.; Tmaxi=0.; mmax=0.
   frosttime=0.; maxfrosttime=0.
   m=0.; Fsurf=0.
@@ -144,7 +149,7 @@ program cratersQ_Mars
 
      !if (sdays > tmax-1) then
      if (sdays > tmax-solsy) then
-        Qmeans(:,:) = Qmeans(:,:) + Qn
+        Qmean(:,:) = Qmean(:,:) + Qn
         where (Qn>Qmax) Qmax=Qn
         Tmean = Tmean + Tsurf
         where (Tsurf>Tmaxi) Tmaxi=Tsurf
@@ -172,14 +177,14 @@ program cratersQ_Mars
   close(22)
   if (subsurface) deallocate(T)
 
-  Qmeans=Qmeans/nm
+  Qmean=Qmean/nm
   Tmean=Tmean/nm; Tbottom=Tbottom/nm
   
   open(unit=21,file='qmean.dat',status='unknown',action='write')
   do i=2,NSx-1
      do j=2,NSy-1
         write(21,'(2(i4,1x),f9.2,2x,f6.4,2(1x,f6.1),2(1x,f5.1),1x,f7.1,1x,f6.1)') &
-             & i,j,h(i,j),surfaceSlope(i,j),Qmeans(i,j),Qmax(i,j), &
+             & i,j,h(i,j),surfaceSlope(i,j),Qmean(i,j),Qmax(i,j), &
              & Tmean(i,j),Tmaxi(i,j),mmax(i,j),maxfrosttime(i,j)
      enddo
   enddo
