@@ -44,7 +44,7 @@ program cratersQ_Mars
 
   allocate(h(NSx,NSy), surfaceSlope(NSx,NSy), azFac(NSx,NSy))
   allocate(Qn(NSx,NSy), Tsurf(NSx,NSy), albedo(NSx,NSy), Fsurf(NSx,NSy))
-  allocate(Qmean(NSx,NSy), Qmax(NSx,NSy), Tmean(NSx,NSy), Tmaxi(NSx,NSy), Tbottom(NSx,NSy))
+  allocate(Qmean(NSx,NSy), Qmax(NSx,NSy), Tmean(NSx,NSy), Tmaxi(NSx,NSy))
   allocate(mmax(NSx,NSy), frosttime(NSx,NSy), maxfrosttime(NSx,NSy), Qnm1(NSx,NSy))
 
   ecc = 0.0934;  eps = 25.19*d2r;  omega = 250.87*d2r   ! today
@@ -75,17 +75,18 @@ program cratersQ_Mars
 
   latitude=latitude*d2r
   Tsurf=200.
-  Qmean=0.; Tmean=0.; Tbottom=0.; nm=0
+  Qmean=0.; Tmean=0.; nm=0
   Qmax=0.; Tmaxi=0.; mmax=0.
   frosttime=0.; maxfrosttime=0.
   m=0.; Fsurf=0.
   
   print *,'...reading horizons file...'
-  call readhorizons('Data2/horizons.'//fileext)
+  call readhorizons('horizons.'//fileext)
 
   if (subsurface) then
-     allocate(T(NSx,NSy,1000))
-     call subsurfaceconduction_mars(T(1,1,:),buf,zero,zero,zero,zero,buf,buf,.true.)
+     allocate(T(1+MARGIN:NSx-MARGIN,1+MARGIN:NSy-MARGIN,nz))
+     call subsurfaceconduction_mars(T(NSx/2,NSy/2,:),buf,zero,zero,zero,zero,buf,buf,.true.)
+     allocate(Tbottom(NSx,NSy), source = 0.d0)
   end if
 
   open(unit=22,file='timeseries.dat',status='unknown',action='write')
@@ -178,7 +179,8 @@ program cratersQ_Mars
   if (subsurface) deallocate(T)
 
   Qmean=Qmean/nm
-  Tmean=Tmean/nm; Tbottom=Tbottom/nm
+  Tmean=Tmean/nm
+  if (subsurface) Tbottom=Tbottom/nm
   
   open(unit=21,file='qmean.dat',status='unknown',action='write')
   do i=2,NSx-1
@@ -229,7 +231,8 @@ subroutine subsurfaceconduction_mars(T,Tsurf,dtsec,Qn,Qnp1,emiss,m,Fsurf,init)
      write(*,*) 'Subsurface model parameters'
      write(*,*) '   nz=',nz,' zmax=',zmax,' zfac=',zfac
      write(*,*) '   Thermal inertia=',ti(1),' rho*c=',rhocv(1)
-     print *,'   Diurnal skin depth=',delta,' Geothermal flux=',Fgeotherm
+     write(*,*) '   Diurnal and seasonal skin depths=',delta,delta*sqrt(solsy)
+     write(*,*) '   Geothermal flux=',Fgeotherm
 
      return
   endif
@@ -270,20 +273,18 @@ elemental function evap_ingersoll(T)
   real(8) p0,psat,D,Gbuf,rho,R,rhow,nu,drhooverrho,g
   !real(8), external :: psv
 
-  p0=520  ! atmospheric pressure
+  p0=520.  ! atmospheric pressure
   psat=psv(T)
-  R=8314
+  R=8314.5
   D=20e-4 ! in m^2/s 
   g=3.7
   rhow = psat*18/(R*T)
   rho = p0*44/(R*T)
   drhooverrho=(44-18)*psat/(44*p0-(44-18)*psat) ! Ingersoll (1970)
-  !drhooverrho=(44-18)*psat/(44*(p0-e)) ! diverges at p0=e
+  !drhooverrho=(44-18)*psat/(44*(p0-psat)) ! diverges at p0=e
   !nu=7e-4  ! kinematic viscosity of CO2
   nu=16e-4*(T/200)**1.5
   Gbuf=(drhooverrho*g/nu**2)**(1./3.);
   evap_ingersoll=0.17*D*rhow*Gbuf
 
 end function evap_ingersoll
- 
-

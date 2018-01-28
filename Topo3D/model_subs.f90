@@ -13,13 +13,16 @@ contains
     integer i,j,ia,ja,ierr
       
     open(unit=20,file=fn,status='old',action='read',iostat=ierr)
-    if (ierr>0) stop 'gethorizon: Input file not found'
+    if (ierr>0) then
+       print *,fn
+       stop 'readhorizons: Input file not found'
+    endif
     do i=2,NSx-1
        do j=2,NSy-1
           read(20,*) ia,ja,s(i,j,1:naz)
           if (ia /= i .or. ja /= j) then
              print *,i,j,ia,ja
-             stop 'gethorizon: inconsistent input values'
+             stop 'readhorizons: index mismatch'
           endif
           s(i,j,naz+1) = s(i,j,1) !360 deg
        enddo
@@ -183,12 +186,12 @@ subroutine getskysize(skysize,fn)
   
   print *,'...reading horizons file ...'
   open(unit=21,file=fn,status='old',action='read',iostat=ierr)
-  if (ierr>0) stop 'skysize: Input file not found'
+  if (ierr>0) stop 'getskysize: Input file not found'
   
    do i=2,NSx-1
      do j=2,NSy-1
         read(21,*) ii,jj,smax(:)
-        if (ii/=i .or. jj/=j) stop 'index mismatch'
+        if (ii/=i .or. jj/=j) stop 'getskysize: index mismatch'
 
         ! approximate
         landsize0 = sum(atan(smax))*2*pi/naz
@@ -198,7 +201,7 @@ subroutine getskysize(skysize,fn)
         do k=1,naz
            phi = (/ 0, 0, 1 /) *2*pi/naz
            !kp1 = k+1; if (kp1>naz) kp1=kp1-naz
-           kp1 = mod(k,180)+1
+           kp1 = mod(k,naz)+1
            theta = (/ 0.d0, atan(1/smax(k)), atan(1/smax(kp1)) /) ! from zenith
            dOmega = area_spherical_triangle(phi,theta)
            skysize(i,j) = skysize(i,j) + dOmega

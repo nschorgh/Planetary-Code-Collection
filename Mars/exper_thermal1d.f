@@ -25,8 +25,8 @@ C***********************************************************************
       real*8 rhoav(NMAX), rhoavs, rhoavb1, rhoavb2, zdepth, D0
       real*8 buf,minrho
       character*100 dum1
-      real*8 Tsurface, Tsurface_some, rhofold(NMAX), porosity
-      external Tsurface,psv,Tsurface_some
+      real*8 Tsurface, rhofold(NMAX), porosity
+      external Tsurface,psv
 
 C-------read input       
       open(unit=20,file='exper.par',status='old')
@@ -118,15 +118,12 @@ C     Initialize and write to file
 !      call assignTprofile(z,nz,253.d0,233.d0,T)
 !      write(22,'(f8.4,1000(x,f6.2))') time,(Th+T(i),i=1,nz)
       Tsurf=Tsurface(time,Tmean,Tampl)  ! prescribed surface temperature
-!      Tsurf=Tsurface_some(time) 
 C-------loop over time steps 
       do n=0,nsteps-1
          truetime =(n+1)*dtsec   !   time at n+1 
          time = (n+1)*dt
          Tsurfp1=Tsurface(truetime,Tmean,Tampl)
-!         Tsurfp1=Tsurface_some(truetime) 
          do i=1,nz; Told(i)=T(i); enddo
-!         call cranknT(nz,dz,dtsec,T,Tsurf,Tsurfp1,thIn,rhoc)
 !        T(nz)=233.
         call conductionT(nz,z,dtsec,T,Tsurf,Tsurfp1,ti,rhocv,0.d0,Fsurf)
          psurf=min(p0,psv(Tsurf))
@@ -187,7 +184,6 @@ c        output from last year or last day
          endif
 c        output in equally spaced time intervals
          if (time>=0..and.mod(n,max(1,nsteps/60))==0) then
-!         if (time>=0..and.mod(n,max(1,nsteps/897))==0) then
             write(22,'(f12.0,999(x,f6.2))') time,Tsurf,(T(i),i=1,nz)
             write(23,'(f12.0,999(x,f7.4))') time,psurf,(p(i),i=1,nz)
             write(24,'(f12.0,999(x,g10.4))') 

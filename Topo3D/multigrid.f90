@@ -139,7 +139,7 @@ end subroutine findallhorizon_MG3
 
 
 
-subroutine horizon_MG_core(x0,y0,h00,naz,smax,i,j,h,P)
+pure subroutine horizon_MG_core(x0,y0,h00,naz,smax,i,j,h,P)
   use filemanager, only : NSx,NSy,dx,dy
   use allinterfaces, only : horizontaldistance1, azimuth1, diffangle
   implicit none
@@ -198,13 +198,13 @@ subroutine horizon_MG_core(x0,y0,h00,naz,smax,i,j,h,P)
      if (ak2<ak1) then ! swap
         buf=ak1; ak1=ak2; ak2=buf;
      endif
-     if (ak1>naz .or. ak2>naz) stop 'horizon_MG_core: index out of bound'
+     if (ak1>naz .or. ak2>naz) error stop 'horizon_MG_core: index out of bound'
 
      d3=diffangle(az,az_neighbor)
      do akak=ak1,ak2
      !do akak=1,naz
         ak = akak; if (ak<=0) ak = ak+naz
-        if (azRay(ak)==180) print *,'bad ray'
+        !if (azRay(ak)==180) print *,'bad ray'
         d1=diffangle(az,azRay(ak))
         d2=diffangle(az_neighbor,azRay(ak))
         if (d1+d2<=d3+1.d-5) then  

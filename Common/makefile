@@ -12,7 +12,7 @@ LFLAGS = -O3 -Wall
 
 
 common: generalorbit.o flux_noatm.o conductionQ.o conductionT.o \
-	tridag.o grids.o psv.o derivs.o psvco2.o subl_subs.o \
+	tridag.o grids.o psv3.o derivs.o psvco2.o subl_subs.o \
 	julday.o gasdev.o ran2.o makefile
 
 %.o:	%.f makefile
