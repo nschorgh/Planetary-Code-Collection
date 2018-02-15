@@ -2,10 +2,6 @@ CC = gfortran
 CFLAGS = -O3 -Wall
 LFLAGS = -O3 -Wall
 
-#CC = ifort
-#CFLAGS = -O3 -warn all  -warn notruncated_source
-#LFLAGS = -O3 -warn all
-
 SR = ../Common/
 
 insol_earth: topos.o crater_modules.o sunpos.o model_subs.o insol_earth.o \

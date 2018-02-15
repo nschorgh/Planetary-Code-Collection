@@ -2,10 +2,6 @@ CC = gfortran
 CFLAGS = -O3 -Wall
 LFLAGS = -O3 -Wall
 
-#CC = ifort
-#CFLAGS = -O3 -warn all  -warn notruncated_source
-#LFLAGS = -O3 -warn all
-
 SR = ../Common/
 
 exper_thermal: exper_thermal1d.o vapordiffusioni.o makefile

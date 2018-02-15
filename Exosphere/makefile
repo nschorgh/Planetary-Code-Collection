@@ -2,10 +2,6 @@ CC = gfortran
 CFLAGS = -O3 -Wall  # -fopenmp
 LFLAGS = -O3 -Wall  # -fopenmp
 
-#CC = ifort
-#CFLAGS = -O3 -warn all  -warn notruncated_source
-#LFLAGS = -O3 -warn all
-
 SR = ../Common/
 
 moon4: geogrid.o body.o moon4.o montecarlo.o makefile 

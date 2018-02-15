@@ -40,6 +40,11 @@ derivs.f90:
 subl_subs.f90:
 	parametrizations of sublimation rates
 
+conductionT2.f90:
+	faster version of conductionT2 that precomputes coefficients
+
+conductionQ2.f90:
+	faster version of conductionQ2 that precomputes coefficients
 
 
 3RD PARTY FUNCTIONS AND SUBROUTINES FROM NUMERICAL RECIPES(C)
@@ -51,9 +56,7 @@ julday.for:
 	Julian date, from Numerical Recipes (C), but without the pause statement
 
 ran2.for: 
-	uniform random number generator from Numerical Recipes (C), change real to real(8)
+	uniform random number generator from Numerical Recipes (C), change real to real*8
 
 gasdev.for: 
-	generates gaussian distribution, from Numerical Recipes (C), change real to real(8)
-
-
+	generates gaussian distribution, from Numerical Recipes (C), change real to real*8

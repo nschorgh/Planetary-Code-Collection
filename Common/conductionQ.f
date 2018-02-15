@@ -4,8 +4,8 @@ C***********************************************************************
 C   conductionQ:  program to calculate the diffusion of temperature 
 C                 into the ground and thermal emission at the surface 
 C                 with variable thermal properties on irregular grid
-C   Crank-Nicholson scheme, flux conservative
-C                           uses Samar's radiation formula
+C   Crank-Nicolson scheme, flux conservative
+C                          uses Samar's radiation formula
 C   Eqn: rhoc*T_t = (k*T_z)_z 
 C   BC (z=0): Q(t) + kT_z = em*sig*T^4
 C   BC (z=L): heat flux = Fgeotherm
@@ -18,13 +18,16 @@ C               to the surface or the bottom
 C   T = vertical temperature profile [K] (output)
 C   Qn,Qnp1 = net solar insolation at time steps n and n+1 [Watts m^-2]
 C   emiss = emissivity
-C   Tsurf = surface Temperature [K]  (output)
+C   Tsurf = surface temperature [K]  (output)
+C   Fgeotherm = geothermal heat flux at bottom boundary [W/m^2]
+C   Fsurf = heat flux at surface [W/m^2]  (output)   
 C
 C   Grid: surface is at z=0
 C         T(1) is at z(1); ...; T(i) is at z(i)
-C         k(i) is midway between z(i-1) and z(i); same for rhoc(i)
-C
-C   orginally written by Samar Khatiwala, 2001
+C         k(i) is midway between z(i-1) and z(i)
+C         rhoc(i) is midway between z(i-1) and z(i)
+C     
+C   originally written by Samar Khatiwala, 2001
 C   extended to variable thermal properties
 C         and irregular grid by Norbert Schorghofer
 C***********************************************************************
@@ -33,7 +36,7 @@ C***********************************************************************
       integer NMAX
       real*8 sigSB
       parameter (NMAX=1000)
-      parameter (sigSB=5.67051d-8)
+      parameter (sigSB=5.6704d-8)
 
       integer nz, i
       real*8 z(NMAX), dt, Qn, Qnp1, T(NMAX), ti(NMAX),rhoc(NMAX)
