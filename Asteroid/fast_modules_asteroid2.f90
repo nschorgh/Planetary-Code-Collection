@@ -233,7 +233,7 @@ module allinterfaces
 
   ! Common/*.f90
   interface
-     pure real(8) function flux_noatm(R,decl,latitude,HA,surfaceSlope,azFac)
+     elemental real(8) function flux_noatm(R,decl,latitude,HA,surfaceSlope,azFac)
        implicit none
        real(8), intent(IN) :: R,decl,latitude,HA,surfaceSlope,azFac
      end function flux_noatm

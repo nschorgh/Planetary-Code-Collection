@@ -8,7 +8,8 @@ module miscparams
 
   real(8), parameter :: fracIR=0.04, fracDust=0.02
   real(8), parameter :: solsy = 668.60 ! solar days per Mars year
-  real(8), parameter :: solarDay = 88775.244, Fgeotherm = 0.028  ! Mars
+  real(8), parameter :: solarDay = 88775.244  ! Mars
+  real(8), parameter :: Fgeotherm = 0.028  ! Mars
   integer, parameter :: nz=70
 end module miscparams
 
@@ -23,27 +24,26 @@ program cratersQ_Mars
 
   real(8) ecc, eps, omega
   real(8) edays, marsR, marsLs, marsDec
-  real(8) m(NSx,NSy), dE
   real(8), parameter :: albedo0=0.15, co2albedo=0.65
   real(8), parameter :: a = 1.52366 ! Mars semimajor axis in A.U.
-  real(8), parameter :: emiss = 1.
+  real(8), parameter :: emiss = 0.95
 
   integer nsteps, n, i, j, nm, i0, j0, k
   real(8) tmax, dt, latitude, dtsec, buf
   real(8) HA, sdays, azSun, emax, sinbeta
   real(8), allocatable, dimension(:,:) :: h, surfaceSlope, azFac
   real(8), allocatable, dimension(:,:) :: Qn   ! incoming
-  real(8), allocatable, dimension(:,:) :: Tsurf, albedo, Fsurf
+  real(8), allocatable, dimension(:,:) :: Tsurf, albedo, Fsurf, m
   real(8), allocatable, dimension(:,:) :: Qmean, Qmax, Tmean, Tmaxi, Tbottom
   real(8), allocatable, dimension(:,:) :: mmax, frosttime, maxfrosttime, Qnm1
   real(8), allocatable :: T(:,:,:)  ! subsurface
-  real(8) Tsurfold
+  real(8) dE, Tsurfold
   logical, parameter :: subsurface=.false.  ! control panel
   integer, parameter, dimension(4) :: i00=(/ 41, 42, 44, 74/), j00=(/108, 108, 109, 155/)
   integer, parameter :: MARGIN=20  ! must be at least 1, saves time
 
   allocate(h(NSx,NSy), surfaceSlope(NSx,NSy), azFac(NSx,NSy))
-  allocate(Qn(NSx,NSy), Tsurf(NSx,NSy), albedo(NSx,NSy), Fsurf(NSx,NSy))
+  allocate(Qn(NSx,NSy), Tsurf(NSx,NSy), albedo(NSx,NSy), Fsurf(NSx,NSy), m(NSx,NSy))
   allocate(Qmean(NSx,NSy), Qmax(NSx,NSy), Tmean(NSx,NSy), Tmaxi(NSx,NSy))
   allocate(mmax(NSx,NSy), frosttime(NSx,NSy), maxfrosttime(NSx,NSy), Qnm1(NSx,NSy))
 
@@ -85,7 +85,7 @@ program cratersQ_Mars
 
   if (subsurface) then
      allocate(T(1+MARGIN:NSx-MARGIN,1+MARGIN:NSy-MARGIN,nz))
-     call subsurfaceconduction_mars(T(NSx/2,NSy/2,:),buf,zero,zero,zero,zero,buf,buf,.true.)
+     call subsurfaceconduction_mars(T(NSx/2,NSy/2,:),buf,dtsec,zero,zero,zero,buf,buf,.true.)
      allocate(Tbottom(NSx,NSy), source = 0.d0)
   end if
 
@@ -160,8 +160,8 @@ program cratersQ_Mars
 
         do k=1,4
            i0=i00(k); j0=j00(k)
-           write(22,'(f9.3,2(1x,i4),2x,f6.1,1x,f5.1,1x,f6.1)') &
-                & sdays,i0,j0,Qn(i0,j0),Tsurf(i0,j0),m(i0,j0)
+           write(22,'(f9.3,1x,f6.2,2(1x,i4),2x,f6.1,1x,f5.1,1x,f6.1)') &
+                & sdays,mod(marsLs/d2r,360.),i0,j0,Qn(i0,j0),Tsurf(i0,j0),m(i0,j0)
         enddo
      endif
      if (sdays > tmax-2*solsy) then  ! longest continuous period below 200K
@@ -264,14 +264,13 @@ end subroutine subsurfaceconduction_mars
 
 
 elemental function evap_ingersoll(T)
-  ! Returns evaporation rate (kg/m^2/s)
+  ! Returns sublimation rate (kg/m^2/s)
   ! unused
   use allinterfaces, only : psv
   implicit none
   real(8) evap_ingersoll
   real(8), intent(IN) :: T
   real(8) p0,psat,D,Gbuf,rho,R,rhow,nu,drhooverrho,g
-  !real(8), external :: psv
 
   p0=520.  ! atmospheric pressure
   psat=psv(T)
@@ -285,6 +284,7 @@ elemental function evap_ingersoll(T)
   !nu=7e-4  ! kinematic viscosity of CO2
   nu=16e-4*(T/200)**1.5
   Gbuf=(drhooverrho*g/nu**2)**(1./3.);
-  evap_ingersoll=0.17*D*rhow*Gbuf
+  evap_ingersoll=0.17*D*rhow*Gbuf  ! Ingersoll (1970)
+  !evap_ingersoll=0.13*D*rhow*Gbuf  
 
 end function evap_ingersoll

@@ -12,7 +12,8 @@ Common Subroutines and Functions
 FILES
 
 flux_noatm.f90: 
-	Insolation on horizontal or sloped surface without atmosphere
+	flux_noatm: Insolation on horizontal or sloped surface without atmosphere
+	flux_wshad: incoming flux for airless body with distant horizon
 
 psv.f: 
 	vapor pressure of H2O

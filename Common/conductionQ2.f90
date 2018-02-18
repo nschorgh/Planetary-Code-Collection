@@ -28,6 +28,7 @@ contains
 !   calculate coefficients alpha(:), gamma(:), a(:), b(:), c(:)
 !   has no public output
 !
+!   dt = time step [s]
 !   ti = thermal inertia [J m^-2 K^-1 s^-1/2]  VECTOR
 !   rhoc = rho*c  VECTOR where rho=density [kg m^-3] and 
 !                              c=specific heat [J K^-1 kg^-1]
@@ -47,7 +48,9 @@ contains
     integer i
     real*8 k(nz), dz, beta, buf
 
-    allocate(alpha(nz), gamma(nz), a(nz), b(nz), c(nz))
+    if (.not. allocated(alpha)) then
+       allocate(alpha(nz), gamma(nz), a(nz), b(nz), c(nz))
+    endif
     
     ! set some constants
     dz=2.*z(1)

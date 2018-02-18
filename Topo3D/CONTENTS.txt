@@ -39,12 +39,6 @@ model_subs.f90:
 multigrid.f90:
 	subroutines for multigrid acceleration
 
-flux_wshad.f90:
-	incoming flux for airless body with distant horizon
-
-flux_mars.f90:
-	incoming flux with Mars atmosphere with distant horizon
-
 test_shadows1pt.f90: (main program)
 	test shadow calculations
 

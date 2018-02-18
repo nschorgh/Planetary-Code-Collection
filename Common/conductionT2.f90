@@ -19,11 +19,12 @@ module conductionT
 
 
 contains
-  subroutine conductionT2_init(nz,z,dt,ti,rhoc, Fgeotherm)
+  subroutine conductionT2_init(nz,z,dt,ti,rhoc,Fgeotherm)
 !***********************************************************************
 !   calculate coefficients alpha(:), gamma(:), a(:), b(:), c(:)
 !   has no public output
 !
+!   dt = time step [s]
 !   ti = thermal inertia [J m^-2 K^-1 s^-1/2]  VECTOR
 !   rhoc = rho*c  VECTOR where rho=density [kg m^-3] and 
 !                              c=specific heat [J K^-1 kg^-1]
@@ -43,8 +44,11 @@ contains
     real*8, intent(IN) :: z(nz), dt, ti(nz), rhoc(nz), Fgeotherm
     integer i
     real(8) k(nz), buf
-    allocate(alpha(nz), gamma(nz), a(nz), b(nz), c(nz))
     
+    if (.not. allocated(alpha)) then
+       allocate(alpha(nz), gamma(nz), a(nz), b(nz), c(nz))
+    endif
+       
     !   set some constants
     k(:) = ti(:)**2/rhoc(:) ! thermal conductivity
     alpha(1) = k(2)*dt/rhoc(1)/(z(2)-z(1))/z(2) 

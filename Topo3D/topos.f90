@@ -39,7 +39,11 @@ module filemanager
   !integer, parameter :: NSx=150, NSy=180 
   !character(len = *), parameter :: fileext = 'rsl4'
   !real(8), parameter :: dx=4., dy=4., RMAX=1e3
-
+  !integer, parameter :: MARGIN = 20
+  !character(len = *), parameter :: fileext = 'rsl1'
+  !real(8), parameter :: dx=1., dy=1., RMAX=1e3
+  !integer, parameter :: MARGIN = 20*4
+  
   !integer, parameter :: NSx=128, NSy=128
   !character(len = *), parameter :: fileext = 'moongauss3.rms=0.5'
   !real(8), parameter :: dx=1., dy=1., RMAX=1e5
