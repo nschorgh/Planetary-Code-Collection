@@ -173,7 +173,7 @@ subroutine getskysize(skysize,fn)
   implicit none
   character(len=*), intent(IN) :: fn
   real(8), intent(OUT) :: skysize(NSx,NSy) 
-  real(8), parameter :: pi=3.1415926535897932, d2r=pi/180.
+  real(8), parameter :: pi=3.1415926535897932
   integer, parameter :: naz=180   ! # of azimuths
   real(8) smax(naz)
   integer i, j, ii, jj, ierr, k, kp1
@@ -188,7 +188,7 @@ subroutine getskysize(skysize,fn)
   open(unit=21,file=fn,status='old',action='read',iostat=ierr)
   if (ierr>0) stop 'getskysize: Input file not found'
   
-   do i=2,NSx-1
+  do i=2,NSx-1
      do j=2,NSy-1
         read(21,*) ii,jj,smax(:)
         if (ii/=i .or. jj/=j) stop 'getskysize: index mismatch'

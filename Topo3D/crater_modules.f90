@@ -286,29 +286,6 @@ module allinterfaces
   end interface
 
   interface
-     subroutine findallhorizon_MG3(h,h2,h3,i0,j0,naz,smax,RMG)
-       use filemanager, only : NSx,NSy,dx,dy
-       implicit none
-       integer, intent(IN) :: i0,j0,naz
-       real(8), intent(IN) :: h(NSx,NSy),h2(NSx/2,NSy/2),h3(NSx/4,NSy/4)
-       real(8), intent(IN) :: RMG
-       real(8), intent(OUT) :: smax(naz)
-     end subroutine findallhorizon_MG3
-  end interface
-
-  interface
-     subroutine findallhorizon_MG5(h,h2,h3,h4,h5,i0,j0,naz,smax,RMG)
-       use filemanager, only : NSx,NSy,dx,dy
-       implicit none
-       integer, intent(IN) :: i0,j0,naz
-       real(8), intent(IN) :: h(NSx,NSy),h2(NSx/2,NSy/2),h3(NSx/4,NSy/4)
-       real(8), intent(IN) :: h4(NSx/8,NSy/8),h5(NSx/16,NSy/16)
-       real(8), intent(IN) :: RMG
-       real(8), intent(OUT) :: smax(naz)
-     end subroutine findallhorizon_MG5
-  end interface
-
-  interface
      pure subroutine horizon_MG_core(x0,y0,h00,naz,smax,i,j,h,P)
        use filemanager, only : NSx,NSy,dx,dy
        implicit none

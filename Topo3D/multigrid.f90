@@ -11,6 +11,7 @@ subroutine downsample(NSx,NSy,h,hhalf)
   real(8) psum, w(NSx/2,NSy/2)
   integer, parameter :: ei(5)= (/0, 1, 0, -1, 0 /) ! counter-clockwise
   integer, parameter :: ej(5)= (/0, 0, 1, 0, -1 /)
+  integer, parameter :: nan = -32000 
 
   do i2=1,NSx/2
      x(i2) = 2*i2
@@ -27,11 +28,16 @@ subroutine downsample(NSx,NSy,h,hhalf)
            jj = y(j2) + ej(k)
            if (ii>NSx .or. ii<1) cycle
            if (jj>NSy .or. jj<1) cycle
+           if (h(ii,jj)<=nan) cycle
            r = 1+3*(ei(k)**2+ej(k)**2)  ! should be 1 or 4
            psum = psum + h(ii,jj)/r           
            w(i2,j2) = w(i2,j2) + 1./r
         enddo
-        hhalf(i2,j2) = psum/w(i2,j2)
+        if (w(i2,j2)>=1.5) then    ! 1/1 + 4/4 = 2
+           hhalf(i2,j2) = psum/w(i2,j2)
+        else ! only two or fewer valid neighbors
+           hhalf(i2,j2) = nan
+        endif
 
      enddo
   enddo
@@ -49,7 +55,6 @@ real(8) elemental function horizontaldistance1(x1,y1,x2,y2)
   implicit none
   real(8), intent(IN) :: x1,y1,x2,y2
   horizontaldistance1 = sqrt((x1-x2)**2+(y1-y2)**2)
-  !if (horizontaldistance1>0. .and. horizontaldistance1<1d-6) stop
 end function horizontaldistance1
 
 
@@ -83,59 +88,6 @@ subroutine findallhorizon_MG1(h,i0,j0,naz,smax)
   end do
 
 end subroutine findallhorizon_MG1
-
-
-
-subroutine findallhorizon_MG3(h,h2,h3,i0,j0,naz,smax,RMG)
-  ! based on shadow_subs.f90, but for multigrid method
-  use filemanager, only : NSx,NSy,dx,dy
-  use allinterfaces, only : horizontaldistance1, horizon_MG_core
-  implicit none
-  integer, intent(IN) :: i0,j0,naz
-  real(8), intent(IN) :: h(NSx,NSy),h2(NSx/2,NSy/2),h3(NSx/4,NSy/4)
-  real(8), intent(IN) :: RMG
-  real(8), intent(OUT) :: smax(naz)
-  integer i1,j1,i2,j2,i3,j3
-  real(8) r,x0,y0,h00
-  logical :: VERBOSE = .false.
-
-  smax=0.
-
-  x0 = i0*dx; y0 = j0*dy; h00 = h(i0,j0)
-
-  ! start with the coarsest grid
-  ! if distance is too close, switch to finer grid
-  do i3=1,NSx/4 + 1  ! +1 so a last odd one gets included too
-     !if (sin(azRay)*(4*i3-i0) < 0.) cycle  ! TO BE TESTED
-     do j3=1,NSy/4 + 1  ! +1 so a last odd one gets included too
-        r = horizontaldistance1(4*i3*dx,4*j3*dy,x0,y0)
-        !r = horizontaldistance(4*i3,4*j3,i0,j0)
-        if (r>=2*RMG) then  ! do 1 coarse grid cell
-           call horizon_MG_core(x0,y0,h00,naz,smax,i3,j3,h3,4)
-           if (VERBOSE) write(6,*) 'Level3',4*i3,4*j3,smax(90)
-        else ! do 4 finer cells
-           do i2=2*i3-1,2*i3
-              do j2=2*j3-1,2*j3
-                 r = horizontaldistance1(2*i2*dx,2*j2*dy,x0,y0)
-                 !r = horizontaldistance(2*i2,2*j2,i0,j0)
-                 if (r>=RMG) then
-                    call horizon_MG_core(x0,y0,h00,naz,smax,i2,j2,h2,2)
-                    if (VERBOSE) write(6,*) 'Level2',2*i2,2*j2,smax(90)
-                 else ! do 4 finest cells
-                    do i1=2*i2-1,2*i2
-                       do j1=2*j2-1,2*j2
-                          if (i1<=1 .or. j1<=1 .or. i1>=NSx .or. j1>=NSy) cycle
-                          call horizon_MG_core(x0,y0,h00,naz,smax,i1,j1,h,1)
-                          if (VERBOSE) write(6,*) 'Level1',i1,j1,smax(90)
-                       enddo
-                    enddo
-                 endif
-              enddo
-           enddo
-        endif
-     enddo
-  enddo
-end subroutine findallhorizon_MG3
 
 
 
@@ -225,3 +177,150 @@ pure subroutine horizon_MG_core(x0,y0,h00,naz,smax,i,j,h,P)
   end do
 
 end subroutine horizon_MG_core
+
+
+
+module newmultigrid
+  use filemanager, only : NSx,NSy,dx,dy
+  real(8), allocatable :: h2(:,:), h3(:,:), h4(:,:), h5(:,:), h6(:,:)
+  real(8), allocatable :: h7(:,:), h8(:,:)
+  
+contains
+  subroutine downsample_all(h,LMAX,LACT)
+    use allinterfaces, only: downsample
+    implicit none
+    integer, intent(IN) :: LMAX
+    real(8), intent(IN) :: h(NSx,NSy)
+    integer, intent(OUT) :: LACT  ! levels actually allocated
+
+    LACT = 1
+    if (LMAX<2) return
+    allocate(h2(NSx/2,NSy/2))
+    call downsample(NSx,NSy,h,h2)
+    LACT = 2
+    if (min(NSx,NSy)/4>10 .and. LMAX>=3) then
+       allocate(h3(NSx/4,NSy/4))
+       call downsample(NSx/2,NSy/2,h2,h3)
+       LACT = 3
+       if (min(NSx,NSy)/8>10 .and. LMAX>=4) then
+          allocate(h4(NSx/8,NSy/8))
+          call downsample(NSx/4,NSy/4,h3,h4)
+          LACT = 4
+          if (min(NSx,NSy)/16>10 .and. LMAX>=5) then
+             allocate(h5(NSx/16,NSy/16));
+             call downsample(NSx/8,NSy/8,h4,h5)
+             LACT = 5
+             if (min(NSx,NSy)/32>10 .and. LMAX>=6) then
+                allocate(h6(NSx/32,NSy/32))
+                call downsample(NSx/16,NSy/16,h5,h6)
+                LACT = 6
+                if (min(NSx,NSy)/64>10 .and. LMAX>=7) then
+                   allocate(h7(NSx/64,NSy/64))
+                   call downsample(NSx/32,NSy/32,h6,h7)
+                   LACT = 7
+                   if (min(NSx,NSy)/128>10 .and. LMAX>=8) then
+                      allocate(h8(NSx/128,NSy/128))
+                      call downsample(NSx/64,NSy/64,h7,h8)
+                      LACT = 8
+                   endif
+                endif
+             endif
+          endif
+       endif
+    endif
+  end subroutine downsample_all
+
+
+  subroutine findallhorizon_MGR(h,i0,j0,naz,smax,RMG,L)
+    ! based on shadow_subs.f90, but for multigrid method
+    ! recursive implementation
+    use allinterfaces, only: horizontaldistance1, horizon_MG_core
+    implicit none
+    integer, intent(IN) :: i0,j0,naz,L
+    real(8), intent(IN) :: h(NSx,NSy)
+    real(8), intent(IN) :: RMG
+    real(8), intent(OUT) :: smax(naz)
+    integer P,ii,jj
+    real(8) r,x0,y0,h00
+    logical, parameter :: VERBOSE = .false.
+
+    smax=0.
+    
+    x0 = i0*dx; y0 = j0*dy; h00 = h(i0,j0)
+    
+    ! L=5 should exactly match output of MG5 implementation 
+    P=2**(L-1)
+    if (L>8 .or. L<2) error stop 'findallhorizon_MGR: invalid grid level'
+    ! The top loop for the coarsest grid is different from all others
+    do ii=1,NSx/P + 1; do jj=1,NSy/P+1  ! +1 so a last odd one gets included too
+       r = horizontaldistance1(P*ii*dx,P*jj*dy,x0,y0)
+       if (r>=P/2*RMG) then  ! do 1 coarse grid cell
+          !call horizon_MG_core(x0,y0,h00,naz,smax,ii,jj,h7,P) ! make sure to use hL
+          select case (L)
+          case (8)
+             call horizon_MG_core(x0,y0,h00,naz,smax,ii,jj,h8,P)
+          case (7)
+             call horizon_MG_core(x0,y0,h00,naz,smax,ii,jj,h7,P)
+          case (6)
+             call horizon_MG_core(x0,y0,h00,naz,smax,ii,jj,h6,P)
+          case (5)
+             call horizon_MG_core(x0,y0,h00,naz,smax,ii,jj,h5,P)
+          case (4)
+             call horizon_MG_core(x0,y0,h00,naz,smax,ii,jj,h4,P)
+          case (3)
+             call horizon_MG_core(x0,y0,h00,naz,smax,ii,jj,h3,P)
+          case (2)
+             call horizon_MG_core(x0,y0,h00,naz,smax,ii,jj,h2,P)
+          end select
+          if (VERBOSE) write(6,*) 'Level',L,P*ii,P*jj,smax(90)
+       else
+          call findallhorizon_recursive(ii,jj,h,x0,y0,h00,naz,smax,RMG,L-1)
+       endif
+    enddo; enddo
+  end subroutine findallhorizon_MGR
+
+
+  pure recursive subroutine findallhorizon_recursive(i,j,h,x0,y0,h00,naz,smax,RMG,L)
+    use allinterfaces, only: horizontaldistance1, horizon_MG_core
+    implicit none
+    integer, intent(IN) :: naz,L,i,j
+    real(8), intent(IN) :: h(NSx,NSy)
+    real(8), intent(IN) :: x0,y0,h00,RMG
+    real(8), intent(INOUT) :: smax(naz)
+    integer ii,jj,P
+    real(8) r
+    
+    ! start with the coarsest grid
+    ! if distance is too close, switch to finer grid
+    
+    P = 2**(L-1)
+    if (L>7) error stop 'findallhorizon_recursive is not prepared for this'
+    if (L<1) error stop 'findallhorizon_recursive: this must not happen'
+    do ii=2*i-1,2*i; do jj=2*j-1,2*j
+       r = horizontaldistance1(P*ii*dx,P*jj*dy,x0,y0)
+       if (P==1) r = 0.  ! should be redundant
+       if (r>=P/2*RMG) then  ! do 1 coarse grid cell
+          select case (L)
+          case (7)
+             call horizon_MG_core(x0,y0,h00,naz,smax,ii,jj,h7,64)
+          case (6)
+             call horizon_MG_core(x0,y0,h00,naz,smax,ii,jj,h6,32)
+          case (5)
+             call horizon_MG_core(x0,y0,h00,naz,smax,ii,jj,h5,16)
+          case (4)
+             call horizon_MG_core(x0,y0,h00,naz,smax,ii,jj,h4,8)
+          case (3)
+             call horizon_MG_core(x0,y0,h00,naz,smax,ii,jj,h3,4)
+          case (2)
+             call horizon_MG_core(x0,y0,h00,naz,smax,ii,jj,h2,2)
+          case (1)
+             if (ii<=1 .or. jj<=1 .or. ii>=NSx .or. jj>=NSy) cycle
+             call horizon_MG_core(x0,y0,h00,naz,smax,ii,jj,h,1)
+          end select
+       else ! do 4 finer cells
+          call findallhorizon_recursive(ii,jj,h,x0,y0,h00,naz,smax,RMG,L-1)
+       endif
+    enddo; enddo
+  end subroutine findallhorizon_recursive
+
+end module newmultigrid

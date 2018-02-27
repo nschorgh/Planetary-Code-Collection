@@ -1,5 +1,7 @@
 ChangeLog
 
+Feb 2018: recursive implementation of multigrid
+
 7 Feb 2018: added conductionQ2, which is about 1/3 faster than the legendary conductionQ
 
 16 Dec 2017: first version of 3D illumination code for Mars

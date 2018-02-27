@@ -1,68 +1,3 @@
-pure subroutine findonehorizon(h,i0,j0,azRay,smax)
-! finds horizon for one azimuth ray
-  use filemanager, only : NSx,NSy,RMAX
-  use allinterfaces, only : horizontaldistance, azimuth, diffangle
-  implicit none
-  integer, intent(IN) :: i0,j0
-  real(8), intent(IN) :: h(NSx,NSy),azRay
-  real(8), intent(OUT) :: smax
-  integer i,j,k,in,jn
-  real(8) az,az_neighbor,t,r,r_neighbor,rcut,s,hcut,d1,d2,d3,maxsep
-  integer, parameter :: ex(8) = (/ 1, 1, 0, -1, -1, -1, 0, 1 /)
-  integer, parameter :: ey(8) = (/ 0, 1, 1, 1, 0, -1, -1, -1 /)
-
-  smax=0.
-  maxsep = horizontaldistance(1,1,2,2)
-  do i=2,NSx-1
-     if (horizontaldistance(i,1,i0,1)>RMAX) cycle  ! saves computations
-     if (sin(azRay)*(i-i0) < 0.) cycle  ! saves computations
-     do j=2,NSy-1
-        if (i==i0 .and. j==j0) cycle
-        r = horizontaldistance(i,j,i0,j0)
-        if (r>RMAX) cycle  ! saves computations
-        az = azimuth(i0,j0,i,j)
-        if (cos(azRay)*(j-j0) > 0.) cycle  ! saves computations
-
-        d1=diffangle(az,azRay)
-        if (r*d1*3.1416 > maxsep*3) cycle   ! saves computations
-        if (d1==0.) then  ! grid point lies on ray
-           s = (h(i,j)-h(i0,j0))/r
-           if (s>smax) smax=s
-           cycle
-        endif
-
-        do k=1,8
-           in = i+ex(k)
-           jn = j+ey(k)
-           if (in==i0 .and. jn==j0) cycle
-           !if ((in==i0+1.and.jn==j0) .or. (in==i0-1.and.jn==j0) .or. &
-           !     & (in==i0.and.jn==j0+1) .or. (in==i0.and.jn==j0-1)) cycle
-           az_neighbor = azimuth(i0,j0,in,jn)
-
-           d2=diffangle(az_neighbor,azRay)
-           d3=diffangle(az,az_neighbor)
-
-           if (d1+d2<=d3+1.d-5) then  
-              if (d1>0.5*d3 .and. d3>1.d-6) cycle ! try this
-              r_neighbor = horizontaldistance(in,jn,i0,j0)
-              ! edge between h1,i0,j0 and h2,in,jn
-              if (d3>1.d-6) then
-                 t = d1/d3  ! approximation
-              else
-                 t = 0.5  ! dirty fix
-              endif
-              hcut = h(i,j)*(1-t)+h(in,jn)*t
-              rcut = r*(1-t)+r_neighbor*t
-              s = (hcut-h(i0,j0))/rcut
-              if (s>smax) smax=s
-           endif
-        end do
-     enddo
-  enddo
-end subroutine findonehorizon
-
-
-
 elemental function diffangle(a1,a2)
   implicit none
   real(8) diffangle
@@ -275,6 +210,8 @@ subroutine compactoutput(unit,value,nr)
   do j=1,nr
      if (value(j)==0.) then
         write(unit,'(1x,f2.0)',advance='no') value(j)
+     elseif (value(j)>=9.99995d0) then ! format overflow
+        write(unit,'(1x,f6.4)',advance='no') 9.9999
      else
         write(unit,'(1x,f6.4)',advance='no') value(j)
      endif
