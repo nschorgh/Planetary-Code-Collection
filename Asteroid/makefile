@@ -25,7 +25,7 @@ asteroid_fast2: fast_modules_asteroid2.f90 fast_modules_asteroid2.o \
 
 asteroid_fast1: fast_modules_asteroid1.f90 fast_modules_asteroid1.o \
 	asteroid_fast1.o fast_subs_asteroid1.o makefile 
-	make -C $(SR) common
+	make -C $(SR) common more
 	$(CC) $(LFLAGS) asteroid_fast1.o fast_subs_asteroid1.o \
 	$(SR)flux_noatm.o $(SR)conductionQ.o $(SR)tridag.o \
 	$(SR)grids.o $(SR)generalorbit.o $(SR)psv.o $(SR)subl_subs.o -o fast

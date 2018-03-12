@@ -1,5 +1,5 @@
 elemental function flux_mars(R,decl,latitude,HA,albedo, &
-     &   fracir,fracdust,surfaceSlope,azFac,smax)
+     &   fracir,fracdust,surfaceSlope,azFac,emax,viewfactor)
 !***********************************************************************
 !   flux:  program to calculate solar insolation
 !     identical to function flux, but with distant horizon
@@ -12,13 +12,14 @@ elemental function flux_mars(R,decl,latitude,HA,albedo, &
 !     fracdust: fraction of scattering
 !     surfaceSlope: >0, (radians) 
 !     azFac: azimuth of gradient (radians east of north)
-!     smax: maximum slope in direction of azimuth
+!     emax: maximum horizon elevation in direction of azimuth (radians)
+!     viewfactor: fraction of unobstructed sky (0...1)  
 !***********************************************************************
   implicit none
   real(8) flux_mars
   real(8), parameter :: pi=3.1415926535897931, So=1365., d2r=pi/180.
   real(8), intent(IN) :: R,decl,latitude,HA,albedo,fracIR,fracDust
-  real(8), intent(IN) :: surfaceSlope,azFac,smax
+  real(8), intent(IN) :: surfaceSlope,azFac,emax,viewfactor
   real(8) c1,s1,solarAttenuation,Q
   real(8) sinbeta,sinbetaNoon,cosbeta,sintheta,azSun,buf
 
@@ -44,15 +45,15 @@ elemental function flux_mars(R,decl,latitude,HA,albedo, &
 
   sintheta = max(sintheta,0.d0)  ! horizon
   if (sinbeta<0.) sintheta=0.  ! horizontal horizon at infinity
-  if (sinbeta<sin(smax)) sintheta=0. 
+  if (sinbeta<sin(emax)) sintheta=0. 
 
-  solarAttenuation = (1.-albedo)* &
-       &     (1.- fracIR - fracDust)**(1./max(sinbeta,0.04)) 
-! net flux: solar insolation + IR
-  Q = sintheta*solarAttenuation +   &
-       &     cos(surfaceSlope/2.)**2*sinbetaNoon*fracIR 
+! net flux
+  Q = (1.-albedo)*sintheta
+! contributions from atmosphere
+  solarAttenuation = (1.- fracIR - fracDust)**(1./max(sinbeta,0.04))
+  Q = Q*solarAttenuation + viewfactor*sinbetaNoon*fracIR 
   if (sinbeta>0.d0) then
-     Q = Q + 0.5*cos(surfaceSlope/2.)**2*fracDust
+     Q = Q + (1.-albedo)*0.5*viewfactor*fracDust
   endif
   flux_mars=Q*So/R**2
   

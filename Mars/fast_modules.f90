@@ -5,7 +5,7 @@ module miscparameters
   real(8), parameter :: marsDay=88775.244, solsperyear=668.60
   real(8), parameter :: icedensity=927.
   real(8), parameter :: earthDay=86400.
-  real(8), parameter :: sigSB=5.67051e-8
+  real(8), parameter :: sigSB=5.6704e-8
   ! for reference here are some parameters that are literally coded
   !   mass of H2O molecule = 18
   !   universal gas constant = 8314 

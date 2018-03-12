@@ -29,7 +29,7 @@ subroutine jsubv(NS, zdepth, latitude, albedo0, thIn, pfrost, nz, &
   integer, parameter :: NMAX=1000
   real*8, parameter :: pi=3.1415926535897932, d2r=pi/180.
   real*8, parameter :: earthDay=86400., marsDay=88775.244, solsperyear=668.60
-  real*8, parameter :: sigSB=5.67051d-8, Lco2frost=6.0e5, co2albedo=0.65, co2emiss=1.
+  real*8, parameter :: sigSB=5.6704d-8, Lco2frost=6.0e5, co2albedo=0.65, co2emiss=1.
 
   integer, intent(IN) :: NS, nz, mode
   real*8, intent(IN) :: zdepth(NS), latitude, albedo0, thIn, pfrost, rhoc

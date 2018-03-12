@@ -16,7 +16,7 @@ C***********************************************************************
       integer NMAX
       real*8 pi, d2r, earthDay, marsDay, sigSB, Tco2frost, Lco2frost
       real*8 solsy   ! number of sols in a Mars year
-      parameter (NMAX=1000, sigSB=5.67051d-8)
+      parameter (NMAX=1000, sigSB=5.6704d-8)
       parameter (pi=3.1415926535897932, d2r=pi/180.,
      &     earthDay=86400., marsDay=88775.244, solsy=668.60)
       parameter (Tco2frost=145., Lco2frost=6.0e5)

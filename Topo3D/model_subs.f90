@@ -8,6 +8,7 @@ module newhorizons
 contains
   subroutine readhorizons(fn)
     ! reads and stores all horizon elevations
+    ! also converts slopes to angles
     implicit none
     character(len=*), intent(IN) :: fn
     integer i,j,ia,ja,ierr
@@ -51,7 +52,34 @@ contains
     smax = s(i0,j0,k+1)*(1.-a) + s(i0,j0,k+2)*a
     getonehorizon = smax
   end function getonehorizon
-
+  
+  pure subroutine getskysize(skysize)
+    !***********************************************************************
+    !   calculates sky size (steradian) from horizons
+    !   in-module abbreviated version
+    !   returns viewfactor 0...1
+    !***********************************************************************
+    use allinterfaces, only: area_spherical_triangle
+    implicit none
+    real(8), intent(OUT) :: skysize(NSx,NSy) 
+    real(8), parameter :: pi=3.1415926535897932
+    integer i, j, k
+    real(8) phi(3), theta(3), dOmega
+    
+    do i=2,NSx-1
+       do j=2,NSy-1
+          skysize(i,j)=0
+          phi = (/ 0, 0, 1 /) *2*pi/naz
+          do k=1,naz
+             theta = (/ 0.d0, atan(1/s(i,j,k)), atan(1/s(i,j,k+1)) /) ! from zenith
+             dOmega = area_spherical_triangle(phi,theta)
+             skysize(i,j) = skysize(i,j) + dOmega
+          enddo
+          skysize(i,j) = skysize(i,j)/(2*pi)  ! steradian -> viewfactor
+       enddo
+    enddo
+  end subroutine getskysize
+  
 end module newhorizons
 
 
@@ -163,53 +191,3 @@ subroutine getmaxfieldsize(NSx,NSy,fileext,maxsize)
 end subroutine getmaxfieldsize
 
 
-
-subroutine getskysize(skysize,fn)
-!***********************************************************************
-!   reads horizons file and calculates sky size (steradian)
-!***********************************************************************
-  use filemanager, only : NSx,NSy,fileext
-  use allinterfaces, except_this_one => getskysize
-  implicit none
-  character(len=*), intent(IN) :: fn
-  real(8), intent(OUT) :: skysize(NSx,NSy) 
-  real(8), parameter :: pi=3.1415926535897932
-  integer, parameter :: naz=180   ! # of azimuths
-  real(8) smax(naz)
-  integer i, j, ii, jj, ierr, k, kp1
-  real(8) phi(3), theta(3), dOmega, landsize0
-
-  ! azimuth in degrees east of north, 0=north facing, 0...2*pi
-
-  print *,'# azimuth rays = ',naz
-  write(*,*) 'Nx=',NSx,'Ny=',NSy,'File=',fileext
-  
-  print *,'...reading horizons file ...'
-  open(unit=21,file=fn,status='old',action='read',iostat=ierr)
-  if (ierr>0) stop 'getskysize: Input file not found'
-  
-  do i=2,NSx-1
-     do j=2,NSy-1
-        read(21,*) ii,jj,smax(:)
-        if (ii/=i .or. jj/=j) stop 'getskysize: index mismatch'
-
-        ! approximate
-        landsize0 = sum(atan(smax))*2*pi/naz
-
-        ! exact
-        skysize(i,j)=0
-        do k=1,naz
-           phi = (/ 0, 0, 1 /) *2*pi/naz
-           !kp1 = k+1; if (kp1>naz) kp1=kp1-naz
-           kp1 = mod(k,naz)+1
-           theta = (/ 0.d0, atan(1/smax(k)), atan(1/smax(kp1)) /) ! from zenith
-           dOmega = area_spherical_triangle(phi,theta)
-           skysize(i,j) = skysize(i,j) + dOmega
-        enddo
-
-        !print *,i,j,2*pi-landsize0,skysize(i,j)
-     enddo
-  enddo
-
-  close(21)
-end subroutine getskysize

@@ -27,7 +27,7 @@ C***********************************************************************
       parameter (NMAX=1000)
       parameter (pi=3.1415926535897932, 
      &     earthDay=86400.,marsDay=88775.244,solsperyear=668.60)
-      parameter (sigSB=5.67051d-8, Lco2frost=6.0e5)
+      parameter (sigSB=5.6704d-8, Lco2frost=6.0e5)
       parameter (co2albedo=0.60, co2emiss=1.)
       parameter (NULL=0.)
 

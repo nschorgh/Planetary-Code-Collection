@@ -41,11 +41,14 @@ derivs.f90:
 subl_subs.f90:
 	parametrizations of sublimation rates
 
+psv3.f: 
+	vapor pressure of H2O; alternative version of psv.f
+
 conductionT2.f90:
-	faster version of conductionT2 that precomputes coefficients
+	version of conductionT that precomputes coefficients
 
 conductionQ2.f90:
-	faster version of conductionQ2 that precomputes coefficients
+	version of conductionQ that precomputes coefficients
 
 
 3RD PARTY FUNCTIONS AND SUBROUTINES FROM NUMERICAL RECIPES(C)

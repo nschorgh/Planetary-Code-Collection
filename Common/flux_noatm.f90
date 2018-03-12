@@ -74,7 +74,7 @@ elemental real(8) function flux_wshad(R,sinbeta,azSun,surfaceSlope,azFac,smax)
 !-shadowing
   sintheta = max(sintheta,0.d0)  ! self-shadowing
   if (sinbeta<0.) sintheta=0.  ! horizontal horizon at infinity
-  if (sinbeta<sin(smax)) sintheta=0.  ! shadowing
+  if (sinbeta<sin(smax)) sintheta=0.  ! shadowing from distant horizon
 
 !-intensity
   flux_wshad = sintheta*So/(R**2)

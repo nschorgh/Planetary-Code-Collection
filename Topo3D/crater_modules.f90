@@ -154,12 +154,6 @@ module allinterfaces
   end interface
 
   interface
-     elemental real(8) function flux_wshad(R,sinbeta,azSun,surfaceSlope,azFac,smax)
-       real(8), intent(IN) :: R,azSun,sinbeta,surfaceSlope,azFac,smax
-     end function flux_wshad
-  end interface
-
-  interface
      subroutine getfieldofview(NSx,NSy,fileext,cc,ia,ja,dOh,skysize,CCMAX)
        integer, intent(IN) :: NSx, NSy
        character(len=*), intent(IN) :: fileext
@@ -297,4 +291,11 @@ module allinterfaces
      end subroutine horizon_MG_core
   end interface
 
+  ! f90 routines in Common/
+  interface
+     elemental real(8) function flux_wshad(R,sinbeta,azSun,surfaceSlope,azFac,emax)
+       real(8), intent(IN) :: R,azSun,sinbeta,surfaceSlope,azFac,emax
+     end function flux_wshad
+  end interface
+  
 end module allinterfaces

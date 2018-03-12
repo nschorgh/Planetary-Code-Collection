@@ -402,17 +402,22 @@ subroutine nonuniformgravity(vspeed,alpha,d,t)
   real(8), intent(IN) :: vspeed
   real(8), intent(IN) :: alpha  ! zenith angle of launch velocity
   real(8), intent(OUT) :: d, t  ! distance and flighttime
-  real(8), parameter :: pi=3.1415926535897932
+  !real(8), parameter :: pi=3.1415926535897932
   real(8) gamma, ecc, Ep
 
   gamma = (vspeed/vescape)**2
   !a = Rbody/2./(1-gamma)
   ecc = sqrt(1-4*(1-gamma)*gamma*sin(alpha)**2)
+  !theta = 1/ecc*(1-2*gamma*sin(alpha)**2)
   d = 2*Rbody*acos(1/ecc*(1-2*gamma*sin(alpha)**2))
-  Ep = pi - 2*atan(sqrt((1-ecc)/(1+ecc))/tan(d/(4*Rbody)))
+  !d = 2*Rbody*acos(theta)
+  !Ep = pi - 2*atan(sqrt((1-ecc)/(1+ecc))/tan(d/(4*Rbody)))
+  Ep = 2*atan(sqrt((1+ecc)/(1-ecc))*tan(d/(4*Rbody))) 
+  !Ep = 2*atan(sqrt((1+ecc)/(1-ecc)*(1-theta)/(1+theta))) 
   if (ecc>1.-1d-5) then
      d = Rbody*4*gamma*sin(alpha)
-     Ep = pi - 2*atan(sqrt((1-gamma)/gamma))
+     !Ep = pi - 2*atan(sqrt((1-gamma)/gamma))
+     Ep = 2*atan(sqrt(gamma/(1-gamma)))
   endif
   !t = 2*sqrt(2*a**3/Rbody/vescape**2)*(Ep+ecc*sin(Ep))
   t = (Rbody/vescape)/(1-gamma)**1.5*(Ep+ecc*sin(Ep))
