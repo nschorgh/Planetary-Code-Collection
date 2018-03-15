@@ -9,7 +9,7 @@ module miscparams
   real(8), parameter :: fracIR=0.04, fracDust=0.02
   real(8), parameter :: solsy = 668.60 ! solar days per Mars year
   real(8), parameter :: solarDay = 88775.244  ! Mars
-  real(8), parameter :: Fgeotherm = 0.028  ! Mars
+  real(8), parameter :: Fgeotherm = 0.0
   integer, parameter :: nz=70
 end module miscparams
 
@@ -43,18 +43,19 @@ program cratersQ_Mars
   integer, parameter :: MARGIN=20  ! must be at least 1, saves time
 
   allocate(h(NSx,NSy), surfaceSlope(NSx,NSy), azFac(NSx,NSy))
-  allocate(Qn(NSx,NSy), Tsurf(NSx,NSy), albedo(NSx,NSy), Fsurf(NSx,NSy), m(NSx,NSy))
-  allocate(Qmean(NSx,NSy), Qmax(NSx,NSy), Tmean(NSx,NSy), Tmaxi(NSx,NSy))
-  allocate(mmax(NSx,NSy), frosttime(NSx,NSy), maxfrosttime(NSx,NSy), Qnm1(NSx,NSy))
-
+  allocate(Qn(NSx,NSy), Tsurf(NSx,NSy), Fsurf(NSx,NSy), m(NSx,NSy))
+  allocate(albedo(NSx,NSy), source=albedo0)
+  allocate(Qmean(NSx,NSy), Qmax(NSx,NSy), Tmean(NSx,NSy), Tmaxi(NSx,NSy), source=0.d0)
+  allocate(mmax(NSx,NSy), Qnm1(NSx,NSy))
+  allocate(frosttime(NSx,NSy), maxfrosttime(NSx,NSy), source=0.d0)
+  
   ecc = 0.0934;  eps = 25.19*d2r;  omega = 250.87*d2r   ! today
   
-  dt=0.02; 
+  dt=0.02
   tmax = solsy+1.
   !tmax = solsy*10.5
   tmax = 2.
   latitude = -41.6
-  albedo(:,:) = albedo0
 
   ! set some constants
   nsteps=int(tmax/dt)       ! calculate total number of timesteps
@@ -66,18 +67,13 @@ program cratersQ_Mars
   write(*,*) 'Mean albedo=',sum(albedo)/size(albedo),'Emissivity=',emiss
   write(*,*) 'Reflections:',.FALSE.,'Subsurface:',subsurface
 
-  ! setenv OMP_NUM_THREADS 4
-  !write (*,'(a,i8)') 'The number of processors available = ', omp_get_num_procs()
-  !write (*,'(a,i8)') 'The number of threads available    = ', omp_get_max_threads()
-
   call readdem(h)
   call difftopo(NSx,NSy,h,dx,dy,surfaceSlope,azFac)
 
   latitude=latitude*d2r
   Tsurf=200.
-  Qmean=0.; Tmean=0.; nm=0
-  Qmax=0.; Tmaxi=0.; mmax=0.
-  frosttime=0.; maxfrosttime=0.
+  nm=0
+  mmax=0.
   m=0.; Fsurf=0.
   
   print *,'...reading horizons file...'
@@ -256,7 +252,7 @@ subroutine subsurfaceconduction_mars(T,Tsurf,dtsec,Qn,Qnp1,emiss,m,Fsurf,init)
      Tsurf=Tco2frost
      dE = (- Qn - Qnp1 + Fsurfold + Fsurf + &
           &           emiss*sigSB*(Tsurfold**4+Tsurf**4))/2.
-     m = m + dtsec*dE/Lco2frost;
+     m = m + dtsec*dE/Lco2frost
   endif
 
 end subroutine subsurfaceconduction_mars

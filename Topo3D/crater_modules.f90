@@ -174,15 +174,6 @@ module allinterfaces
      end subroutine getmaxfieldsize
   end interface
 
-  interface
-     subroutine getskysize(skysize,fn)
-       use filemanager
-       implicit none
-       real(8), intent(OUT) :: skysize(NSx,NSy)
-       character(len=*), intent(IN) :: fn
-     end subroutine getskysize
-  end interface
-
   ! begin mk_atmosphere.f90
   interface
      real(8) function mk_atmosphere(Z,I0,D0)

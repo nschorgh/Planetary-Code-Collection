@@ -150,6 +150,7 @@ Topo3D/model_subs.f90
 Common/flux_noatm.f90
 Mars/flux_mars.f90
 Topo3D/multigrid.f90
+Topo3D/fieldproperties.f90: (main program)
 Topo3D/hpsort.for
 Topo3D/topo40.xyz
 Documentation: User Guide Part 5

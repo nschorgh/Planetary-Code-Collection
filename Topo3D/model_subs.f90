@@ -45,10 +45,10 @@ contains
     daz = 2*pi/real(naz)
     k = floor(modulo(azSun,2*pi)/daz)
     a = modulo(azSun,2*pi)/daz-k
-    if (k<0 .or. k>=naz) then
+    !if (k<0 .or. k>=naz) then
        !print *,'azSun=',azSun,'k=',k
-       !stop 'gethorizon: impossible k value'  ! impure
-    endif
+       !stop 'getonehorizon: impossible k value'  ! impure
+    !endif
     smax = s(i0,j0,k+1)*(1.-a) + s(i0,j0,k+2)*a
     getonehorizon = smax
   end function getonehorizon
@@ -57,7 +57,6 @@ contains
     !***********************************************************************
     !   calculates sky size (steradian) from horizons
     !   in-module abbreviated version
-    !   returns viewfactor 0...1
     !***********************************************************************
     use allinterfaces, only: area_spherical_triangle
     implicit none
@@ -75,7 +74,6 @@ contains
              dOmega = area_spherical_triangle(phi,theta)
              skysize(i,j) = skysize(i,j) + dOmega
           enddo
-          skysize(i,j) = skysize(i,j)/(2*pi)  ! steradian -> viewfactor
        enddo
     enddo
   end subroutine getskysize

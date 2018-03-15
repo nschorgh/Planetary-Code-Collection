@@ -42,6 +42,9 @@ multigrid.f90:
 test_shadows1pt.f90: (main program)
 	test shadow calculations
 
+fieldproperties.f90: (main program)
+	processes geometric information, mostly diagnostics
+
 topo40.xyz: 
 	example input topography
 

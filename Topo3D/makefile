@@ -39,12 +39,16 @@ cratersQ_mars: topos.o crater_modules.o model_subs.o cratersQ_mars.o \
 	topos.o model_subs.o $(SR)grids.o $(SR)conductionQ.o flux_mars.o \
 	$(SR)tridag.o $(SR)conductionT.o $(SR)psv.o -o $@
 
-test: topos.o crater_modules.o test_shadows1pt.o shadow_subs.o crater_common.o \
-	topos.o hpsort.o multigrid.o makefile
+test: topos.o crater_modules.o test_shadows1pt.o shadow_subs.o
+	crater_common.o topos.o hpsort.o multigrid.o makefile
 	make -C $(SR) common
 	$(CC) $(LFLAGS) topos.o test_shadows1pt.o shadow_subs.o hpsort.o \
 	crater_common.o multigrid.o 
 
+fieldproperties: topos.o crater_modules.o crater_common.o model_subs.o \
+	fieldproperties.o makefile
+	$(CC) $(LFLAGS) fieldproperties.o topos.o crater_common.o \
+	model_subs.o 
 
 %.o:	%.f makefile
 	$(CC) $(CFLAGS) -c $<
