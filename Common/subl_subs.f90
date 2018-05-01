@@ -52,21 +52,21 @@ end function padsr
 pure real(8) function restime_species(T)
   ! sublimation rate in #molecules/m^2/s
   implicit none
-  real(8),intent(IN) :: T
-  real(8), parameter :: pi=3.1415926535897932, kB = 1.38065e-23
-  real(8) psv, sublrate_species
+  real*8,intent(IN) :: T
+  real*8, parameter :: pi=3.1415926535897932, kB = 1.38065e-23
+  real*8 psv, sublrate_species
   
   ! Argon
-  !real(8), parameter :: mu = 39.962*1.66054e-27
-  !real(8), parameter :: A=-7814.5, B=+7.5741   ! Ict Vol 3
-  !real(8), parameter :: sigma0 = 8.42e18   ! (1623/(40*1.66e-27))**(2./3.)  
-  !psv = 10**(0.05223*A/T + B)*133.32  ! mmHg -> Pa
+  real*8, parameter :: mu = 39.962*1.66054e-27
+  real*8, parameter :: A=-7814.5, B=+7.5741   ! Ict Vol 3
+  real*8, parameter :: sigma0 = 8.42e18   ! (1623/(40*1.66e-27))**(2./3.)  
+  psv = 10**(0.05223*A/T + B)*133.32  ! mmHg -> Pa
   
   ! CO2
-  real*8, parameter :: mu = 44.01*1.66054e-27
-  real*8, parameter :: A=6.81228, B=1301.679, C=-3.494
-  real*8, parameter :: sigma0 = 7.5e18   ! (1500/mu)**(2./3.)
-  psv = 10**(A-(B/(T+C)))*1.e5   ! Antoine equation
+  !real*8, parameter :: mu = 44.01*1.66054e-27
+  !real*8, parameter :: A=6.81228, B=1301.679, C=-3.494
+  !real*8, parameter :: sigma0 = 7.5e18   ! (1500/mu)**(2./3.)
+  !psv = 10**(A-(B/(T+C)))*1.e5   ! Antoine equation
   
   ! SO2
   !real*8, parameter :: mu = 64.06*1.66054e-27

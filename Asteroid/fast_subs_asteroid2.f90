@@ -58,11 +58,11 @@ subroutine icelayer_asteroid(bigstep,NP,z,porosity,Tinit, &
         Deff = Diff0
      else
         deltaz = colint(spread(1d0,1,nz),z,nz,1,typeP-1)  ! for normalization
-        Deff = deltaz/colint(1./Diff,z,nz,1,typeP-1) 
         if (minval(Diff(1:typeP-1))<=0.) then
            print *,typeP,porefill(1:typeP-1),Diff(1:typeP-1)
            stop 'D_EFF PROBLEM'
         endif
+        Deff = deltaz/colint(1./Diff,z,nz,1,typeP-1) 
      endif
      !call impactstirring(nz,z(:),bigstep,sigma(:,k))  ! turn impact stiring on and off here
      call icechanges(nz,z(:),typeP,avrho(:),ypp(:),Deff,bigstep,Jp,zdepthP(k),sigma(:,k))

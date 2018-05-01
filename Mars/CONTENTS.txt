@@ -10,6 +10,9 @@ flux.f:
 marsorbit.f:
 	Position of the sun as seen from Mars; data from Allison & McEwen (2000)
 
+marsclock24.f90:
+	marsorbit.f + local Mars time
+
 mars_thermal1d.f: (main program)
 	1D diffusion of temperature for Mars; 
 	prototype example of how to call conductionQ/T with seasonal CO2 frost cover

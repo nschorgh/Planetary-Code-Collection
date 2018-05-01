@@ -38,7 +38,7 @@ subroutine impactstirring(nz,z,dt,sigma)
   ! Set NT and meanz
   ! NT*meanz^2 should be proportional to dt
   ! this proportionality constant, Dgarden, is set by impactor flux
-  ! there should be man grid points < meanz
+  ! there should be many grid points < meanz
   NT=1
   meanz=sqrt(dt*Dgarden/4.)   ! factor 4 makes 1st moment grow as sqrt(2*D*t)
   do while (NT<100 .and. meanz>z(15))  ! try to increase NT
@@ -82,7 +82,7 @@ end subroutine impactstirring
 
 real(8) pure function colintp(y,z,nz,i1,i2) 
   ! column integrates y
-  ! identical to colint, which is who knows where
+  ! identical to colint
   implicit none
   integer, intent(IN) :: nz, i1, i2
   real(8), intent(IN) :: y(nz),z(nz)

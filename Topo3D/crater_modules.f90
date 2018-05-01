@@ -186,11 +186,11 @@ module allinterfaces
   ! begin cratersQ_mars.f90
   interface
      elemental function flux_mars(R,decl,latitude,HA,albedo, &
-          &   fracir,fracdust,surfaceSlope,azFac,smax)
+          &   fracir,fracdust,surfaceSlope,azFac,smax,vf)
        implicit none
        real(8) flux_mars
        real(8), intent(IN) :: R,decl,latitude,HA,albedo,fracIR,fracDust
-       real(8), intent(IN) :: surfaceSlope,azFac,smax
+       real(8), intent(IN) :: surfaceSlope,azFac,smax,vf
      end function flux_mars
   end interface
 
@@ -287,6 +287,18 @@ module allinterfaces
      elemental real(8) function flux_wshad(R,sinbeta,azSun,surfaceSlope,azFac,emax)
        real(8), intent(IN) :: R,azSun,sinbeta,surfaceSlope,azFac,emax
      end function flux_wshad
+  end interface
+
+  interface
+     subroutine marsclock24(JDUT,Deltat_J2000,Ls,dec,RM,Longitude_W,LTST)
+       implicit none
+       real*8, intent(IN) :: JDUT !  Julian Date
+       real*8, intent(OUT) :: Deltat_J2000  ! days since J2000
+       real*8, intent(OUT) :: Ls   ! (radian)
+       real*8, intent(OUT) :: dec, RM
+       real*8, intent(IN) :: Longitude_W
+       real*8, intent(OUT) :: LTST  ! (hour)
+     end subroutine marsclock24
   end interface
   
 end module allinterfaces

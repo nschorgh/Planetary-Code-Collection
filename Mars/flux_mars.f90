@@ -50,7 +50,7 @@ elemental function flux_mars(R,decl,latitude,HA,albedo, &
 ! net flux
   Q = (1.-albedo)*sintheta
 ! contributions from atmosphere
-  solarAttenuation = (1.- fracIR - fracDust)**(1./max(sinbeta,0.04))
+  solarAttenuation = (1.- fracIR - fracDust)**(1./max(sinbeta,0.04d0))
   Q = Q*solarAttenuation + viewfactor*sinbetaNoon*fracIR 
   if (sinbeta>0.d0) then
      Q = Q + (1.-albedo)*0.5*viewfactor*fracDust

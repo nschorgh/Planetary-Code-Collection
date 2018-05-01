@@ -18,7 +18,7 @@ program asteroid_fast
   real(8) bigstep, bssum, omega, eps, porosity(nz)
   real(8), dimension(NP) :: latitude, albedo, zdepthP
   real(8), dimension(NP) :: Tmean1, Tmean3, Tmin, Tmax
-  character(4) ext
+  character(7) ext
 
   ! latitudes
   if (iargc() /= 1) then

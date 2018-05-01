@@ -149,6 +149,7 @@ Topo3D/fieldofview_subs.f90
 Topo3D/model_subs.f90
 Common/flux_noatm.f90
 Mars/flux_mars.f90
+Mars/marsclock24.f90
 Topo3D/multigrid.f90
 Topo3D/fieldproperties.f90: (main program)
 Topo3D/hpsort.for
