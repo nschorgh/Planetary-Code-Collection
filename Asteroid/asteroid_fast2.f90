@@ -163,11 +163,11 @@ subroutine outputskindepths(nz,z,zmax,porosity)
   real(8) delta, stretch, newrhoc, newti, rhoc
   real(8) rhocv(nz), ti(nz), porefill(nz), thIn
 
-  call assignthermalproperties(nz,z,Tnominal,porosity,ti,rhocv)
+  call assignthermalproperties(nz,Tnominal,porosity,ti,rhocv)
   thIn = ti(1); rhoc=rhocv(1)
   print *,'Thermal inertia=',thIn
   porefill = 1.
-  call assignthermalproperties(nz,z,Tnominal,porosity,ti,rhocv,porefill)
+  call assignthermalproperties(nz,Tnominal,porosity,ti,rhocv,porefill)
   newti = ti(1); newrhoc=rhocv(1)
 
   delta = thIn/rhoc*sqrt(solarDay/pi)

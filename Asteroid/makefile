@@ -2,6 +2,15 @@ CC = gfortran
 CFLAGS = -O3 -Wall
 LFLAGS = -O3 -Wall
 
+#CC = ifort
+#CFLAGS = -O3 -warn all -warn notruncated_source
+#LFLAGS = -O3 -warn all
+
+#CC = pgfortran
+#CFLAGS = -fast
+#LFLAGS = -fast
+
+
 SR = ../Common/
 
 asteroid_thermal: asteroid_thermal.f90 asteroid_thermal.o \
@@ -28,7 +37,8 @@ asteroid_fast1: fast_modules_asteroid1.f90 fast_modules_asteroid1.o \
 	make -C $(SR) common more
 	$(CC) $(LFLAGS) asteroid_fast1.o fast_subs_asteroid1.o \
 	$(SR)flux_noatm.o $(SR)conductionQ.o $(SR)tridag.o \
-	$(SR)grids.o $(SR)generalorbit.o $(SR)psv.o $(SR)subl_subs.o -o fast
+	$(SR)grids.o $(SR)generalorbit.o $(SR)psv.o $(SR)subl_subs.o \
+	-o fast
 
 test1: testgardening1.o impactstirring.o makefile
 	make -C $(SR) common

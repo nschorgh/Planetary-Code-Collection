@@ -25,7 +25,7 @@ subroutine impactstirring(nz,z,dt,sigma)
   real(8), parameter :: Dgarden = 5e-11 ! gardening parameter (m^2/yr)
   integer j,k,NR,turns(nz),NT,i
   real(8) x,rho(nz),eavrho(nz),meanz,rhomean,zeff
-  real(8), external :: pareto, colintp
+  real(8), external :: pareto, colint
   integer, save :: idum = -948
 
   if (maxval(sigma)==0.) return  ! no ice
@@ -59,12 +59,12 @@ subroutine impactstirring(nz,z,dt,sigma)
         k = k-1
         ! 0<k<=nz
         if (k>0) then
-           zeff=colintp(spread(real(1.,8),1,nz),z,nz,1,k)
-           rhomean=colintp(rho,z,nz,1,k)/zeff
+           zeff=colint(spread(real(1.,8),1,nz),z,nz,1,k)
+           rhomean=colint(rho,z,nz,1,k)/zeff
 
            ! test mass conservation
-           !buf=colintp(spread(rhomean,1,nz),z,nz,1,k)
-           !print *,colintp(rho,z,nz,1,k),buf)
+           !buf=colint(spread(rhomean,1,nz),z,nz,1,k)
+           !print *,colint(rho,z,nz,1,k),buf)
            rho(1:k)=rhomean
            turns(k) = turns(k)+1
         endif
@@ -78,21 +78,3 @@ subroutine impactstirring(nz,z,dt,sigma)
   !write(30,'(999(f8.3,1x))') sigma(:)
   !write(32,*) turns
 end subroutine impactstirring
-
-
-real(8) pure function colintp(y,z,nz,i1,i2) 
-  ! column integrates y
-  ! identical to colint
-  implicit none
-  integer, intent(IN) :: nz, i1, i2
-  real(8), intent(IN) :: y(nz),z(nz)
-  integer i
-  real(8) dz(nz)
-  dz(1)=(z(2)-0.)/2
-  do i=2,nz-1
-     dz(i) = (z(i+1)-z(i-1))/2.
-  enddo
-  dz(nz) = z(nz)-z(nz-1)
-  colintp = sum(y(i1:i2)*dz(i1:i2))
-end function colintp
-

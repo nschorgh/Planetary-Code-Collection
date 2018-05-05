@@ -111,7 +111,7 @@ module allinterfaces
      end function zint
   end interface
 
-  interface
+  interface ! moved to grids.f 
      pure function colint(y,z,nz,i1,i2)
        implicit none
        integer, intent(IN) :: nz, i1, i2

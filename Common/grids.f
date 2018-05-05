@@ -241,5 +241,37 @@ c-----------Mellon et al. 1997 (option 2)
       end
 
 
+      
+c-----grid-dependent utility functions
+
+      function colint(y,z,nz,i1,i2)
+c     column integrates y
+      implicit none
+      integer nz, i1, i2
+      real(8) y(nz),z(nz)
+      real(8) colint
+      integer i
+      real(8) dz(nz)
+      dz(1)=(z(2)-0.)/2
+      do i=2,nz-1
+         dz(i) = (z(i+1)-z(i-1))/2.
+      enddo
+      dz(nz) = z(nz)-z(nz-1)
+      colint= sum(y(i1:i2)*dz(i1:i2))
+      end function colint
 
 
+ 
+      subroutine dzvector(nz,z,dz) 
+c     matches colint
+      implicit none
+      integer nz
+      real(8) z(nz)
+      real(8) dz(nz)   ! output
+      integer i
+      dz(1)=(z(2)-0.)/2
+      do i=2,nz-1
+         dz(i) = (z(i+1)-z(i-1))/2.
+      enddo
+      dz(nz) = z(nz)-z(nz-1)
+      end subroutine dzvector

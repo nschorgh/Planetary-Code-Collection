@@ -1,6 +1,15 @@
 CC = gfortran
-CFLAGS = -O3 -Wall
-LFLAGS = -O3 -Wall
+CFLAGS = -O2 -Wall
+LFLAGS = -O2 -Wall
+
+#CC = ifort
+#CFLAGS = -O2 #-warn all -warn notruncated_source -nogen-interface
+#LFLAGS = -O2 -warn all
+
+#CC = pgfortran
+#CFLAGS = -fast
+#LFLAGS = -fast
+
 
 SR = ../Common/
 
@@ -55,7 +64,7 @@ mars_fast: fast_modules.o mars_fast.o fast_subs_univ.o fast_subs_mars.o \
 	flux.o $(SR)conductionQ.o $(SR)psvco2.o $(SR)generalorbit.o \
 	fast_subs_mars.o -o $@
 
-common-mars: marsorbit.o vapordiffusioni.o flux.o 
+common-mars: marsorbit.o vapordiffusioni.o flux.o marsclock24.o
 
 %.o:	%.f makefile
 	$(CC) $(CFLAGS) -c $<

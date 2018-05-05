@@ -36,7 +36,7 @@ subroutine icelayer_asteroid(bigstep,NP,z,porosity,Tinit, &
 
      ! assign/update property profiles
      porefill(:) = sigma(:,k)/(porosity(:)*icedensity)
-     call assignthermalproperties(nz,z,Tnominal,porosity,ti,rhocv,porefill)
+     call assignthermalproperties(nz,Tnominal,porosity,ti,rhocv,porefill)
      diam = 100e-6  ! assumed grain size
      Diff0 = vapordiffusivity(diam,porosity(1),Tnominal) ! surface
      do j=1,nz
@@ -323,24 +323,6 @@ end function zint
 
 
 
-pure function colint(y,z,nz,i1,i2)
-  ! column integrates y
-  implicit none
-  integer, intent(IN) :: nz, i1, i2
-  real(8), intent(IN) :: y(nz),z(nz)
-  real(8) colint
-  integer i
-  real(8) dz(nz)
-  dz(1)=(z(2)-0.)/2
-  do i=2,nz-1
-     dz(i) = (z(i+1)-z(i-1))/2.
-  enddo
-  dz(nz) = z(nz)-z(nz-1)
-  colint= sum(y(i1:i2)*dz(i1:i2))
-end function colint
-
-
-
 subroutine compactoutput(unit,sigma,nz)
   implicit none
   integer, intent(IN) :: unit,nz
@@ -358,7 +340,7 @@ end subroutine compactoutput
 
 
 
-subroutine assignthermalproperties(nz,z,Tnom,porosity,ti,rhocv,porefill)
+subroutine assignthermalproperties(nz,Tnom,porosity,ti,rhocv,porefill)
 !*********************************************************
 ! assign thermal properties of soil
 ! specify thermal interia profile here
@@ -367,7 +349,7 @@ subroutine assignthermalproperties(nz,z,Tnom,porosity,ti,rhocv,porefill)
   use allinterfaces, only : heatcapacity
   implicit none
   integer, intent(IN) :: nz
-  real(8), intent(IN) :: z(nz), Tnom, porosity(nz)
+  real(8), intent(IN) :: Tnom, porosity(nz)
   real(8), intent(OUT) :: ti(nz), rhocv(nz)
   real(8), intent(IN), optional :: porefill(nz)
   real(8), parameter :: rhodry = 2500  ! bulk density
@@ -484,21 +466,6 @@ elemental function faintsun(t)
   faintsun = 1./(1+0.4*abs(t)/4.57e9)
 end function faintsun
 
-
-
-subroutine dzvector(nz,z,dz) 
-  ! matches colint
-  implicit none
-  integer, intent(IN) :: nz
-  real(8), intent(IN) :: z(nz)
-  real(8), intent(OUT) :: dz(nz)
-  integer i
-  dz(1)=(z(2)-0.)/2
-  do i=2,nz-1
-     dz(i) = (z(i+1)-z(i-1))/2.
-  enddo
-  dz(nz) = z(nz)-z(nz-1)
-end subroutine dzvector
 
 
 integer function gettype(zdepth,nz,z)

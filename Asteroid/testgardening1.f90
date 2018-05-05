@@ -7,7 +7,7 @@ program testgardening
   parameter(nz=160, zfac=1.05d0, zmax=10.) 
   real(8) z(nz), sigma(nz)
   real(8) m0, m1, m2
-  real(8), external :: colintp
+  real(8), external :: colint
 
   call setgrid(nz,z,zmax,zfac)
   open(unit=30,file='z.dat',action='write',status='unknown')
@@ -26,9 +26,9 @@ program testgardening
      call impactstirring(nz,z,bigstep,sigma)
 
      ! optional diagnostics
-     m0 = colintp(sigma,z,nz,1,nz)
-     m1 = colintp(sigma*z,z,nz,1,nz)/m0
-     m2 = colintp(sigma*z*z,z,nz,1,nz)/m0
+     m0 = colint(sigma,z,nz,1,nz)
+     m1 = colint(sigma*z,z,nz,1,nz)/m0
+     m2 = colint(sigma*z*z,z,nz,1,nz)/m0
 
      write(30,'(999(f8.3,1x))') sigma(:)
      write(31,*) n*bigstep,m0,m1,m2

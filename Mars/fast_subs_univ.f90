@@ -13,24 +13,6 @@ end function zint
 
 
 
-pure function colint(y,z,nz,i1,i2)
-  ! column integrates y
-  implicit none
-  integer, intent(IN) :: nz, i1, i2
-  real(8), intent(IN) :: y(nz),z(nz)
-  real(8) colint
-  integer i
-  real(8) dz(nz)
-  dz(1)=z(1) ! this leaves z(1)/2 for surface point
-  do i=2,nz-1
-     dz(i) = (z(i+1)-z(i-1))/2.
-  enddo
-  dz(nz) = z(nz)-z(nz-1)
-  colint= sum(y(i1:i2)*dz(i1:i2))
-end function colint
-
-
-
 pure function equildepth(nz, z, rhosatav, rhosatav0, avrho1)
 !***********************************************************************
 !  returns equilibrium depth for given ice content

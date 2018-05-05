@@ -146,10 +146,10 @@ module allinterfaces
   end interface
 
   interface
-     subroutine assignthermalproperties(nz,z,Tnom,porosity,ti,rhocv,porefill)
+     subroutine assignthermalproperties(nz,Tnom,porosity,ti,rhocv,porefill)
        implicit none
        integer, intent(IN) :: nz
-       real(8), intent(IN) :: z(nz), Tnom, porosity(nz)
+       real(8), intent(IN) :: Tnom, porosity(nz)
        real(8), intent(OUT) :: ti(nz), rhocv(nz)
        real(8), intent(IN), optional :: porefill(nz)
      end subroutine assignthermalproperties
@@ -206,15 +206,7 @@ module allinterfaces
      end function pareto
   end interface
 
-  interface
-     real(8) pure function colintp(y,z,nz,i1,i2) 
-       implicit none
-       integer, intent(IN) :: nz, i1, i2
-       real(8), intent(IN) :: y(nz),z(nz)
-     end function colintp
-  end interface
-
-  interface
+  interface ! moved to grids.f
      subroutine dzvector(nz,z,dz) 
        implicit none
        integer, intent(IN) :: nz
