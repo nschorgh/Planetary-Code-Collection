@@ -4,9 +4,9 @@ LFLAGS = -O3 -Wall  # -fopenmp
 
 SR = ../Common/
 
-moon4: geogrid.o body.o moon4.o montecarlo.o makefile 
+moon_exo: geogrid.o body.o moon_exo.o montecarlo.o makefile 
 	make -C $(SR) common more
-	$(CC) $(LFLAGS) moon4.o montecarlo.o geogrid.o \
+	$(CC) $(LFLAGS) moon_exo.o montecarlo.o geogrid.o \
 	$(SR)flux_noatm.o $(SR)conductionQ.o $(SR)tridag.o \
 	$(SR)grids.o $(SR)psv.o $(SR)subl_subs.o \
 	$(SR)gasdev.o $(SR)ran2.o

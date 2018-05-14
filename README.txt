@@ -159,7 +159,7 @@ Documentation: User Guide Part 5
 
 *Monte-Carlo Model for Surface-bounded Exosphere*
 
-Exosphere/moon4.f90: (main program)
+Exosphere/moon_exo.f90: (main program)
 Exosphere/ceres_exo.f90: (main program)
 Exosphere/montecarlo.f90
 Exosphere/geogrid.f90

@@ -183,7 +183,7 @@ end subroutine horizon_MG_core
 module newmultigrid
   use filemanager, only : NSx,NSy,dx,dy
   real(8), allocatable :: h2(:,:), h3(:,:), h4(:,:), h5(:,:), h6(:,:)
-  real(8), allocatable :: h7(:,:), h8(:,:)
+  real(8), allocatable :: h7(:,:), h8(:,:), h9(:,:), h10(:,:)
   
 contains
   subroutine downsample_all(h,LMAX,LACT)
@@ -222,6 +222,16 @@ contains
                       allocate(h8(NSx/128,NSy/128))
                       call downsample(NSx/64,NSy/64,h7,h8)
                       LACT = 8
+                      if (min(NSx,NSy)/256>10 .and. LMAX>=9) then
+                         allocate(h9(NSx/256,NSy/256))
+                         call downsample(NSx/128,NSy/128,h8,h9)
+                         LACT = 9
+                         if (min(NSx,NSy)/512>10 .and. LMAX>=10) then
+                            allocate(h10(NSx/512,NSy/512))
+                            call downsample(NSx/256,NSy/256,h9,h10)
+                            LACT = 10
+                         endif
+                      endif
                    endif
                 endif
              endif
@@ -230,7 +240,7 @@ contains
     endif
   end subroutine downsample_all
 
-
+  
   subroutine findallhorizon_MGR(h,i0,j0,naz,smax,RMG,L)
     ! based on shadow_subs.f90, but for multigrid method
     ! recursive implementation
@@ -250,13 +260,16 @@ contains
     
     ! L=5 should exactly match output of MG5 implementation 
     P=2**(L-1)
-    if (L>8 .or. L<2) error stop 'findallhorizon_MGR: invalid grid level'
+    if (L>10 .or. L<2) error stop 'findallhorizon_MGR: invalid grid level'
     ! The top loop for the coarsest grid is different from all others
     do ii=1,NSx/P + 1; do jj=1,NSy/P+1  ! +1 so a last odd one gets included too
        r = horizontaldistance1(P*ii*dx,P*jj*dy,x0,y0)
        if (r>=P/2*RMG) then  ! do 1 coarse grid cell
-          !call horizon_MG_core(x0,y0,h00,naz,smax,ii,jj,h7,P) ! make sure to use hL
           select case (L)
+          case (10)
+             call horizon_MG_core(x0,y0,h00,naz,smax,ii,jj,h10,P)
+          case (9)
+             call horizon_MG_core(x0,y0,h00,naz,smax,ii,jj,h9,P)
           case (8)
              call horizon_MG_core(x0,y0,h00,naz,smax,ii,jj,h8,P)
           case (7)
@@ -294,13 +307,17 @@ contains
     ! if distance is too close, switch to finer grid
     
     P = 2**(L-1)
-    if (L>7) error stop 'findallhorizon_recursive is not prepared for this'
-    if (L<1) error stop 'findallhorizon_recursive: this must not happen'
+    if (L>9) error stop 'findallhorizon_recursive: exceeds maximum number of levels'
+    if (L<1) error stop 'findallhorizon_recursive: level is zero or negative'
     do ii=2*i-1,2*i; do jj=2*j-1,2*j
        r = horizontaldistance1(P*ii*dx,P*jj*dy,x0,y0)
        if (P==1) r = 0.  ! should be redundant
        if (r>=P/2*RMG) then  ! do 1 coarse grid cell
           select case (L)
+          case (9)  ! one below the highest
+             call horizon_MG_core(x0,y0,h00,naz,smax,ii,jj,h9,256)
+          case (8) 
+             call horizon_MG_core(x0,y0,h00,naz,smax,ii,jj,h8,128)
           case (7)
              call horizon_MG_core(x0,y0,h00,naz,smax,ii,jj,h7,64)
           case (6)

@@ -33,7 +33,7 @@ program toposhadows
      print *,'# grid levels =',ceiling(log(max(NSx*dx,NSy*dy)/RMG)/log(2.))
      LMAX = floor(log(sqrt((NSx*dx)**2+(NSy*dy)**2)/RMG)/log(2.))
      print *,'# log2(domain size/RMG) =',LMAX
-     LMAX = min(8,LMAX)
+     LMAX = min(10,LMAX)
      call downsample_all(h,LMAX,LACT)
      LMAX = min(LACT,LMAX)
      print *,'# levels allocated = ',LMAX
@@ -50,7 +50,7 @@ program toposhadows
   else  ! parallel implementation
      call getarg(1,extc)
      read(extc,'(i4)') ext  ! string->integer
-     if (ext<=1 .or. ext>=NSx) stop 'argument is out of bounds'
+     if (ext<=1 .or. ext>=NSx) stop 'argument is outside of domain'
      print *,'...creating file horizon....'
      open(unit=21,file='horizon.'//extc,status='unknown',action='write')
      i = ext  ! replaces loop over i=2,...,NSx-1

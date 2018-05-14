@@ -63,7 +63,7 @@ subroutine marsclock24(JDUT,Deltat_J2000,Ls,dec,RM,Longitude_W,LTST)
   
   ! Areocentric solar longitude (AM2000, eq. 19)
   Ls = alpha_FMS + numinusM
-  Ls = mod(Ls,360.d0)*d2r
+  Ls = modulo(Ls,360.d0)*d2r
   
   ! Solar declination (A1997, eq. 5)
   dec = asin(0.42565*sin(Ls)) + 0.25*d2r*sin(Ls)
