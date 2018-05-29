@@ -9,7 +9,6 @@ program insol_earth
   use allinterfaces
   use dateformat
   use newhorizons
-  !use omp_lib
   implicit none
   real(8), parameter :: pi=3.1415926535897932, d2r=pi/180.
 
@@ -20,14 +19,17 @@ program insol_earth
   real(8), dimension(NSx,NSy) :: h, surfaceSlope, azFac
   real(8), dimension(NSx,NSy) :: Qn, Qsw   ! incoming
   real(8), dimension(NSx,NSy) :: Qmeans, Qmax, daytime
+  real(8), dimension(NSx,NSy) :: ditime=0., longday=-999., shortday=1e32
   real(8) Qref, Qrefm, alltime
   real(8) I0, D0, S0, unsd  ! atmosphere
+  real(8) :: oldHours = -999.
+  
   type(cTime) udtTime
   real(8), parameter :: zero=0.
   logical, parameter :: atmosphere=.true.
 
-
   dtmin=10.
+  ! dtmin = 5.
   tmax = 365.+1
   latitude = 19.821; longitude = -155.468  ! Mauna Kea summit
   ! azimuth in degrees east of north, 0=north facing
@@ -61,20 +63,19 @@ program insol_earth
      edays = (n+1)*dtmin/1440.
      print *,edays
      udtTime%dMinutes = udtTime%dMinutes + dtmin
+     oldHours = udtTime%dHours
      call addtime(udtTime)
 
      call sunpos(udtTime, longitude, latitude, dZenithAngle, dAzimuth, R)
      sinbeta = cos(dZenithAngle*d2r)
      azSun = dAzimuth*d2r
 
-     !$OMP PARALLEL DO private(emax)
      do i=2,NSx-1
         do j=2,NSy-1
            emax = getonehorizon(i,j,azSun)
            Qn(i,j)=flux_wshad(R,sinbeta,azSun,surfaceSlope(i,j),azFac(i,j),emax)
-        enddo
-     enddo
-     !$OMP END PARALLEL DO
+        end do
+     end do
      Qref=flux_wshad(R,sinbeta,azSun,zero,zero,zero)
 
      if (atmosphere) then
@@ -98,16 +99,29 @@ program insol_earth
         alltime = alltime + dtmin
      endif
 
+     ! length of day
+     if (udtTime%dHours < oldHours) then ! new day
+        if (edays>tmax-365.) then
+           where (ditime > longday) longday=ditime
+           where (ditime < shortday) shortday=ditime
+        endif
+        ditime = 0.
+     endif
+     where (Qn>0) ditime = ditime + dtmin
+     
   enddo  ! end of time loop
 
-  Qmeans=Qmeans/nm
-
+  Qmeans = Qmeans/nm
+  longday = longday/60.  ! min -> hr
+  shortday = shortday/60.  ! min -> hr
+  daytime = daytime/alltime*24
+  
   print *,'Qref=',Qrefm/nm
   open(unit=21,file='qmean.dat',status='unknown',action='write')
   do i=2,NSx-1
      do j=2,NSy-1
         write(21,'(2(i4,1x),f9.2,2x,f6.4,2(1x,f6.1),1x,f6.3)') &
-             & i,j,h(i,j),surfaceSlope(i,j),Qmeans(i,j),Qmax(i,j),daytime(i,j)/alltime*24
+             & i,j,h(i,j),surfaceSlope(i,j),Qmeans(i,j),Qmax(i,j),daytime(i,j)
         !write(21,'(2(i4,1x),f9.2,2x,f6.4,5(1x,f6.1),1x,f5.1)') &  ! instanteneous values
         !     & i,j,h(i,j),surfaceSlope(i,j),Qn(i,j),Qmax(i,j)
      enddo

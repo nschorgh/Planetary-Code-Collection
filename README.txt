@@ -114,7 +114,7 @@ Common/grids.f
 Common/generalorbit.f
 Common/psv.f
 Common/derivs.f90
-Common/ran2.f
+Common/ran2.for
 Common/subl_subs.f90
 Asteroid/lats.0
 Documentation: Schorghofer, N. (2016) Icarus 276, 88-95.
