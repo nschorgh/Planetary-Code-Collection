@@ -14,7 +14,7 @@ module miscparams
 end module miscparams
 
 
-program cratersQ_Mars
+program cratersQ_mars
   !use omp_lib
   use filemanager
   use allinterfaces
@@ -44,10 +44,12 @@ program cratersQ_Mars
 
   allocate(h(NSx,NSy), surfaceSlope(NSx,NSy), azFac(NSx,NSy))
   allocate(Qn(NSx,NSy), Tsurf(NSx,NSy), Fsurf(NSx,NSy), m(NSx,NSy))
-  allocate(albedo(NSx,NSy), source=albedo0)
+  allocate(albedo(NSx,NSy), source=albedo0);
   allocate(Qmean(NSx,NSy), Qmax(NSx,NSy), Tmean(NSx,NSy), Tmaxi(NSx,NSy), source=0.d0)
   allocate(mmax(NSx,NSy), Qnm1(NSx,NSy))
-  allocate(frosttime(NSx,NSy), maxfrosttime(NSx,NSy), source=0.d0)
+  allocate(frosttime(NSx,NSy), maxfrosttime(NSx,NSy))
+  Fsurf=0.; m=0.
+  frosttime=0.; maxfrosttime=0.; mmax=0.
   
   ecc = 0.0934;  eps = 25.19*d2r;  omega = 250.87*d2r   ! today
   
@@ -73,8 +75,6 @@ program cratersQ_Mars
   latitude=latitude*d2r
   Tsurf=200.
   nm=0
-  mmax=0.
-  m=0.; Fsurf=0.
   
   print *,'...reading horizons file...'
   call readhorizons('horizons.'//fileext)

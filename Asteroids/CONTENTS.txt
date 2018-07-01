@@ -1,4 +1,4 @@
-Asteroid/
+Asteroids/
 
 Basic Thermal Model for Astroid Surfaces
 ========================================
@@ -19,6 +19,10 @@ asteroid_fast2.f90: (main program)
        	Asynchronously coupled model of ice loss, temperature, 
 	and impact stirring on asteroids
 
+asteroid_fast1.f90: (main program)
+       	Asynchronously coupled model of ice loss and temperature
+	on asteroids; simplified version of asteroid_fast2
+
 impactstirring.f90:
 	Model of ice homogenization due to impact stirring,
 	for use with "fast" model
@@ -32,10 +36,6 @@ fast_subs_asteroid2.f90:
 testgardening1.f90
 
 test_timejumps.f90
-
-asteroid_fast1.f90: (main program)
-       	Asynchronously coupled model of ice loss and temperature
-	on asteroids; simplified version of asteroid_fast2
 
 fast_modules_asteroid1.f90:
 	modules
