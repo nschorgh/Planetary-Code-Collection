@@ -141,6 +141,7 @@ Topo3D/fieldofviews.f90: (main program)
 Topo3D/cratersQ_snapshot.f90: (main program)
 Topo3D/cratersQ_moon.f90: (main program)
 Topo3D/cratersQ_mars.f90: (main program)
+Topo3D/cratersQ_mars_shadowsonly.f90: (main program)
 Topo3D/topos.f90
 Topo3D/crater_modules.f90
 Topo3D/crater_common.f90

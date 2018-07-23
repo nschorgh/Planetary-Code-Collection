@@ -33,6 +33,7 @@ program cratersQ_earth
   real(8), parameter :: zero=0.
   logical, parameter :: reflection=.true., subsurface=.false., atmosphere=.true.
   real(8), parameter :: Qother = 100.  ! (W/m^2) background (LW+downwelling)
+  integer, parameter :: nz=40
   
   dtmin=15.
   tmax = 365.+1

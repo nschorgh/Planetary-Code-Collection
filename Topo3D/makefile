@@ -7,6 +7,7 @@ LFLAGS = -O3 -Wall
 #LFLAGS = -O3 -warn all
 
 SR = ../Common/
+SRM = ../Mars/
 
 shadows: topos.o crater_modules.o multigrid.o shadows.o shadow_subs.o \
 	crater_common.o hpsort.o multigrid.o makefile
@@ -38,6 +39,13 @@ cratersQ_mars: topos.o crater_modules.o model_subs.o cratersQ_mars.o \
 	$(CC) $(LFLAGS) cratersQ_mars.o crater_common.o $(SR)generalorbit.o \
 	topos.o model_subs.o $(SR)grids.o $(SR)conductionQ.o flux_mars.o \
 	$(SR)tridag.o $(SR)conductionT.o $(SR)psv.o -o $@
+
+cratersQ_mars_shadowsonly: topos.o crater_modules.o model_subs.o \
+	crater_common.o cratersQ_mars_shadowsonly.o makefile
+	make -C $(SR) common
+	make -C $(SRM) common-mars
+	$(CC) $(LFLAGS) cratersQ_mars_shadowsonly.o crater_common.o topos.o \
+	model_subs.o $(SR)flux_noatm.o $(SR)julday.o $(SRM)marsclock24.o
 
 test: topos.o crater_modules.o test_shadows1pt.o shadow_subs.o
 	crater_common.o topos.o hpsort.o multigrid.o makefile

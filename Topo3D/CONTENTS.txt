@@ -18,6 +18,9 @@ cratersQ_moon.f90: (main program)
 cratersQ_mars.f90: (main program)
 	surface temperature with 3D shadowing for Mars
 
+cratersQ_mars_shadowsonly.f90: (main program)
+	3D shadowing for Mars
+
 topos.f90:
 	input, topography information
 

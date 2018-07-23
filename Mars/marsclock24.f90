@@ -25,7 +25,7 @@ subroutine marsclock24(JDUT,Deltat_J2000,Ls,dec,RM,Longitude_W,LTST)
   real*8, intent(OUT) :: LTST  ! (hour)
       
   ! Time offset from J2000 epoch (UT)
-  temp1 = (JDUT-2451545.0)/36525.
+  temp1 = (JDUT-2451545.0d0)/36525.d0
   
   ! dcor = JD_TT - JD_UTC  ! (seconds),  TT = terrestrial time
   ! (AM2000, eq. 27)
@@ -43,7 +43,7 @@ subroutine marsclock24(JDUT,Deltat_J2000,Ls,dec,RM,Longitude_W,LTST)
       
   ! Mars orbital parameters
   ! Mars mean anomaly (AM2000, eq. 16)
-  M = 19.3871 + 0.52402073*Deltat_J2000 ! (degree)
+  M = 19.3871d0 + 0.52402073d0*Deltat_J2000 ! (degree)
   !M = 19.3870 + 0.52402075*Deltat_J2000 !  actual (degree)
       
   ! Angle of Fiction Mean Sun (AM2000, eq. 17)
@@ -66,22 +66,22 @@ subroutine marsclock24(JDUT,Deltat_J2000,Ls,dec,RM,Longitude_W,LTST)
   Ls = modulo(Ls,360.d0)*d2r
   
   ! Solar declination (A1997, eq. 5)
-  dec = asin(0.42565*sin(Ls)) + 0.25*d2r*sin(Ls)
+  dec = asin(0.42565d0*sin(Ls)) + 0.25d0*d2r*sin(Ls)
   
   ! Heliocentric distance (AM2000, eq. 25, corrected)
-  RM = 1.52367934 * (1.00436 - 0.09309*cos(M) - 0.004336*cos(2*M) &
-       &     - 0.00031*cos(3*M) - 0.00003*cos(4*M))
+  RM = 1.52367934d0 * (1.00436d0 - 0.09309d0*cos(M) - 0.004336d0*cos(2*M) &
+       &     - 0.00031d0*cos(3*M) - 0.00003d0*cos(4*M))
 
 
   ! Mars Local Time
   ! Equation of Time (AM2000, eq. 20)
-  EOT = 2.861*sin(2*Ls) - 0.071*sin(4*Ls) + 0.002*sin(6*Ls) - numinusM  ! (degree)
+  EOT = 2.861d0*sin(2*Ls) - 0.071d0*sin(4*Ls) + 0.002d0*sin(6*Ls) - numinusM  ! (degree)
       
   ! Mean Solar Time (AM2000, eq. 22)
-  MST = 24*( (JDTT-2451549.5)/1.02749125 + 44796.0 - 0.00072 )
+  MST = 24*( (JDTT-2451549.5d0)/1.02749125d0 + 44796.0d0 - 0.00072d0 )
   
   ! Local True Solar Time (AM2000, eq. 23)
-  LTST = MST - Longitude_W*24./360. + EOT*24./360.
+  LTST = MST - Longitude_W*24.d0/360.d0 + EOT*24.d0/360.d0
   
   LTST = mod(LTST,24.d0)
   

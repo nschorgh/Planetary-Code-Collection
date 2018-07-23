@@ -40,14 +40,14 @@ program cratersQ_mars
   real(8) dE, Tsurfold
   logical, parameter :: subsurface=.false.  ! control panel
   integer, parameter, dimension(4) :: i00=(/ 41, 42, 44, 74/), j00=(/108, 108, 109, 155/)
-  integer, parameter :: MARGIN=20  ! must be at least 1, saves time
 
   allocate(h(NSx,NSy), surfaceSlope(NSx,NSy), azFac(NSx,NSy))
   allocate(Qn(NSx,NSy), Tsurf(NSx,NSy), Fsurf(NSx,NSy), m(NSx,NSy))
-  allocate(albedo(NSx,NSy), source=albedo0);
-  allocate(Qmean(NSx,NSy), Qmax(NSx,NSy), Tmean(NSx,NSy), Tmaxi(NSx,NSy), source=0.d0)
+  allocate(albedo(NSx,NSy)); albedo = albedo0
+  allocate(Qmean(NSx,NSy), Qmax(NSx,NSy), Tmean(NSx,NSy), Tmaxi(NSx,NSy))
   allocate(mmax(NSx,NSy), Qnm1(NSx,NSy))
   allocate(frosttime(NSx,NSy), maxfrosttime(NSx,NSy))
+  Qmean=0.; Qmax=0.; Tmean=0.; Tmaxi=0.
   Fsurf=0.; m=0.
   frosttime=0.; maxfrosttime=0.; mmax=0.
   
@@ -80,9 +80,10 @@ program cratersQ_mars
   call readhorizons('horizons.'//fileext)
 
   if (subsurface) then
-     allocate(T(1+MARGIN:NSx-MARGIN,1+MARGIN:NSy-MARGIN,nz))
+     allocate(T(2:NSx-1,2:NSy-1,nz))
      call subsurfaceconduction_mars(T(NSx/2,NSy/2,:),buf,dtsec,zero,zero,zero,buf,buf,.true.)
-     allocate(Tbottom(NSx,NSy), source = 0.d0)
+     allocate(Tbottom(NSx,NSy))
+     Tbottom(:,:)=-9.
   end if
 
   open(unit=22,file='timeseries.dat',status='unknown',action='write')
@@ -100,11 +101,11 @@ program cratersQ_mars
      if (mod(n,10)==0) print *,n,sdays,HA
      
      !$OMP PARALLEL DO private(emax)
-     do i=1+MARGIN,NSx-MARGIN
-        do j=1+MARGIN,NSy-MARGIN
+     do i=2,NSx-1
+        do j=2,NSy-1
            emax = getonehorizon(i,j,azSun)
-           Qn(i,j)=(1.-albedo(i,j))*flux_mars( &
-                & marsR,marsDec,latitude,HA,0.d0,fracir,fracdust,surfaceSlope(i,j),azFac(i,j),emax)
+           Qn(i,j)=flux_mars(marsR,marsDec,latitude,HA,albedo(i,j), &
+                & fracir,fracdust,surfaceSlope(i,j),azFac(i,j),emax)
         enddo
      enddo
      !$OMP END PARALLEL DO
@@ -113,8 +114,8 @@ program cratersQ_mars
      if (subsurface) then
         if (n==0) Tsurf(:,:) = -9. ! no-value, max 3 digits
         !$OMP PARALLEL DO
-        do i=1+MARGIN,NSx-MARGIN
-           do j=1+MARGIN,NSy-MARGIN
+        do i=2,NSx-1
+           do j=2,NSy-1
               call subsurfaceconduction_mars(T(i,j,:),Tsurf(i,j), &
                    & dtsec,Qnm1(i,j),Qn(i,j),emiss,m(i,j),Fsurf(i,j),.false.)
            enddo
@@ -123,8 +124,8 @@ program cratersQ_mars
 
      else  ! no subsurface conduction
         !$OMP PARALLEL DO private(dE, Tsurfold)
-        do i=1+MARGIN,NSx-MARGIN
-           do j=1+MARGIN,NSy-MARGIN
+        do i=2,NSx-1
+           do j=2,NSy-1
               Tsurf(i,j) = (Qn(i,j)/emiss/sigSB)**0.25
               Tsurfold = (Qnm1(i,j)/emiss/sigSB)**0.25
               if (Tsurf(i,j)<Tco2frost.or.m(i,j)>0.) then   ! CO2 condensation
@@ -144,7 +145,6 @@ program cratersQ_mars
         albedo = co2albedo
      end where
 
-     !if (sdays > tmax-1) then
      if (sdays > tmax-solsy) then
         Qmean(:,:) = Qmean(:,:) + Qn
         where (Qn>Qmax) Qmax=Qn
@@ -156,7 +156,7 @@ program cratersQ_mars
 
         do k=1,4
            i0=i00(k); j0=j00(k)
-           write(22,'(f9.3,1x,f6.2,2(1x,i4),2x,f6.1,1x,f5.1,1x,f6.1)') &
+           write(22,'(f9.3,1x,f7.3,2(1x,i4),2x,f6.1,1x,f5.1,1x,f6.1)') &
                 & sdays,mod(marsLs/d2r,360.),i0,j0,Qn(i0,j0),Tsurf(i0,j0),m(i0,j0)
         enddo
      endif
@@ -174,9 +174,9 @@ program cratersQ_mars
   close(22)
   if (subsurface) deallocate(T)
 
-  Qmean=Qmean/nm
-  Tmean=Tmean/nm
-  if (subsurface) Tbottom=Tbottom/nm
+  Qmean = Qmean/nm
+  Tmean = Tmean/nm
+  if (subsurface) Tbottom = Tbottom/nm
   
   open(unit=21,file='qmean.dat',status='unknown',action='write')
   do i=2,NSx-1
@@ -187,6 +187,14 @@ program cratersQ_mars
      enddo
   enddo
   close(21)
+  if (subsurface) then
+     Tbottom=Tbottom/nm
+     do i=2,NSx-1
+        do j=2,Nsy-1
+           write(23,'(2(i4,1x),2(1x,f7.1))') i,j,Tmean(i,j),Tbottom(i,j)
+        enddo
+     enddo
+  endif
 end program cratersQ_Mars
 
 
@@ -284,3 +292,4 @@ elemental function evap_ingersoll(T)
   !evap_ingersoll=0.13*D*rhow*Gbuf  
 
 end function evap_ingersoll
+
