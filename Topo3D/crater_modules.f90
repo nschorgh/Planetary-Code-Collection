@@ -194,6 +194,14 @@ module allinterfaces
      end function flux_mars
   end interface
 
+  interface
+     elemental function evap_ingersoll(T)
+       implicit none
+       real(8) evap_ingersoll
+       real(8), intent(IN) :: T
+     end function evap_ingersoll
+  end interface
+  
   ! Fortran 77 programs
   interface
      subroutine hpsort(n,ra,ind)
