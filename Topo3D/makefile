@@ -22,23 +22,25 @@ fieldofviews: topos.o crater_modules.o fieldofviews.o crater_common.o \
 	fieldofview_subs.o shadow_subs.o -o $@
 
 cratersQ_snapshot: topos.o crater_modules.o model_subs.o cratersQ_snapshot.o \
-	crater_common.o flux_wshad.o makefile
+	crater_common.o makefile
 	$(CC) $(LFLAGS) cratersQ_snapshot.o topos.o model_subs.o \
-	crater_common.o flux_wshad.o -o $@
+	crater_common.o $(SR)flux_noatm.o -o $@
 
 cratersQ_moon: topos.o crater_modules.o model_subs.o cratersQ_moon.o \
-	crater_common.o flux_wshad.o makefile
+	crater_common.o makefile
 	make -C $(SR) common
 	$(CC) $(LFLAGS) cratersQ_moon.o crater_common.o $(SR)generalorbit.o \
-	topos.o model_subs.o $(SR)grids.o $(SR)conductionQ.o flux_wshad.o \
+	topos.o model_subs.o $(SR)grids.o $(SR)conductionQ.o $(SR)flux_noatm.o \
 	$(SR)tridag.o -o $@
 
-cratersQ_mars: topos.o crater_modules.o model_subs.o cratersQ_mars.o \
-	crater_common.o flux_mars.o makefile
+cratersQ_mars: topos.o crater_modules.o model_subs.o conductionT2.o \
+	conductionQ2.o cratersQ_mars.o crater_common.o flux_mars.o \
+	makefile
 	make -C $(SR) common
 	$(CC) $(LFLAGS) cratersQ_mars.o crater_common.o $(SR)generalorbit.o \
-	topos.o model_subs.o $(SR)grids.o $(SR)conductionQ.o flux_mars.o \
-	$(SR)tridag.o $(SR)conductionT.o $(SR)psv.o -o $@
+	topos.o model_subs.o $(SR)grids.o $(SR)conductionQ2.o flux_mars.o \
+	$(SR)tridag.o $(SR)conductionT2.o $(SR)julday.o $(SRM)marsclock24.o \
+	$(SR)psv.o $(SR)flux_noatm.o -o $@
 
 cratersQ_mars_shadowsonly: topos.o crater_modules.o model_subs.o \
 	crater_common.o cratersQ_mars_shadowsonly.o makefile

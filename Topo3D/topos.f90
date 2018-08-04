@@ -48,6 +48,7 @@ module filemanager
   !character(len = *), parameter :: fileext = 'moongauss3.rms=0.5'
   !real(8), parameter :: dx=1., dy=1., RMAX=1e5
 
+  integer, parameter :: Mx1=2, Mx2=NSx-1, My1=2, My2=NSy-1
 end module filemanager
 
 
