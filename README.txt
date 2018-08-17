@@ -21,6 +21,7 @@ This program collection contains:
 Mars/mars_thermal1d.f: (main program)
 Mars/flux.f
 Mars/marsorbit.f
+Mars/soilthprop.f
 Common/conductionQ.f
 Common/conductionT.f
 Common/tridag.for
@@ -49,6 +50,7 @@ Mars/mars_mapiqh2v.f90: (main program)
 Mars/jsub.f
 Mars/jsubv.f90
 Mars/marsorbit.f
+Mars/soilthprop.f 
 Common/conductionQ.f
 Common/conductionT.f
 Common/tridag.for
@@ -70,6 +72,7 @@ Mars/fast_modules.f90
 Mars/fast_subs_univ.f90
 Mars/fast_subs_exper.f90
 Mars/fast_subs_mars.f90
+Mars/soilthprop.f
 Common/conductionQ.f
 Common/conductionT.f
 Common/tridag.for

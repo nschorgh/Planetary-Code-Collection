@@ -111,15 +111,6 @@ module allinterfaces
      end function zint
   end interface
 
-  interface ! moved to grids.f 
-     pure function colint(y,z,nz,i1,i2)
-       implicit none
-       integer, intent(IN) :: nz, i1, i2
-       real(8), intent(IN) :: y(nz),z(nz)
-       real(8) colint
-     end function colint
-  end interface
-
   interface
      subroutine assignthermalproperties1(nz,z,Tnom,porosity,ti,rhocv,icefrac,zdepthT)
        implicit none
@@ -155,15 +146,6 @@ module allinterfaces
   end interface
 
   interface
-     subroutine dzvector(nz,z,dz) 
-       implicit none
-       integer, intent(IN) :: nz
-       real(8), intent(IN) :: z(nz)
-       real(8), intent(OUT) :: dz(nz)
-     end subroutine dzvector
-  end interface
-
-  interface
      integer function gettype(zdepth,nz,z)
        implicit none
        integer, intent(IN) :: nz
@@ -171,12 +153,21 @@ module allinterfaces
      end function gettype
   end interface
 
-  ! Common/*.f90
+  ! Common/{*.f,*.f90}
   interface
      elemental real(8) function flux_noatm(R,decl,latitude,HA,surfaceSlope,azFac)
        implicit none
        real(8), intent(IN) :: R,decl,latitude,HA,surfaceSlope,azFac
      end function flux_noatm
+  end interface
+
+  interface
+     pure function colint(y,z,nz,i1,i2)
+       implicit none
+       integer, intent(IN) :: nz, i1, i2
+       real(8), intent(IN) :: y(nz),z(nz)
+       real(8) colint
+     end function colint
   end interface
 
 end module allinterfaces
