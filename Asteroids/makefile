@@ -11,7 +11,7 @@ LFLAGS = -O3 -Wall
 #LFLAGS = -fast
 
 
-SR = ../Common/
+SR =  ../Common/
 
 asteroid_thermal: asteroid_thermal.f90 asteroid_thermal.o \
 	oneasteroid_thermal1d.o insolonly.o makefile 
@@ -40,7 +40,7 @@ asteroid_fast1: fast_modules_asteroid1.f90 fast_modules_asteroid1.o \
 	$(SR)grids.o $(SR)generalorbit.o $(SR)psv.o $(SR)subl_subs.o \
 	-o fast
 
-test1: testgardening1.o impactstirring.o makefile
+testgardening1: testgardening1.o impactstirring.o makefile
 	make -C $(SR) common
 	$(CC) $(LFLAGS) impactstirring.o testgardening1.o \
 	$(SR)ran2.o $(SR)grids.o 

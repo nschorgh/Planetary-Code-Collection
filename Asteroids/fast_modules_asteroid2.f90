@@ -121,14 +121,6 @@ module allinterfaces
   end interface
 
   interface
-     pure function zint(y1,y2,z1,z2)
-       implicit none
-       real(8), intent(IN) :: y1,y2,z1,z2
-       real(8) zint
-     end function zint
-  end interface
-
-  interface
      subroutine compactoutput(unit,sigma,nz)
        implicit none
        integer, intent(IN) :: unit,nz
@@ -180,11 +172,12 @@ module allinterfaces
   
   ! impactstirring.f90
   interface
-     subroutine impactstirring(nz,z,dt,rho)
+     subroutine impactstirring(nz,z,dt,rho,NR)
        implicit none
        integer, intent(IN) :: nz
        real(8), intent(IN) :: z(nz), dt 
        real(8), intent(INOUT) :: rho(nz)
+       integer, intent(IN), optional :: NR
      end subroutine impactstirring
   end interface
 

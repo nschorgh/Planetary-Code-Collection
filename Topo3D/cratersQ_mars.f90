@@ -106,7 +106,7 @@ program cratersQ_mars
   !close(31)
   
   print *,'...reading horizons file...'
-  call readhorizons('Data2/horizons.'//fileext)
+  call readhorizons('horizons.'//fileext)
   call getskysize(viewfactor)  ! only use viewfactors with IR contribution
   viewfactor = viewfactor/(2*pi)
   print *,'max/min/mean of skyviewfactor:',maxval(viewfactor(:,:)),minval(viewfactor),sum(viewfactor)/size(viewfactor)
@@ -222,7 +222,6 @@ program cratersQ_mars
         where (m>0.) co2last = marsLs        
         if (subsurface) then
            Tbottom(Mx1:Mx2,My1:My2) = Tbottom(Mx1:Mx2,My1:My2)+T(:,:,nz)
-           Tbottom(1,1) = Tbottom(1,1)+T(1,1,nz)
         endif
         nm=nm+1
 

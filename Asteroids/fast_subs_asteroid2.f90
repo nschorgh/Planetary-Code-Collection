@@ -59,12 +59,13 @@ subroutine icelayer_asteroid(bigstep,NP,z,porosity,Tinit, &
      else
         deltaz = colint(spread(1d0,1,nz),z,nz,1,typeP-1)  ! for normalization
         if (minval(Diff(1:typeP-1))<=0.) then
-           print *,typeP,porefill(1:typeP-1),Diff(1:typeP-1)
+           print *,'error info',typeP,porefill(1:typeP-1)
+           print *,'error info',typeP,Diff(1:typeP-1)
            stop 'D_EFF PROBLEM'
         endif
         Deff = deltaz/colint(1./Diff,z,nz,1,typeP-1) 
      endif
-     !call impactstirring(nz,z(:),bigstep,sigma(:,k))  ! turn impact stiring on and off here
+     !call impactstirring(nz,z(:),bigstep,sigma(:,k))  ! turn impact stirring on and off here
      call icechanges(nz,z(:),typeP,avrho(:),ypp(:),Deff,bigstep,Jp,zdepthP(k),sigma(:,k))
      where(sigma<0.) sigma=0.
      do j=1,nz
@@ -313,16 +314,6 @@ end subroutine icechanges
 
 
 
-pure function zint(y1,y2,z1,z2)
-  ! interpolate between two values, y1*y2<0
-  implicit none
-  real(8), intent(IN) :: y1,y2,z1,z2
-  real(8) zint
-  zint = (y1*z2 - y2*z1)/(y1-y2)
-end function zint
-
-
-
 subroutine compactoutput(unit,sigma,nz)
   implicit none
   integer, intent(IN) :: unit,nz
@@ -392,6 +383,7 @@ end subroutine assignthermalproperties
 
 
 elemental function heatcapacity(T)
+  ! specific heat capacity of silicates
   implicit none
   real(8), intent(IN) :: T
   real(8) heatcapacity

@@ -19,9 +19,9 @@ program fieldproperties
   call readdem(h)
 
   print *,'...reading horizons file...'
-  !call readhorizons(skysize,'Data2/horizons.'//fileext)
+  !call readhorizons(skysize,'horizons.'//fileext)
   !call getskysize(skysize)
-  call getskysize(skysize,'Data2/horizons.'//fileext)
+  call getskysize(skysize,'horizons.'//fileext)
   
   if (fieldofview) then
      print *,'...reading huge fieldofviews file...'

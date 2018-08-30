@@ -225,16 +225,6 @@ end subroutine icechanges
 
 
 
-pure function zint(y1,y2,z1,z2)
-  ! interpolate between two values, y1*y2<0
-  implicit none
-  real(8), intent(IN) :: y1,y2,z1,z2
-  real(8) zint
-  zint = (y1*z2 - y2*z1)/(y1-y2)
-end function zint
-
-
-
 subroutine assignthermalproperties1(nz,z,Tnom,porosity,ti,rhocv,icefrac,zdepthT)
 !*********************************************************
 ! assign thermal properties of soil

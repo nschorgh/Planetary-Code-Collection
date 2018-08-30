@@ -40,7 +40,8 @@ program asteroid_fast
   timestep = 1e5  ! Earth years
   zdepthP(:) = 0.  ! initial ice depth
 
-  eps = 4.*d2r   ! (1) Ceres
+  eps = 4.*d2r    ! (1) Ceres, current
+  !eps = 12.*d2r   ! (1) Ceres, average
   !eps = 75.*d2r   ! Elst-Pizarro
   omega = 0.*d2r
 
@@ -52,10 +53,6 @@ program asteroid_fast
 
   ! porosity can decrease with depth, but should be constant within stirring depth
   porosity(:) = 0.4d0   ! dry porosity
-  do i=1,nz
-     !if (z(i)>0.5) porosity(i) = porosity(i) - (z(i)-0.5)/40.*porosity(1)
-     !if (porosity(i)<0.) porosity(i)=0.
-  enddo
   forall (i=1:nz) sigma(i,:) = porosity(i)*icedensity
   open(unit=30,file='poro.'//ext,action='write',status='unknown')
   write(30,'(999(f7.5,1x))') porosity(1:nz)

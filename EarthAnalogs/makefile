@@ -4,8 +4,9 @@ LFLAGS = -O3 -Wall
 
 SR = ../Common/
 
-insol_earth: topos.o crater_modules.o sunpos.o model_subs.o insol_earth.o \
-	mk_atmosphere.o crater_common.o flux_noatm.o makefile
+insol_earth: topos.o crater_modules.o sunpos.o model_subs.o \
+	insol_earth.o mk_atmosphere.o crater_common.o flux_noatm.o \
+	makefile
 	$(CC) $(LFLAGS) topos.o insol_earth.o mk_atmosphere.o \
 	sunpos.o crater_common.o model_subs.o flux_noatm.o 
 

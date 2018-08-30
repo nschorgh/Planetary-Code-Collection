@@ -53,7 +53,7 @@ program cratersQ_mars_shadowsonly
   nm=0
   
   print *,'...reading horizons file...'
-  call readhorizons('Data2/horizons.'//fileext)
+  call readhorizons('horizons.'//fileext)
 
   ! image taken imm = 5; iday=15; iyr=2014 8:44 UTC  ESP_036561
   longitude = 360 - 202.3 ! west longitude

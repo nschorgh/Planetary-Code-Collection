@@ -16,12 +16,13 @@ real(8) function pareto(idum,mean)
 end function pareto
 
 
-subroutine impactstirring(nz,z,dt,sigma)
+subroutine impactstirring(nz,z,dt,sigma,NRin)
   ! statistical model of impact stirring/gardening
   implicit none
   integer, intent(IN) :: nz
   real(8), intent(IN) :: z(nz), dt  ! dt in years
   real(8), intent(INOUT) :: sigma(nz)
+  integer, intent(IN), optional :: NRin ! number of realizations
   real(8), parameter :: Dgarden = 5e-11 ! gardening parameter (m^2/yr)
   integer j,k,NR,turns(nz),NT,i
   real(8) x,rho(nz),eavrho(nz),meanz,rhomean,zeff
@@ -30,6 +31,13 @@ subroutine impactstirring(nz,z,dt,sigma)
 
   if (maxval(sigma)==0.) return  ! no ice
   if (dt<1.) return  ! almost nothing is going to happen in 1 year
+
+  if (present(NRin)) then
+     NR=NRin
+     if (NR<1) return
+  else
+     NR=1000
+  endif
 
   NR=1000
   eavrho = 0.
