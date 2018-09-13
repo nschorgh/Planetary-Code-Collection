@@ -63,8 +63,7 @@ module filemanager
   !integer, parameter :: NSx=224, NSy=585
   !character(len = *), parameter :: fileext = 'PSP005943_32'
   !real(8), parameter :: dx=32., dy=32., RMAX=1e30
-  
-  integer, parameter :: Mx1=2, Mx2=NSx-1, My1=2, My2=NSy-1
+
 end module filemanager
 
 

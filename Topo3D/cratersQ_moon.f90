@@ -65,7 +65,7 @@ program cratersQ_Moon
      allocate(ii(NSx,NSy,CCMAX), jj(NSx,NSy,CCMAX), dO12(NSx,NSy,CCMAX))
      call getfieldofview(NSx,NSy,fileext,cc,ii,jj,dO12,skysize,CCMAX)
   endif
-  if (subsurface) allocate(T(NSx,NSy,1000), Qnm1(NSx,NSy))
+  if (subsurface) allocate(T(1000,NSx,NSy), Qnm1(NSx,NSy))
 
   print *,'...calculating...'
   ! loop over time steps 
@@ -127,7 +127,7 @@ program cratersQ_Moon
         ! main part
         do i=2,NSx-1
            do j=2,NSy-1
-              call subsurfaceconduction(T(i,j,:),Tsurf(i,j),dtsec,Qnm1(i,j),Qabs(i,j),emiss,solarDay)
+              call subsurfaceconduction(T(:,i,j),Tsurf(i,j),dtsec,Qnm1(i,j),Qabs(i,j),emiss,solarDay)
            enddo
         enddo
         Qnm1 = Qabs

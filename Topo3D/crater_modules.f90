@@ -174,7 +174,7 @@ module allinterfaces
      end subroutine getmaxfieldsize
   end interface
   
-  ! begin mk_atmosphere.f90
+  ! mk_atmosphere.f90
   interface
      real(8) function mk_atmosphere(Z,I0,D0)
        implicit none
@@ -182,18 +182,8 @@ module allinterfaces
        real(8), intent(OUT) :: I0, D0
      end function mk_atmosphere
   end interface
-  
-  ! begin cratersQ_mars.f90
-  interface
-     elemental function flux_mars(R,decl,latitude,HA,albedo, &
-          &   fracir,fracdust,surfaceSlope,azFac,smax,vf)
-       implicit none
-       real(8) flux_mars
-       real(8), intent(IN) :: R,decl,latitude,HA,albedo,fracIR,fracDust
-       real(8), intent(IN) :: surfaceSlope,azFac,smax,vf
-     end function flux_mars
-  end interface
 
+  ! flux_mars.f90
   interface
      elemental subroutine flux_mars2(R,decl,latitude,HA, &
           &   surfaceSlope,azFac,emax,Q,Qscat,Qlw)
@@ -203,6 +193,7 @@ module allinterfaces
      end subroutine flux_mars2
   end interface
   
+  ! cratersQ_mars.f90
   interface
      elemental function evap_ingersoll(T)
        implicit none

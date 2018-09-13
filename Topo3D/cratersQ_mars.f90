@@ -46,7 +46,8 @@ program cratersQ_mars
   integer, external :: julday
   real(8) jd, jd_snap(3), longitude, LTST, jd_end, jd_themis(2)
   character(len=20) fnt(2), fns(3)  ! snapshot file names
-
+  integer, parameter :: Mx1=2, Mx2=NSx-1, My1=2, My2=NSy-1
+  
   allocate(h(NSx,NSy), surfaceSlope(NSx,NSy), azFac(NSx,NSy))
   allocate(Qn(NSx,NSy), Qnm1(NSx,NSy), Qdirect(NSx,NSy))
   allocate(Tsurf(NSx,NSy), m(NSx,NSy))
@@ -425,8 +426,8 @@ subroutine writethemissnapshot(fn,h,Tsurf,NSx,NSy)
   integer i,j
   
   open(unit=27,file=fn,status='unknown',action='write')
-  do i=2,NSx-1 ! = Mx1,Mx2
-     do j=2,NSy-1  ! = My1,My2
+  do i=2,NSx-1
+     do j=2,NSy-1
         write(27,'(2(i4,1x),f9.2,1x,f5.1)') i,j,h(i,j),Tsurf(i,j)
      enddo
   enddo
@@ -444,8 +445,8 @@ subroutine writesnapshot(fn,h,Qdirect,m,Qn,NSx,NSy)
   integer i,j
 
   open(unit=27,file=fn,status='unknown',action='write')
-  do i=2,NSx-1 ! = Mx1,Mx2
-     do j=2,NSy-1  ! = My1,My2
+  do i=2,NSx-1
+     do j=2,NSy-1
         write(27,'(2(i4,1x),f9.2,1x,f6.1,1x,f7.1,1x,f6.1)') &
              & i,j,h(i,j),Qdirect(i,j),m(i,j),Qn(i,j)
      enddo

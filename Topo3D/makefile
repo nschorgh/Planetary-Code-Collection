@@ -36,7 +36,8 @@ cratersQ_moon: topos.o crater_modules.o model_subs.o cratersQ_moon.o \
 cratersQ_mars: topos.o crater_modules.o model_subs.o conductionT2.o \
 	conductionQ2.o cratersQ_mars.o crater_common.o flux_mars.o \
 	makefile
-	make -C $(SR) common
+	make -C $(SR) common more
+	make -C $(SRM) common-mars
 	$(CC) $(LFLAGS) cratersQ_mars.o crater_common.o topos.o \
 	$(SR)generalorbit.o model_subs.o flux_mars.o $(SR)grids.o \
 	$(SR)conductionQ2.o $(SR)tridag.o $(SR)conductionT2.o $(SR)julday.o \
