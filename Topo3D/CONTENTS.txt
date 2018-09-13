@@ -51,6 +51,10 @@ fieldproperties.f90: (main program)
 topo40.xyz: 
 	example input topography
 
+postassemble.cmd:
+	simple shell script that merges output of parallel versions
+	of shadows.f90 and fieldofviews.f90
+
 makefile:
 	shows file dependencies
 

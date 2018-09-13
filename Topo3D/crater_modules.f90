@@ -195,6 +195,15 @@ module allinterfaces
   end interface
 
   interface
+     elemental subroutine flux_mars2(R,decl,latitude,HA, &
+          &   surfaceSlope,azFac,emax,Q,Qscat,Qlw)
+       implicit none
+       real(8), intent(IN) :: R,decl,latitude,HA,surfaceSlope,azFac,emax
+       real(8), intent(OUT) :: Q,Qscat,Qlw
+     end subroutine flux_mars2
+  end interface
+  
+  interface
      elemental function evap_ingersoll(T)
        implicit none
        real(8) evap_ingersoll

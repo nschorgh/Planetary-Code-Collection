@@ -48,6 +48,22 @@ module filemanager
   !character(len = *), parameter :: fileext = 'moongauss3.rms=0.5'
   !real(8), parameter :: dx=1., dy=1., RMAX=1e5
 
+  !integer, parameter :: NSx=1792, NSy=4680
+  !character(len = *), parameter :: fileext = 'PSP005943_4'
+  !real(8), parameter :: dx=4., dy=4., RMAX=1e30
+
+  !integer, parameter :: NSx=896, NSy=2340
+  !character(len = *), parameter :: fileext = 'PSP005943_8'
+  !real(8), parameter :: dx=8., dy=8., RMAX=1e30
+
+  !integer, parameter :: NSx=448, NSy=1170
+  !character(len = *), parameter :: fileext = 'PSP005943_16'
+  !real(8), parameter :: dx=16., dy=16., RMAX=1e30
+
+  !integer, parameter :: NSx=224, NSy=585
+  !character(len = *), parameter :: fileext = 'PSP005943_32'
+  !real(8), parameter :: dx=32., dy=32., RMAX=1e30
+  
   integer, parameter :: Mx1=2, Mx2=NSx-1, My1=2, My2=NSy-1
 end module filemanager
 

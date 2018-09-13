@@ -25,6 +25,7 @@ program cratersQ_mars
 
   real(8), parameter :: albedo0=0.12, co2albedo=0.65
   real(8), parameter :: emiss = 0.94
+  real(8), parameter :: earthDay = 86400.
 
   integer nsteps, n, i, j, nm
   real(8) tmax, dt, latitude, dtsec, buf
@@ -32,27 +33,25 @@ program cratersQ_mars
   real(8) edays, marsR, marsLs, marsDec
   real(8), allocatable, dimension(:,:) :: h, surfaceSlope, azFac
   real(8), allocatable, dimension(:,:) :: Qn   ! incoming
-  real(8), allocatable, dimension(:,:) :: Tsurf, albedo, Fsurf, m
+  real(8), allocatable, dimension(:,:) :: Tsurf, albedo, m
   real(8), allocatable, dimension(:,:) :: Qmean, Qmax, Tmean, Tmaxi, Qdirect
   real(8), allocatable, dimension(:,:) :: viewfactor
   real(8), allocatable, dimension(:,:) :: mmax, frosttime, maxfrosttime, Qnm1
-  real(8), allocatable :: T(:,:,:), Tbottom(:,:), Tref(:)  ! subsurface
+  real(8), allocatable :: Fsurf(:,:), T(:,:,:), Tbottom(:,:), Tref(:)  ! subsurface
   real(8), allocatable, dimension(:,:) :: mmin, co2last, co2first, h2olast, h2olastt !, EH2Ocum
-  real(8) dE, Tsurfold, QIR !, EH2O
+  real(8) dE, Tsurfold, QIR, Qscat, Qlw !, EH2O
   logical, parameter :: subsurface=.true.  ! control panel
   !integer, parameter :: NrMP=3   ! number of monitoring points
   integer k !, i0, j0, i00(NrMP), j00(NrMP)
-  
-  real(8), parameter :: earthDay = 86400.
   integer, external :: julday
   real(8) jd, jd_snap(3), longitude, LTST, jd_end, jd_themis(2)
   character(len=20) fnt(2), fns(3)  ! snapshot file names
 
   allocate(h(NSx,NSy), surfaceSlope(NSx,NSy), azFac(NSx,NSy))
   allocate(Qn(NSx,NSy), Qnm1(NSx,NSy), Qdirect(NSx,NSy))
-  allocate(Tsurf(NSx,NSy))
+  allocate(Tsurf(NSx,NSy), m(NSx,NSy))
   allocate(albedo(NSx,NSy)); albedo = albedo0
-  allocate(Fsurf(NSx,NSy), m(NSx,NSy))
+  allocate(Fsurf(NSx,NSy))
   allocate(viewfactor(Mx1:Mx2,My1:My2))
   allocate(Qmean(NSx,NSy), Qmax(NSx,NSy), Tmean(NSx,NSy), Tmaxi(NSx,NSy))
   allocate(frosttime(NSx,NSy), maxfrosttime(NSx,NSy))
@@ -107,7 +106,11 @@ program cratersQ_mars
   
   print *,'...reading horizons file...'
   call readhorizons('horizons.'//fileext)
-  call getskysize(viewfactor)  ! only use viewfactors with IR contribution
+  ! only use viewfactors with IR contribution
+  !call getskysize(viewfactor)
+  do concurrent(i=2:NSx-1, j=2:Nsy-1)
+     viewfactor(i,j) = getoneskysize(i,j)
+  end do
   viewfactor = viewfactor/(2*pi)
   print *,'max/min/mean of skyviewfactor:',maxval(viewfactor(:,:)),minval(viewfactor),sum(viewfactor)/size(viewfactor)
   
@@ -156,22 +159,28 @@ program cratersQ_mars
      
      if (mod(n,10)==0) print *,n,sdays,marsLs/d2r
 
-     Qn(1,1)=flux_mars(marsR,marsDec,latitude,HA, &
-          & albedo(1,1),fracir,fracdust,zero,zero,zero,1.d0)
+     !Qn(1,1)=flux_mars(marsR,marsDec,latitude,HA, &
+     !     & albedo(1,1),fracir,fracdust,zero,zero,zero,1.d0)
+     call flux_mars2(marsR,marsDec,latitude,HA,zero,zero,emax,Qdirect(1,1),Qscat,Qlw)
+     Qn(1,1) = (1-albedo(1,1))*(Qdirect(1,1)+Qscat) + emiss*Qlw
      do i=Mx1,Mx2
         do j=My1,My2
            ! incoming solar flux
            if (h(i,j)<-32000) cycle
            emax = getonehorizon(i,j,azSun)
-           Qn(i,j)=flux_mars(marsR,marsDec,latitude,HA,albedo(i,j), &
-                & fracir,fracdust,surfaceSlope(i,j),azFac(i,j),emax,viewfactor(i,j))
+           !Qn(i,j)=flux_mars(marsR,marsDec,latitude,HA,albedo(i,j), &
+           !     & fracir,fracdust,surfaceSlope(i,j),azFac(i,j),emax,viewfactor(i,j))
+           call flux_mars2(marsR,marsDec,latitude,HA,surfaceSlope(i,j),azFac(i,j), &
+                & emax,Qdirect(i,j),Qscat,Qlw)
+           Qn(i,j) = (1-albedo(i,j))*(Qdirect(i,j)+Qscat*viewfactor(i,j)) &
+                & + emiss*Qlw*viewfactor(i,j)
            ! contribution from land in field of view
            if (n>0) then 
               QIR = (1-viewfactor(i,j))*emiss*sigSB*Tsurf(1,1)**4
               Qn(i,j) = Qn(i,j) + emiss*QIR
            endif
            ! Qdirect is for snapshot
-           Qdirect(i,j)=flux_wshad(marsR,sinbeta,azSun,surfaceSlope(i,j),azFac(i,j),emax)
+           !Qdirect(i,j)=flux_wshad(marsR,sinbeta,azSun,surfaceSlope(i,j),azFac(i,j),emax)
         enddo
      enddo
      if (n==0) Qnm1(:,:) = Qn(:,:)

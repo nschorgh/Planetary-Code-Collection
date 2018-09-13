@@ -53,30 +53,29 @@ contains
     getonehorizon = smax
   end function getonehorizon
   
-  pure subroutine getskysize(skysize)
+  elemental function getoneskysize(i,j)
     !***********************************************************************
     !   calculates sky size (steradian) from horizons
-    !   in-module abbreviated version
+    !   abbreviated version
     !***********************************************************************
     use allinterfaces, only: area_spherical_triangle
     implicit none
-    real(8), intent(OUT) :: skysize(NSx,NSy) 
+    real(8) getoneskysize
+    integer, intent(IN) :: i,j
     real(8), parameter :: pi=3.1415926535897932
-    integer i, j, k
-    real(8) phi(3), theta(3), dOmega
-    
-    do i=2,NSx-1
-       do j=2,NSy-1
-          skysize(i,j)=0
-          phi = (/ 0, 0, 1 /) *2*pi/naz
-          do k=1,naz
-             theta = (/ 0.d0, atan(1/s(i,j,k)), atan(1/s(i,j,k+1)) /) ! from zenith
-             dOmega = area_spherical_triangle(phi,theta)
-             skysize(i,j) = skysize(i,j) + dOmega
-          enddo
-       enddo
+    integer k
+    real(8) phi(3), theta(3), dOmega, skysize
+
+    skysize=0
+    phi = (/ 0, 0, 1 /) *2*pi/naz
+    do k=1,naz
+       theta = (/ 0.d0, atan(1/s(i,j,k)), atan(1/s(i,j,k+1)) /) ! from zenith
+       dOmega = area_spherical_triangle(phi,theta)
+       skysize = skysize + dOmega
     enddo
-  end subroutine getskysize
+    getoneskysize = skysize
+    
+  end function getoneskysize
   
 end module newhorizons
 
@@ -128,8 +127,8 @@ elemental subroutine equatorial2horizontal(decl,latitude,HA,sinbeta,azimuth)
   cosbeta = sqrt(1-sinbeta**2)
   buf = (sin(decl)-sin(latitude)*sinbeta)/(cos(latitude)*cosbeta)
   ! buf can be NaN if cosbeta = 0
-  if (buf>+1.) buf=+1.  ! damn roundoff
-  if (buf<-1.) buf=-1.  ! damn roundoff
+  if (buf>+1.) buf=+1.  ! roundoff
+  if (buf<-1.) buf=-1.  ! roundoff
   azimuth = acos(buf)
   if (sin(HA)>=0) azimuth=2*pi-azimuth  
 end subroutine equatorial2horizontal

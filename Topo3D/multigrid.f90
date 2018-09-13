@@ -258,7 +258,6 @@ contains
     
     x0 = i0*dx; y0 = j0*dy; h00 = h(i0,j0)
     
-    ! L=5 should exactly match output of MG5 implementation 
     P=2**(L-1)
     if (L>10 .or. L<2) error stop 'findallhorizon_MGR: invalid grid level'
     ! The top loop for the coarsest grid is different from all others
