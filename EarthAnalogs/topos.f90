@@ -8,8 +8,8 @@ module filemanager
   implicit none
   ! NSx = # pixels in x-direction (longitude)
   ! NSy = # pixels in y-direction (latitude)
-  ! dx, dy = horizontal resolution (meter)
-  ! RMAX = max radius of consideration (meter)
+  ! dx, dy = horizontal resolution [meter]
+  ! RMAX = max radius of consideration [meter]
 
   !integer, parameter :: NSx=40, NSy=40
   !character(len=*), parameter :: fileext = 'topo40'

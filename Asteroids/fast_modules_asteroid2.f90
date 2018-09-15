@@ -16,10 +16,10 @@ end module constants
 module body
   implicit none
 
-  real(8) semia  ! semimajor axis (AU)
+  real(8) semia  ! semimajor axis [AU]
   real(8) ecc  ! orbital eccentricity 
   real(8) Trot ! length of solar day in Earth days
-  real(8) solarDay ! length of solar day in seconds
+  real(8) solarDay ! length of solar day [seconds]
   real(8) emiss ! IR emissivity of dry surface
   real(8) solsperyear
   integer nz   ! number of vertical grid points
@@ -43,8 +43,8 @@ module body
   !parameter(emiss = 0.95d0)
   !parameter(nz=160, zfac=1.05d0, zmax=20.) 
   
-  real(8), parameter :: Tnominal = 140.   ! for Diff and Tinit
-  real(8), parameter :: icedensity = 931.  ! 140K
+  real(8), parameter :: Tnominal = 140.   ! for Diff and Tinit [K]
+  real(8), parameter :: icedensity = 931.  ! 140K  [kg/m^3]
 
   real(8), parameter :: dt = 0.01  ! in units of solar days
   real(8), parameter :: Fgeotherm = 0.

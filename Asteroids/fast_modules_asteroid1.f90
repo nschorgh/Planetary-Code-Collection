@@ -16,10 +16,10 @@ end module constants
 module body
   implicit none
 
-  real(8) semia  ! semimajor axis (AU)
+  real(8) semia  ! semimajor axis [AU]
   real(8) ecc  ! orbital eccentricity 
   real(8) Trot ! length of solar day in Earth days
-  real(8) solarDay ! length of solar day in seconds
+  real(8) solarDay ! length of solar day [seconds]
   real(8) emiss ! IR emissivity of dry surface
   real(8) solsperyear
   integer nz   ! number of vertical grid points

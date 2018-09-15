@@ -1,27 +1,90 @@
+elemental real*8 function flux_mars77(R,decl,latitude,HA,albedo, &
+     &     fracir,fracdust,Tsurf)
+  !***********************************************************************
+  !   flux_mars77: calculates insolation at Mars
+  !     flat surface only; also works in polar regions
+  !
+  !     R: distance from sun [AU]
+  !     decl: planetocentric solar declination [radians]
+  !     latitude: [radians]
+  !     HA: hour angle [radians from noon, clockwise]
+  !     fracir: fraction of absorption
+  !     fracdust: fraction of scattering
+  !     Tsurf: surface temperature [K]
+  !
+  !***********************************************************************
+  implicit none
+  real*8 pi, So, d2r
+  parameter (pi=3.1415926535897931, So=1365., d2r=pi/180.)
+  real*8, intent(IN) :: R,decl,latitude,HA,albedo,fracIR,fracDust,Tsurf
+  real*8 c1,s1,Qo,solarAttenuation,Q
+  real*8 sinbeta,sinbetaNoon,cosbeta,azSun,buf,Fout
+  real*8, parameter :: sigSB=5.6704d-8
+
+  c1=cos(latitude)*cos(decl)
+  s1=sin(latitude)*sin(decl)
+  ! beta = 90 minus incidence angle for horizontal surface
+  ! beta = elevation of sun above (horizontal) horizon 
+  sinbeta = c1*cos(HA) + s1
+  sinbetaNoon = c1 + s1
+  sinbetaNoon = max(sinbetaNoon,0.d0)  ! horizon
+  
+  cosbeta = sqrt(1-sinbeta**2)
+  ! ha -> az (option 1)
+  ! azSun=asin(-cos(decl)*sin(ha)/cosbeta)
+  ! ha -> az (option 2)
+  buf = (sin(decl)-sin(latitude)*sinbeta)/(cos(latitude)*cosbeta)
+  if (buf>+1.) buf=1.d0   ! roundoff
+  if (buf<-1.) buf=-1.d0  ! roundoff
+  azSun = acos(buf)
+  if (sin(HA)>=0) azSun=2*pi-azSun
+  ! ha -> az (option 3)  without beta
+  ! azSun=sin(latitude)*cos(decl)*cos(ha)-cos(latitude)*sin(decl)
+  ! azSun=atan(sin(ha)*cos(decl)/azSun)
+  ! print *,asin(sinbeta)/d2r,azSun/d2r
+  
+  Qo = So/(R**2)
+  ! atmospheric contributions are based on Kieffer et al. (1977), JGR
+  if (sinbeta>0.d0) then
+     solarAttenuation = (1.-albedo)* &
+          &        (1.- fracIR - fracDust)**(1./max(sinbeta,0.04)) 
+     Q = Qo*(sinbeta*solarAttenuation + 0.5*fracDust)
+  else
+     Q = 0.
+  endif
+  ! net flux: short-wavelength insolation + IR
+  Fout = 1.*sigSB*Tsurf**4
+  Q = Q + max(Qo*sinbetaNoon,Fout)*fracIR  
+  flux_mars77 = Q
+end function flux_mars77
+
+
+
 elemental subroutine flux_mars2(R,decl,latitude,HA, &
      &   surfaceSlope,azFac,emax,Q,Qscat,Qlw)
-!*************************************************************************
+!***********************************************************************
 !     This subroutine for solar insolation at Mars is based on the
-!        function flux, but returns several irradiances in W/m^2
+!       function flux, but returns several irradiances [W/m^2]
 !
-!     R: distance from sun (AU)
-!     decl: planetocentric solar declination (radians)
-!     latitude: (radians)
-!     HA: hour angle (radians from noon, clockwise)
+!     R: distance from sun [AU]
+!     decl: planetocentric solar declination [radians]
+!     latitude: [radians]
+!     HA: hour angle [radians from noon, clockwise]
 !     fracir: fraction of absorption
 !     fracdust: fraction of scattering
-!     surfaceSlope: >0, (radians) 
+!     surfaceSlope: >0, [radians]
 !     azFac: azimuth of gradient (radians east of north)
-!     emax: maximum horizon elevation in direction of azimuth (radians)
+!     emax: maximum horizon elevation in direction of azimuth [radians]
 !     Q: direct incoming short-wavelength irradiance
-!     Qscat: scattered (isotropic) short-wavelength irradiance from atmosphere
-!     Qlw: (isotropic) long-wavelength irradiance from atmosphere
-!*************************************************************************
+!     Qscat: diffuse short-wavelength irradiance from atmosphere
+!     Qlw: diffuse long-wavelength irradiance from atmosphere
+!
+!***********************************************************************
   implicit none
   real(8), parameter :: pi=3.1415926535897931, So=1365., d2r=pi/180.
   real(8), intent(IN) :: R,decl,latitude,HA,surfaceSlope,azFac,emax
   real(8), intent(OUT) :: Q,Qscat,Qlw
-  real(8) c1,s1,solarAttenuation,Q0
+  real(8) c1,s1,solarAttenuation,Qo
   real(8) sinbeta,sinbetaNoon,cosbeta,sintheta,azSun,buf
   real(8), parameter :: fracIR=0.04, fracDust=0.02
   
@@ -50,13 +113,14 @@ elemental subroutine flux_mars2(R,decl,latitude,HA, &
   if (sinbeta<sin(emax)) sintheta=0. ! distant horizon
 
 ! fluxes and contributions from atmosphere
-  Q0 = So/R**2  ! solar constant at Mars
+  Qo = So/R**2  ! solar constant at Mars
   solarAttenuation = (1.- fracIR - fracDust)**(1./max(sinbeta,0.04d0))
-  Q = Q0*sintheta*solarAttenuation
-  ! Qlw = fracIR*max(sinbetaNoon*Q0, sigSB*Tbase**4)  in polar region
-  Qlw = sinbetaNoon*fracIR*Q0
+  Q = Qo*sintheta*solarAttenuation
+  ! Fout = 1.*sigSB*Tsurf**4
+  ! Qlw = fracIR*max(Q0*sinbetaNoon, Fout)  in polar region
+  Qlw = sinbetaNoon*fracIR*Qo
   if (sinbeta>0.d0) then
-     Qscat = 0.5*fracDust*Q0
+     Qscat = 0.5*fracDust*Qo
   else
      Qscat = 0.
   endif

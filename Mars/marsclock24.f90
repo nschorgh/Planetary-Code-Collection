@@ -1,13 +1,15 @@
 subroutine marsclock24(JDUT,Deltat_J2000,Ls,dec,RM,Longitude_W,LTST)
+  !***********************************************************************
   ! functionality of marsorbit.f + local time
   ! AM2000 = Allison & McEwen, PSS 48, 215 (2000)
   ! see also  www.giss.nasa.gov/tools/mars24/help/algorithm.html
+  !***********************************************************************
   implicit none
   real*8, intent(IN) :: JDUT !  Julian Date
   real*8 temp1, dcor
   real*8 JDTT ! terrestrial julian date
   real*8, intent(OUT) :: Deltat_J2000  ! days since J2000
-  real*8, intent(OUT) :: Ls   ! (radian)
+  real*8, intent(OUT) :: Ls   ! [radian]
   real*8, intent(OUT) :: dec, RM
 
   integer i

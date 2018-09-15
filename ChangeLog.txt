@@ -1,5 +1,9 @@
 ChangeLog
 
+Sep 2018: most of the code development over the past 14 months was for the 3D surface energy balance model for Mars (cratersQ_mars and its subroutines), which is now in producation mode
+
+Sep 2018: function flux_mars is replaced by subroutine flux_mars2, which returns direct and diffuse irradiance separately
+
 Aug 2018: moved mars-specific subroutines out of grids.f
 
 Feb 2018: recursive implementation of multigrid

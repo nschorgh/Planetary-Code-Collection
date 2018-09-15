@@ -13,7 +13,6 @@ module allinterfaces
   ! begin shadows_subs.f90
   interface
      subroutine findonehorizon_wsort(h,i0,j0,azRay,smax,visibility)
-       ! finds horizon and determines visibility for one azimuth ray
        use filemanager
        integer, intent(IN) :: i0,j0
        real(8), intent(IN) :: h(NSx,NSy),azRay
@@ -282,11 +281,11 @@ module allinterfaces
      pure subroutine horizon_MG_core(x0,y0,h00,naz,smax,i,j,h,P)
        use filemanager, only : NSx,NSy,dx,dy
        implicit none
-       real(8), intent(IN) :: x0,y0,h00  ! on fine grid
+       real(8), intent(IN) :: x0,y0,h00 
        integer, intent(IN) :: naz
        real(8), intent(INOUT) :: smax(naz)
-       integer, intent(IN) :: i,j,P  ! on fine or coarse grid
-       real(8), intent(IN) :: h(NSx/P,NSy/P) ! on fine or coarse grid
+       integer, intent(IN) :: i,j,P 
+       real(8), intent(IN) :: h(NSx/P,NSy/P)
      end subroutine horizon_MG_core
   end interface
 
@@ -300,12 +299,12 @@ module allinterfaces
   interface
      subroutine marsclock24(JDUT,Deltat_J2000,Ls,dec,RM,Longitude_W,LTST)
        implicit none
-       real*8, intent(IN) :: JDUT !  Julian Date
-       real*8, intent(OUT) :: Deltat_J2000  ! days since J2000
-       real*8, intent(OUT) :: Ls   ! (radian)
+       real*8, intent(IN) :: JDUT
+       real*8, intent(OUT) :: Deltat_J2000
+       real*8, intent(OUT) :: Ls
        real*8, intent(OUT) :: dec, RM
        real*8, intent(IN) :: Longitude_W
-       real*8, intent(OUT) :: LTST  ! (hour)
+       real*8, intent(OUT) :: LTST
      end subroutine marsclock24
   end interface
   

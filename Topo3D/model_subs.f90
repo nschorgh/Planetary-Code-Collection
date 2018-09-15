@@ -105,11 +105,11 @@ end subroutine difftopo
 elemental subroutine equatorial2horizontal(decl,latitude,HA,sinbeta,azimuth)
 !***********************************************************************
 !   converts declination and hour angle to azimuth and sin(altitude)
-!     decl: planetocentric solar declination (radians)
-!     latitude: (radians)
-!     HA: hour angle (radians from noon, clockwise)
+!     decl: planetocentric solar declination [radians]
+!     latitude [radians]
+!     HA: hour angle [radians from noon, clockwise]
 !     sinbeta: sin(altitude)
-!     azimuth: (radians east of north)
+!     azimuth [radians east of north]
 !***********************************************************************
   implicit none
   real(8), parameter :: pi=3.1415926535897931
