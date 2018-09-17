@@ -1,3 +1,7 @@
+# This overwrites and passes on options:
+# make CC=pgfortran CFLAGS=-fast LFLAGS=-fast
+# make CC=ifort CFLAGS='-O2 -warn all' LFLAGS='-O2 -warn all'
+
 CC = gfortran
 CFLAGS = -O3 -Wall
 LFLAGS = -O3 -Wall

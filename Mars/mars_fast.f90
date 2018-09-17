@@ -7,7 +7,7 @@ program mars_fast
   use allinterfaces
   implicit none
   integer, parameter :: NP=1   ! # of sites
-  integer nz, i, k, ierr
+  integer nz, i, k, ierr, iargc
   real(8) zfac, zmax, delta, z(NMAX), icetime, porosity, icefrac
   real(8), dimension(NP) :: latitude, albedo, thIn, rhoc
   real(8), dimension(NP) :: pfrost, p0, htopo

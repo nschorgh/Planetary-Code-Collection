@@ -20,7 +20,8 @@ This program collection contains:
 
 Mars/mars_thermal1d.f: (main program)
 Mars/flux.f
-Mars/marsorbit.f
+Mars/flux_mars.f90
+Mars/marsorbit.f90
 Mars/soilthprop.f
 Common/conductionQ.f
 Common/conductionT.f
@@ -49,8 +50,9 @@ Mars/mars_mapt2.f: (main program)
 Mars/mars_mapiqh2v.f90: (main program)
 Mars/jsub.f
 Mars/jsubv.f90
-Mars/marsorbit.f
-Mars/soilthprop.f 
+Mars/marsorbit.f90
+Mars/flux_mars.f90
+Mars/soilthprop.f
 Common/conductionQ.f
 Common/conductionT.f
 Common/tridag.for
@@ -156,7 +158,7 @@ Topo3D/fieldproperties.f90: (main program)
 Topo3D/hpsort.for
 Common/flux_noatm.f90
 Mars/flux_mars.f90
-Mars/marsclock24.f90
+Mars/marsorbit.f90
 Topo3D/topo40.xyz
 Documentation: User Guide Part 5
 

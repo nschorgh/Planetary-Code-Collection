@@ -182,7 +182,7 @@ module allinterfaces
      end function mk_atmosphere
   end interface
 
-  ! flux_mars.f90
+  ! routines in Mars/
   interface
      elemental subroutine flux_mars2(R,decl,latitude,HA, &
           &   surfaceSlope,azFac,emax,Q,Qscat,Qlw)
@@ -191,6 +191,19 @@ module allinterfaces
        real(8), intent(OUT) :: Q,Qscat,Qlw
      end subroutine flux_mars2
   end interface
+
+  interface
+     subroutine marsclock24(JDUT,Deltat_J2000,Ls,dec,RM,Longitude_W,LTST)
+       implicit none
+       real*8, intent(IN) :: JDUT
+       real*8, intent(OUT) :: Deltat_J2000
+       real*8, intent(OUT) :: Ls
+       real*8, intent(OUT) :: dec, RM
+       real*8, intent(IN) :: Longitude_W
+       real*8, intent(OUT) :: LTST
+     end subroutine marsclock24
+  end interface
+  
   
   ! cratersQ_mars.f90
   interface
@@ -296,16 +309,4 @@ module allinterfaces
      end function flux_wshad
   end interface
 
-  interface
-     subroutine marsclock24(JDUT,Deltat_J2000,Ls,dec,RM,Longitude_W,LTST)
-       implicit none
-       real*8, intent(IN) :: JDUT
-       real*8, intent(OUT) :: Deltat_J2000
-       real*8, intent(OUT) :: Ls
-       real*8, intent(OUT) :: dec, RM
-       real*8, intent(IN) :: Longitude_W
-       real*8, intent(OUT) :: LTST
-     end subroutine marsclock24
-  end interface
-  
 end module allinterfaces

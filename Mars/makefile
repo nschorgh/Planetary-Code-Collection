@@ -1,3 +1,7 @@
+# This overwrites and passes on options:
+# make CC=pgfortran CFLAGS=-fast LFLAGS=-fast
+# make CC=ifort CFLAGS='-O2 -warn all' LFLAGS='-O2 -warn all'
+
 CC = gfortran
 CFLAGS = -O2 -Wall
 LFLAGS = -O2 -Wall
@@ -66,7 +70,7 @@ mars_fast: fast_modules.o mars_fast.o fast_subs_univ.o \
 	fast_subs_univ.o flux.o $(SR)conductionQ.o $(SR)psvco2.o \
 	$(SR)generalorbit.o fast_subs_mars.o -o $@
 
-common-mars: marsorbit.o vapordiffusioni.o flux.o marsclock24.o
+common-mars: marsorbit.o vapordiffusioni.o flux.o flux_mars.o
 
 %.o:	%.f makefile
 	$(CC) $(CFLAGS) -c $<

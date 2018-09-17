@@ -41,7 +41,7 @@ cratersQ_mars: topos.o crater_modules.o model_subs.o conductionT2.o \
 	$(CC) $(LFLAGS) cratersQ_mars.o crater_common.o topos.o \
 	$(SR)generalorbit.o model_subs.o flux_mars.o $(SR)grids.o \
 	$(SR)conductionQ2.o $(SR)tridag.o $(SR)conductionT2.o $(SR)julday.o \
-	$(SRM)marsclock24.o $(SR)psv.o  -o $@
+	$(SRM)marsorbit.o $(SR)psv.o  -o $@
 
 cratersQ_mars_shadowsonly: topos.o crater_modules.o model_subs.o \
 	crater_common.o cratersQ_mars_shadowsonly.o makefile
@@ -49,7 +49,7 @@ cratersQ_mars_shadowsonly: topos.o crater_modules.o model_subs.o \
 	make -C $(SRM) common-mars
 	$(CC) $(LFLAGS) cratersQ_mars_shadowsonly.o crater_common.o \
 	topos.o model_subs.o $(SR)flux_noatm.o $(SR)julday.o \
-	$(SRM)marsclock24.o
+	$(SRM)marsorbit.o
 
 test: topos.o crater_modules.o test_shadows1pt.o shadow_subs.o
 	crater_common.o topos.o hpsort.o multigrid.o makefile

@@ -7,11 +7,9 @@ Mars/
 flux.f: 
 	Insolation on horizontal or sloped surface with a poor man's Mars atmosphere
 
-marsorbit.f:
+marsorbit.f90:
 	Position of the sun as seen from Mars; data from Allison & McEwen (2000)
-
-marsclock24.f90:
-	marsorbit.f + local Mars time
+	marsclock24 = marsorbit + local Mars time
 
 mars_thermal1d.f: (main program)
 	1D diffusion of temperature for Mars; 
