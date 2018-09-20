@@ -130,18 +130,18 @@ pure subroutine addtime(udtTime)
   type(cTime), intent(INOUT) :: udtTime
   integer shft
 
-  if (udtTime%dSeconds >= 60) then
+  do while (udtTime%dSeconds >= 60)
      udtTime%dSeconds = udtTime%dSeconds - 60
      udtTime%dMinutes = udtTime%dMinutes + 1
-  endif
-  if (udtTime%dMinutes >= 60) then
+  end do
+  do while (udtTime%dMinutes >= 60)
      udtTime%dMinutes = udtTime%dMinutes - 60
      udtTime%dHours = udtTime%dHours + 1
-  endif
-  if (udtTime%dHours >= 24) then
+  end do
+  do while (udtTime%dHours >= 24)
      udtTime%dHours = udtTime%dHours - 24
      udtTime%iDay = udtTime%iDay + 1
-  endif
+  end do
 
   select case (udtTime%iMonth)
   case(1,3,5,7,8,10,12)
@@ -176,18 +176,18 @@ pure subroutine subtime(udtTime)
   type(cTime), intent(INOUT) :: udtTime
   integer shft
 
-  if (udtTime%dSeconds < 0) then
+  do while (udtTime%dSeconds < 0) 
      udtTime%dSeconds = udtTime%dSeconds + 60
      udtTime%dMinutes = udtTime%dMinutes - 1
-  endif
-  if (udtTime%dMinutes < 0) then
+  end do
+  do while (udtTime%dMinutes < 0)
      udtTime%dMinutes = udtTime%dMinutes + 60
      udtTime%dHours = udtTime%dHours - 1
-  endif
-  if (udtTime%dHours < 0) then
+  end do
+  do while (udtTime%dHours < 0) 
      udtTime%dHours = udtTime%dHours + 24
      udtTime%iDay = udtTime%iDay - 1
-  endif
+  end do
 
   select case (udtTime%iMonth-1)
   case(1,3,5,7,8,10,0)
