@@ -22,7 +22,7 @@ end function azimuth
 
 
 
-real(8) function viewing_angle(i0,j0,i,j,h)
+real(8) pure function viewing_angle(i0,j0,i,j,h)
 !***********************************************************************
 !  function that calculates angle between surface normal at (i,j)
 !     and vector pointing to (ii,jj) as in findonehorizon_wsort

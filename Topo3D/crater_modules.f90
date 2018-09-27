@@ -93,7 +93,7 @@ module allinterfaces
   end interface
 
   interface
-     real(8) function viewing_angle(i0,j0,i,j,h)
+     real(8) pure function viewing_angle(i0,j0,i,j,h)
        use filemanager, only : NSx,NSy,dx,dy
        implicit none
        integer, intent(IN) :: i0,j0,i,j

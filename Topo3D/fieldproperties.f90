@@ -57,7 +57,7 @@ subroutine getskysize(skysize,fn)
   character(len=*), intent(IN) :: fn
   real(8), intent(OUT) :: skysize(NSx,NSy) 
   real(8), parameter :: pi=3.1415926535897932
-  integer, parameter :: naz=180*2   ! # of azimuths
+  integer, parameter :: naz=180   ! # of azimuths
   real(8) smax(naz)
   integer i, j, ii, jj, ierr, k, kp1
   real(8) phi(3), theta(3), dOmega, landsize0
