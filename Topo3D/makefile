@@ -1,5 +1,5 @@
 CC = gfortran
-CFLAGS = -O3 -Wall
+CFLAGS = -O3 -Wall -Wno-integer-division
 LFLAGS = -O3 -Wall
 
 #CC = ifort

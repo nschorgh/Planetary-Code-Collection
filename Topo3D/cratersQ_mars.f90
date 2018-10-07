@@ -6,6 +6,7 @@ module miscparams
   real(8), parameter :: Tco2frost=145., Lco2frost=6.0e5  ! Mars
   real(8), parameter :: zero = 0.
   real(8), parameter :: Tfrost = 200. ! H2O frost point temperature, for diagnostics only
+  real(8), parameter :: earthDay = 86400.
 
   ! thermal model parameters
   real(8), parameter :: fracIR=0.04, fracDust=0.02
@@ -25,10 +26,11 @@ program cratersQ_mars
 
   real(8), parameter :: albedo0=0.12, co2albedo=0.65
   real(8), parameter :: emiss = 0.94
-  real(8), parameter :: earthDay = 86400.
+  real(8) :: latitude = -41.6
+  real(8), parameter :: longitude = 360 - 202.3 ! west longitude
 
   integer nsteps, n, i, j, nm
-  real(8) tmax, dt, latitude, dtsec, buf
+  real(8) tmax, dt, dtsec, buf
   real(8) HA, sdays, azSun, emax, sinbeta
   real(8) edays, marsR, marsLs, marsDec
   real(8), allocatable, dimension(:,:) :: h, surfaceSlope, azFac
@@ -44,7 +46,7 @@ program cratersQ_mars
   !integer, parameter :: NrMP=3   ! number of monitoring points
   integer k !, i0, j0, i00(NrMP), j00(NrMP)
   integer, external :: julday
-  real(8) jd, jd_snap(3), longitude, LTST, jd_end, jd_themis(2)
+  real(8) jd, jd_snap(3), LTST, jd_end, jd_themis(2)
   character(len=20) fnt(2), fns(3)  ! snapshot file names
   integer, parameter :: Mx1=2, Mx2=NSx-1, My1=2, My2=NSy-1
   
@@ -69,7 +71,6 @@ program cratersQ_mars
   !tmax = solsy*10.5  ! should end at the beginning of spring for the respective hemisphere
   !tmax = 2.
   tmax = 5.*solsy
-  latitude = -41.6
 
   ! set some constants
   nsteps=int(tmax/dt)       ! calculate total number of timesteps
@@ -126,7 +127,6 @@ program cratersQ_mars
 
   open(unit=22,file='timeseries_flat.dat',status='unknown',action='write')
 
-  longitude = 360 - 202.3 ! west longitude
   ! image taken imm = 5; iday=15; iyr=2014 8:44 UTC  ESP_036561
   jd_snap(1)=dble(julday(5,15,2014)) + (8.+44./60-12)/24.  !  JD for noon UTC on imm,iday,iyear
   !call marsclock24(jd_snap,buf,marsLs,marsDec,marsR,Longitude,LTST)
@@ -162,7 +162,7 @@ program cratersQ_mars
 
      !Qn(1,1)=flux_mars(marsR,marsDec,latitude,HA, &
      !     & albedo(1,1),fracir,fracdust,zero,zero,zero,1.d0)
-     call flux_mars2(marsR,marsDec,latitude,HA,zero,zero,emax,Qdirect(1,1),Qscat,Qlw)
+     call flux_mars2(marsR,marsDec,latitude,HA,zero,zero,zero,Qdirect(1,1),Qscat,Qlw)
      Qn(1,1) = (1-albedo(1,1))*(Qdirect(1,1)+Qscat) + emiss*Qlw
      do i=Mx1,Mx2
         do j=My1,My2
