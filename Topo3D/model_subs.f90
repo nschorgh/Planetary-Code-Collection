@@ -77,6 +77,22 @@ contains
     
   end function getoneskysize
   
+  elemental function getoneskysize_v2(i,j)
+    !***********************************************************************
+    !   calculates sky size (steradian) from horizons
+    !***********************************************************************
+    implicit none
+    real(8) getoneskysize_v2
+    integer, intent(IN) :: i,j
+    real(8), parameter :: pi=3.1415926535897932
+    real(8), parameter :: dphi=2*pi/naz
+    real(8) landsize
+    
+    landsize = sum(sin(s(i,j,1:naz)))*dphi
+    getoneskysize_v2 = 2*pi-landsize
+    
+  end function getoneskysize_v2
+  
 end module newhorizons
 
 
