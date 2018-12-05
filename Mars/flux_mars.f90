@@ -59,7 +59,7 @@ end function flux_mars77
 
 
 
-elemental subroutine flux_mars2(R,decl,latitude,HA, &
+elemental subroutine flux_mars2(R,decl,latitude,HA,fracIR,fracDust, &
      &   surfaceSlope,azFac,emax,Q,Qscat,Qlw)
 !***********************************************************************
 !     This subroutine for solar insolation at Mars is based on the
@@ -82,10 +82,10 @@ elemental subroutine flux_mars2(R,decl,latitude,HA, &
   implicit none
   real(8), parameter :: pi=3.1415926535897931, So=1365., d2r=pi/180.
   real(8), intent(IN) :: R,decl,latitude,HA,surfaceSlope,azFac,emax
+  real(8), intent(IN) :: fracIR,fracDust
   real(8), intent(OUT) :: Q,Qscat,Qlw
   real(8) c1,s1,solarAttenuation,Qo
   real(8) sinbeta,sinbetaNoon,cosbeta,sintheta,azSun,buf
-  real(8), parameter :: fracIR=0.04, fracDust=0.02
   
   c1=cos(latitude)*cos(decl)
   s1=sin(latitude)*sin(decl)

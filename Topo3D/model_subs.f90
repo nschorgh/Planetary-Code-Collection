@@ -56,7 +56,6 @@ contains
   elemental function getoneskysize(i,j)
     !***********************************************************************
     !   calculates sky size (steradian) from horizons
-    !   abbreviated version
     !***********************************************************************
     use allinterfaces, only: area_spherical_triangle
     implicit none
@@ -92,6 +91,34 @@ contains
     getoneskysize_v2 = 2*pi-landsize
     
   end function getoneskysize_v2
+
+  elemental function getoneGterm(i,j,alpha,azFac)
+    ! quantity used for specific type of approximation
+    implicit none
+    real(8) getoneGterm
+    integer, intent(IN) :: i,j
+    real(8), intent(IN) :: alpha, azFac
+    real(8), parameter :: pi=3.1415926535897932
+    integer k
+    real(8), dimension(1:naz) :: ssub, az, daz, emin
+    real(8) G1, G2
+
+    ssub(1:naz) = s(i,j,1:naz)
+    do concurrent(k=1:naz)
+       az(k) = real(2*pi*(k-1),8)/naz
+       daz(k) = azFac-az(k)+pi  ! the +pi was two days of work
+       ! daz should be zero when line of sight coincides with direction of steepest descent
+       emin(k) = atan( -tan(alpha)*cos(daz(k)) ) 
+       if (emin(k)>ssub(k)) ssub(k)=emin(k) ! self-shadowing higher than distant horizon
+    end do
+    G1 = sum(sin(ssub)**2) - sum(sin(emin)**2)
+    G2 = sum(cos(daz)*( ssub+sin(ssub)*cos(ssub) - emin-sin(emin)*cos(emin) ))
+    G1 = G1/naz 
+    G2 = G2/naz
+    
+    getoneGterm = cos(alpha)*G1 + sin(alpha)*G2
+    ! Gterm should never be negative
+  end function getoneGterm
   
 end module newhorizons
 
