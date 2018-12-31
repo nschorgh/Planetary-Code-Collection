@@ -63,5 +63,5 @@ makefile:
 3RD PARTY FUNCTIONS AND SUBROUTINES FROM NUMERICAL RECIPES(C)
 
 hpsort.for:
-	Heapsort from Numerical Recipes (C), also returns array of indices
+	Heapsort from Numerical Recipes (C), modified to also return array of indices
 
