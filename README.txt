@@ -25,10 +25,10 @@ Mars/marsorbit.f90
 Mars/soilthprop.f
 Common/conductionQ.f
 Common/conductionT.f
-Common/tridag.for
 Common/grids.f
-Common/psvco2.f
 Common/julday.for
+Common/psvco2.f
+Common/tridag.for
 Mars/input.par
 Documentation: User Guide Part 1
 
@@ -112,15 +112,15 @@ Asteroids/impactstirring.f90
 Asteroids/asteroid_fast1.f90: (main program)
 Asteroids/fast_modules_asteroid1.f90
 Asteroids/fast_subs_asteroid1.f90 
-Common/flux_noatm.f90
 Common/conductionQ.f
-Common/tridag.for
-Common/grids.f
-Common/generalorbit.f
-Common/psv.f
 Common/derivs.f90
+Common/flux_noatm.f90
+Common/generalorbit.f
+Common/grids.f
+Common/psv.f
 Common/ran2.for
 Common/subl_subs.f90
+Common/tridag.for
 Asteroids/lats.0
 Documentation: Schorghofer, N. (2016) Icarus 276, 88-95.
 
@@ -132,10 +132,10 @@ EarthAnalogs/insol_flat.f90: (simple main program)
 EarthAnalogs/mk_atmosphere.f90
 EarthAnalogs/sunpos.f90
 EarthAnalogs/cratersQ_earth.f90: (main program)
-Topo3D/topos.f90
 Topo3D/crater_modules.f90 
 Topo3D/crater_common.f90
 Topo3D/model_subs.f90
+Topo3D/topos.f90
 Documentation: User Guide Sections 4.1 & 5.2-5.4
 
 
@@ -156,7 +156,13 @@ Topo3D/model_subs.f90
 Topo3D/multigrid.f90
 Topo3D/fieldproperties.f90: (main program)
 Topo3D/hpsort.for
+Common/conductionQ.f
+Common/conductionQ2.f
+Common/conductionT2.f
 Common/flux_noatm.f90
+Common/grids.f
+Common/julday.f
+Common/tridag.for
 Mars/flux_mars.f90
 Mars/marsorbit.f90
 Topo3D/topo40.xyz

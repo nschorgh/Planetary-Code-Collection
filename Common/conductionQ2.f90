@@ -36,6 +36,7 @@ contains
 !         to the surface or the bottom
 !
 !   Grid: surface is at z=0
+!         z(0)=0, z(2)=3*z(1), i.e., the top layer has half the width
 !         T(1) is at z(1); ...; T(i) is at z(i)
 !         k(i) is midway between z(i-1) and z(i); same for rhoc(i)
 !

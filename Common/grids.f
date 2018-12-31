@@ -1,6 +1,7 @@
       subroutine setgrid(nz,z,zmax,zfac)
 C     construct regularly or geometrically spaced 1D grid
 C     z(n)-z(1) = 2*z(1)*(zfac**(n-1)-1)/(zfac-1)
+C     choice of z(1) and z(2) is compatible with conductionQ
       implicit none
       integer NMAX
       parameter (NMAX=1000)
@@ -18,9 +19,9 @@ C     z(n)-z(1) = 2*z(1)*(zfac**(n-1)-1)/(zfac-1)
             z(i)=(1.+zfac)*z(i-1)-zfac*z(i-2)
          enddo
       endif
-      if (z(1)<1.e-5) then
+      !if (z(1)<1.e-5) then
       !   print *,'WARNING: first grid point is too shallow'
-      endif
+      !endif
       end
 
 

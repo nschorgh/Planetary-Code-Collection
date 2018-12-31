@@ -162,7 +162,8 @@ program cratersQ_mars
 
      !Qn(1,1)=flux_mars(marsR,marsDec,latitude,HA, &
      !     & albedo(1,1),fracir,fracdust,zero,zero,zero,1.d0)
-     call flux_mars2(marsR,marsDec,latitude,HA,zero,zero,zero,Qdirect(1,1),Qscat,Qlw)
+     call flux_mars2(marsR,marsDec,latitude,HA,fracIR,fracDust, &
+          & zero,zero,zero,Qdirect(1,1),Qscat,Qlw)
      Qn(1,1) = (1-albedo(1,1))*(Qdirect(1,1)+Qscat) + emiss*Qlw
      do i=Mx1,Mx2
         do j=My1,My2
@@ -171,8 +172,8 @@ program cratersQ_mars
            emax = getonehorizon(i,j,azSun)
            !Qn(i,j)=flux_mars(marsR,marsDec,latitude,HA,albedo(i,j), &
            !     & fracir,fracdust,surfaceSlope(i,j),azFac(i,j),emax,viewfactor(i,j))
-           call flux_mars2(marsR,marsDec,latitude,HA,surfaceSlope(i,j),azFac(i,j), &
-                & emax,Qdirect(i,j),Qscat,Qlw)
+           call flux_mars2(marsR,marsDec,latitude,HA,fracIR,fracDust, &
+                & surfaceSlope(i,j),azFac(i,j),emax,Qdirect(i,j),Qscat,Qlw)
            Qn(i,j) = (1-albedo(i,j))*(Qdirect(i,j)+Qscat*viewfactor(i,j)) &
                 & + emiss*Qlw*viewfactor(i,j)
            ! contribution from land in field of view

@@ -23,6 +23,7 @@ C   Fgeotherm = geothermal heat flux at bottom boundary [W/m^2]
 C   Fsurf = heat flux at surface [W/m^2]  (output)   
 C
 C   Grid: surface is at z=0
+C         z(0)=0, z(2)=3*z(1), i.e., the top layer has half the width
 C         T(1) is at z(1); ...; T(i) is at z(i)
 C         k(i) is midway between z(i-1) and z(i)
 C         rhoc(i) is midway between z(i-1) and z(i)
