@@ -8,7 +8,7 @@ subroutine insolonly(latitude,a,omega,ecc,eps,Trot,Q0mean,Qmean,Q4mean)
   integer n, nr
   real(8) edays, Rau, Ls, decl, Torb
   real(8) Q, HA, Q0
-  real(8), external :: flux_noatm, a2Torb, flux2T
+  real(8), external :: flux_noatm, a2Torb
 
   Torb = a2Torb(a)
   Q0mean=0; Qmean=0.; Q4mean=0.

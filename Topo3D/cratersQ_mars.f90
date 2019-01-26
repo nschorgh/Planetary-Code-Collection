@@ -289,9 +289,9 @@ program cratersQ_mars
 
   Qmean = Qmean/nm
   Tmean = Tmean/nm
-  where (co2first/=-9) co2first=co2first/d2r
-  where (co2last/=-9) co2last=co2last/d2r
-  where (h2olast/=-9) h2olast=h2olast/d2r
+  where (co2first/=-9.) co2first=co2first/d2r
+  where (co2last/=-9.) co2last=co2last/d2r
+  where (h2olast/=-9.) h2olast=h2olast/d2r
 
   open(unit=21,file='qmean.dat',status='unknown',action='write')
   do i=Mx1,Mx2

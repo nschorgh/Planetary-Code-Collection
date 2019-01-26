@@ -89,6 +89,9 @@ input_fast.par:
 mars_fast.f90: (main program)
 	numerically accelerated growth and depletion of subsurface ice
 
+insol_driver.f90: (simple main program)
+  	Insolation quantities over the past 20 Myr
+
 lats.ph:
 	Example input file for mars_fast.f90
 

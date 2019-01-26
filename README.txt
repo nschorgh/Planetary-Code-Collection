@@ -75,6 +75,7 @@ Mars/fast_subs_univ.f90
 Mars/fast_subs_exper.f90
 Mars/fast_subs_mars.f90
 Mars/soilthprop.f
+Mars/insol_driver.f90 (main program)
 Common/conductionQ.f
 Common/conductionT.f
 Common/tridag.for

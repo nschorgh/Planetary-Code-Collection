@@ -1,7 +1,7 @@
 subroutine oneasteroid(latitude, omega, eps, albedo, thIn, Qmean, Tmean, Tmin, Tmax)
   ! calculate surface temperatures of body with rotation and conduction
   ! modules are defined in main program
-  use constants, only : pi, sigSB, So, d2r
+  use constants, only : pi, So, d2r
   use body, only : a, ecc, Trot, emiss
   implicit none
   integer n, nr, cc
@@ -114,8 +114,8 @@ end function flux2T
 
 pure function a2Torb(a)
   ! returns orbital period in Earth days
-  use constants, only : pi
   implicit none
+  real(8), parameter :: pi=3.1415926535897932
   real(8), intent(IN) :: a  ! semimajor axis (AU)
   real(8) a2Torb  
 

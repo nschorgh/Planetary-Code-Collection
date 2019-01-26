@@ -17,8 +17,7 @@ C***********************************************************************
       integer layertype
       real*8 porosity, fill, rhocobs, tiobs, icefrac
       real*8 newti, newrhoc
-      real*8 kobs, cobs, cice, icedensity, kice
-      parameter (cobs=800.d0)   ! heat capacity
+      real*8 kobs, cice, icedensity, kice
       !parameter (cice=2000.d0, icedensity=926.d0, kice=2.4d0) ! uneffected by scaling
       parameter (cice=1540.d0, icedensity=927.d0, kice=3.2d0) ! at 198 Kelvin
       real*8 fA, ki0, ki, kw, k

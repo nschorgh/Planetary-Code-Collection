@@ -70,12 +70,12 @@ mars_fast: fast_modules.o mars_fast.o fast_subs_univ.o \
 	fast_subs_univ.o flux.o $(SR)conductionQ.o $(SR)psvco2.o \
 	$(SR)generalorbit.o fast_subs_mars.o -o $@
 
-mars_temprlong: conductionT2.o conductionQ2.o mars_temprlong.o \
-	flux_mars.o makefile
+insol_driver: insol_driver.o $(SR)generalorbit.o $(SR)flux_noatm.o \
+	makefile
 	make -C $(SR) common
-	$(CC) $(LFLAGS) mars_temprlong.o $(SR)generalorbit.o \
-	flux_mars.o $(SR)tridag.o $(SR)grids.o $(SR)psvco2.o \
-	conductionT2.o conductionQ2.o
+	$(CC) $(LFLAGS) insol_driver.o $(SR)generalorbit.o \
+	$(SR)flux_noatm.o
+
 
 common-mars: marsorbit.o vapordiffusioni.o flux.o flux_mars.o
 
