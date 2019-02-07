@@ -62,5 +62,4 @@ julday.for:
 ran2.for: 
 	uniform random number generator from Numerical Recipes (C), change real to real*8
 
-gasdev.for: 
-	generates gaussian distribution, from Numerical Recipes (C), change real to real*8
+

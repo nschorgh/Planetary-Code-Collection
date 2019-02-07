@@ -10,7 +10,7 @@ subroutine oneasteroid(latitude, omega, eps, albedo, thIn, Qmean, Tmean, Tmin, T
   integer, parameter :: nz=110
   integer, parameter :: EQUILTIME=20  ! [orbits]
   real(8) edays, Rau, Ls, decl, HA, Torb, Q, Qp1, dt
-  real(8) z(nz), zmax, delta1, delta2
+  real(8) z(nz), zmax, delta1, delta2, coslat
   real(8) Temp(nz), Tsurf, Fsurf, ti(nz), rhoc(nz)
   !real(8) c, k
   !real(8) Emean, E
@@ -38,9 +38,7 @@ subroutine oneasteroid(latitude, omega, eps, albedo, thIn, Qmean, Tmean, Tmin, T
      if (z(n)<delta1) cc=cc+1
   enddo
   print *,cc,'points in diurnal skin depth'
-  if (cc<5) then
-     stop 'Exiting because grid is too coarse'
-  endif
+  if (cc<5) stop 'Exiting because grid is too coarse'
   !open(unit=30,file='z',action='write',status='unknown')
   !write(30,'(999(f8.4,1x))') z(:)
   !close(30)
@@ -49,8 +47,9 @@ subroutine oneasteroid(latitude, omega, eps, albedo, thIn, Qmean, Tmean, Tmin, T
   az = 0.  ! radians east of north
   !slope = 30.*d2r; az = 270.*d2r
 
-  Tsurf=flux2T(So/a**2*(1.-albedo)*cos(latitude)/pi)
-  if (abs(cos(latitude))<0.01) Tsurf=50;  ! avoids NaNs
+  coslat = max(cos(latitude),cos(latitude+eps/2),cos(latitude-eps/2))
+  Tsurf=flux2T(So/a**2*coslat/pi,albedo,emiss)
+  if (abs(coslat)<0.01) Tsurf=50;  ! avoids NaNs
   print *,'initialization temperature=',Tsurf
   Temp(:)=Tsurf
   Tmean=0.; Qmean=0.; 
@@ -78,7 +77,7 @@ subroutine oneasteroid(latitude, omega, eps, albedo, thIn, Qmean, Tmean, Tmin, T
      call conductionQ(nz,z,dt,Q,Qp1,Temp,ti,rhoc,emiss,Tsurf,0.d0,Fsurf)
      Q = Qp1
      if (n>(EQUILTIME-1)*nr) then  ! annual average
-        !if (n>=EQUILTIME*nr-100) write(71,*) edays,HA,Tsurf,Temp(nz),flux2T(Q)
+        !if (n>=EQUILTIME*nr-100) write(71,*) edays,HA,Tsurf,Temp(nz),flux2T(Q,albedo,emiss)
         Qmean = Qmean+Q
         Tmean = Tmean+Tsurf
         if (Tsurf>Tmax) Tmax=Tsurf
@@ -100,15 +99,14 @@ subroutine oneasteroid(latitude, omega, eps, albedo, thIn, Qmean, Tmean, Tmin, T
 end subroutine oneasteroid
 
 
-pure function flux2T(Q)
-  ! flux Q must already contain albedo effect
-  use constants, only : sigSB
-  use body, only : emiss
+pure function flux2T(Q,albedo,emiss)
+  ! convert incoming flux Q to equilibrium temperature
   implicit none
-  real(8), intent(IN) :: Q
+  real(8), intent(IN) :: Q, emiss, albedo
+  real*8, parameter :: sigSB=5.6704d-8
   real(8) flux2T
 
-  flux2T = (Q/sigSB/emiss)**0.25
+  flux2T = ((1.-albedo)*Q/sigSB/emiss)**0.25
 end function flux2T
 
 

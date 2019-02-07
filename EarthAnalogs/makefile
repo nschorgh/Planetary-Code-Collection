@@ -3,8 +3,8 @@
 # make CC=ifort CFLAGS='-O2 -warn all' LFLAGS='-O2 -warn all'
 
 CC = gfortran
-CFLAGS = -O3 -Wall
-LFLAGS = -O3 -Wall
+CFLAGS = -O2 -Wall
+LFLAGS = -O2 -Wall
 
 SR = ../Common/
 

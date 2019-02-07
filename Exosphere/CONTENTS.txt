@@ -23,6 +23,9 @@ geogrid_D.f90:
 body.f90:
 	module with body specific parameters
 
+gasdev.for: 
+	generates gaussian distribution, from Numerical Recipes (C), change real to real*8
+
 makefile:
 	shows file dependencies
 

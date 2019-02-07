@@ -68,15 +68,16 @@ program asteroid
   Torb = a2Torb(a)
   print *,'Torb=',Torb,'days'
 
-  write(6,*) 'Tss=',flux2T((1-albedo)*flux_noatm(a,0d0,0d0,0d0,0d0,0d0))
-  write(6,*) 'Tss=',flux2T((1-albedo)*So/a**2)
-  !write(6,*) 'Tmax=',flux2T((1-albedo)*So/(a*(1-ecc))**2)
+  write(6,*) 'Tss=',flux2T(flux_noatm(a,0d0,0d0,0d0,0d0,0d0),albedo,emiss)
+  write(6,*) 'Tss=',flux2T(So/a**2,albedo,emiss)
+  !write(6,*) 'Tmax=',flux2T(So/(a*(1-ecc))**2,albedo,emiss)
 
   ! Insolation - optional
   call insolonly(latitude,a,omega,ecc,eps,Trot,Q0mean,Qmean,Q4mean)
   Qmean = (1-albedo)*Qmean;  Q4mean = (1-albedo)*Q4mean
   write(6,'(a,4(1x,f5.1))') 'Fluxes (W/m^2):',So/a**2,Q0mean,(1-albedo)*Q0mean/pi,Qmean
-  write(6,'(a,2(1x,f6.2))') 'End-member temperatures (K):',flux2T(Qmean),flux2T(Q4mean)
+  write(6,'(a,2(1x,f6.2))') 'End-member temperatures (K):', &
+       & flux2T(Qmean,1d0,emiss),flux2T(Q4mean,1d0,emiss)
 
   ! Surface temperature with rotation and conduction
   !ti = (/ 10000., 2100., 2000., 1000., 500., 200., 100., 50., 25., 15., 10., 5., 3. /)

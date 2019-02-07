@@ -177,9 +177,9 @@ Exosphere/ceres_exo.f90: (main program)
 Exosphere/montecarlo.f90
 Exosphere/geogrid.f90
 Exosphere/geogrid_D.f90
-Common/subl_subs.f90
-Common/gasdev.for
+Exosphere/gasdev.for
 Common/ran2.for
+Common/subl_subs.f90
 Documentation: User Guide Part 6
 
 

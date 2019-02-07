@@ -1,10 +1,10 @@
 CC = gfortran
-CFLAGS = -O3 -Wall -Wno-integer-division
-LFLAGS = -O3 -Wall
+CFLAGS = -O2 -Wall -Wno-integer-division
+LFLAGS = -O2 -Wall
 
 #CC = ifort
-#CFLAGS = -O3 -warn all  -warn notruncated_source
-#LFLAGS = -O3 -warn all
+#CFLAGS = -O2 -warn all  -warn notruncated_source
+#LFLAGS = -O2 -warn all
 
 SR = ../Common/
 SRM = ../Mars/
