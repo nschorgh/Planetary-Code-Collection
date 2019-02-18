@@ -77,7 +77,8 @@ insol_driver: insol_driver.o $(SR)generalorbit.o $(SR)flux_noatm.o \
 	$(SR)flux_noatm.o
 
 
-common-mars: marsorbit.o vapordiffusioni.o flux.o flux_mars.o
+common-mars: marsorbit.o vapordiffusioni.o flux.o flux_mars.o \
+	soilthprop.o 
 
 %.o:	%.f makefile
 	$(CC) $(CFLAGS) -c $<
