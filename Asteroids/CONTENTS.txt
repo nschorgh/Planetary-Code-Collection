@@ -27,22 +27,25 @@ impactstirring.f90:
 	Model of ice homogenization due to impact stirring,
 	for use with "fast" model
 
-fast_modules_asteroid2.f90:
+fast_modules_asteroid2.f90 & fast_subs_asteroid1.f90:
 	modules
 
-fast_subs_asteroid2.f90:
+fast_subs_asteroid2.f90 & fast_modules_asteroid1.f90:
 	subroutines and functions
 
 testgardening1.f90
 
 test_timejumps.f90
 
-fast_modules_asteroid1.f90:
-	modules
 
-fast_subs_asteroid1.f90:
-	subroutines and functions
+Model of Temperature and Ice Loss for Asteroids and NEOs
+========================================================
 
+sphere1d_implicit.f90: (main program)
+	semi-implicit solver for 1D spherically symmetric heat equation and ice retreat
+
+common_subs.f90:
+	functions used by many of these programs
 
 
 makefile:

@@ -52,14 +52,6 @@ module allinterfaces
 
   ! fast_subs_asteroid1.f90
   interface
-     elemental function faintsun(t)
-       implicit none
-       real(8) faintsun
-       real(8), intent(IN) :: t   ! time before present [years]
-     end function faintsun
-  end interface
-
-  interface
      subroutine icelayer_asteroid(bigstep,NP,z,porosity,icefrac,Tinit, &
           & zdepthT,Tmean1,Tmean3,Tmin,Tmax,latitude,albedo,ecc,omega,eps,S0)
        use constants, only : d2r, NMAX
@@ -114,21 +106,30 @@ module allinterfaces
   end interface
 
   interface
-     elemental function heatcapacity(T)
-       implicit none
-       real(8), intent(IN) :: T
-       real(8) heatcapacity
-     end function heatcapacity
-  end interface
-
-  interface
      elemental function conductivity(T)
        implicit none
        real(8), intent(IN) :: T
        real(8) conductivity
      end function conductivity
   end interface
+ 
+  interface
+     integer function gettype(zdepth,nz,z)
+       implicit none
+       integer, intent(IN) :: nz
+       real(8), intent(IN) :: zdepth, z(nz)
+     end function gettype
+  end interface
 
+  ! common_subs.f90
+  interface
+     function heatcapacity(T)
+       implicit none
+       real(8), intent(IN) :: T
+       real(8) heatcapacity
+     end function heatcapacity
+  end interface
+  
   interface
      function vapordiffusivity(diam,porosity,T)
        implicit none
@@ -138,13 +139,13 @@ module allinterfaces
   end interface
 
   interface
-     integer function gettype(zdepth,nz,z)
+     function faintsun(t)
        implicit none
-       integer, intent(IN) :: nz
-       real(8), intent(IN) :: zdepth, z(nz)
-     end function gettype
+       real(8) faintsun
+       real(8), intent(IN) :: t   ! time before present [years]
+     end function faintsun
   end interface
-
+  
   ! Common/{*.f,*.f90}
   interface
      elemental real(8) function flux_noatm(R,decl,latitude,HA,surfaceSlope,azFac)
@@ -154,7 +155,7 @@ module allinterfaces
   end interface
 
   interface
-     pure function colint(y,z,nz,i1,i2)
+     function colint(y,z,nz,i1,i2)
        implicit none
        integer, intent(IN) :: nz, i1, i2
        real(8), intent(IN) :: y(nz),z(nz)

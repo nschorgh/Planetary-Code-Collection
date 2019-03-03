@@ -25,7 +25,7 @@ program cratersQ_mars
   implicit none
 
   real(8), parameter :: albedo0=0.12, co2albedo=0.65
-  real(8), parameter :: emiss = 0.94
+  real(8), parameter :: emiss = 0.98
   real(8) :: latitude = -41.6
   real(8), parameter :: longitude = 360 - 202.3 ! west longitude
 
@@ -37,7 +37,7 @@ program cratersQ_mars
   real(8), allocatable, dimension(:,:) :: Qn   ! incoming
   real(8), allocatable, dimension(:,:) :: Tsurf, albedo, m
   real(8), allocatable, dimension(:,:) :: Qmean, Qmax, Tmean, Tmaxi, Qdirect
-  real(8), allocatable, dimension(:,:) :: viewfactor
+  real(8), allocatable, dimension(:,:) :: viewfactor, gterm
   real(8), allocatable, dimension(:,:) :: mmax, frosttime, maxfrosttime, Qnm1
   real(8), allocatable :: Fsurf(:,:), T(:,:,:), Tbottom(:,:), Tref(:)  ! subsurface
   real(8), allocatable, dimension(:,:) :: mmin, co2last, co2first, h2olast, h2olastt !, EH2Ocum
@@ -55,7 +55,7 @@ program cratersQ_mars
   allocate(Tsurf(NSx,NSy), m(NSx,NSy))
   allocate(albedo(NSx,NSy)); albedo = albedo0
   allocate(Fsurf(NSx,NSy))
-  allocate(viewfactor(Mx1:Mx2,My1:My2))
+  allocate(viewfactor(Mx1:Mx2,My1:My2), gterm(Mx1:Mx2,My1:My2))
   allocate(Qmean(NSx,NSy), Qmax(NSx,NSy), Tmean(NSx,NSy), Tmaxi(NSx,NSy))
   allocate(frosttime(NSx,NSy), maxfrosttime(NSx,NSy))
   allocate(mmax(NSx,NSy), mmin(NSx,NSy))
@@ -112,9 +112,9 @@ program cratersQ_mars
   !call getskysize(viewfactor)
   do concurrent(i=2:NSx-1, j=2:Nsy-1)
      viewfactor(i,j) = getoneskysize(i,j)
+     gterm(i,j) = getoneGterm(i,j,surfaceSlope(i,j),azFac(i,j))
   end do
   viewfactor = viewfactor/(2*pi)
-  print *,'max/min/mean of skyviewfactor:',maxval(viewfactor(:,:)),minval(viewfactor),sum(viewfactor)/size(viewfactor)
   
   if (subsurface) then
      allocate(T(Mx1:Mx2,My1:My2,nz))
@@ -178,10 +178,14 @@ program cratersQ_mars
                 & + emiss*Qlw*viewfactor(i,j)
            ! contribution from land in field of view
            if (n>0) then 
-              QIR = (1-viewfactor(i,j))*emiss*sigSB*Tsurf(1,1)**4
+              !QIR = (1-viewfactor(i,j))*emiss*sigSB*Tsurf(1,1)**4
+              QIR = gterm(i,j)*emiss*sigSB*Tsurf(1,1)**4
               Qn(i,j) = Qn(i,j) + emiss*QIR
            endif
-           ! Qdirect is for snapshot
+           !Qrefl = (1-viewfactor(i,j))*albedo(1,1)*(Qdirect(1,1)+Qscat)
+           !Qrefl = gterm(i,j)*albedo(1,1)*(Qdirect(1,1)+Qscat)
+           !Qn(i,j) = Qn(i,j) + (1-albedo(i,j))*Qrefl(i,j)
+           ! Qdirect w/o atmosphere is for snapshot; different from Qdirect above
            !Qdirect(i,j)=flux_wshad(marsR,sinbeta,azSun,surfaceSlope(i,j),azFac(i,j),emax)
         enddo
      enddo

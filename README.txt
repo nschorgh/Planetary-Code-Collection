@@ -126,6 +126,17 @@ Asteroids/lats.0
 Documentation: Schorghofer, N. (2016) Icarus 276, 88-95.
 
 
+*Model of Temperature and Ice Loss for Asteroids and NEOs*
+
+Asteroids/sphere1d_implicit.f90: (main program)
+Asteroids/common_subs.f90
+Common/flux_noatm.f90
+Common/generalorbit.f
+Common/psv.o
+Common/tridag.for
+Documentation: in preparation
+
+
 *Irradiance Model for Terrestrial Analog*
 
 EarthAnalogs/insol_earth.f90: (main program)
@@ -184,7 +195,7 @@ Documentation: User Guide Part 6
 
 
 
-NOTE: Third party source code from Numerical Recipes is covered by a separate copyright. These are files ending with .for.  Most of this code will not work without them. 
+NOTE: Third party source code from Numerical Recipes is covered by a separate copyright. These are files ending with .for.
 
 
 

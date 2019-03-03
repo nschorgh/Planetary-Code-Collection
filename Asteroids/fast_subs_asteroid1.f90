@@ -265,51 +265,6 @@ end subroutine assignthermalproperties1
 
 
 
-elemental function heatcapacity(T)
-  implicit none
-  real(8), intent(IN) :: T
-  real(8) heatcapacity
-  real(8) c
-  
-  ! heat capacity from Ledlow et al. (1992), <350K
-  !c = 0.1812 + 0.1191*(T/300.-1) + 0.0176*(T/300.-1)**2 + &
-  !     0.2721*(T/300.-1)**3 + 0.1869*(T/300.-1)**4
-  !c = c*1000*4.184  ! cal/(g K) -> J/(kg K)
-
-  ! heat capacity from Winter & Saari (1969),  20K<T<500K
-  c = -0.034*T**0.5 + 0.008*T - 0.0002*T**1.5
-  heatcapacity = c*1000   ! J/(g K) -> J/(kg K)
-end function heatcapacity
-
-
-
-function vapordiffusivity(diam,porosity,T)
-  ! diam = rms grain diameter
-  use constants, only : pi, kB
-  implicit none
-  real(8) vapordiffusivity
-  real(8), intent(IN) :: diam,porosity,T
-  real(8) vbar, r
-  real(8), parameter :: tau = 2.  ! tortuosity
-
-  r = diam/2.
-  vbar = sqrt(8*kB*T/(pi*18*1.66e-27))
-  ! for 0<=porosity<=0.5
-  vapordiffusivity = pi/(8+pi)*porosity/(1-porosity)*vbar*r/tau
-end function vapordiffusivity
-
-
-
-elemental function faintsun(t)
-  implicit none
-  real(8) faintsun
-  real(8), intent(IN) :: t   ! time before present [years]
-  ! Gough, D. O. (1981), Sol. Phys., 74, 21–34
-  faintsun = 1./(1+0.4*abs(t)/4.57e9)
-end function faintsun
-
-
-
 integer function gettype(zdepth,nz,z)
   implicit none
   integer, intent(IN) :: nz

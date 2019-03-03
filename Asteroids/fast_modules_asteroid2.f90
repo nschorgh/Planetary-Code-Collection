@@ -58,14 +58,6 @@ module allinterfaces
 
   ! fast_subs_asteroid2.f90
   interface
-     elemental function faintsun(t)
-       implicit none
-       real(8) faintsun
-       real(8), intent(IN) :: t   ! time before present [years]
-     end function faintsun
-  end interface
-
-  interface
      subroutine icelayer_asteroid(bigstep,NP,z,porosity,Tinit, &
           & zdepthP,sigma,Tmean1,Tmean3,Tmin,Tmax,latitude,albedo,ecc,omega,eps,S0)
        use constants, only : d2r, NMAX
@@ -139,27 +131,11 @@ module allinterfaces
   end interface
 
   interface
-     elemental function heatcapacity(T)
-       implicit none
-       real(8), intent(IN) :: T
-       real(8) heatcapacity
-     end function heatcapacity
-  end interface
-
-  interface
      elemental function conductivity(T)
        implicit none
        real(8), intent(IN) :: T
        real(8) conductivity
      end function conductivity
-  end interface
-
-  interface
-     function vapordiffusivity(diam,porosity,T)
-       implicit none
-       real(8) vapordiffusivity
-       real(8), intent(IN) :: diam,porosity,T
-     end function vapordiffusivity
   end interface
 
   interface
@@ -198,6 +174,31 @@ module allinterfaces
      end function gettype
   end interface
 
+  ! common_subs.f90
+  interface
+     function heatcapacity(T)
+       implicit none
+       real(8), intent(IN) :: T
+       real(8) heatcapacity
+     end function heatcapacity
+  end interface
+  
+  interface
+     function vapordiffusivity(diam,porosity,T)
+       implicit none
+       real(8) vapordiffusivity
+       real(8), intent(IN) :: diam,porosity,T
+     end function vapordiffusivity
+  end interface
+
+  interface
+     function faintsun(t)
+       implicit none
+       real(8) faintsun
+       real(8), intent(IN) :: t   ! time before present [years]
+     end function faintsun
+  end interface
+  
   ! Common/{*.f,*.f90}
   interface
      elemental real(8) function flux_noatm(R,decl,latitude,HA,surfaceSlope,azFac)

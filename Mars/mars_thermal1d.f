@@ -2,9 +2,9 @@
 C***********************************************************************
 C   mars_thermal1d:  program to calculate the diffusion of temperature 
 C   into the ground
-C   Eqn: T_t = D*T_zz   where D=k/(rho*c)
-C   BC (z=0): Q(t) + kT_z = em*sig*T^4 + L*dm/dt
-C   BC (z=L): no flux or geothermal flux
+C   Eqn: T_t = (D*T_z)_z   where D=k/(rho*c)
+C   BC (z=0): Q(t) + k*T_z = em*sig*T^4 + L*dm/dt
+C   BC (z=L): geothermal flux
 C
 C   Skin depth delta =(I/(rho*c))*sqrt(P/pi)
 C   where I=thermal inertia [J m^-2 K^-1 s^-1/2], rho=density [kg m^-3],
@@ -106,8 +106,6 @@ C-----Initialize
       latitude=latitude*d2r
       surfaceSlope=surfaceSlope*d2r
       azFac=azFac*d2r
-C      i=nz/20
-C      ti(i)=sqrt(ti(i-1)**2+ti(i+1)**2)/2.  ! nice trick
       Tmean=0.; Tmean2=0.; nm=0     ! recycle variable Tmean
       ps=0.; pb=0.
 
@@ -145,7 +143,7 @@ C      ti(i)=sqrt(ti(i-1)**2+ti(i+1)**2)/2.  ! nice trick
 C     net flux: solar insolation + IR
       Qn=flux(marsR,marsDec,latitude,HA,albedo,
      &     fracir,fracdust,surfaceSlope,azFac)
-!      Qn=flux77(marsR,marsDec,latitude,HA,albedo,fracir,fracdust,Tsurf)
+!      Qn=flux_mars77(marsR,marsDec,latitude,HA,albedo,fracir,fracdust)
 
 C-----loop over time steps 
       do n=0,nsteps-1
@@ -156,7 +154,7 @@ C        Solar insolation and IR at future time step
          HA=2.*pi*mod(time,1.d0)    ! hour angle
          Qnp1=flux(marsR,marsDec,latitude,HA,albedo,
      &        fracir,fracdust,surfaceSlope,azFac)
-!         Qnp1=flux77(marsR,marsDec,latitude,HA,albedo,fracir,fracdust,Tsurf)
+!         Qnp1=flux_mars77(marsR,marsDec,latitude,HA,albedo,fracir,fracdust)
          Tsurfold=Tsurf
          Fsurfold=Fsurf
 
