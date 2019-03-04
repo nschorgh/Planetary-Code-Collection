@@ -104,7 +104,7 @@ Common/generalorbit.f
 Documentation: User Guide Part 1
 
 
-*Asynchronous Model for Temperature, Impact Stirring, and Ice Loss on Asteroids*
+*Asynchronous Models for Temperature, Impact Stirring, and Ice Loss on Asteroids*
 
 Asteroids/asteroid_fast2.f90: (main program)
 Asteroids/fast_modules_asteroid2.f90
@@ -112,7 +112,9 @@ Asteroids/fast_subs_asteroid2.f90
 Asteroids/impactstirring.f90
 Asteroids/asteroid_fast1.f90: (main program)
 Asteroids/fast_modules_asteroid1.f90
-Asteroids/fast_subs_asteroid1.f90 
+Asteroids/fast_subs_asteroid1.f90
+Asteroids/common_subs.f90
+Asteroids/sphere1d_implicit.f90: (main program)
 Common/conductionQ.f
 Common/derivs.f90
 Common/flux_noatm.f90
@@ -124,17 +126,6 @@ Common/subl_subs.f90
 Common/tridag.for
 Asteroids/lats.0
 Documentation: Schorghofer, N. (2016) Icarus 276, 88-95.
-
-
-*Model of Temperature and Ice Loss for Asteroids and NEOs*
-
-Asteroids/sphere1d_implicit.f90: (main program)
-Asteroids/common_subs.f90
-Common/flux_noatm.f90
-Common/generalorbit.f
-Common/psv.o
-Common/tridag.for
-Documentation: in preparation
 
 
 *Irradiance Model for Terrestrial Analog*

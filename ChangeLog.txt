@@ -1,5 +1,7 @@
 ChangeLog
 
+3 Mar 2019: minor updates plus a semi-implicit solver for the heat equation in a spherically symmetric geometry in sphere1d_implicit.f90
+
 Sep 2018: most of the code development over the past 14 months was for the 3D surface energy balance model for Mars
 
 Sep 2018: function flux_mars is replaced by subroutine flux_mars2, which returns direct and diffuse irradiances separately
