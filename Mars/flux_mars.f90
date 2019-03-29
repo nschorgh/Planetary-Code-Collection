@@ -103,11 +103,10 @@ elemental subroutine flux_mars2(R,decl,latitude,HA,fracIR,fracDust, &
   if (sin(HA)>=0) azSun=2*pi-azSun
   
 ! theta = 90 minus incidence angle for sloped surface
-  if (cosbeta==0.) sintheta = cos(surfaceSlope)*sinbeta
   sintheta = cos(surfaceSlope)*sinbeta - &  
        &     sin(surfaceSlope)*cosbeta*cos(azSun-azFac)
 
-  sintheta = max(sintheta,0.d0)  ! local horizon
+  if (sintheta<0.) sintheta=0.  ! local horizon
   if (sinbeta<0.) sintheta=0.  ! horizontal horizon at infinity
   if (sinbeta<sin(emax)) sintheta=0. ! distant horizon
 
@@ -116,8 +115,8 @@ elemental subroutine flux_mars2(R,decl,latitude,HA,fracIR,fracDust, &
   solarAttenuation = (1.- fracIR - fracDust)**(1./max(sinbeta,0.04d0))
   Q = Qo*sintheta*solarAttenuation
   ! Fout = 1.*sigSB*150**4
-  ! Qlw = fracIR*max(Q0*sinbetaNoon, Fout)  in polar region
-  Qlw = sinbetaNoon*fracIR*Qo
+  ! Qlw = fracIR*max(Qo*sinbetaNoon,Fout)  in polar region
+  Qlw = fracIR*Qo*sinbetaNoon
   if (sinbeta>0.d0) then
      Qscat = 0.5*fracDust*Qo
   else

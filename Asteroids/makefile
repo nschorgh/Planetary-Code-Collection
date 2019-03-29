@@ -53,6 +53,9 @@ sphere1d: sphere1d_implicit.o common_subs.o makefile
 	$(SR)tridag.o $(SR)generalorbit.o common_subs.o $(SR)psv.o
 
 
+common-asteroids: common_subs.o
+
+
 %.o:	%.f makefile
 	$(CC) $(CFLAGS) -c $<
 

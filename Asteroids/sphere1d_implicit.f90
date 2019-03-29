@@ -9,7 +9,6 @@ program sphere1d_implicit
   real*8 semia, ecc, Q, time0
   real*8, parameter :: So=1365
   real*8, parameter :: A=0.05, emiss=0.96
-  real*8, parameter :: pi=3.1415926535897932 !, d2r=pi/180.
   character(2) :: nn
   
   logical :: init(NB) = .true.
@@ -17,11 +16,9 @@ program sphere1d_implicit
   real*8 T(nz,NB), Tsurf(NB), Tsurfm1(NB), Teff
 
   real*8 zT(NB)  ! depth of ice table
-  real*8 Tatz, Elatent, edens
+  real*8 Tatz, Elatent
   real*8, external :: interp1, flux2T
 
-  !real*8 latitude,omega,obliq
-  
   zT(:) = 0.
   time(:) = 0.  ! earliest time in input file
   
@@ -29,11 +26,7 @@ program sphere1d_implicit
   dr = Radius/nz
   forall(i=1:nz) z(i) = i*dr
 
-  kappa = 0.2/(0.5*2600*500)  ! kappa=k/rhoc
-
-  !latitude = 0.*d2r
-  !omega = 0.*d2r
-  !obliq = 0.*d2r
+  kappa = 0.25/(0.5*2600*500)  ! kappa=k/rhoc
 
   narg = COMMAND_ARGUMENT_COUNT()
   if (narg==0) then
@@ -93,8 +86,6 @@ program sphere1d_implicit
 
      ! options for surface temperature
      Tsurf(id) = Teff ! upper bound
-     !Tsurf(id) = 0.9888*Teff
-     !Tsurf(id) = 0.57*Teff  ! lower bound for ecc=0
      !call insolonly1(latitude,semia,omega,ecc,obliq,Q0mean,Qmean,Q4mean)
      !print *,Tsurf(id),flux2T(Qmean,A,emiss),flux2T(Q4mean,A,emiss)
      !Tsurf(id) = flux2T(Q4mean,A,emiss)  ! cold end-member
@@ -114,8 +105,6 @@ program sphere1d_implicit
         Tatz = interp1(real(0.,8),z,Tsurf(id),T(:,id),zT(id),nz)
         call retreat_s(Tatz,zT(id),Radius,dtsec,Elatent)
         if (zT(id)>Radius) zT(id)=-9999.
-        edens = Elatent/(4*pi*Radius**3/3)/(0.5*2600)  ! [J/kg]
-        if (edens>1e5) print *,'warning: latent heat noticeable'
      else
         Tatz = -9999.
      end if
@@ -123,7 +112,7 @@ program sphere1d_implicit
      ! lots of output
      unit = 100+id
      if (id==26) then
-        !write(unit,'(f11.0,1x,f7.4,1x,f6.4,3(1x,f5.1),1x,f7.3,1x,i2)') time(id),semia,ecc,Tsurf(id),T(nz,id),Tatz,zT(id),id
+        !write(unit,'(f11.0,1x,f7.4,1x,f6.4,3(1x,f5.1),1x,f8.3,1x,i2)') time(id),semia,ecc,Tsurf(id),T(nz,id),Tatz,zT(id),id
      endif
      
      !if (zT /= zT) stop  ! NaN
@@ -149,7 +138,7 @@ subroutine conductionT_sphere(nz,dr,dt,T,Tsurf,Tsurfp1,kappa)
   !                 temperature in a spherically symmetric geometry
   !   Crank-Nicholson scheme, flux conservative
   !
-  !   Eqn: rhoc*T_t = (k/r^2)*d/dr(r^2*dT_r)
+  !   Eqn: T_t = (kappa/r^2)*d/dr(r^2*dT_r)
   !   BC (z=0, r=R): T=T(t)
   !   BC (z=R, r=0): center of sphere, dT_r=0
   !
@@ -161,9 +150,10 @@ subroutine conductionT_sphere(nz,dr,dt,T,Tsurf,Tsurfp1,kappa)
   !         T(nz) is at center of sphere
   !***********************************************************************
   implicit none
-  integer nz, i
+  integer, intent(IN) :: nz
   real*8, intent(IN) :: dr, dt, Tsurf, Tsurfp1, kappa
   real*8, intent(INOUT) :: T(nz)
+  integer i
   real*8 cp(nz), cm(nz), cn(nz)
   real*8 alpha, a(nz), b(nz), c(nz), r(nz)
   
@@ -171,8 +161,8 @@ subroutine conductionT_sphere(nz,dr,dt,T,Tsurf,Tsurfp1,kappa)
 
   do i=1,nz-1
      r(i) = (nz-i)*dr
-     cp(i) = (r(i)+dr/2)**2/r(i)**2
-     cm(i) = (r(i)-dr/2)**2/r(i)**2
+     cp(i) = (r(i)-dr/2)**2/r(i)**2  ! inward of r(i)
+     cm(i) = (r(i)+dr/2)**2/r(i)**2  ! outward of r(i)
      cn(i) = (cp(i)+cm(i))/2.
   enddo
   

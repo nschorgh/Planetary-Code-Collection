@@ -10,7 +10,7 @@ This program collection contains:
 * fast method for subsurface-atmosphere vapor exchange for Mars
 * fast (asynchronous) model for ice retreat on asteroids
 * Monte-Carlo model for ballistic hops in the exosphere of the Moon and Ceres
-* 3D model of shadowing, illumination, and scattering
+* 3D model of shadowing, illumination, and scattering for airless bodies, Mars, and Mauna Kea
 
 
 
