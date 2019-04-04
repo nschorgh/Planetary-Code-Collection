@@ -107,11 +107,10 @@ Documentation: User Guide Part 1
 *Asynchronous Models for Temperature, Impact Stirring, and Ice Loss on Asteroids*
 
 Asteroids/asteroid_fast2.f90: (main program)
-Asteroids/fast_modules_asteroid2.f90
+Asteroids/fast_modules_asteroid.f90
 Asteroids/fast_subs_asteroid2.f90 
 Asteroids/impactstirring.f90
 Asteroids/asteroid_fast1.f90: (main program)
-Asteroids/fast_modules_asteroid1.f90
 Asteroids/fast_subs_asteroid1.f90
 Asteroids/common_subs.f90
 Asteroids/sphere1d_implicit.f90: (main program)

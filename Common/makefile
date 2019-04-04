@@ -13,9 +13,7 @@ LFLAGS = -O2 -Wall
 
 common: generalorbit.o flux_noatm.o conductionQ.o conductionT.o \
 	tridag.o grids.o psv.o derivs.o psvco2.o julday.o \
-	makefile
-
-more:	subl_subs.o ran2.o conductionT2.o conductionQ2.o
+	subl_subs.o ran2.o conductionT2.o conductionQ2.o makefile 
 
 %.o:	%.f makefile
 	$(CC) $(CFLAGS) -c $<
@@ -28,7 +26,7 @@ more:	subl_subs.o ran2.o conductionT2.o conductionQ2.o
 
 
 
-.PHONY: clean more
+.PHONY: clean
 
 clean:
 	rm -f  *.o  *.mod 

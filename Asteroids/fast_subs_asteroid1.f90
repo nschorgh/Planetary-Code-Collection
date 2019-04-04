@@ -8,11 +8,12 @@ subroutine icelayer_asteroid(bigstep,NP,z,porosity,icefrac,Tinit, &
 !*************************************************************************
 ! bigstep = time step [Earth years]
 ! latitude  [degree]
-! S0 = solar constant relative to present (as defined in flux_noatm.f90)
+! eps = axis tilt [radians]  
+! S0 = solar constant relative to present
 !*************************************************************************
   use constants, only : d2r, NMAX
   use body, only : icedensity, Tnominal, nz
-  use allinterfaces, except_this_one => icelayer_asteroid
+  use allinterfaces
   implicit none
   integer, intent(IN) :: NP
   real(8), intent(IN) :: bigstep
@@ -27,6 +28,8 @@ subroutine icelayer_asteroid(bigstep,NP,z,porosity,icefrac,Tinit, &
   real(8) Deff, deltaz, Diff0, avrho
   real(8), dimension(nz) :: Diff
   real(8), SAVE :: zdepth_old(100)  ! NP<=100
+  integer, external :: gettype
+  real(8), external :: vapordiffusivity
 
   do k=1,NP   ! big loop over sites
 
@@ -88,7 +91,7 @@ subroutine ajsub_asteroid(latitude, albedo, z, ti, rhocv, ecc, omega, eps, &
 !***********************************************************************
   use constants
   use body, only : EQUILTIME, dt, solsperyear, Fgeotherm, semia, nz, emiss, solarDay
-  use allinterfaces, except_this_one => ajsub_asteroid
+  use allinterfaces, only : flux_noatm
   implicit none
   real(8), intent(IN) :: latitude  ! in radians
   real(8), intent(IN) :: albedo, z(NMAX)
@@ -192,9 +195,8 @@ end subroutine outputmoduleparameters
 
 subroutine icechanges(nz,z,typeT,avrho,Deff,bigstep,zdepthT,porosity,icefrac)
 !***********************************************************
-! advances ice interface and grows pore ice
+! advances ice interface, allows for deflation
 !***********************************************************
-  use allinterfaces, except_this_one => icechanges
   use body, only : icedensity
   implicit none
   integer, intent(IN) :: nz, typeT
@@ -202,6 +204,7 @@ subroutine icechanges(nz,z,typeT,avrho,Deff,bigstep,zdepthT,porosity,icefrac)
   real(8), intent(INOUT) :: zdepthT
   integer newtypeT
   real(8) zdepthTnew, buf, bigdtsec, beta
+  integer, external :: gettype
 
   if (typeT<0) return   ! no ice anywhere
   if (zdepthT<0.) print *,'Error: No ice in icechanges'
@@ -230,7 +233,6 @@ subroutine assignthermalproperties1(nz,z,Tnom,porosity,ti,rhocv,icefrac,zdepthT)
 ! assign thermal properties of soil
 !*********************************************************
   use body, only : icedensity
-  use allinterfaces, only : heatcapacity
   implicit none
   integer, intent(IN) :: nz
   real(8), intent(IN) :: z(nz), Tnom, porosity
@@ -242,6 +244,7 @@ subroutine assignthermalproperties1(nz,z,Tnom,porosity,ti,rhocv,icefrac,zdepthT)
   real(8) cdry  ! heat capacity of dry regolith
   real(8) k(nz)  ! thermal conductivity
   real(8) thIn
+  real(8), external :: heatcapacity
 
   cdry = heatcapacity(Tnom)
   thIn = 15.

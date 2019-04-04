@@ -9,11 +9,12 @@ subroutine icelayer_asteroid(bigstep,NP,z,porosity,Tinit, &
 !*************************************************************************
 ! bigstep = time step [Earth years]
 ! latitude  [degree]
-! S0 = solar constant relative to present (as defined in flux_noatm.f90)
+! eps = axis tilt [radians]
+! S0 = solar constant relative to present
 !*************************************************************************
   use constants, only : d2r, NMAX
   use body, only : icedensity, Tnominal, nz
-  use allinterfaces, except_this_one => icelayer_asteroid
+  use allinterfaces
   implicit none
   integer, intent(IN) :: NP
   real(8), intent(IN) :: bigstep
@@ -28,6 +29,8 @@ subroutine icelayer_asteroid(bigstep,NP,z,porosity,Tinit, &
   real(8) Deff, deltaz, Diff0, Jp, avrhotmp
   real(8), dimension(nz) :: Diff, ypp, avrho, porefill
   real(8), SAVE :: zdepth_old(100)  ! NP<=100
+  integer, external :: gettype
+  real(8), external :: vapordiffusivity, constriction
 
   do k=1,NP   ! big loop over sites
 
@@ -105,7 +108,7 @@ subroutine ajsub_asteroid(latitude, albedo, z, ti, rhocv, ecc, omega, eps, &
 !***********************************************************************
   use constants
   use body, only : EQUILTIME, dt, solsperyear, Fgeotherm, semia, nz, emiss, solarDay
-  use allinterfaces, except_this_one => ajsub_asteroid
+  use allinterfaces
   implicit none
   real(8), intent(IN) :: latitude  ! in radians
   real(8), intent(IN) :: albedo, z(NMAX)
@@ -214,7 +217,7 @@ subroutine avmeth(nz, z, rhosatav, rhosatav0, rlow, typeP, Diff, Diff0, ypp, Jpu
 !***********************************************************************
 !  returns 2nd derivative ypp and pumping flux
 !***********************************************************************
-  use allinterfaces, except_this_one => avmeth
+  use allinterfaces
   implicit none
   integer, intent(IN) :: nz, typeP
   real(8), intent(IN), dimension(nz) :: z, rhosatav, Diff
@@ -246,7 +249,6 @@ subroutine icechanges(nz,z,typeP,avrho,ypp,Deff,bigstep,Jp,zdepthP,sigma)
 !***********************************************************
 ! advances ice interface and grows pore ice
 !***********************************************************
-  use allinterfaces, except_this_one => icechanges
   implicit none
   integer, intent(IN) :: nz, typeP
   real(8), intent(IN) :: z(nz), ypp(nz), avrho(nz)
@@ -254,6 +256,7 @@ subroutine icechanges(nz,z,typeP,avrho,ypp,Deff,bigstep,Jp,zdepthP,sigma)
   real(8), intent(INOUT) :: zdepthP, sigma(nz)
   integer j, newtypeP
   real(8) zdepthPnew, buf, bigdtsec, dtcorr, dtstep, dz(nz)
+  integer, external :: gettype
 
   if (typeP<0) return   ! no ice anywhere
   if (zdepthP<0.) print *,'Error: No ice in icechanges'
@@ -337,7 +340,6 @@ subroutine assignthermalproperties(nz,Tnom,porosity,ti,rhocv,porefill)
 ! specify thermal interia profile here
 !*********************************************************
   use body, only : icedensity
-  use allinterfaces, only : heatcapacity
   implicit none
   integer, intent(IN) :: nz
   real(8), intent(IN) :: Tnom, porosity(nz)
@@ -351,6 +353,7 @@ subroutine assignthermalproperties(nz,Tnom,porosity,ti,rhocv,porefill)
   real(8) cdry  ! heat capacity of dry regolith
   real(8) k(nz)  ! thermal conductivity
   real(8) thIn
+  real(8), external :: heatcapacity
 
   if (minval(porosity)<0. .or. maxval(porosity)>0.8) then
      print *,'Error: unreasonable porosity',minval(porosity),maxval(porosity)
@@ -397,7 +400,7 @@ end function conductivity
 
 
 
-elemental function constriction(porefill)
+function constriction(porefill)
 ! vapor diffusivity constriction function, 0<=eta<=1
   implicit none
   real(8), intent(IN) :: porefill

@@ -6,7 +6,7 @@ SR = ../Common/
 
 moon_exo: geogrid.o body.o moon_exo.o montecarlo.o gasdev.o \
 	makefile 
-	make -C $(SR) common more
+	make -C $(SR) common
 	$(CC) $(LFLAGS) moon_exo.o montecarlo.o geogrid.o \
 	$(SR)flux_noatm.o $(SR)conductionQ.o $(SR)tridag.o \
 	$(SR)grids.o $(SR)psv.o $(SR)subl_subs.o \
@@ -14,7 +14,7 @@ moon_exo: geogrid.o body.o moon_exo.o montecarlo.o gasdev.o \
 
 ceres_exo: geogrid.o body.o ceres_exo.o montecarlo.o gasdev.o \
 	makefile 
-	make -C $(SR) common more
+	make -C $(SR) common
 	$(CC) $(LFLAGS) ceres_exo.o montecarlo.o geogrid.o \
 	$(SR)flux_noatm.o $(SR)conductionQ.o $(SR)tridag.o \
 	$(SR)grids.o $(SR)psv.o $(SR)subl_subs.o gasdev.o \

@@ -20,7 +20,23 @@ program asteroid_fast1
   real(8), dimension(NP) :: latitude, albedo, zdepthT
   real(8), dimension(NP) :: Tmean1, Tmean3, Tmin, Tmax
   character(4) ext
-
+  real(8), external :: faintsun
+  interface
+     subroutine icelayer_asteroid(bigstep,NP,z,porosity,icefrac,Tinit, &
+          & zdepthT,Tmean1,Tmean3,Tmin,Tmax,latitude,albedo,ecc,omega,eps,S0)
+       use constants, only : d2r, NMAX
+       use body, only : icedensity, Tnominal, nz
+       implicit none
+       integer, intent(IN) :: NP
+       real(8), intent(IN) :: bigstep
+       real(8), intent(IN) :: z(NMAX), porosity, icefrac
+       logical, intent(IN) :: Tinit
+       real(8), intent(INOUT) :: zdepthT(NP), Tmean1(NP), Tmean3(NP)
+       real(8), intent(OUT) :: Tmin(NP), Tmax(NP)
+       real(8), intent(IN) :: latitude(NP), albedo(NP), ecc, omega, eps, S0
+     end subroutine icelayer_asteroid
+  end interface
+  
   ! latitudes
   if (iargc() /= 1) then
      stop 'USAGE: asteroid_fast ext'

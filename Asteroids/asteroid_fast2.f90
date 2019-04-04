@@ -19,6 +19,7 @@ program asteroid_fast
   real(8), dimension(NP) :: latitude, albedo, zdepthP
   real(8), dimension(NP) :: Tmean1, Tmean3, Tmin, Tmax
   character(7) ext
+  real(8), external :: faintsun
 
   ! latitudes
   if (iargc() /= 1) then
