@@ -62,7 +62,7 @@ subroutine icelayer_asteroid(bigstep,NP,z,porosity,icefrac,Tinit, &
            stop 'D_EFF PROBLEM'
         endif
      endif
-     call icechanges(nz,z(:),typeT,avrho,Deff,bigstep,zdepthT(k),porosity,icefrac)
+     call icechanges(nz,z(:),avrho,Deff,bigstep,zdepthT(k),porosity,icefrac)
 
      ! diagnose
      if (zdepthT(k)>=0.) then
@@ -193,33 +193,30 @@ end subroutine outputmoduleparameters
 
 
 
-subroutine icechanges(nz,z,typeT,avrho,Deff,bigstep,zdepthT,porosity,icefrac)
+subroutine icechanges(nz,z,avrho,Deff,bigstep,zdepthT,porosity,icefrac)
 !***********************************************************
 ! advances ice interface, allows for deflation
 !***********************************************************
   use body, only : icedensity
   implicit none
-  integer, intent(IN) :: nz, typeT
+  integer, intent(IN) :: nz
   real(8), intent(IN) :: z(nz), avrho, Deff, bigstep, porosity, icefrac
   real(8), intent(INOUT) :: zdepthT
-  integer newtypeT
   real(8) zdepthTnew, buf, bigdtsec, beta
-  integer, external :: gettype
 
-  if (typeT<0) return   ! no ice anywhere
-  if (zdepthT<0.) print *,'Error: No ice in icechanges'
+  if (zdepthT<0.) return   ! no ice anywhere
+
   bigdtsec = bigstep*86400*365.24
 
   ! advance ice table
-  if (icefrac>porosity) then
+  if (icefrac>porosity) then  ! deflation
      beta = (1-icefrac)/(1-porosity)
-  else
+  else  ! no deflation
      beta = 1.
   endif
   buf = Deff*avrho*beta/(icefrac*icedensity)
   zdepthTnew = sqrt(2*buf*bigdtsec + zdepthT**2)
-  newtypeT = gettype(zdepthTnew,nz,z)
-  write(6,*) '# advance of ice table',typeT,zdepthT,newtypeT,zdepthTnew
+  write(6,*) '# advance of ice table',zdepthT,zdepthTnew
 
   zdepthT = zdepthTnew
   if (zdepthT>z(nz)) zdepthT=-9999.
@@ -266,18 +263,3 @@ subroutine assignthermalproperties1(nz,z,Tnom,porosity,ti,rhocv,icefrac,zdepthT)
   ti(1:nz) = sqrt(k(1:nz)*rhocv(1:nz))
 end subroutine assignthermalproperties1
 
-
-
-integer function gettype(zdepth,nz,z)
-  implicit none
-  integer, intent(IN) :: nz
-  real(8), intent(IN) :: zdepth, z(nz)
-  integer j
-  gettype = -9 
-  do j=1,nz
-     if (z(j)>zdepth) then
-        gettype = j  
-        exit
-     endif
-  enddo
-end function gettype

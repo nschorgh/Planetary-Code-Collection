@@ -38,8 +38,7 @@ function heatcapacity(T)
   ! specific heat capacity of silicates
   implicit none
   real(8), intent(IN) :: T  ! [K]
-  real(8) heatcapacity  ! J/(kg K)
-  real(8) c 
+  real(8) c, heatcapacity  ! J/(kg K)
   
   ! heat capacity from Ledlow et al. (1992), <350K
   !c = 0.1812 + 0.1191*(T/300.-1) + 0.0176*(T/300.-1)**2 + &
@@ -77,4 +76,18 @@ function faintsun(t)
   faintsun = 1./(1+0.4*abs(t)/4.57e9)
 end function faintsun
 
+
+integer function gettype(zdepth,nz,z)
+  implicit none
+  integer, intent(IN) :: nz
+  real(8), intent(IN) :: zdepth, z(nz)
+  integer j
+  gettype = -9 
+  do j=1,nz
+     if (z(j)>zdepth) then
+        gettype = j  
+        exit
+     endif
+  enddo
+end function gettype
 

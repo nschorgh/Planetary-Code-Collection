@@ -2,20 +2,20 @@ module constants
   implicit none
   real(8), parameter :: pi=3.1415926535897932, d2r=pi/180.
   real(8), parameter :: sigSB = 5.6704e-8
-  real(8), parameter :: So=1365.  ! solar constant (W/m^2)
+  real(8), parameter :: So=1365.  ! solar constant [W/m^2]
 end module constants
 
 
 module body
   implicit none
-  real(8) a   ! semimajor axis (AU)
+  real(8) a   ! semimajor axis [AU]
   real(8) ecc  ! orbital eccentricity
   real(8) Trot ! length of solar day in Earth days
   real(8) emiss ! IR emissivity
 
   ! default
   !parameter(a = 3.2, ecc = 0., Trot=10./24.)
-  parameter(emiss=0.95)  
+  parameter(emiss=0.96)  
 
   ! Ceres
   parameter(a = 2.76750591, ecc = 0.07582, Trot = 9.076/24.)  ! synodic
@@ -42,17 +42,17 @@ program asteroid
   use body
   implicit none
   !integer n
-  real(8) eps  ! obliquity (radians)
-  real(8) omega  ! (radians)
+  real(8) eps  ! obliquity [radians]
+  real(8) omega  ! [radians]
   real(8) latitude, Qmean, Q4mean, Q0mean
   real(8) Tmean, thIn, Tmin, Tmax, Torb !, ti(13)
-  real(8) albedo ! Bond albedo
+  real(8) albedo
   real(8), external :: flux_noatm, flux2T, a2Torb
 
   ! Ceres
-  eps = 4.*d2r; omega = 301.*d2r 
-  albedo = 0.034
-  !albedo = 0.24  ! bright spot
+  eps = 4.*d2r; omega = 301.*d2r
+  ! albedo = 0.034  ! Bond albedo
+  albedo = 0.09
 
   ! 133 P/Elst-Pizarro
   ! vernal equinox = 291.8+90=21.8

@@ -22,7 +22,7 @@ program sphere1d_implicit
   zT(:) = 0.
   time(:) = 0.  ! earliest time in input file
   
-  Radius = 1e2  ! body radius
+  Radius = 500.  ! body radius
   dr = Radius/nz
   forall(i=1:nz) z(i) = i*dr
 
@@ -189,14 +189,14 @@ end subroutine conductionT_sphere
 
 
 
-subroutine retreat_s(T,zT,Radius,dt,E)
+subroutine retreat_s(T,zT,Radius,dt,Elatent)
   ! retreat of ice table, 1D spherically symmetric
   implicit none
   real*8, intent(IN) :: T  ! scalar temperature [K]
   real*8, intent(IN) :: Radius  ! radius of body [m]
   real*8, intent(IN) :: dt  ! time step (sec)
   real*8, intent(INOUT) :: zT  ! depth of ice table below surface
-  real*8, intent(OUT) :: E  ! latent heat, for diagnostics
+  real*8, intent(OUT) :: Elatent  ! latent heat, for diagnostics
   real*8, parameter :: pi=3.1415926535897932
   real*8, parameter :: Lh2o=2.834e6 ! latent heat of sublimation [J/kg]
   real*8, parameter :: R = 8314.5 ! universal gas constant
@@ -205,7 +205,7 @@ subroutine retreat_s(T,zT,Radius,dt,E)
   real*8, external :: psv, vapordiffusivity
   real*8 zTold, dV
   
-  diam=10d-3; porosity=0.5
+  diam=100d-3; porosity=0.5
   D=vapordiffusivity(diam,porosity,T)
   
   rhos = psv(T)*18/(R*T) ! p = n k T
@@ -215,9 +215,9 @@ subroutine retreat_s(T,zT,Radius,dt,E)
   if (zT>=0. .and. zTold>=0.) then
      dV = (zT-zTold)*4*pi*(Radius-(zT+zTold)/2)**2
      !dV = 4*pi/3*((Radius-zTold)**3 - (Radius-zT)**3) ! more accurate but roundoff sensitive
-     E = dV*porosity*rhoice*Lh2o  ! [J]
+     Elatent = dV*porosity*rhoice*Lh2o  ! [J]
   else
-     E = -999.
+     Elatent = -999.
   end if
 end subroutine retreat_s
 

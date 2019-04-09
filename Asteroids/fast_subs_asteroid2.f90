@@ -416,17 +416,3 @@ function constriction(porefill)
 end function constriction
 
 
-
-integer function gettype(zdepth,nz,z)
-  implicit none
-  integer, intent(IN) :: nz
-  real(8), intent(IN) :: zdepth, z(nz)
-  integer j
-  gettype = -9 
-  do j=1,nz
-     if (z(j)>zdepth) then
-        gettype = j  
-        exit
-     endif
-  enddo
-end function gettype

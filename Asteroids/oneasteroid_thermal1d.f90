@@ -15,7 +15,8 @@ subroutine oneasteroid(latitude, omega, eps, albedo, thIn, Qmean, Tmean, Tmin, T
   !real(8) c, k
   !real(8) Emean, E
   !real(8) rhocmean, Imean
-  real(8) slope,az
+  real(8), parameter :: slope = 0.*d2r ! [radians]
+  real(8), parameter :: az = 0.*d2r ! radians east of north
   real(8), external :: flux_noatm, flux2T, a2Torb, sublrate
 
   print *,'Latitude=',latitude/d2r
@@ -43,10 +44,6 @@ subroutine oneasteroid(latitude, omega, eps, albedo, thIn, Qmean, Tmean, Tmin, T
   !write(30,'(999(f8.4,1x))') z(:)
   !close(30)
 
-  slope=0.  ! radians
-  az = 0.  ! radians east of north
-  !slope = 30.*d2r; az = 270.*d2r
-
   coslat = max(cos(latitude),cos(latitude+eps/2),cos(latitude-eps/2))
   Tsurf=flux2T(So/a**2*coslat/pi,albedo,emiss)
   if (abs(coslat)<0.01) Tsurf=50;  ! avoids NaNs
@@ -69,7 +66,8 @@ subroutine oneasteroid(latitude, omega, eps, albedo, thIn, Qmean, Tmean, Tmin, T
      Qp1= (1-albedo)*flux_noatm(Rau,decl,latitude,HA,slope,az)
 
      !do j=1,nz
-     !   call props(Temp(j),thIn,c,k)
+     !   c = heatcapacity(Temp(j))
+     !   k = conductivity(Temp(j))
      !   ti(j) = sqrt(k*c*500.)
      !   rhoc(j) = 500.*c
      !enddo
@@ -99,7 +97,7 @@ subroutine oneasteroid(latitude, omega, eps, albedo, thIn, Qmean, Tmean, Tmin, T
 end subroutine oneasteroid
 
 
-pure function flux2T(Q,albedo,emiss)
+function flux2T(Q,albedo,emiss)
   ! convert incoming flux Q to equilibrium temperature
   implicit none
   real(8), intent(IN) :: Q, emiss, albedo
@@ -114,19 +112,17 @@ pure function a2Torb(a)
   ! returns orbital period in Earth days
   implicit none
   real(8), parameter :: pi=3.1415926535897932
-  real(8), intent(IN) :: a  ! semimajor axis (AU)
+  real(8), intent(IN) :: a  ! semimajor axis [AU]
   real(8) a2Torb  
 
   a2Torb = sqrt(4*pi**2/(6.674e-11*1.989e30)*(a*149.598e9)**3)/86400.
 end function a2Torb
 
 
-subroutine props(T,c,k)
+function heatcapacity(T)
   implicit none
   real(8), intent(IN) :: T
-  real(8), intent(OUT) :: c, k
-  !real(8) kc
-  real(8) A, B
+  real(8) :: c, heatcapacity
 
   ! heat capacity from Ledlow et al. (1992), <350K
   !c = 0.1812 + 0.1191*(T/300.-1) + 0.0176*(T/300.-1)**2 + &
@@ -135,17 +131,27 @@ subroutine props(T,c,k)
 
   ! heat capacity from Winter & Saari (1969),  20K<T<500K
   c = -0.034*T**0.5 + 0.008*T - 0.0002*T**1.5
-  c = c*1000   ! J/(g K) -> J/(kg K)
+  heatcapacity = c*1000   ! J/(g K) -> J/(kg K)
+end function heatcapacity
 
-  ! c150 = 433.96
-  ! rho = 500
+
+function conductivity(T)
+  implicit none
+  real(8), intent(IN) :: T
+  real(8) k, conductivity
+  !real(8) kc, rhoc150
+  real(8) A, B
+
+  ! rhoc150 = 500.*433.96
 
   ! thermal conductivity
-  !kc = I150**2/(500.*433.96)/(1+1.48*(150./350.)**3)
+  !kc = I150**2/rhoc150/(1+1.48*(150./350.)**3)
   !k = kc*(1+1.48*(T/350.)**3)
 
   ! based on Sakatani et al. (2012) 
   A = 0.001; B = 3e-11     ! D= 100um
   !A = 0.003; B = 1.5e-10   ! D= 1mm
   k = A + B*T**3
-end subroutine props
+
+  conductivity = k
+end function conductivity
