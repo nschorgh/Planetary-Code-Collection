@@ -20,10 +20,6 @@ asteroid_thermal: asteroid_thermal.f90 asteroid_thermal.o \
 	$(SR)flux_noatm.o $(SR)conductionQ.o $(SR)tridag.o \
 	$(SR)grids.o $(SR)generalorbit.o insolonly.o -o $@
 
-# Modules: body.mod miscparameters.mod allinterfaces.mod
-# The following depend on modules:
-#       asteroid_fast2, fast_subs_asteroid2
-
 asteroid_fast2: fast_modules_asteroid.f90 fast_modules_asteroid.o \
 	asteroid_fast2.o fast_subs_asteroid2.o impactstirring.o \
 	common_subs.o makefile 
@@ -52,8 +48,9 @@ sphere1d: sphere1d_implicit.o common_subs.o makefile
 	$(CC) $(LFLAGS) sphere1d_implicit.o $(SR)flux_noatm.o \
 	$(SR)tridag.o $(SR)generalorbit.o common_subs.o $(SR)psv.o
 
-
-common-asteroids: common_subs.o
+# Modules require certain build order
+#    body.mod constants.mod in asteroid_thermal.f90
+#    body.mod constants.mod allinterfaces.mod in fast_modules_asteroid.f90
 
 
 %.o:	%.f makefile

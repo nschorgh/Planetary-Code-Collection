@@ -1,5 +1,7 @@
 ChangeLog
 
+17 Apr 2019: The last month or so involved code cleanup, especially in the Asteroids/ directory.
+
 3 Mar 2019: minor updates plus a semi-implicit solver for the heat equation in a spherically symmetric geometry in sphere1d_implicit.f90
 
 Sep 2018: most of the code development over the past 14 months was for the 3D surface energy balance model for Mars
@@ -46,7 +48,7 @@ Aug 2015: moved to GitHub
 
 3/4 Jun 2014: changed NMAX=2000 to NMAX=1000 almost everywhere
 
-31 May 2014: added a few simple routines for thermal modeling of asteroids; reorganized webpage
+31 May 2014: added a few simple routines for thermal modeling of asteroids
 
 4 Sep 2011: better implementation of "mode 2" ice growth, affecting fast_subs_mars.f90 and fast_subs_univ.f90
 
@@ -59,8 +61,6 @@ Aug 2015: moved to GitHub
 27 Mar 2010: minor polish of the very old program mars_thermal1d.f
 
 9 Feb 2010: grids.f has an additional subroutine and the default for the parametrization of thermal conductivity has changed.
-
-4 Feb 2010: From now on, old versions will be archived in directory OldVersions.
 
 2 Jan 2010: routines for fast method have been added. Their filenames contain the string fast.
 
