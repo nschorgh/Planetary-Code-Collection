@@ -64,14 +64,14 @@ program cratersQ_earth
   nm=0   
   
   print *,'...reading horizons file...'
-  call readhorizons('horizons.'//fileext)
+  call readhorizons
 
   if (reflection) then
      print *,'...reading huge fieldofviews file...'
-     call getmaxfieldsize(NSx,NSy,fileext,CCMAX)
+     CCMAX = getmaxfieldsize(NSx,NSy,ffn)
      print *,'... max field of view size=',CCMAX
      allocate(ii(NSx,NSy,CCMAX), jj(NSx,NSy,CCMAX), dO12(NSx,NSy,CCMAX))
-     call getfieldofview(NSx,NSy,fileext,cc,ii,jj,dO12,skysize,CCMAX)
+     call getfieldofview(NSx,NSy,ffn,cc,ii,jj,dO12,skysize,CCMAX)
   endif
   if (subsurface) allocate(T(nz,NSx,NSy), Qnm1(NSx,NSy))
   

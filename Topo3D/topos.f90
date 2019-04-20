@@ -64,24 +64,13 @@ module filemanager
   !character(len = *), parameter :: fileext = 'PSP005943_32'
   !real(8), parameter :: dx=32., dy=32., RMAX=1e30
 
+  
+  ! paths and default filenames for inputs
+  character(len = *), parameter :: &
+       hfn='./'//fileext//'.xyz' ,& ! path and filename for topography (*.xyz)
+       sfn='./horizons.'//fileext ,& ! path and filename for horizons.* input 
+       ffn='./fieldofviews.'//fileext  ! path and filename for fieldofviews.* input
+  ! outputs are written to working directory
 end module filemanager
 
-
-subroutine readdem(h)
-  ! read DEM
-  ! (1,1) = northwest corner
-  ! (NSx,1) = northeast corner
-  ! (1,NSy) = southwest corner
-  ! (NSx,NSy) = southeast corner
-  use filemanager
-  implicit none
-  real(8), intent(OUT) :: h(NSx,NSy)
-  integer j, ierr
-  open(unit=20,file=fileext//'.xyz',status='old',action='read',iostat=ierr)
-  if (ierr>0) stop 'readdem: input file not found'
-  do j=1,NSy
-     read(20,*) h(:,j)
-  enddo
-  close(20)
-end subroutine readdem
 

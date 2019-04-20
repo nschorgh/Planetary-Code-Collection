@@ -1,6 +1,27 @@
 ! Subroutines and functions that are called from cratersQ, fieldofviews, and shadows
 
 
+subroutine readdem(h)
+  ! read DEM
+  ! (1,1) = northwest corner
+  ! (NSx,1) = northeast corner
+  ! (1,NSy) = southwest corner
+  ! (NSx,NSy) = southeast corner
+  use filemanager, only : NSx, NSy, hfn
+  implicit none
+  real(8), intent(OUT) :: h(NSx,NSy)
+  integer j, ierr
+
+  open(unit=20,file=hfn,status='old',action='read',iostat=ierr)
+  if (ierr>0) stop 'readdem: input file not found'
+  do j=1,NSy
+     read(20,*) h(:,j)
+  enddo
+  close(20)
+end subroutine readdem
+
+
+
 elemental function horizontaldistance(i1,j1,i2,j2)
   ! distance between two points; must have same units as height
   use filemanager, only : dx,dy

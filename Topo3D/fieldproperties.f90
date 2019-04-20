@@ -19,7 +19,7 @@ program fieldproperties
   call readdem(h)
 
   print *,'...reading horizons file...'
-  call readhorizons('horizons.'//fileext)
+  call readhorizons
   do i=2,NSx-1
      do j=2,NSy-1
         skysize1(i,j)=getoneskysize(i,j)
@@ -29,10 +29,10 @@ program fieldproperties
   
   if (fieldofview) then
      print *,'...reading huge fieldofviews file...'
-     call getmaxfieldsize(NSx,NSy,fileext,CCMAX)
+     CCMAX = getmaxfieldsize(NSx,NSy,ffn)
      print *,'... max field of view size=',CCMAX
      allocate(ii(NSx,NSy,CCMAX), jj(NSx,NSy,CCMAX), dO12(NSx,NSy,CCMAX))
-     call getfieldofview(NSx,NSy,fileext,cc,ii,jj,dO12,landsize,CCMAX)
+     call getfieldofview(NSx,NSy,ffn,cc,ii,jj,dO12,landsize,CCMAX)
   else
      landsize = -9.
   end if

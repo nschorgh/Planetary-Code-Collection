@@ -1,5 +1,7 @@
 ChangeLog
 
+19 Apr 2019: readdem has moved from topos.f90 to crater_common.f90, because input path is now defined in filemaneger.
+
 17 Apr 2019: The last month or so involved code cleanup, especially in the Asteroids/ directory.
 
 3 Mar 2019: minor updates plus a semi-implicit solver for the heat equation in a spherically symmetric geometry in sphere1d_implicit.f90

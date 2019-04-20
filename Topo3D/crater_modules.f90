@@ -1,15 +1,6 @@
 module allinterfaces
   ! interfaces from subroutines and functions
 
-  ! begin topos.f90
-  interface
-     subroutine readdem(h)
-       use filemanager
-       implicit none
-       real(8), intent(OUT) :: h(NSx,NSy)
-     end subroutine readdem
-  end interface
-
   ! begin shadows_subs.f90
   interface
      subroutine findonehorizon_wsort(h,i0,j0,azRay,smax,visibility)
@@ -77,6 +68,14 @@ module allinterfaces
 
   ! begin crater_common.f90
   interface
+     subroutine readdem(h)
+       use filemanager
+       implicit none
+       real(8), intent(OUT) :: h(NSx,NSy)
+     end subroutine readdem
+  end interface
+
+  interface
      elemental function horizontaldistance(i1,j1,i2,j2)
        implicit none
        real(8) horizontaldistance
@@ -134,7 +133,6 @@ module allinterfaces
      end function distanceonsphere
   end interface
 
-
   ! begin model_subs.f90
   interface
      pure subroutine difftopo(NSx,NSy,h,dx,dy,surfaceSlope,azFac)
@@ -153,9 +151,9 @@ module allinterfaces
   end interface
 
   interface
-     subroutine getfieldofview(NSx,NSy,fileext,cc,ia,ja,dOh,skysize,CCMAX)
+     subroutine getfieldofview(NSx,NSy,ffn,cc,ia,ja,dOh,skysize,CCMAX)
        integer, intent(IN) :: NSx, NSy
-       character(len=*), intent(IN) :: fileext
+       character(len=*), intent(IN) :: ffn
        integer, intent(IN) :: CCMAX
        integer, intent(OUT) :: cc(NSx,NSy) ! number of cells in field of view
        integer(2), intent(OUT), dimension(NSx,NSy,CCMAX) :: ia, ja
@@ -165,12 +163,11 @@ module allinterfaces
   end interface
 
   interface
-     subroutine getmaxfieldsize(NSx,NSy,fileext,maxsize)
+     integer function getmaxfieldsize(NSx,NSy,ffn)
        implicit none
        integer, intent(IN) :: NSx,NSy
-       character(len=*), intent(IN) :: fileext
-       integer, intent(OUT) :: maxsize
-     end subroutine getmaxfieldsize
+       character(len=*), intent(IN) :: ffn
+     end function getmaxfieldsize
   end interface
   
   ! mk_atmosphere.f90

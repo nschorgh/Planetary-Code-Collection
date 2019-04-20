@@ -3,9 +3,7 @@ Common/
 Common Subroutines and Functions
 ================================
 
-* These have no modules and use no modules, unless that module is only used in its own source file.
-
-* No main programs in this directory either.
+No main programs in this directory
 
 
 
@@ -32,7 +30,7 @@ conductionT.f:
 	1D thermal conduction with heterogeneous thermal properties and 
 	upper temperature boundary condition, semi-implicit solver
 
-grids.f: 
+grids.f:
 	creates appropriate 1D grids, calculates thermal properties of soil with ice
 
 derivs.f90: 
@@ -50,6 +48,9 @@ conductionT2.f90:
 conductionQ2.f90:
 	version of conductionQ that precomputes coefficients
 
+makefile:
+	shows file dependencies
+
 
 3RD PARTY FUNCTIONS AND SUBROUTINES FROM NUMERICAL RECIPES(C)
 
@@ -60,6 +61,6 @@ julday.for:
 	Julian date, from Numerical Recipes (C), but without the pause statement
 
 ran2.for: 
-	uniform random number generator from Numerical Recipes (C), change real to real*8
+	uniform random number generator from Numerical Recipes (C); changed real to real*8
 
 

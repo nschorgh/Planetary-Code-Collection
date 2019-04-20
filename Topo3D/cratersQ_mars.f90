@@ -107,7 +107,7 @@ program cratersQ_mars
   !close(31)
   
   print *,'...reading horizons file...'
-  call readhorizons('horizons.'//fileext)
+  call readhorizons
   ! only use viewfactors with IR contribution
   !call getskysize(viewfactor)
   do concurrent(i=2:NSx-1, j=2:Nsy-1)

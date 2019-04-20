@@ -1,21 +1,20 @@
 module newhorizons
   ! privately stores horizon data
-  use filemanager, only : NSx, NSy
+  use filemanager, only : NSx, NSy, sfn
   implicit none
   integer, parameter :: naz=180  ! # azimuth values
   real(8), dimension(NSx,NSy,naz+1), private :: s ! angles
 
 contains
-  subroutine readhorizons(fn)
+  subroutine readhorizons
     ! reads and stores all horizon elevations
     ! also converts slopes to angles
     implicit none
-    character(len=*), intent(IN) :: fn
     integer i,j,ia,ja,ierr
       
-    open(unit=20,file=fn,status='old',action='read',iostat=ierr)
+    open(unit=20,file=sfn,status='old',action='read',iostat=ierr)
     if (ierr>0) then
-       print *,fn
+       print *,sfn
        stop 'readhorizons: Input file not found'
     endif
     do i=2,NSx-1
@@ -178,10 +177,10 @@ end subroutine equatorial2horizontal
 
 
 
-subroutine getfieldofview(NSx,NSy,fileext,cc,ia,ja,dOh,skysize,CCMAX)
+subroutine getfieldofview(NSx,NSy,ffn,cc,ia,ja,dOh,skysize,CCMAX)
   implicit none
   integer, intent(IN) :: NSx, NSy
-  character(len=*), intent(IN) :: fileext
+  character(len=*), intent(IN) :: ffn
   integer, intent(IN) :: CCMAX
   integer, intent(OUT) :: cc(NSx,NSy) ! number of cells in field of view
   integer(2), intent(OUT), dimension(NSx,NSy,CCMAX) :: ia, ja
@@ -189,7 +188,7 @@ subroutine getfieldofview(NSx,NSy,fileext,cc,ia,ja,dOh,skysize,CCMAX)
   real(8), intent(OUT) :: skysize(NSx,NSy)
   integer i, j, k, i0_2, j0_2, ierr
 
-  open(unit=20,file='fieldofviews.'//fileext,status='old',action='read',iostat=ierr)
+  open(unit=20,file=ffn,status='old',action='read',iostat=ierr)
   if (ierr>0) stop 'getfieldofview: input file not found'
   do i=2,NSx-1
      do j=2,NSy-1
@@ -209,14 +208,14 @@ end subroutine getfieldofview
 
 
 
-subroutine getmaxfieldsize(NSx,NSy,fileext,maxsize)
+integer function getmaxfieldsize(NSx,NSy,ffn)
   implicit none
   integer, intent(IN) :: NSx,NSy
-  character(len=*), intent(IN) :: fileext
-  integer, intent(OUT) :: maxsize
+  character(len=*), intent(IN) :: ffn
+  integer maxsize
   integer cc, i, j, i0_2, j0_2, ierr
 
-  open(unit=20,file='fieldofviews.'//fileext,status='old',action='read',iostat=ierr)
+  open(unit=20,file=ffn,status='old',action='read',iostat=ierr)
   if (ierr>0) stop 'getmaxfieldsize: input file not found'
 
   maxsize=0
@@ -228,6 +227,8 @@ subroutine getmaxfieldsize(NSx,NSy,fileext,maxsize)
      enddo
   enddo
   close(20)
-end subroutine getmaxfieldsize
+
+  getmaxfieldsize = maxsize
+end function getmaxfieldsize
 
 

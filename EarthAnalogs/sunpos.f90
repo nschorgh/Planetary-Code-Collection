@@ -8,7 +8,7 @@ end module dateformat
 
 subroutine sunpos(udtTime, dLongitude, dLatitude, dZenithAngle, dAzimuth, R)
   ! Adapted from
-  ! Blanco-Muriel et al. 2001, Computing the solar vector, Solar Energy 70, 431-441
+  ! Blanco-Muriel et al. (2001), Computing the solar vector, Solar Energy 70, 431-441
   use dateformat
   implicit none
 
@@ -17,8 +17,7 @@ subroutine sunpos(udtTime, dLongitude, dLatitude, dZenithAngle, dAzimuth, R)
   real(8), intent(OUT) :: dZenithAngle, dAzimuth, R  ! cSunCoordinates
 
   real(8), parameter ::  pi =   3.14159265358979323846
-  real(8), parameter ::  twopi = (2*pi)
-  real(8), parameter ::  rad = (pi/180)
+  real(8), parameter ::  twopi = 2*pi, rad = pi/180.
   real(8), parameter ::  dEarthMeanRadius =  6371.01    ! In km
   real(8), parameter ::  dAstronomicalUnit = 149597890  ! In km
 

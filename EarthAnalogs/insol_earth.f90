@@ -55,7 +55,7 @@ program insol_earth
   daytime(:,:)=0.; alltime=0.
   
   print *,'...reading horizons file...'
-  call readhorizons('horizons.'//fileext)
+  call readhorizons
 
   print *,'...calculating...'
   ! loop over time steps 

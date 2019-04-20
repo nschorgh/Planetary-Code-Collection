@@ -47,24 +47,12 @@ module filemanager
   !character(len = *), parameter :: fileext = 'summit_haukea'
   !real(8), parameter :: dx=10., dy=10., RMAX=1e5
 
+  
+  ! paths and default filenames for inputs
+  character(len = *), parameter :: &
+       hfn='./'//fileext//'.xyz' ,& ! path and filename for topography (*.xyz)
+       sfn='./horizons.'//fileext ,& ! path and filename for horizons.* input 
+       ffn='./fieldofviews.'//fileext  ! path and filename for fieldofviews.* input
+  ! outputs are written to working directory
 end module filemanager
-
-
-
-subroutine readdem(h)
-  ! read DEM
-  use filemanager
-  implicit none
-  real(8), intent(OUT) :: h(NSx,NSy)
-  integer j, ierr
-  open(unit=20,file=fileext//'.xyz',status='old',action='read',iostat=ierr)
-  if (ierr>0) then
-     print *,fileext//'.xyz'
-     stop 'readdem: input file not found'
-  endif
-  do j=1,NSy
-     read(20,*) h(:,j)
-  enddo
-  close(20)
-end subroutine readdem
 

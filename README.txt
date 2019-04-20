@@ -134,10 +134,11 @@ EarthAnalogs/insol_flat.f90: (simple main program)
 EarthAnalogs/mk_atmosphere.f90
 EarthAnalogs/sunpos.f90
 EarthAnalogs/cratersQ_earth.f90: (main program)
+EarthAnalogs/topos.f90
+Common/flux_noatm.f90
 Topo3D/crater_modules.f90 
 Topo3D/crater_common.f90
 Topo3D/model_subs.f90
-Topo3D/topos.f90
 Documentation: User Guide Sections 4.1 & 5.2-5.6
 
 

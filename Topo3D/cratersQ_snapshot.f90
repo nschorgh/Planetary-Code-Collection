@@ -33,13 +33,13 @@ program cratersQ_snapshot
   call difftopo(NSx,NSy,h,dx,dy,surfaceSlope,azFac)
 
   print *,'...reading horizons file...'
-  call readhorizons('horizons.'//fileext)
+  call readhorizons
 
   print *,'...reading huge fieldofviews file...'
-  call getmaxfieldsize(NSx,NSy,fileext,CCMAX)
+  CCMAX = getmaxfieldsize(NSx,NSy,ffn)
   print *,'... max field of view size=',CCMAX
   allocate(ii(NSx,NSy,CCMAX), jj(NSx,NSy,CCMAX), dO12(NSx,NSy,CCMAX))
-  call getfieldofview(NSx,NSy,fileext,cc,ii,jj,dO12,skysize,CCMAX)
+  call getfieldofview(NSx,NSy,ffn,cc,ii,jj,dO12,skysize,CCMAX)
 
   print *,'...calculating...'  
   print *,'beta=',betaSun/d2r,'azSun=',azSun/d2r
