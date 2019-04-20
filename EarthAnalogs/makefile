@@ -40,7 +40,7 @@ cratersQ_earth: topos.o crater_modules.o sunpos.o model_subs.o \
 .PHONY: clean 
 
 clean:
-	rm -f  *.o  a.out  *.o  *.mod 
+	rm -f  *.o  a.out  *.mod 
 
 
 

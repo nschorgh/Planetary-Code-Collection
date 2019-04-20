@@ -1,6 +1,6 @@
 ChangeLog
 
-19 Apr 2019: readdem has moved from topos.f90 to crater_common.f90, because input path is now defined in filemaneger.
+19 Apr 2019: readdem has moved from topos.f90 to crater_common.f90, because input path is now defined in filemanager.
 
 17 Apr 2019: The last month or so involved code cleanup, especially in the Asteroids/ directory.
 

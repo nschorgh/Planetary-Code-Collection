@@ -1,4 +1,4 @@
-elemental real(8) function flux_noatm(R,decl,latitude,HA,surfaceSlope,azFac)
+pure function flux_noatm(R,decl,latitude,HA,surfaceSlope,azFac)
 !***********************************************************************
 !   flux:  program to calculate incoming solar flux without atmosphere
 !     R: distance from sun (AU)
@@ -9,6 +9,7 @@ elemental real(8) function flux_noatm(R,decl,latitude,HA,surfaceSlope,azFac)
 !     azFac: azimuth of topographic gradient (radians east of north)
 !***********************************************************************
   implicit none
+  real(8) flux_noatm
   real(8), parameter :: So=1365.  ! solar constant
   real(8), parameter :: pi=3.1415926535897931, d2r=pi/180.
   real(8), intent(IN) :: R,decl,latitude,HA,surfaceSlope,azFac
@@ -48,7 +49,7 @@ end function flux_noatm
 
 
 
-elemental real(8) function flux_wshad(R,sinbeta,azSun,surfaceSlope,azFac,emax)
+pure function flux_wshad(R,sinbeta,azSun,surfaceSlope,azFac,emax)
 !***********************************************************************
 !   flux:  program to calculate incoming solar flux without atmosphere
 !     R: distance from sun (AU)
@@ -59,6 +60,7 @@ elemental real(8) function flux_wshad(R,sinbeta,azSun,surfaceSlope,azFac,emax)
 !     emax: elevation of horizon in direction of azimuth (radians)
 !***********************************************************************
   implicit none
+  real(8) flux_wshad
   real(8), parameter :: So=1365.  ! solar constant
   real(8), intent(IN) :: R,azSun,sinbeta,surfaceSlope,azFac,emax
   real(8) cosbeta,sintheta

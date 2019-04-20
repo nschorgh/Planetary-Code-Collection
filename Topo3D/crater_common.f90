@@ -43,7 +43,7 @@ end function azimuth
 
 
 
-real(8) pure function viewing_angle(i0,j0,i,j,h)
+pure function viewing_angle(i0,j0,i,j,h)
 !***********************************************************************
 !  function that calculates angle between surface normal at (i,j)
 !     and vector pointing to (ii,jj) as in findonehorizon_wsort
@@ -51,6 +51,7 @@ real(8) pure function viewing_angle(i0,j0,i,j,h)
   use filemanager, only : NSx,NSy
   use allinterfaces, except_this_one => viewing_angle
   implicit none
+  real(8) viewing_angle
   integer, intent(IN) :: i0,j0,i,j
   real(8), intent(IN) :: h(NSx,NSy)
   real(8), parameter :: pi=3.1415926535897931

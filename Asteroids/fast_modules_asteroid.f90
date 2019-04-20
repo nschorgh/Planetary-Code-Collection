@@ -79,14 +79,15 @@ module allinterfaces
 
   ! Common/{*.f,*.f90}
   interface
-     elemental real(8) function flux_noatm(R,decl,latitude,HA,surfaceSlope,azFac)
+     pure function flux_noatm(R,decl,latitude,HA,surfaceSlope,azFac)
        implicit none
+       real(8) flux_noatm
        real(8), intent(IN) :: R,decl,latitude,HA,surfaceSlope,azFac
      end function flux_noatm
   end interface
 
   interface
-     function colint(y,z,nz,i1,i2)
+     pure function colint(y,z,nz,i1,i2)
        implicit none
        integer, intent(IN) :: nz, i1, i2
        real(8), intent(IN) :: y(nz),z(nz)
@@ -95,7 +96,7 @@ module allinterfaces
   end interface
 
   interface
-     subroutine dzvector(nz,z,dz) 
+     pure subroutine dzvector(nz,z,dz) 
        implicit none
        integer, intent(IN) :: nz
        real(8), intent(IN) :: z(nz)

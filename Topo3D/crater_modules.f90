@@ -92,9 +92,10 @@ module allinterfaces
   end interface
 
   interface
-     real(8) pure function viewing_angle(i0,j0,i,j,h)
+     pure function viewing_angle(i0,j0,i,j,h)
        use filemanager, only : NSx,NSy,dx,dy
        implicit none
+       real(8) viewing_angle
        integer, intent(IN) :: i0,j0,i,j
        real(8), intent(IN) :: h(NSx,NSy)
      end function viewing_angle
@@ -181,7 +182,7 @@ module allinterfaces
 
   ! routines in Mars/
   interface
-     elemental subroutine flux_mars2(R,decl,latitude,HA,fracIR,fracDust, &
+     pure subroutine flux_mars2(R,decl,latitude,HA,fracIR,fracDust, &
           &   surfaceSlope,azFac,emax,Q,Qscat,Qlw)
        implicit none
        real(8), intent(IN) :: R,decl,latitude,HA,surfaceSlope,azFac,emax
@@ -247,7 +248,7 @@ module allinterfaces
   end interface
   
   interface
-     elemental function psv(T)
+     pure function psv(T)
        implicit none
        real*8, intent(IN) :: T
        real*8 psv
@@ -302,7 +303,8 @@ module allinterfaces
 
   ! f90 routines in Common/
   interface
-     elemental real(8) function flux_wshad(R,sinbeta,azSun,surfaceSlope,azFac,emax)
+     pure function flux_wshad(R,sinbeta,azSun,surfaceSlope,azFac,emax)
+       real(8) flux_wshad
        real(8), intent(IN) :: R,azSun,sinbeta,surfaceSlope,azFac,emax
      end function flux_wshad
   end interface

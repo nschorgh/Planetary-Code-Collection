@@ -1,4 +1,4 @@
-elemental real*8 function flux_mars77(R,decl,latitude,HA,albedo, &
+pure function flux_mars77(R,decl,latitude,HA,albedo, &
      &     fracir,fracdust)
   !***********************************************************************
   !   flux_mars77: calculates insolation at Mars
@@ -13,12 +13,12 @@ elemental real*8 function flux_mars77(R,decl,latitude,HA,albedo, &
   !
   !***********************************************************************
   implicit none
-  real*8 pi, So, d2r
-  parameter (pi=3.1415926535897931, So=1365., d2r=pi/180.)
+  real*8 flux_mars77
   real*8, intent(IN) :: R,decl,latitude,HA,albedo,fracIR,fracDust
+  real*8, parameter :: pi=3.1415926535897931, So=1365., d2r=pi/180.
+  real*8, parameter :: sigSB=5.6704d-8
   real*8 c1,s1,Qo,solarAttenuation,Q
   real*8 sinbeta,sinbetaNoon,cosbeta,azSun,buf,Fout
-  real*8, parameter :: sigSB=5.6704d-8
 
   c1=cos(latitude)*cos(decl)
   s1=sin(latitude)*sin(decl)
@@ -59,7 +59,7 @@ end function flux_mars77
 
 
 
-elemental subroutine flux_mars2(R,decl,latitude,HA,fracIR,fracDust, &
+pure subroutine flux_mars2(R,decl,latitude,HA,fracIR,fracDust, &
      &   surfaceSlope,azFac,emax,Q,Qscat,Qlw)
 !***********************************************************************
 !     This subroutine for solar insolation at Mars is based on the

@@ -8,6 +8,10 @@ LFLAGS = -O2 -Wall
 
 SR = ../Common/
 SRM = ../Mars/
+# topos.f90 has to be compiled first for module filemanager
+# crater_modules.f90 has to be compiled second for module allinterfaces
+# model_subs.f90 contains module newhorizons and should be compiled third
+# conductionT2/Q2 contain modules conductionT/Q (therefore the symlink)
 
 shadows: topos.o crater_modules.o multigrid.o shadows.o shadow_subs.o \
 	crater_common.o hpsort.o multigrid.o makefile
@@ -39,8 +43,8 @@ cratersQ_mars: topos.o crater_modules.o model_subs.o conductionT2.o \
 	make -C $(SR) common
 	make -C $(SRM) common-mars
 	$(CC) $(LFLAGS) cratersQ_mars.o crater_common.o model_subs.o \
-	flux_mars.o $(SR)grids.o $(SR)conductionQ2.o $(SR)tridag.o \
-	$(SR)conductionT2.o $(SR)julday.o $(SRM)marsorbit.o $(SR)psv.o  -o $@
+	flux_mars.o $(SR)grids.o conductionQ2.o $(SR)tridag.o \
+	conductionT2.o $(SR)julday.o $(SRM)marsorbit.o $(SR)psv.o -o $@
 
 cratersQ_mars_shadowsonly: topos.o crater_modules.o model_subs.o \
 	crater_common.o cratersQ_mars_shadowsonly.o makefile
@@ -49,16 +53,15 @@ cratersQ_mars_shadowsonly: topos.o crater_modules.o model_subs.o \
 	$(CC) $(LFLAGS) cratersQ_mars_shadowsonly.o crater_common.o \
 	model_subs.o $(SR)flux_noatm.o $(SR)julday.o $(SRM)marsorbit.o
 
-test: topos.o crater_modules.o test_shadows1pt.o shadow_subs.o
-	crater_common.o topos.o hpsort.o multigrid.o makefile
+test: topos.o crater_modules.o test_shadows1pt.o shadow_subs.o \
+	crater_common.o hpsort.o multigrid.o makefile
 	make -C $(SR) common
 	$(CC) $(LFLAGS) test_shadows1pt.o shadow_subs.o hpsort.o \
 	crater_common.o multigrid.o 
 
 fieldproperties: topos.o crater_modules.o crater_common.o model_subs.o \
 	fieldproperties.o makefile
-	$(CC) $(LFLAGS) fieldproperties.o topos.o crater_common.o \
-	model_subs.o 
+	$(CC) $(LFLAGS) fieldproperties.o crater_common.o model_subs.o 
 
 %.o:	%.f makefile
 	$(CC) $(CFLAGS) -c $<

@@ -93,7 +93,7 @@ common-mars: marsorbit.o vapordiffusioni.o flux.o flux_mars.o \
 .PHONY: clean 
 
 clean:
-	rm -f  *.o  a.out  *.o90  *.mod \
+	rm -f  *.o  a.out  *.mod \
 	exper_fast mars_fast stabgrow_fast
 
 

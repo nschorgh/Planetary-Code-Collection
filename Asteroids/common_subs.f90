@@ -2,7 +2,7 @@
 ! a collection of commonly-used functions
 !***********************************************************************
 
-function flux2T(Q,albedo,emiss)
+pure function flux2T(Q,albedo,emiss)
   implicit none
   real(8), intent(IN) :: Q, emiss, albedo
   real*8, parameter :: sigSB=5.6704d-8
@@ -12,7 +12,7 @@ function flux2T(Q,albedo,emiss)
 end function flux2T
 
 
-function interp1(x0,x,y0,y,xi,nz)
+pure function interp1(x0,x,y0,y,xi,nz)
   ! linear interpolation
   ! x0<x(1)<x(2)<...<x(nz)
   implicit none
@@ -34,7 +34,7 @@ function interp1(x0,x,y0,y,xi,nz)
 end function interp1
 
 
-function heatcapacity(T)
+pure function heatcapacity(T)
   ! specific heat capacity of silicates
   implicit none
   real(8), intent(IN) :: T  ! [K]
@@ -51,7 +51,7 @@ function heatcapacity(T)
 end function heatcapacity
 
 
-function vapordiffusivity(diam,porosity,T)
+pure function vapordiffusivity(diam,porosity,T)
   ! diam = rms grain diameter
   implicit none
   real*8, parameter :: pi=3.1415926535897932
@@ -68,7 +68,7 @@ function vapordiffusivity(diam,porosity,T)
 end function vapordiffusivity
 
 
-function faintsun(t)
+pure function faintsun(t)
   implicit none
   real(8) faintsun
   real(8), intent(IN) :: t   ! time before present [years]
@@ -77,8 +77,9 @@ function faintsun(t)
 end function faintsun
 
 
-integer function gettype(zdepth,nz,z)
+pure function gettype(zdepth,nz,z)
   implicit none
+  integer gettype
   integer, intent(IN) :: nz
   real(8), intent(IN) :: zdepth, z(nz)
   integer j

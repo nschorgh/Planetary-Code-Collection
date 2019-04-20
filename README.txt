@@ -139,7 +139,7 @@ Common/flux_noatm.f90
 Topo3D/crater_modules.f90 
 Topo3D/crater_common.f90
 Topo3D/model_subs.f90
-Documentation: User Guide Sections 4.1 & 5.2-5.6
+Documentation: User Guide Sections 4.1, 5.1, 5.3-5.6
 
 
 *Shadowing and Illumination*
