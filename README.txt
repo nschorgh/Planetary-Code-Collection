@@ -136,9 +136,9 @@ EarthAnalogs/sunpos.f90
 EarthAnalogs/cratersQ_earth.f90: (main program)
 EarthAnalogs/topos.f90
 Common/flux_noatm.f90
-Topo3D/crater_modules.f90 
-Topo3D/crater_common.f90
-Topo3D/model_subs.f90
+Topo3D/topo3d_modules.f90 
+Topo3D/topo3d_common.f90
+Topo3D/topo3d_subs.f90
 Documentation: User Guide Sections 4.1, 5.1, 5.3-5.6
 
 
@@ -151,11 +151,11 @@ Topo3D/cratersQ_moon.f90: (main program)
 Topo3D/cratersQ_mars.f90: (main program)
 Topo3D/cratersQ_mars_shadowsonly.f90: (main program)
 Topo3D/topos.f90
-Topo3D/crater_modules.f90
-Topo3D/crater_common.f90
+Topo3D/topo3d_modules.f90
+Topo3D/topo3d_common.f90
 Topo3D/shadow_subs.f90
 Topo3D/fieldofview_subs.f90
-Topo3D/model_subs.f90
+Topo3D/topo3d_subs.f90
 Topo3D/multigrid.f90
 Topo3D/fieldproperties.f90: (main program)
 Topo3D/hpsort.for

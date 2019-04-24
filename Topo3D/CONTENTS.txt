@@ -24,10 +24,10 @@ cratersQ_mars_shadowsonly.f90: (main program)
 topos.f90:
 	input, topography information
 
-crater_modules.f90: 
+topo3d_modules.f90: 
 	interface definitions
 
-crater_common.f90: 
+topo3d_common.f90: 
 	common routines
 
 shadow_subs.f90: 
@@ -36,7 +36,7 @@ shadow_subs.f90:
 fieldofview_subs.f90: 
 	subroutines for program fieldofviews
 
-model_subs.f90: 
+topo3d_subs.f90: 
 	subroutines for programs cratersQ_*
 
 multigrid.f90:

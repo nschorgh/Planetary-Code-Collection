@@ -66,7 +66,7 @@ module allinterfaces
      end subroutine refinevisibility
   end interface
 
-  ! begin crater_common.f90
+  ! begin topo3d_common.f90
   interface
      subroutine readdem(h)
        use filemanager
@@ -134,7 +134,7 @@ module allinterfaces
      end function distanceonsphere
   end interface
 
-  ! begin model_subs.f90
+  ! begin topo3d_subs.f90
   interface
      pure subroutine difftopo(NSx,NSy,h,dx,dy,surfaceSlope,azFac)
        implicit none
