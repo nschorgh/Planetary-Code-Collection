@@ -19,10 +19,7 @@ C     choice of z(1) and z(2) is compatible with conductionQ
             z(i)=(1.+zfac)*z(i-1)-zfac*z(i-2)
          enddo
       endif
-      !if (z(1)<1.e-5) then
-      !   print *,'WARNING: first grid point is too shallow'
-      !endif
-      end
+      end subroutine setgrid
 
 
 
@@ -51,7 +48,7 @@ C     produces zfac with desired number of points within depth delta
          print *,'zfac=',smartzfac
          stop 'unwanted result in smartzfac'
       endif
-      end
+      end function smartzfac
 
 
       

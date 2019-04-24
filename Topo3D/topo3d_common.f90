@@ -1,4 +1,4 @@
-! Subroutines and functions that are called from cratersQ, fieldofviews, and shadows
+! Subroutines and functions that are called from cratersQ_* and also from fieldofviews or shadows
 
 
 subroutine readdem(h)
@@ -144,7 +144,7 @@ end function area_spherical_triangle
 elemental function distanceonsphere(phi1,theta1,phi2,theta2)
 ! spherical distance between two points in radians
   implicit none
-  real(8), intent(IN) :: phi1,phi2,theta1,theta2  ! in radians
+  real(8), intent(IN) :: phi1,phi2,theta1,theta2  ! [radians]
   real(8) distanceonsphere, buf, lat1, lat2
   real(8), parameter :: pi=3.1415926535897932
   lat1=pi/2-theta1; lat2=pi/2-theta2

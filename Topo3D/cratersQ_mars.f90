@@ -111,10 +111,9 @@ program cratersQ_mars
   ! only use viewfactors with IR contribution
   !call getskysize(viewfactor)
   do concurrent(i=2:NSx-1, j=2:Nsy-1)
-     viewfactor(i,j) = getoneskysize(i,j)
+     viewfactor(i,j) = getoneskysize_v2(i,j)/(2*pi)
      gterm(i,j) = getoneGterm(i,j,surfaceSlope(i,j),azFac(i,j))
   end do
-  viewfactor = viewfactor/(2*pi)
   
   if (subsurface) then
      allocate(T(Mx1:Mx2,My1:My2,nz))

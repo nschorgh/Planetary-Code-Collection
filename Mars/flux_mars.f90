@@ -1,5 +1,4 @@
-pure function flux_mars77(R,decl,latitude,HA,albedo, &
-     &     fracir,fracdust)
+pure function flux_mars77(R,decl,latitude,HA,albedo,fracir,fracdust)
   !***********************************************************************
   !   flux_mars77: calculates insolation at Mars
   !     flat surface only; also works in polar regions
@@ -10,7 +9,6 @@ pure function flux_mars77(R,decl,latitude,HA,albedo, &
   !     HA: hour angle [radians from noon, clockwise]
   !     fracir: fraction of absorption
   !     fracdust: fraction of scattering
-  !
   !***********************************************************************
   implicit none
   real*8 flux_mars77
@@ -74,10 +72,9 @@ pure subroutine flux_mars2(R,decl,latitude,HA,fracIR,fracDust, &
 !     surfaceSlope: >0, [radians]
 !     azFac: azimuth of gradient (radians east of north)
 !     emax: maximum horizon elevation in direction of azimuth [radians]
-!     Q: direct incoming short-wavelength irradiance
-!     Qscat: diffuse short-wavelength irradiance from atmosphere
-!     Qlw: diffuse long-wavelength irradiance from atmosphere
-!
+!     Q: direct incoming short-wavelength irradiance [W/m^2]
+!     Qscat: diffuse short-wavelength irradiance from atmosphere [W/m^2]
+!     Qlw: diffuse long-wavelength irradiance from atmosphere [W/m^2]
 !***********************************************************************
   implicit none
   real(8), parameter :: pi=3.1415926535897931, So=1365., d2r=pi/180.

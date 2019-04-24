@@ -1,4 +1,5 @@
 program cratersQ_mars_shadowsonly
+  ! map of direct solar irradiance
   use filemanager
   use allinterfaces
   use newhorizons
@@ -24,7 +25,7 @@ program cratersQ_mars_shadowsonly
   allocate(h(NSx,NSy), surfaceSlope(NSx,NSy), azFac(NSx,NSy))
   allocate(Qn(NSx,NSy), Qmean(NSx,NSy), Qmax(NSx,NSy))
   allocate(shadowtime(NSx,NSy), maxshadowtime(NSx,NSy))
-  Qn=0; Qmean=0; Qmax=0; shadowtime=0; maxshadowtime=0
+  Qn=0.; Qmean=0; Qmax=0; shadowtime=0; maxshadowtime=0
   
   dt=0.02; 
   tmax = 2*solsy+1.
@@ -80,14 +81,14 @@ program cratersQ_mars_shadowsonly
      
      do i=Mx1,Mx2
         do j=My1,My2
-           if (h(i,j)<-32000) cycle
+           if (h(i,j)<-32000.) cycle
            emax = getonehorizon(i,j,azSun)
            Qn(i,j)=flux_wshad(marsR,sinbeta,azSun,surfaceSlope(i,j),azFac(i,j),emax)
         enddo
      enddo
 
      ! only diagnostics below this line
-     if (sdays > tmax-solsy) then
+     if (sdays > tmax-nint(solsy)) then
         Qmean(:,:) = Qmean(:,:) + Qn
         where (Qn>Qmax) Qmax=Qn
         nm=nm+1

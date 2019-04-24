@@ -5,7 +5,7 @@
 pure function flux2T(Q,albedo,emiss)
   implicit none
   real(8), intent(IN) :: Q, emiss, albedo
-  real*8, parameter :: sigSB=5.6704d-8
+  real(8), parameter :: sigSB=5.6704d-8
   real(8) flux2T
 
   flux2T = ((1-albedo)*Q/sigSB/emiss)**0.25
@@ -54,8 +54,8 @@ end function heatcapacity
 pure function vapordiffusivity(diam,porosity,T)
   ! diam = rms grain diameter
   implicit none
-  real*8, parameter :: pi=3.1415926535897932
-  real*8, parameter :: Ru = 8314.5
+  real(8), parameter :: pi=3.1415926535897932
+  real(8), parameter :: Ru = 8314.5
   real(8) vapordiffusivity
   real(8), intent(IN) :: diam,porosity,T
   real(8) vbar, r

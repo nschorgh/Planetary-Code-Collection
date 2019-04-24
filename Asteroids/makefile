@@ -38,9 +38,9 @@ asteroid_fast1: fast_modules_asteroid.f90 fast_modules_asteroid.o \
 	$(SR)grids.o $(SR)generalorbit.o $(SR)psv.o $(SR)subl_subs.o \
 	common_subs.o -o fast
 
-testgardening1: testgardening1.o impactstirring.o makefile
+test_gardening1: test_gardening1.o impactstirring.o makefile
 	make -C $(SR) common
-	$(CC) $(LFLAGS) impactstirring.o testgardening1.o \
+	$(CC) $(LFLAGS) impactstirring.o test_gardening1.o \
 	$(SR)ran2.o $(SR)grids.o 
 
 sphere1d: sphere1d_implicit.o common_subs.o makefile
@@ -49,8 +49,8 @@ sphere1d: sphere1d_implicit.o common_subs.o makefile
 	$(SR)tridag.o $(SR)generalorbit.o common_subs.o $(SR)psv.o
 
 # Modules require certain build order
-#    body.mod constants.mod in asteroid_thermal.f90
-#    body.mod constants.mod allinterfaces.mod in fast_modules_asteroid.f90
+#    body.mod and constants.mod in asteroid_thermal.f90
+#    body.mod, constants.mod, and allinterfaces.mod in fast_modules_asteroid.f90
 
 
 %.o:	%.f makefile

@@ -45,8 +45,8 @@ contains
     k = floor(modulo(azSun,2*pi)/daz)
     a = modulo(azSun,2*pi)/daz-k
     !if (k<0 .or. k>=naz) then
-       !print *,'azSun=',azSun,'k=',k
-       !stop 'getonehorizon: impossible k value'  ! impure
+       !print *,'azSun=',azSun,'k=',k   ! impure
+       !error stop 'getonehorizon: impossible k value' 
     !endif
     smax = s(i0,j0,k+1)*(1.-a) + s(i0,j0,k+2)*a
     getonehorizon = smax
@@ -125,6 +125,10 @@ end module newhorizons
 
 pure subroutine difftopo(NSx,NSy,h,dx,dy,surfaceSlope,azFac)
   ! calculate slopes and azimuths of surface elements
+  ! azFac= 0 sloped toward south
+  ! azFac=+/-pi sloped toward north
+  ! azFac=+pi/2 sloped toward west
+  ! azFac=-pi/2 sloped toward east
   implicit none
   integer, intent(IN) :: NSx,NSy
   real(8), intent(IN) :: h(NSx,NSy),dx,dy
