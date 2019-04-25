@@ -8,7 +8,7 @@ LFLAGS = -O2 -Wall
 
 SR = ../Common/
 
-insol_earth: topos.o topo3d_modules.o sunpos.o topo3d_subs.o \
+insol_earth: filemanager.o topo3d_modules.o sunpos.o topo3d_subs.o \
 	insol_earth.o mk_atmosphere.o topo3d_common.o flux_noatm.o \
 	makefile
 	$(CC) $(LFLAGS) insol_earth.o mk_atmosphere.o sunpos.o \
@@ -18,7 +18,7 @@ insol_flat: sunpos.o insol_flat.o mk_atmosphere.o flux_noatm.o makefile
 	$(CC) $(LFLAGS) sunpos.o insol_flat.o mk_atmosphere.o \
 	flux_noatm.o
 
-cratersQ_earth: topos.o topo3d_modules.o sunpos.o topo3d_subs.o \
+cratersQ_earth: filemanager.o topo3d_modules.o sunpos.o topo3d_subs.o \
 	cratersQ_earth.o sunpos.o topo3d_common.o mk_atmosphere.o \
 	flux_noatm.o makefile
 	make -C $(SR) common

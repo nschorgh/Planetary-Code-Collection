@@ -1,17 +1,36 @@
 module newhorizons
-  ! privately stores horizon data
+  ! reads and privately stores horizon data
+  ! and contains functions that calculate values from horizons
   use filemanager, only : NSx, NSy, sfn
   implicit none
-  integer, parameter :: naz=180  ! # azimuth values
-  real(8), dimension(NSx,NSy,naz+1), private :: s ! angles
+  integer, parameter :: naz=90  ! # azimuth values
+  real(8), dimension(:,:,:), private, allocatable :: s 
 
 contains
-  subroutine readhorizons
-    ! reads and stores all horizon elevations
+  subroutine readhorizons(Mx1,Mx2,My1,My2)
+    ! reads and stores all horizon elevations [radians]
     ! also converts slopes to angles
     implicit none
+    integer, intent(IN), optional :: Mx1,Mx2,My1,My2
+    logical crop
     integer i,j,ia,ja,ierr
-      
+    real(8) sread(naz)
+
+    if (present(Mx1).and.present(Mx2).and.present(My1).and.present(My2)) then
+       crop = .true.
+    else
+       crop = .false.
+    endif
+    
+    if (.not.crop) then ! the whole domain
+       allocate(s(NSx,NSy,naz+1))
+    else  ! cropped domain
+       if (Mx1<=1 .or. Mx2>=NSx .or. My1<=1 .or. My2>=NSy) then
+          stop 'readhorizons: Inappropriate size for region of interest'
+       endif
+       allocate(s(Mx1:Mx2,My1:My2,naz+1))
+    endif
+    
     open(unit=20,file=sfn,status='old',action='read',iostat=ierr)
     if (ierr>0) then
        print *,sfn
@@ -19,16 +38,23 @@ contains
     endif
     do i=2,NSx-1
        do j=2,NSy-1
-          read(20,*) ia,ja,s(i,j,1:naz)
+          !read(20,*) ia,ja,s(i,j,1:naz)
+          read(20,*) ia,ja,sread(:)
           if (ia /= i .or. ja /= j) then
              print *,i,j,ia,ja
              stop 'readhorizons: index mismatch'
           endif
-          s(i,j,naz+1) = s(i,j,1) !360 deg
+          ! store only what is needed
+          if (.not.crop .or. &
+               & (i>=Mx1 .and. i<=Mx2 .and. j>=My1 .and. j<=My2)) then
+             s(i,j,1:naz) = sread(:)
+             s(i,j,naz+1) = s(i,j,1) ! wrap around
+          endif
        enddo
     enddo
-    s = atan(s)  ! slope -> angle
     close(20)
+    
+    s = atan(s)  ! slope -> angle
   end subroutine readhorizons
     
   elemental function getonehorizon(i0,j0,azSun)
@@ -44,14 +70,14 @@ contains
     daz = 2*pi/real(naz)
     k = floor(modulo(azSun,2*pi)/daz)
     a = modulo(azSun,2*pi)/daz-k
-    !if (k<0 .or. k>=naz) then
+    !if (k<0 .or. k>=naz) then 
        !print *,'azSun=',azSun,'k=',k   ! impure
-       !error stop 'getonehorizon: impossible k value' 
+       !error stop 'getonehorizon: impossible k value'
     !endif
     smax = s(i0,j0,k+1)*(1.-a) + s(i0,j0,k+2)*a
     getonehorizon = smax
   end function getonehorizon
-  
+
   elemental function getoneskysize(i,j)
     !***********************************************************************
     !   calculates sky size (steradian) from horizons
@@ -74,7 +100,7 @@ contains
     getoneskysize = skysize
     
   end function getoneskysize
-  
+
   elemental function getoneskysize_v2(i,j)
     !***********************************************************************
     !   calculates sky size (steradian) from horizons
@@ -85,7 +111,7 @@ contains
     real(8), parameter :: pi=3.1415926535897932
     real(8), parameter :: dphi=2*pi/naz
     real(8) landsize
-    
+
     landsize = sum(sin(s(i,j,1:naz)))*dphi
     getoneskysize_v2 = 2*pi-landsize
     
@@ -116,7 +142,7 @@ contains
     G2 = G2/naz
     
     getoneGterm = cos(alpha)*G1 + sin(alpha)*G2
-    ! Gterm should never be negative
+    ! getoneGterm should never be negative
   end function getoneGterm
   
 end module newhorizons
@@ -234,5 +260,4 @@ integer function getmaxfieldsize(NSx,NSy,ffn)
 
   getmaxfieldsize = maxsize
 end function getmaxfieldsize
-
 

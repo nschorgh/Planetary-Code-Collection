@@ -16,21 +16,26 @@ program insol_earth
   real(8) tmax, edays, dtmin, latitude
   real(8) R, dZenithAngle, dAzimuth, longitude
   real(8) azSun, sinbeta, emax
-  real(8), dimension(NSx,NSy) :: h, surfaceSlope, azFac
-  real(8), dimension(NSx,NSy) :: Qn, Qsw   ! incoming
-  real(8), dimension(NSx,NSy) :: Qmeans, Qmax, daytime
+  real(8), dimension(:,:), allocatable :: h, surfaceSlope, azFac
+  real(8), dimension(:,:), allocatable :: Qn, Qsw   ! incoming
+  real(8), dimension(:,:), allocatable :: Qmeans, Qmax, daytime
   real(8), dimension(NSx,NSy) :: ditime=0., longday=-999., shortday=1e32
-  real(8) Qref, Qrefm, alltime
+  real(8) Qflat, Qflatm, alltime
   real(8) I0, D0, S0, unsd  ! atmosphere
   real(8) :: oldHours = -999.
-  
+
   type(cTime) udtTime
   real(8), parameter :: zero=0.
   logical, parameter :: atmosphere=.true.
 
+  allocate(h(NSx,NSy), surfaceSlope(NSx,NSy), azFac(NSx,NSy))
+  allocate(Qn(NSx,NSy), Qsw(NSx,NSy))
+  allocate(Qmeans(NSx,NSy), Qmax(NSx,NSy), daytime(NSx,NSy), source=0.d0)
+
   dtmin=10.
-  ! dtmin = 5.
+  ! dtmin=5.
   tmax = 365.+1
+  
   latitude = 19.821; longitude = -155.468  ! Mauna Kea summit
   ! azimuth in degrees east of north, 0=north facing
 
@@ -50,9 +55,7 @@ program insol_earth
   call readdem(h)
   call difftopo(NSx,NSy,h,dx,dy,surfaceSlope,azFac)
 
-  Qmax=0.; Qmeans=0.; Qrefm=0.
-  nm=0
-  daytime(:,:)=0.; alltime=0.
+  nm=0; Qflatm=0.; alltime=0.
   
   print *,'...reading horizons file...'
   call readhorizons
@@ -76,13 +79,13 @@ program insol_earth
            Qn(i,j)=flux_wshad(R,sinbeta,azSun,surfaceSlope(i,j),azFac(i,j),emax)
         end do
      end do
-     Qref=flux_wshad(R,sinbeta,azSun,zero,zero,zero)
-
+     Qflat = flux_wshad(R,sinbeta,azSun,zero,zero,zero)
+     
      if (atmosphere) then
         unsd = mk_atmosphere(dZenithAngle*d2r,I0,D0)
         S0=1365./R**2  ! must be the same as in flux_wshad
         Qsw(:,:) = Qn(:,:)*I0 + S0*D0  ! do not use skysize
-        Qref = Qref*I0 + S0*D0
+        Qflat = Qflat*I0 + S0*D0
      else
         Qsw = Qn
      endif
@@ -92,7 +95,7 @@ program insol_earth
      !if (udtTime%iMonth==6) then  ! June
         Qmeans = Qmeans + Qsw
         where (Qsw>Qmax) Qmax=Qsw
-        Qrefm = Qrefm + Qref
+        Qflatm = Qflatm + Qflat
         nm=nm+1
         
         where (Qn>0.) daytime = daytime + dtmin
@@ -116,7 +119,7 @@ program insol_earth
   shortday = shortday/60.  ! min -> hr
   daytime = daytime/alltime*24
   
-  print *,'Qref=',Qrefm/nm
+  print *,'Qflat=',Qflatm/nm
   open(unit=21,file='qmean.dat',status='unknown',action='write')
   do i=2,NSx-1
      do j=2,NSy-1
@@ -124,8 +127,11 @@ program insol_earth
              & i,j,h(i,j),surfaceSlope(i,j),Qmeans(i,j),Qmax(i,j),daytime(i,j)
         !write(21,'(2(i4,1x),f9.2,2x,f6.4,5(1x,f6.1),1x,f5.1)') &  ! instanteneous values
         !     & i,j,h(i,j),surfaceSlope(i,j),Qn(i,j),Qmax(i,j)
+        !write(22,'(2(i4,1x),f9.2,2(1x,f6.1),3(1x,f6.3))') i,j,h(i,j), &
+        !     & -999.,-999.,daytime(i,j),shortday(i,j),longday(i,j)
      enddo
   enddo
   close(21)
 
 end program insol_earth
+

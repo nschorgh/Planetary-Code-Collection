@@ -20,7 +20,7 @@ program insol_flat
   ! set some constants
   dtmin = 10.   ! time step in minutes
   !tmax = 1.*1440
-  tmax = (365.+1)*1440
+  tmax = (365.+1)*1440.
 
   ! Mauna Kea summit
   latitude = 19.821; longitude = -155.468
@@ -29,7 +29,6 @@ program insol_flat
 
   ! start time in UTC = HST-10
   !udtTime = cTime(2012,11,26,0.,0.,0.) ! = Nov 26, 14 HST 
-  !udtTime = cTime(2013,1,1,0.,0.,0.)
   udtTime = cTime(2012,12,31,10.,0.,0.) ! midnight in Hawaii time zone
 
   write(*,*) 'Time step=',dtmin,' Max number of steps=',nsteps
@@ -56,7 +55,7 @@ program insol_flat
           & udtTime%iYear,udtTime%iMonth,udtTime%iDay,udtTime%dHours,udtTime%dMinutes, &
           & Qn,Qsw,Qdirect,Qdiffuse,I0,D0
 
-     if (n>nsteps-int(365.*1440./dtmin)) then
+     if (n>nsteps-nint(365.*1440./dtmin)) then
         Qmean(1) = Qmean(1) + Qn
         Qmean(2) = Qmean(2) + Qsw
         Qmean(3) = Qmean(3) + Qdirect
@@ -82,7 +81,7 @@ program insol_flat
   Qmean = Qmean/nm
 
   print *,'Qmean=',Qmean
-  print *,latitude,Qmean(1:2)
+  print *,latitude,Qmean(1:4)
 end program insol_flat
 
 

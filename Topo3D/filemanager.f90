@@ -5,21 +5,12 @@ module filemanager
   ! dx, dy = horizontal resolution [meter]
   ! RMAX = max radius of consideration [meter]
 
-  !integer, parameter :: NSx=30, NSy=20
-  !character(len=*), parameter :: fileext = 'topo20'
-  !real(8), parameter :: dx=5., dy=5., RMAX=1e35
-
   integer, parameter :: NSx=40, NSy=40
   character(len=*), parameter :: fileext = 'topo40'
   !integer, parameter :: NSx=81, NSy=81
   !character(len=*), parameter :: fileext = 'topo81'
-  !character(len=*), parameter :: fileext = 'boulder'
   real(8), parameter :: dx=5., dy=5., RMAX=1e35
 
-  !integer, parameter :: NSx=131, NSy=191 
-  !character(len = *), parameter :: fileext = 'summit_large'
-  !real(8), parameter :: dx=10., dy=10., RMAX=2e3
-  
   !integer, parameter :: NSx=71, NSy=81 
   !character(len = *), parameter :: fileext = 'summit_small'
   !real(8), parameter :: dx=10., dy=10., RMAX=2e3
@@ -36,14 +27,6 @@ module filemanager
   !character(len = *), parameter :: fileext = 'summitregion3'
   !real(8), parameter :: dx=4.4971, dy=4.4971, RMAX=4e3
 
-  !integer, parameter :: NSx=150, NSy=180 
-  !character(len = *), parameter :: fileext = 'rsl4'
-  !real(8), parameter :: dx=4., dy=4., RMAX=1e3
-  !integer, parameter :: MARGIN = 20
-  !character(len = *), parameter :: fileext = 'rsl1'
-  !real(8), parameter :: dx=1., dy=1., RMAX=1e3
-  !integer, parameter :: MARGIN = 20*4
-  
   !integer, parameter :: NSx=128, NSy=128
   !character(len = *), parameter :: fileext = 'moongauss3.rms=0.5'
   !real(8), parameter :: dx=1., dy=1., RMAX=1e5
@@ -63,7 +46,10 @@ module filemanager
   !integer, parameter :: NSx=224, NSy=585
   !character(len = *), parameter :: fileext = 'PSP005943_32'
   !real(8), parameter :: dx=32., dy=32., RMAX=1e30
-
+  
+  !integer, parameter :: NSx=112, NSy=292
+  !character(len = *), parameter :: fileext = 'PSP005943_64'
+  !real(8), parameter :: dx=64., dy=64., RMAX=1e30
   
   ! paths and default filenames for inputs
   character(len = *), parameter :: &
