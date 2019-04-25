@@ -1,4 +1,4 @@
-EarthAnalogs/
+arthAnalogs/
 
 Irradiance models for terrestrial analogs
 =========================================
@@ -19,7 +19,7 @@ insol_flat.f90: (main program)
 cratersQ_earth.f90: (main program)
 	surface temperature with 3D shadowing and reflections for Earth
 
-topos.f90:
+filemanager.f90:
 	input, topography information
 
 (several symoblic links to subroutines in Topo3D/)

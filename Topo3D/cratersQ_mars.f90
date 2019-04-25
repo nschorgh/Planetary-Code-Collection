@@ -3,7 +3,8 @@
 module miscparams
   real(8), parameter :: pi=3.1415926535897932, d2r=pi/180.
   real(8), parameter :: sigSB = 5.6704e-8
-  real(8), parameter :: Tco2frost=145., Lco2frost=6.0e5  ! Mars
+  real(8), parameter :: Lco2frost=6.0e5 
+  real(8), parameter :: Tco2frost=145.  ! adjust according to elevation
   real(8), parameter :: zero = 0.
   real(8), parameter :: Tfrost = 200. ! H2O frost point temperature, for diagnostics only
   real(8), parameter :: earthDay = 86400.
@@ -41,7 +42,7 @@ program cratersQ_mars
   real(8), allocatable, dimension(:,:) :: mmax, frosttime, maxfrosttime, Qnm1
   real(8), allocatable :: Fsurf(:,:), T(:,:,:), Tbottom(:,:), Tref(:)  ! subsurface
   real(8), allocatable, dimension(:,:) :: mmin, co2last, co2first, h2olast, h2olastt !, EH2Ocum
-  real(8) dE, Tsurfold, QIR, Qscat, Qlw !, EH2O
+  real(8) dE, Tsurfold, QIR, Qrefl, Qscat, Qlw !, EH2O
   logical, parameter :: subsurface=.true.  ! control panel
   !integer, parameter :: NrMP=3   ! number of monitoring points
   integer k !, i0, j0, i00(NrMP), j00(NrMP)
@@ -116,7 +117,7 @@ program cratersQ_mars
   end do
   
   if (subsurface) then
-     allocate(T(Mx1:Mx2,My1:My2,nz))
+     allocate(T(nz,Mx1:Mx2,My1:My2))
      allocate(Tref(nz))
      call subsurfaceconduction_mars(Tref(:),buf,dtsec,zero,zero,zero,buf,buf,.true.)
      allocate(Tbottom(NSx,NSy))
@@ -178,10 +179,8 @@ program cratersQ_mars
               Qn(i,j) = Qn(i,j) + emiss*QIR
            endif
            !Qrefl = (1-viewfactor(i,j))*albedo(1,1)*(Qdirect(1,1)+Qscat)
-           !Qrefl = gterm(i,j)*albedo(1,1)*(Qdirect(1,1)+Qscat)
-           !Qn(i,j) = Qn(i,j) + (1-albedo(i,j))*Qrefl(i,j)
-           ! Qdirect w/o atmosphere is for snapshot; different from Qdirect above
-           !Qdirect(i,j)=flux_wshad(marsR,sinbeta,azSun,surfaceSlope(i,j),azFac(i,j),emax)
+           Qrefl = gterm(i,j)*albedo(1,1)*(Qdirect(1,1)+Qscat)
+           Qn(i,j) = Qn(i,j) + (1-albedo(i,j))*Qrefl
         enddo
      enddo
      if (n==0) Qnm1(:,:) = Qn(:,:)
@@ -190,7 +189,7 @@ program cratersQ_mars
         do i=Mx1,Mx2
            do j=My1,My2
               if (h(i,j)<-32000) cycle
-              call subsurfaceconduction_mars(T(i,j,:),Tsurf(i,j), &
+              call subsurfaceconduction_mars(T(:,i,j),Tsurf(i,j), &
                    & dtsec,Qnm1(i,j),Qn(i,j),emiss,m(i,j),Fsurf(i,j),.false.)
            enddo
         enddo
@@ -210,7 +209,13 @@ program cratersQ_mars
               endif
            enddo
         enddo
-        ! Tsurf(1,1) not implemented
+        Tsurf(1,1) = (Qn(1,1)/emiss/sigSB)**0.25
+        Tsurfold = (Qnm1(1,1)/emiss/sigSB)**0.25
+        if (Tsurf(1,1)<Tco2frost.or.m(1,1)>0.) then   ! CO2 condensation
+           Tsurf(1,1)=Tco2frost
+           dE = - Qn(1,1) + emiss*sigSB*(Tsurf(1,1)**4 + Tsurfold**4)/2.
+           m(1,1) = m(1,1) + dtsec*dE/Lco2frost
+        endif
      endif
      Qnm1(:,:) = Qn(:,:)
 
@@ -231,7 +236,7 @@ program cratersQ_mars
         where (m>0. .and. co2first<0.) co2first = marsLs
         where (m>0.) co2last = marsLs        
         if (subsurface) then
-           Tbottom(Mx1:Mx2,My1:My2) = Tbottom(Mx1:Mx2,My1:My2)+T(:,:,nz)
+           Tbottom(Mx1:Mx2,My1:My2) = Tbottom(Mx1:Mx2,My1:My2)+T(nz,:,:)
         endif
         nm=nm+1
 

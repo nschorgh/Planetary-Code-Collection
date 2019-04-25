@@ -134,7 +134,7 @@ EarthAnalogs/insol_flat.f90: (simple main program)
 EarthAnalogs/mk_atmosphere.f90
 EarthAnalogs/sunpos.f90
 EarthAnalogs/cratersQ_earth.f90: (main program)
-EarthAnalogs/topos.f90
+EarthAnalogs/filemanager.f90
 Common/flux_noatm.f90
 Topo3D/topo3d_modules.f90 
 Topo3D/topo3d_common.f90
@@ -150,7 +150,7 @@ Topo3D/cratersQ_snapshot.f90: (main program)
 Topo3D/cratersQ_moon.f90: (main program)
 Topo3D/cratersQ_mars.f90: (main program)
 Topo3D/cratersQ_mars_shadowsonly.f90: (main program)
-Topo3D/topos.f90
+Topo3D/filemanager.f90
 Topo3D/topo3d_modules.f90
 Topo3D/topo3d_common.f90
 Topo3D/shadow_subs.f90

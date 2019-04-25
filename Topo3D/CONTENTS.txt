@@ -21,7 +21,7 @@ cratersQ_mars.f90: (main program)
 cratersQ_mars_shadowsonly.f90: (main program)
 	3D shadowing for Mars
 
-topos.f90:
+filemanager.f90:
 	input, topography information
 
 topo3d_modules.f90: 

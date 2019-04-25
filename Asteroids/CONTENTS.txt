@@ -39,7 +39,7 @@ sphere1d_implicit.f90: (main program)
 common_subs.f90:
 	functions used by many of these programs
 
-testgardening1.f90
+test_gardening1.f90
 
 test_timejumps.f90
 
