@@ -46,12 +46,12 @@ cratersQ_mars: filemanager.o topo3d_modules.o topo3d_subs.o conductionT2.o \
 	flux_mars.o $(SR)grids.o conductionQ2.o $(SR)tridag.o \
 	conductionT2.o $(SR)julday.o $(SRM)marsorbit.o $(SR)psv.o -o $@
 
-cratersQ_mars_shadowsonly: filemanager.o topo3d_modules.o topo3d_subs.o \
-	topo3d_common.o cratersQ_mars_shadowsonly.o makefile
+insol_mars: filemanager.o topo3d_modules.o topo3d_subs.o \
+	topo3d_common.o insol_mars.o makefile
 	make -C $(SR) common
 	make -C $(SRM) common-mars
-	$(CC) $(LFLAGS) cratersQ_mars_shadowsonly.o topo3d_common.o \
-	topo3d_subs.o $(SR)flux_noatm.o $(SR)julday.o $(SRM)marsorbit.o
+	$(CC) $(LFLAGS) insol_mars.o topo3d_common.o topo3d_subs.o \
+	$(SR)flux_noatm.o $(SR)julday.o $(SRM)marsorbit.o
 
 test: filemanager.o topo3d_modules.o test_shadows1pt.o shadow_subs.o \
 	topo3d_common.o hpsort.o multigrid.o makefile

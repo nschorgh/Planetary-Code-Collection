@@ -1,5 +1,9 @@
-program cratersQ_mars_shadowsonly
-  ! map of direct solar irradiance
+program insol_mars
+!***********************************************************************
+!   insol_mars: program to calculate direct insolation with terrain 
+!               shadowing, Mars orbit, and no atmosphere
+!               (pared down from cratersQ_mars)
+!***********************************************************************
   use filemanager
   use allinterfaces
   use newhorizons
@@ -23,9 +27,8 @@ program cratersQ_mars_shadowsonly
   integer, parameter :: Mx1=2, Mx2=NSx-1, My1=2, My2=NSy-1
   
   allocate(h(NSx,NSy), surfaceSlope(NSx,NSy), azFac(NSx,NSy))
-  allocate(Qn(NSx,NSy), Qmean(NSx,NSy), Qmax(NSx,NSy))
-  allocate(shadowtime(NSx,NSy), maxshadowtime(NSx,NSy))
-  Qn=0.; Qmean=0; Qmax=0; shadowtime=0; maxshadowtime=0
+  allocate(Qn(NSx,NSy), Qmean(NSx,NSy), Qmax(NSx,NSy), source=0.d0)
+  allocate(shadowtime(NSx,NSy), maxshadowtime(NSx,NSy), source=0.d0)
   
   dt=0.02; 
   tmax = 2*solsy+1.
@@ -128,4 +131,4 @@ program cratersQ_mars_shadowsonly
   enddo
   close(21)
   
-end program cratersQ_mars_shadowsonly
+end program insol_mars
