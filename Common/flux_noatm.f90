@@ -1,13 +1,13 @@
 pure function flux_noatm(R,decl,latitude,HA,surfaceSlope,azFac)
-!***********************************************************************
-!   flux:  program to calculate incoming solar flux without atmosphere
+!**********************************************************************
+!   flux_noatm: calculates incoming solar flux without atmosphere
 !     R: distance from sun (AU)
 !     decl: planetocentric solar declination (radians)
 !     latitude: (radians)
 !     HA: hour angle (radians from noon, clockwise)
 !     surfaceSlope: >0, (radians) 
 !     azFac: azimuth of topographic gradient (radians east of north)
-!***********************************************************************
+!**********************************************************************
   implicit none
   real(8) flux_noatm
   real(8), parameter :: So=1365.  ! solar constant
@@ -50,15 +50,15 @@ end function flux_noatm
 
 
 pure function flux_wshad(R,sinbeta,azSun,surfaceSlope,azFac,emax)
-!***********************************************************************
-!   flux:  program to calculate incoming solar flux without atmosphere
+!**********************************************************************
+!   flux_wshad: calculates incoming solar flux without atmosphere
 !     R: distance from sun (AU)
 !     sinbeta: sin(altitude) 
 !     azSun: azimuth of Sun (radians east of north)
 !     surfaceSlope: >=0, (radians) 
 !     azFac: azimuth of topographic gradient (radians east of north)
 !     emax: elevation of horizon in direction of azimuth (radians)
-!***********************************************************************
+!**********************************************************************
   implicit none
   real(8) flux_wshad
   real(8), parameter :: So=1365.  ! solar constant

@@ -26,7 +26,7 @@ program cratersQ_earth
   integer(2), dimension(:,:,:), allocatable :: ii,jj
   real(4), dimension(:,:,:), allocatable :: dO12
   real(8), dimension(NSx,NSy) :: Tsurf, Qvis, skysize, Qabs, albedo, QIRin, QIRre
-  real(8) Qmeans(NSx,NSy,4), Qmax(NSx,NSy), Tmean(NSx,NSy), Qref, Qrefm
+  real(8) Qmeans(NSx,NSy,4), Qmax(NSx,NSy), Tmean(NSx,NSy), Qflat, Qflatm
   real(8) I0,D0,S0,unsd  ! atmosphere
   real(8), allocatable :: T(:,:,:), Qnm1(:,:)  ! subsurface conduction
   type(cTime) udtTime
@@ -60,7 +60,7 @@ program cratersQ_earth
   call difftopo(NSx,NSy,h,dx,dy,surfaceSlope,azFac)
 
   Tsurf=0.; Qrefl=0.; QIRre=0.  
-  Qmax=0.; Qmeans=0.; Tmean=0.; Qrefm=0.
+  Qmax=0.; Qmeans=0.; Tmean=0.; Qflatm=0.
   nm=0   
   
   print *,'...reading horizons file...'
@@ -94,7 +94,7 @@ program cratersQ_earth
            Qn(i,j)=flux_wshad(R,sinbeta,azSun,surfaceSlope(i,j),azFac(i,j),emax)
         enddo
      enddo
-     Qref=flux_wshad(R,sinbeta,azSun,zero,zero,zero)
+     Qflat=flux_wshad(R,sinbeta,azSun,zero,zero,zero)
 
      if (atmosphere) then
         unsd = mk_atmosphere(dZenithAngle*d2r,I0,D0)
@@ -106,7 +106,7 @@ program cratersQ_earth
         else
            Qn(:,:) = Qn(:,:)*I0 + S0*D0
         endif
-        Qref = Qref*I0 + S0*D0
+        Qflat = Qflat*I0 + S0*D0
      endif
      
      if (reflection) then
@@ -155,7 +155,7 @@ program cratersQ_earth
         Qmeans(:,:,3) = Qmeans(:,:,3) + QIR
         Qmeans(:,:,4) = Qmeans(:,:,4) + Qrefl
         Tmean = Tmean + Tsurf
-        Qrefm = Qrefm + Qref
+        Qflatm = Qflatm + Qflat
         nm=nm+1
      endif
 
@@ -167,7 +167,7 @@ program cratersQ_earth
   Qmeans=Qmeans/nm
   Tmean=Tmean/nm
   
-  print *,'Qref=',Qrefm/nm  ! contains neither albedo nor subsurface conduction
+  print *,'Qflat=',Qflatm/nm  ! contains neither albedo nor subsurface conduction
   open(unit=21,file='qmean.dat',status='unknown',action='write')
   do i=2,NSx-1
      do j=2,NSy-1

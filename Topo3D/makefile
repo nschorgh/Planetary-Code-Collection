@@ -38,12 +38,11 @@ cratersQ_moon: filemanager.o topo3d_modules.o topo3d_subs.o cratersQ_moon.o \
 	$(SR)tridag.o -o $@
 
 cratersQ_mars: filemanager.o topo3d_modules.o topo3d_subs.o conductionT2.o \
-	conductionQ2.o cratersQ_mars.o topo3d_common.o flux_mars.o \
-	makefile
+	conductionQ2.o cratersQ_mars.o topo3d_common.o makefile
 	make -C $(SR) common
 	make -C $(SRM) common-mars
 	$(CC) $(LFLAGS) cratersQ_mars.o topo3d_common.o topo3d_subs.o \
-	flux_mars.o $(SR)grids.o conductionQ2.o $(SR)tridag.o \
+	$(SRM)flux_mars.o $(SR)grids.o conductionQ2.o $(SR)tridag.o \
 	conductionT2.o $(SR)julday.o $(SRM)marsorbit.o $(SR)psv.o -o $@
 
 insol_mars: filemanager.o topo3d_modules.o topo3d_subs.o \
