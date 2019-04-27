@@ -15,6 +15,7 @@ module miscparams
   real(8), parameter :: solarDay = 88775.244  ! Mars
   real(8), parameter :: Fgeotherm = 0.0
   integer, parameter :: nz=70
+  real(8), parameter :: thIn = 600. 
 end module miscparams
 
 
@@ -27,7 +28,7 @@ program cratersQ_mars
 
   real(8), parameter :: albedo0=0.12, co2albedo=0.65
   real(8), parameter :: emiss = 0.98
-  real(8) :: latitude = -41.6
+  real(8) :: latitude = -41.6  ! Palikir Crater
   real(8), parameter :: longitude = 360 - 202.3 ! west longitude
 
   integer nsteps, n, i, j, nm
@@ -47,30 +48,30 @@ program cratersQ_mars
   !integer, parameter :: NrMP=3   ! number of monitoring points
   integer k !, i0, j0, i00(NrMP), j00(NrMP)
   integer, external :: julday
-  real(8) jd, jd_snap(3), LTST, jd_end, jd_themis(2)
-  character(len=20) fnt(2), fns(3)  ! snapshot file names
+  real(8) jd, LTST, jd_end
+  
+  real(8) jd_snap(3), jd_themis(2)  ! Julian dates of snapshots
+  character(len=20) fnt(2), fns(3)  ! file names of snapshots
+
   integer, parameter :: Mx1=2, Mx2=NSx-1, My1=2, My2=NSy-1
   
   allocate(h(NSx,NSy), surfaceSlope(NSx,NSy), azFac(NSx,NSy))
   allocate(Qn(NSx,NSy), Qnm1(NSx,NSy), Qdirect(NSx,NSy))
   allocate(Tsurf(NSx,NSy), m(NSx,NSy))
   allocate(albedo(NSx,NSy)); albedo = albedo0
-  allocate(Fsurf(NSx,NSy))
   allocate(viewfactor(Mx1:Mx2,My1:My2), gterm(Mx1:Mx2,My1:My2))
   allocate(Qmean(NSx,NSy), Qmax(NSx,NSy), Tmean(NSx,NSy), Tmaxi(NSx,NSy))
   allocate(frosttime(NSx,NSy), maxfrosttime(NSx,NSy))
   allocate(mmax(NSx,NSy), mmin(NSx,NSy))
   allocate(co2last(NSx,NSy), co2first(NSx,NSy), h2olast(NSx,NSy), h2olastt(NSx,NSy))
   !allocate(EH2Ocum(Mx1:Mx2,My1:My2))
-  Qn=0.; Qnm1=0.; Fsurf=0.; m=0.; Qdirect=0.; viewfactor=0.
+  Qn=0.; Qnm1=0.; m=0.; Qdirect=0.; viewfactor=0.
   Qmean=0.; Qmax=0.; Tmean=0.; Tmaxi=0.
   frosttime=0.; maxfrosttime=0.; mmax=0.; mmin=0
   co2last=-9.; co2first=-9.; h2olast=-9.; h2olastt=-9.
   
   dt=0.02
   !tmax = 2*solsy+1.
-  !tmax = solsy*10.5  ! should end at the beginning of spring for the respective hemisphere
-  !tmax = 2.
   tmax = 5.*solsy
 
   ! set some constants
@@ -86,8 +87,6 @@ program cratersQ_mars
 
   ! Set start date
   !jd=dble(julday(1,1,2009))  !  JD for noon UTC on imm,iday,iyear
-  !call marsorbit(dt0_j2000,0.d0,marsLs,marsDec,marsR)
-  !call marsclock24(jd,dt0_J2000,marsLs,marsDec,marsR,0d0,LTST) ! calculate dt0_J2000
 
   ! Alternatively set end date
   jd_end=dble(julday(2,28,2017)) 
@@ -114,13 +113,15 @@ program cratersQ_mars
      gterm(i,j) = getoneGterm(i,j,surfaceSlope(i,j),azFac(i,j))
   end do
   
-  if (subsurface) then
+  if (subsurface) then ! initialize subsurface component
      allocate(T(nz,Mx1:Mx2,My1:My2))
      allocate(Tref(nz))
+     allocate(Fsurf(NSx,NSy))
      call subsurfaceconduction_mars(Tref(:),buf,dtsec,zero,zero,zero,buf,buf,.true.)
      allocate(Tbottom(NSx,NSy))
      Tbottom(:,:)=-9
      Tsurf(:,:)=-9  ! max 3 digits
+     Fsurf(:,:)=0.
   end if
 
   open(unit=22,file='timeseries_flat.dat',status='unknown',action='write')
@@ -130,29 +131,20 @@ program cratersQ_mars
   !call marsclock24(jd_snap,buf,marsLs,marsDec,marsR,Longitude,LTST)
   fns(1)='qsnap_036561.dat' ! snapshot
   
-  jd_snap(2)=dble(julday(8,18,2012)) + (8.+48./60-12)/24.  
-  fns(2)='qsnap_028412.dat'
+  jd_snap(2)=dble(julday(8,18,2012)) + (8.+48./60-12)/24.; fns(2)='qsnap_028412.dat'
+  jd_snap(3)=dble(julday(5,11,2012)) + (17.+31./60-12)/24.; fns(3)='qsnap_027146.dat'
 
-  jd_snap(3)=dble(julday(5,11,2012)) + (17.+31./60-12)/24. 
-  fns(3)='qsnap_027146.dat'
-
-  jd_themis(1)=dble(julday(2,13,2017)) + (22.+05./60-12)/24. 
-  fnt(1) = 'qsnap_i67294006.dat'
-
-  jd_themis(2)=dble(julday(2,24,2017)) + (16.+36./60-12)/24. 
-  fnt(2) = 'qsnap_i67425002.dat' 
-
+  jd_themis(1)=dble(julday(10,30,2016)) + (1.+30./60-12)/24.; fnt(1)='qsnap_i65997002.dat'
+  jd_themis(2)=dble(julday(2,26,2017)) + (18.+03./60-12)/24.; fnt(2)='qsnap_i67450002.dat' 
+  
   print *,'...calculating...'
   ! loop over time steps 
   do n=0,nsteps-1
      sdays = (n+1)*dtsec/solarDay
      edays = (n+1)*dtsec/earthDay
 
-     !call marsorbit(dt0_j2000,edays,marsLs,marsDec,marsR)
-     !call generalorbit(edays,a,ecc,omega,eps,marsLs,marsDec,marsR)
-     !HA=2.*pi*mod(sdays,1.)   ! hour angle
      call marsclock24(jd+edays,buf,marsLs,marsDec,marsR,Longitude,LTST)
-     HA=2.*pi*mod(LTST+12,24.d0)/24
+     HA=2.*pi*mod(LTST+12,24.d0)/24  ! hour angle
      
      call equatorial2horizontal(marsDec,latitude,HA,sinbeta,azSun)
      
@@ -168,15 +160,14 @@ program cratersQ_mars
            emax = getonehorizon(i,j,azSun)
            call flux_mars2(marsR,marsDec,latitude,HA,fracIR,fracDust, &
                 & surfaceSlope(i,j),azFac(i,j),emax,Qdirect(i,j),Qscat,Qlw)
+           ! absorbed direct insolation and contributions from atmosphere
            Qn(i,j) = (1-albedo(i,j))*(Qdirect(i,j)+Qscat*viewfactor(i,j)) &
                 & + emiss*Qlw*viewfactor(i,j)
            ! contribution from land in field of view
            if (n>0) then 
-              !QIR = (1-viewfactor(i,j))*emiss*sigSB*Tsurf(1,1)**4
               QIR = gterm(i,j)*emiss*sigSB*Tsurf(1,1)**4
               Qn(i,j) = Qn(i,j) + emiss*QIR
            endif
-           !Qrefl = (1-viewfactor(i,j))*albedo(1,1)*(Qdirect(1,1)+Qscat)
            Qrefl = gterm(i,j)*albedo(1,1)*(Qdirect(1,1)+Qscat)
            Qn(i,j) = Qn(i,j) + (1-albedo(i,j))*Qrefl
         enddo
@@ -329,12 +320,11 @@ subroutine subsurfaceconduction_mars(T,Tsurf,dtsec,Qn,Qnp1,emiss,m,Fsurf,init)
   integer i
   !real(8), parameter :: zmax=3., zfac=1.05d0  ! adjust
   real(8), parameter :: zmax=13., zfac=1.05d0  ! with rhoc=thIn*1000 (nz=70, 3x seasonal)
-  real(8) Tinit, delta, thIn
-  real(8) Fsurfold, dE, Tsurfold, Told(1:nz)
+  real(8) Tinit, delta
+  real(8) Fsurfold, dE, Tsurfold, Told(nz)
   real(8) z(nz), ti(nz), rhocv(nz)
 
   if (init) then ! initialize grid
-     thIn = 400.
      ti(:) = thIn  ! adjust
      !rhocv(:) = 1200.*800.
      rhocv(:) = thIn*1000.  ! makes skin depth invariant
