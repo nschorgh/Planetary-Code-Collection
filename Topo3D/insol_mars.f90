@@ -21,8 +21,7 @@ program insol_mars
   real(8), allocatable, dimension(:,:) :: shadowtime, maxshadowtime
 
   integer julday, iyr, imm, iday
-  real(8) jd, dt0_J2000
-  real(8) jd_snap, longitude, buf, LTST
+  real(8) jd, jd_snap, longitude, buf, LTST
   
   integer, parameter :: Mx1=2, Mx2=NSx-1, My1=2, My2=NSy-1
   
@@ -43,10 +42,10 @@ program insol_mars
   write(*,*) 'Nx=',NSx,'Ny=',NSy,'File=',fileext
   write(*,*) 'Region of interest: (',Mx1,',',My1,') x (',Mx2,',',My2,')'
 
-  ! date at the beginning of run
-  imm = 1; iday=1; iyr=2013
+  ! Set start date
+  imm = 1; iday=1; iyr=2014
   jd=dble(julday(imm,iday,iyr))  !  JD for noon UTC on iyear/imm/iday
-  call marsclock24(jd,dt0_J2000,marsLs,marsDec,marsR,0d0,LTST) ! calculate dt0_J2000
+  !call marsclock24(jd,dt0_J2000,marsLs,marsDec,marsR,0d0,LTST) ! calculate dt0_J2000
   !call marsorbit(dt0_j2000,0.d0,marsLs,marsDec,marsR)
   
   call readdem(h)
@@ -63,10 +62,9 @@ program insol_mars
   longitude = 360 - 202.3 ! west longitude
   imm = 5; iday=15; iyr=2014 
   jd_snap=dble(julday(imm,iday,iyr)) + (8.+44./60-12)/24.  ! noon UTC
-  call marsclock24(jd_snap,buf,marsLs,marsDec,marsR,Longitude,LTST)
+  !call marsclock24(jd_snap,buf,marsLs,marsDec,marsR,Longitude,LTST)
 
-  open(unit=25,file='qsnap.dat',status='unknown',action='write') ! snapshot
-  
+
   print *,'...calculating...'
   ! loop over time steps 
   do n=0,nsteps-1
@@ -106,6 +104,7 @@ program insol_mars
      endif
 
      if (jd+edays > jd_snap-dt/2 .and. jd+edays <= jd_snap+dt/2) then
+        open(unit=25,file='qsnap.dat',status='unknown',action='write') ! snapshot
         print *,'writing snapshot'
         print *,'current hour angle',HA
         print *,'current altitude of sun',asin(sinbeta)/d2r

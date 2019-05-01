@@ -13,9 +13,10 @@ module miscparams
   real(8), parameter :: fracIR=0.04, fracDust=0.02
   real(8), parameter :: solsy = 668.60 ! solar days per Mars year
   real(8), parameter :: solarDay = 88775.244  ! Mars
+  real(8), parameter :: emiss = 0.98
   real(8), parameter :: Fgeotherm = 0.0
-  integer, parameter :: nz=70
-  real(8), parameter :: thIn = 600. 
+  integer, parameter :: nz=70 
+  real(8), parameter :: thIn = 600.
 end module miscparams
 
 
@@ -27,7 +28,6 @@ program cratersQ_mars
   implicit none
 
   real(8), parameter :: albedo0=0.12, co2albedo=0.65
-  real(8), parameter :: emiss = 0.98
   real(8) :: latitude = -41.6  ! Palikir Crater
   real(8), parameter :: longitude = 360 - 202.3 ! west longitude
 
@@ -42,7 +42,7 @@ program cratersQ_mars
   real(8), allocatable, dimension(:,:) :: viewfactor, gterm
   real(8), allocatable, dimension(:,:) :: mmax, frosttime, maxfrosttime, Qnm1
   real(8), allocatable :: Fsurf(:,:), T(:,:,:), Tbottom(:,:), Tref(:)  ! subsurface
-  real(8), allocatable, dimension(:,:) :: mmin, co2last, co2first, h2olast, h2olastt !, EH2Ocum
+  real(8), allocatable, dimension(:,:) :: mmin, co2last, co2first, h2olast !, EH2Ocum
   real(8) dE, Tsurfold, QIR, Qrefl, Qscat, Qlw !, EH2O
   logical, parameter :: subsurface=.true.  ! control panel
   !integer, parameter :: NrMP=3   ! number of monitoring points
@@ -51,7 +51,7 @@ program cratersQ_mars
   real(8) jd, LTST, jd_end
   
   real(8) jd_snap(3), jd_themis(2)  ! Julian dates of snapshots
-  character(len=20) fnt(2), fns(3)  ! file names of snapshots
+  character(len=20) fns(3), fnt(2)  ! file names of snapshots
 
   integer, parameter :: Mx1=2, Mx2=NSx-1, My1=2, My2=NSy-1
   
@@ -63,16 +63,15 @@ program cratersQ_mars
   allocate(Qmean(NSx,NSy), Qmax(NSx,NSy), Tmean(NSx,NSy), Tmaxi(NSx,NSy))
   allocate(frosttime(NSx,NSy), maxfrosttime(NSx,NSy))
   allocate(mmax(NSx,NSy), mmin(NSx,NSy))
-  allocate(co2last(NSx,NSy), co2first(NSx,NSy), h2olast(NSx,NSy), h2olastt(NSx,NSy))
+  allocate(co2last(NSx,NSy), co2first(NSx,NSy), h2olast(NSx,NSy))
   !allocate(EH2Ocum(Mx1:Mx2,My1:My2))
   Qn=0.; Qnm1=0.; m=0.; Qdirect=0.; viewfactor=0.
   Qmean=0.; Qmax=0.; Tmean=0.; Tmaxi=0.
   frosttime=0.; maxfrosttime=0.; mmax=0.; mmin=0
-  co2last=-9.; co2first=-9.; h2olast=-9.; h2olastt=-9.
+  co2last=-9.; co2first=-9.; h2olast=-9.;
   
   dt=0.02
-  !tmax = 2*solsy+1.
-  tmax = 5.*solsy
+  tmax = 6.*solsy
 
   ! set some constants
   nsteps=int(tmax/dt)       ! calculate total number of timesteps
@@ -80,9 +79,11 @@ program cratersQ_mars
   
   write(*,*) 'Time step=',dt,' Max number of steps=',nsteps
   write(*,*) 'Calculations performed for latitude=',latitude
+  write(*,*) 'fracIR=',fracIR,'fracDust=',fracDust
   write(*,*) 'Nx=',NSx,'Ny=',NSy,'File=',fileext
   write(*,*) 'Region of interest: (',Mx1,',',My1,') x (',Mx2,',',My2,')'
   write(*,*) 'Mean albedo=',sum(albedo)/size(albedo),'Emissivity=',emiss
+  write(*,*) 'CO2 frost temperature=',Tco2frost
   write(*,*) 'Reflections:',.FALSE.,'Subsurface:',subsurface
 
   ! Set start date
@@ -91,6 +92,8 @@ program cratersQ_mars
   ! Alternatively set end date
   jd_end=dble(julday(2,28,2017)) 
   jd = nint(jd_end - tmax*solarDay/earthDay)
+  
+  write(*,*) 'Julian start and end date',jd,jd_end
   
   call readdem(h)
   call difftopo(NSx,NSy,h,dx,dy,surfaceSlope,azFac)
@@ -117,7 +120,7 @@ program cratersQ_mars
      allocate(T(nz,Mx1:Mx2,My1:My2))
      allocate(Tref(nz))
      allocate(Fsurf(NSx,NSy))
-     call subsurfaceconduction_mars(Tref(:),buf,dtsec,zero,zero,zero,buf,buf,.true.)
+     call subsurfaceconduction_mars(Tref(:),buf,dtsec,zero,zero,buf,buf,.true.)
      allocate(Tbottom(NSx,NSy))
      Tbottom(:,:)=-9
      Tsurf(:,:)=-9  ! max 3 digits
@@ -179,11 +182,11 @@ program cratersQ_mars
            do j=My1,My2
               if (h(i,j)<-32000) cycle
               call subsurfaceconduction_mars(T(:,i,j),Tsurf(i,j), &
-                   & dtsec,Qnm1(i,j),Qn(i,j),emiss,m(i,j),Fsurf(i,j),.false.)
+                   & dtsec,Qnm1(i,j),Qn(i,j),m(i,j),Fsurf(i,j),.false.)
            enddo
         enddo
         call subsurfaceconduction_mars(Tref(:),Tsurf(1,1), &
-             & dtsec,Qnm1(1,1),Qn(1,1),emiss,m(1,1),Fsurf(1,1),.false.)
+             & dtsec,Qnm1(1,1),Qn(1,1),m(1,1),Fsurf(1,1),.false.)
 
      else  ! no subsurface conduction
         do i=Mx1,Mx2
@@ -241,13 +244,6 @@ program cratersQ_mars
            !     & sdays,mod(marsLs/d2r,360.),i0,j0,Qn(i0,j0),Tsurf(i0,j0),EH2O,EH2Ocum(i0,j0)
         !enddo
 
-        do i=2,NSx-1 ! second half
-           do j=2,NSy-1
-              if (Tsurf(i,j)>263. .and. sdays-h2olastt(i,j)<14.) then
-                 write(40,*) i,j,h2olastt(i,j),sdays
-              endif
-           end do
-        end do
      endif
      
      if (sdays > tmax-2*solsy) then  ! longest continuous period below H2O frost point (~200K)
@@ -259,7 +255,6 @@ program cratersQ_mars
         where (frosttime>maxfrosttime)
            maxfrosttime=frosttime
            h2olast = marsLs  ! last time maxfrosttime increased
-           h2olastt = sdays ! first half
            !EH2Ocum = 0.
         end where
      endif
@@ -309,13 +304,13 @@ end program cratersQ_mars
 
 
 
-subroutine subsurfaceconduction_mars(T,Tsurf,dtsec,Qn,Qnp1,emiss,m,Fsurf,init)
+subroutine subsurfaceconduction_mars(T,Tsurf,dtsec,Qn,Qnp1,m,Fsurf,init)
   use miscparams
   use conductionQ
   use conductionT
   implicit none
   real(8), intent(INOUT) :: T(nz), Tsurf, m, Fsurf
-  real(8), intent(IN) :: dtsec,Qn,Qnp1,emiss
+  real(8), intent(IN) :: dtsec,Qn,Qnp1
   logical, intent(IN) :: init
   integer i
   !real(8), parameter :: zmax=3., zfac=1.05d0  ! adjust
