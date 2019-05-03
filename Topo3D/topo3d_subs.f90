@@ -3,7 +3,7 @@ module newhorizons
   ! and contains functions that calculate values from horizons
   use filemanager, only : NSx, NSy, sfn
   implicit none
-  integer, parameter :: naz=90  ! # azimuth values
+  integer, parameter :: naz=180  ! # azimuth values
   real(8), dimension(:,:,:), private, allocatable :: s 
 
 contains

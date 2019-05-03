@@ -211,7 +211,7 @@ program cratersQ_mars
      endif
      Qnm1(:,:) = Qn(:,:)
 
-     where (Tsurf>Tco2frost.or.m<=0.)
+     where (Tsurf>Tco2frost .or. m<=0.)
         albedo = albedo0
      elsewhere
         albedo = co2albedo
@@ -243,10 +243,9 @@ program cratersQ_mars
            !write(24,'(f9.3,1x,f7.3,2(1x,i4),2x,f6.1,1x,f5.1,2(1x,g12.4))') &
            !     & sdays,mod(marsLs/d2r,360.),i0,j0,Qn(i0,j0),Tsurf(i0,j0),EH2O,EH2Ocum(i0,j0)
         !enddo
-
      endif
      
-     if (sdays > tmax-2*solsy) then  ! longest continuous period below H2O frost point (~200K)
+     if (sdays > tmax-2*solsy) then  ! longest continuous period below H2O frost point
         where (Tsurf<Tfrost) 
            frosttime=frosttime+dt
         elsewhere
@@ -261,12 +260,12 @@ program cratersQ_mars
 
      do k=1,3
         if (jd+edays > jd_snap(k)-dt/2 .and. jd+edays <= jd_snap(k)+dt/2) then
-           call writesnapshot(fns(k),h,Qdirect,m,Qn,NSx,NSy)
+           call writesnapshot(fns(k),h,Qdirect,m,Qn)
         endif
      end do
      do k=1,2
         if (jd+edays > jd_themis(k)-dt/2 .and. jd+edays <= jd_themis(k)+dt/2) then
-           call writethemissnapshot(fnt(k),h,Tsurf,NSx,NSy)
+           call writethemissnapshot(fnt(k),h,Tsurf)
         endif
      enddo
   
@@ -405,14 +404,15 @@ end function evap_ingersoll
 
 
 
-subroutine writethemissnapshot(fn,h,Tsurf,NSx,NSy)
+subroutine writethemissnapshot(fn,h,Tsurf)
   ! output surface temperature snapshot
+  use filemanager, only : NSx, NSy
   implicit none
-  integer, intent(IN) :: NSx,NSy
   character(len=*), intent(IN) :: fn
   real(8), intent(IN), dimension(NSx,NSy) :: h,Tsurf
   integer i,j
-  
+
+  print *,'entered writethemissnapshot'
   open(unit=27,file=fn,status='unknown',action='write')
   do i=2,NSx-1
      do j=2,NSy-1
@@ -424,14 +424,15 @@ end subroutine writethemissnapshot
 
 
 
-subroutine writesnapshot(fn,h,Qdirect,m,Qn,NSx,NSy)
+subroutine writesnapshot(fn,h,Qdirect,m,Qn)
   ! output snapshot
+  use filemanager, only : NSx, NSy
   implicit none
-  integer, intent(IN) :: NSx,NSy
   character(len=*), intent(IN) :: fn
   real(8), intent(IN), dimension(NSx,NSy) :: h,Qdirect,m,Qn
   integer i,j
 
+  print *,'entered writesnapshot'
   open(unit=27,file=fn,status='unknown',action='write')
   do i=2,NSx-1
      do j=2,NSy-1

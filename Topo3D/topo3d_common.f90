@@ -154,3 +154,35 @@ elemental function distanceonsphere(phi1,theta1,phi2,theta2)
   distanceonsphere = 2.*asin(sqrt(buf))
   !distanceonsphere = 2.*atan2(sqrt(buf),sqrt(1-buf))
 end function distanceonsphere
+
+
+
+subroutine slicer(NSx,ilower,iupper,extc)
+  ! splits domain for parallel processing
+  ! two input arguments required
+  implicit none
+  integer, intent(IN) :: NSx
+  integer, intent(OUT) :: ilower, iupper
+  character(5), intent(OUT) :: extc
+  integer SLICE  ! number of slices (jobs) the domain is divided into
+  integer nr, slicewidth, Mx1, Mx2  ! 1 <= nr <= SLICE
+  
+  call getarg(1,extc)
+  read(extc,'(i4)') SLICE  ! string->integer
+  call getarg(2,extc)
+  read(extc,'(i4)') nr  ! string->integer
+  if (SLICE>NSx-2) stop 'not that many slices available'
+  if (nr<1 .or. nr>SLICE) stop 'slice id outside of range'
+  slicewidth = ceiling((NSx-2)/real(SLICE))
+  if (slicewidth<1) stop 'no slice width'
+  print *,'Number of slices=',SLICE,'slice width=',slicewidth
+  Mx1 = 2+slicewidth*(nr-1)
+  Mx2 = min(2+slicewidth*nr,NSx)-1
+  print *,'Working on slice Mx1=',Mx1,'Mx2=',Mx2
+  if (Mx1>Mx2) stop 'FYI: out of slices - nothing left to do'
+  if (Mx1<=1 .or. Mx1>=NSx .or. Mx2<=1 .or. Mx2>=NSx) stop 'argument is outside of domain'
+  ilower=Mx1; iupper=Mx2
+
+  extc = trim(extc) ! strips trailing spaces
+end subroutine slicer
+     

@@ -8,7 +8,7 @@ program toposhadows
   use newmultigrid
   implicit none
   real(8), parameter :: pi=3.1415926535897932
-  integer i, j, ext, narg, ilower, iupper, LACT, LMAX
+  integer i, j, narg, ilower, iupper, LACT, LMAX
   integer, parameter :: naz=180      ! # of azimuths
   real(8) h(NSx,NSy), smax(naz)
   character(5) extc
@@ -42,21 +42,21 @@ program toposhadows
      print *,'# cutoff radius RMAX =',RMAX
   endif
 
-  if (narg==0) then  ! serial implementation
+  select case(narg)
+  case (0)  ! serial implementation
      print *,'...creating file horizons.dat'
      open(unit=21,file='horizons.dat',status='unknown',action='write')
      ilower = 2; iupper = NSx-1
 
-  else  ! parallel implementation
-     call getarg(1,extc)
-     read(extc,'(i4)') ext  ! string->integer
-     if (ext<=1 .or. ext>=NSx) stop 'argument is outside of domain'
+  case (2)  ! parallel implementation
+     call slicer(NSx,ilower,iupper,extc)
+     !if (ext<=ROIx1 .or. ext>=ROIx2) stop 'argument is outside of region of interest'
      print *,'...creating file horizon....'
      open(unit=21,file='horizon.'//extc,status='unknown',action='write')
-     i = ext  ! replaces loop over i=2,...,NSx-1
-     ilower = i
-     iupper = i
-  endif
+
+  case default
+     stop 'Number of command line arguments must be zero or two' 
+  end select
 
   do i=ilower,iupper
      print *,i
@@ -70,5 +70,6 @@ program toposhadows
         call compactoutput(21,smax,naz)
      enddo
   enddo
+  
   close(21)
 end program toposhadows

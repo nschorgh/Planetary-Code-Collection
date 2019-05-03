@@ -134,6 +134,15 @@ module allinterfaces
      end function distanceonsphere
   end interface
 
+  interface
+     subroutine slicer(NSx,ilower,iupper,extc)
+       implicit none
+       integer, intent(IN) :: NSx
+       integer, intent(OUT) :: ilower, iupper
+       character(4), intent(OUT) :: extc
+     end subroutine slicer
+  end interface
+  
   ! begin topo3d_subs.f90
   interface
      pure subroutine difftopo(NSx,NSy,h,dx,dy,surfaceSlope,azFac)
