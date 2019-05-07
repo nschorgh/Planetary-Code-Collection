@@ -154,6 +154,16 @@ module allinterfaces
   end interface
 
   interface
+     pure subroutine difftopo2(h,surfaceSlope,azFac,Mx1,Mx2,My1,My2)
+       use filemanager, only : NSx,NSy,dx,dy
+       implicit none
+       integer, intent(IN) :: Mx1,Mx2,My1,My2
+       real(8), intent(IN) :: h(NSx,NSy)
+       real(8), intent(OUT), dimension(Mx1:Mx2,My1:My2) :: surfaceSlope,azFac
+     end subroutine difftopo2
+  end interface
+  
+  interface
      elemental subroutine equatorial2horizontal(decl,latitude,HA,sinbeta,azimuth)
        real(8), intent(IN) :: decl,latitude,HA
        real(8), intent(OUT) :: sinbeta,azimuth

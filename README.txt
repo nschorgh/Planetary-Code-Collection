@@ -91,7 +91,7 @@ Documentation: Schorghofer, N. (2010) Icarus 208, 598-607
 
 ==Other Models for Planetary Surfaces==
 
-*Basic Thermal Model for Asteroids*
+*Basic Thermal Model for Airless Bodies*
 
 Asteroids/asteroid_thermal.f90: (main program)
 Asteroids/oneasteroid_thermal1d.f90

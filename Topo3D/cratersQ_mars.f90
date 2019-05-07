@@ -59,12 +59,12 @@ program cratersQ_mars
   allocate(Qn(NSx,NSy), Qnm1(NSx,NSy), Qdirect(NSx,NSy))
   allocate(Tsurf(NSx,NSy), m(NSx,NSy))
   allocate(albedo(NSx,NSy)); albedo = albedo0
-  allocate(viewfactor(Mx1:Mx2,My1:My2), gterm(Mx1:Mx2,My1:My2))
+  allocate(viewfactor(NSx,NSy), gterm(NSx,NSy))
   allocate(Qmean(NSx,NSy), Qmax(NSx,NSy), Tmean(NSx,NSy), Tmaxi(NSx,NSy))
   allocate(frosttime(NSx,NSy), maxfrosttime(NSx,NSy))
   allocate(mmax(NSx,NSy), mmin(NSx,NSy))
   allocate(co2last(NSx,NSy), co2first(NSx,NSy), h2olast(NSx,NSy))
-  !allocate(EH2Ocum(Mx1:Mx2,My1:My2))
+  !allocate(EH2Ocum(NSx,NSy))
   Qn=0.; Qnm1=0.; m=0.; Qdirect=0.; viewfactor=0.
   Qmean=0.; Qmax=0.; Tmean=0.; Tmaxi=0.
   frosttime=0.; maxfrosttime=0.; mmax=0.; mmin=0
@@ -294,7 +294,7 @@ program cratersQ_mars
      Tbottom=Tbottom/nm
      do i=Mx1,Mx2
         do j=My1,My2
-           write(23,'(2(i4,1x),2(1x,f7.1))') i,j,Tmean(i,j),Tbottom(i,j)
+           write(23,'(2(i5,1x),2(1x,f7.1))') i,j,Tmean(i,j),Tbottom(i,j)
         enddo
      enddo
   endif

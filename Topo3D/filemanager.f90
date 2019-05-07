@@ -31,25 +31,33 @@ module filemanager
   !character(len = *), parameter :: fileext = 'moongauss3.rms=0.5'
   !real(8), parameter :: dx=1., dy=1., RMAX=1e5
 
-  !integer, parameter :: NSx=1792, NSy=4680
-  !character(len = *), parameter :: fileext = 'PSP005943_4'
-  !real(8), parameter :: dx=4., dy=4., RMAX=1e30
+  !integer, parameter :: NSx=112, NSy=292
+  !character(len = *), parameter :: fileext = 'PSP005943_64'
+  !real(8), parameter :: dx=64., dy=64., RMAX=1e30
 
-  !integer, parameter :: NSx=896, NSy=2340
-  !character(len = *), parameter :: fileext = 'PSP005943_8'
-  !real(8), parameter :: dx=8., dy=8., RMAX=1e30
+  !integer, parameter :: NSx=224, NSy=585
+  !character(len = *), parameter :: fileext = 'PSP005943_32'
+  !real(8), parameter :: dx=32., dy=32., RMAX=1e30
 
   !integer, parameter :: NSx=448, NSy=1170
   !character(len = *), parameter :: fileext = 'PSP005943_16'
   !real(8), parameter :: dx=16., dy=16., RMAX=1e30
 
-  !integer, parameter :: NSx=224, NSy=585
-  !character(len = *), parameter :: fileext = 'PSP005943_32'
-  !real(8), parameter :: dx=32., dy=32., RMAX=1e30
+  !integer, parameter :: NSx=896, NSy=2340
+  !character(len = *), parameter :: fileext = 'PSP005943_8'
+  !real(8), parameter :: dx=8., dy=8., RMAX=1e30
   
-  !integer, parameter :: NSx=112, NSy=292
-  !character(len = *), parameter :: fileext = 'PSP005943_64'
-  !real(8), parameter :: dx=64., dy=64., RMAX=1e30
+  !integer, parameter :: NSx=1792, NSy=4680
+  !character(len = *), parameter :: fileext = 'PSP005943_4'
+  !real(8), parameter :: dx=4., dy=4., RMAX=1e30
+
+  !integer, parameter :: NSx=3584, NSy=9360
+  !character(len = *), parameter :: fileext = 'PSP005943_2'
+  !real(8), parameter :: dx=2., dy=2., RMAX=1e30
+
+  !integer, parameter :: NSx=7169, NSy=18720
+  !character(len = *), parameter :: fileext = 'PSP005943_1'
+  !real(8), parameter :: dx=1., dy=1., RMAX=1e30
   
   ! paths and default filenames for inputs
   character(len = *), parameter :: &

@@ -167,10 +167,33 @@ pure subroutine difftopo(NSx,NSy,h,dx,dy,surfaceSlope,azFac)
         sx=(h(i+1,j)-h(i-1,j))/(2.*dx)
         sy=(h(i,j+1)-h(i,j-1))/(2.*dy)
         surfaceSlope(i,j)=atan(sqrt(sx**2+sy**2))
-        azFac(i,j)=atan2(sx,-sy)  ! north is up, clockwise (y increases equatorward)
+        azFac(i,j)=atan2(sx,-sy)  ! north is up, clockwise
      enddo
   enddo
 end subroutine difftopo
+
+
+
+pure subroutine difftopo2(h,surfaceSlope,azFac,Mx1,Mx2,My1,My2)
+  ! calculate slopes and azimuths of surface elements
+  ! like difftopo but with different input arguments (for cropped domains)
+  use filemanager, only : NSx,NSy,dx,dy
+  implicit none
+  integer, intent(IN) :: Mx1,Mx2,My1,My2
+  real(8), intent(IN) :: h(NSx,NSy)
+  real(8), intent(OUT), dimension(Mx1:Mx2,My1:My2) :: surfaceSlope,azFac
+  integer i,j
+  real(8) sx,sy
+
+  do i=max(2,Mx1),min(NSx-1,Mx2)
+     do j=max(2,My1),min(NSy-1,My2)
+        sx=(h(i+1,j)-h(i-1,j))/(2.*dx)
+        sy=(h(i,j+1)-h(i,j-1))/(2.*dy)
+        surfaceSlope(i,j)=atan(sqrt(sx**2+sy**2))
+        azFac(i,j)=atan2(sx,-sy)  ! north is up, clockwise
+     enddo
+  enddo
+end subroutine difftopo2
 
 
 
