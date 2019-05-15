@@ -1,3 +1,137 @@
+
+subroutine findallhorizon_wsort(h,i0,j0,naz,smax,visibility)
+! finds horizon and determines visibility for one azimuth ray
+  use filemanager, only : NSx,NSy,RMAX
+  use allinterfaces, only : horizontaldistance, azimuth, diffangle, hpsort
+  implicit none
+  integer, intent(IN) :: i0,j0,naz
+  real(8), intent(IN) :: h(NSx,NSy)
+  real(8), intent(OUT) :: smax(naz)
+  logical, intent(OUT) :: visibility(NSx,NSy)
+  integer, parameter :: CCMAX = 6*(NSx+NSy) ! max # of elements on azimuth ray
+  integer i,j,k,in,jn,cc(CCMAX), ak,ak1,ak2,buf,akak
+  real(8) az,az_neighbor,t,r,r_neighbor,hcut,d1,d2,d3, f,azRay(naz)
+  real(8) s, smaxlocal, surfaceSlope, azFac, slope_along_az
+  real(8), dimension(:,:), allocatable :: rcut, slocal
+  integer, dimension(:,:), allocatable :: celli, cellj
+  integer, dimension(CCMAX) :: arr
+  integer, parameter :: ex(8) = (/ 1, 1, 0, -1, -1, -1, 0, 1 /)
+  integer, parameter :: ey(8) = (/ 0, 1, 1, 1, 0, -1, -1, -1 /)
+  real(8), parameter :: pi=3.1415926535897931
+
+  allocate(rcut(naz,CCMAX), slocal(naz,CCMAX), celli(naz,CCMAX), cellj(naz, CCMAX))
+  
+  f = naz/(2*pi)
+  
+  ! azimuth to integer mapping
+  do ak=1,naz
+     azRay(ak) = (ak-1)/f   ! inverse mapping:  ak = azRay*f+1
+  enddo
+  
+  cc(:)=0
+  smax(:)=0.
+
+  call difftopo1(i0,j0,h,surfaceSlope,azFac)
+  visibility(:,:) = .false.
+  
+  do i=2,NSx-1
+     if (horizontaldistance(i,1,i0,1)>RMAX) cycle  ! saves computations
+     do j=2,NSy-1
+        if (i==i0 .and. j==j0) cycle
+        r = horizontaldistance(i,j,i0,j0)
+        if (r>RMAX) cycle  ! saves computations
+        az = azimuth(i0,j0,i,j)  ! az should go from -pi ... pi
+
+        if (floor(az*f)==ceiling(az*f)) then  ! grid point lies on ray
+           ak=nint(az*f)+1
+
+           cc(ak) = cc(ak)+1
+           if (cc(ak)>CCMAX) stop 'findallhorizons_wsort: not enough memory allocated'
+           s = (h(i,j)-h(i0,j0))/r
+           if (s>smax(ak)) smax(ak)=s
+
+           slope_along_az=atan(surfaceSlope*cos(azFac-azRay(ak))) ! an angle
+           
+           rcut(ak,cc(ak)) = r
+           slocal(ak,cc(ak)) = tan(atan(s)-slope_along_az)
+           celli(ak,cc(ak))=i; cellj(ak,cc(ak))=j
+           cycle
+        endif
+        
+        do k=1,8
+           in = i+ex(k)
+           jn = j+ey(k)
+           if (in==i0 .and. jn==j0) cycle
+           !if ((in-i0)**2+(jn-j0)**2 <= 1) cycle  ! stricter than in findallhorizon
+           az_neighbor = azimuth(i0,j0,in,jn)
+
+           if (az >= az_neighbor) then 
+              ak1 = floor(az*f)+1
+              ak2 = ceiling(az_neighbor*f)+1
+           else
+              ak1 = ceiling(az*f)+1
+              ak2 = floor(az_neighbor*f)+1
+           endif
+           if (ak1==naz/2 .and. ak2<0) ak2 = ak2+naz
+           if (ak2==naz/2 .and. ak1<0) ak1 = ak1+naz
+           if (ak2<ak1) then ! swap
+              buf=ak1; ak1=ak2; ak2=buf;
+           endif
+           if (ak1>naz .or. ak2>naz) stop 'findallhorizons_wsort: index out of bound'
+
+           d3=diffangle(az,az_neighbor)
+           do akak=ak1,ak2
+              ak = akak; if (ak<=0) ak = ak+naz
+
+              d1=diffangle(az,azRay(ak))
+              d2=diffangle(az_neighbor,azRay(ak))
+           
+              if (d1+d2<=d3+1.d-5) then
+                 if (d1>1.0*d3 .and. d3>1.d-6) cycle  ! as in findallhorizon
+                 cc(ak)=cc(ak)+1
+                 if (cc(ak)>CCMAX) stop 'findonehorizons_wsort: not enough memory allocated'
+                 
+                 r_neighbor = horizontaldistance(in,jn,i0,j0)
+                 ! edge between h1,i0,j0 and h2,in,jn
+                 if (d3>1.d-6) then
+                    t = d1/d3  ! approximation
+                 else
+                    t = 0.5  ! dirty fix
+                 endif
+                 hcut = h(i,j)*(1-t)+h(in,jn)*t
+                 rcut(ak,cc(ak)) = r*(1-t)+r_neighbor*t  ! could be improved
+                 s = (hcut-h(i0,j0))/rcut(ak,cc(ak))
+                 if (s>smax(ak)) smax(ak)=s
+
+                 slope_along_az=atan(surfaceSlope*cos(azFac-azRay(ak))) ! an angle
+                 slocal(ak,cc(ak)) = tan(atan(s)-slope_along_az)
+                 celli(ak,cc(ak))=i; cellj(ak,cc(ak))=j
+              endif
+              
+           end do  ! end of ak loop
+        end do  ! end of k loop
+        
+     enddo  ! end of j loop
+  enddo  ! end of i loop
+
+  do ak = 1,naz
+     ! sort by distance from (i0,j0)
+     call hpsort(cc(ak),rcut(ak,:),arr)
+     
+     smaxlocal=0.
+     do i=1,cc(ak)
+        j=arr(i)
+        if (slocal(ak,j)>smaxlocal) then
+           smaxlocal=slocal(ak,j)
+           visibility(celli(ak,j),cellj(ak,j))=.true.
+        endif
+     enddo
+  end do
+  
+end subroutine findallhorizon_wsort
+
+
+
 subroutine find3dangle(h,i0,j0,unit,visibility)
   use filemanager
   use allinterfaces, only : xyz2thetaphi, area_spherical_quadrangle

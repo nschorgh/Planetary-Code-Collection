@@ -1,6 +1,7 @@
 clear all
-%a=load('q.dat');
-a=load('qinst.topo81');
+a=load('q.dat');
+%a=load('qinst.topo81');
+%a=load('qinst.dat');
 
 Nx=81-2; Ny=81-2; 
 
@@ -16,27 +17,30 @@ hmin=min(h(:));
 hmax=max(h(:));
 
 figure(1); clf
-set(gcf,'defaultaxesfontsize',11,'defaulttextfontsize',9)
-set(gcf,'defaultlinelinewidth',2,'defaultaxesfontsize',16)
+set(gcf,'defaultaxesfontsize',11,'defaulttextfontsize',10)
+set(gcf,'defaultlinelinewidth',2,'defaultaxesfontsize',10)
+colormap('jet')
+
 
 subplot(2,2,1)
-pcolor(h);
+imagesc(h);
 shading flat
 axis equal ij
 barh=colorbar;
-set(get(barh,'ylabel'),'string','Elevation (m)','fontsize',11)
+set(get(barh,'ylabel'),'string','Elevation (m)')
 axis off
 hold on
 [c,hcont]=contour(h,hlevs,'k-');
 set(hcont,'linewidth',2)
 hold off
 
+
 subplot(2,2,2)
-pcolor(Q);
+imagesc(Q);
 shading flat
 axis equal ij
 barh=colorbar;
-set(get(barh,'ylabel'),'string','Direct Insolation (W/m^2)','fontsize',11)
+set(get(barh,'ylabel'),'string','Direct Insolation (W/m^2)')
 axis off
 Qmin=min(Q(:));
 Qmax=max(Q(:));
@@ -46,12 +50,13 @@ r=(Qmax-Qmin)/(hmax-hmin);
 set(hcont,'linewidth',2)
 hold off
 
+
 subplot(2,2,3)
-pcolor(Qir);
+imagesc(Qir);
 shading flat
 axis equal ij
 barh=colorbar;
-set(get(barh,'ylabel'),'string','Q_{IR} (W/m^2)','fontsize',11)
+set(get(barh,'ylabel'),'string','Q_{IR} (W/m^2)')
 axis off
 Qmin=min(Qir(:));
 Qmax=max(Qir(:));
@@ -63,11 +68,11 @@ hold off
 
 
 subplot(2,2,4)
-pcolor(T);
+imagesc(T);
 shading flat
 axis equal ij
 barh=colorbar;
-set(get(barh,'ylabel'),'string','Temperature (K)','fontsize',11)
+set(get(barh,'ylabel'),'string','Temperature (K)')
 axis off
 Qmin=min(T(:));
 Qmax=max(T(:));

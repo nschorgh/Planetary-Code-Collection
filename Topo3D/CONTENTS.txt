@@ -1,4 +1,4 @@
-Topo3D/
+opo3D/
 
 Shadowing, illumination, and scattering on 3D topography
 ========================================================
@@ -41,9 +41,6 @@ topo3d_subs.f90:
 
 multigrid.f90:
 	subroutines for multigrid acceleration
-
-test_shadows1pt.f90: (main program)
-	test shadow calculations
 
 fieldproperties.f90: (main program)
 	processes geometric information, mostly diagnostics

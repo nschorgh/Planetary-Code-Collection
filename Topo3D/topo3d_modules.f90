@@ -3,16 +3,6 @@ module allinterfaces
 
   ! begin shadows_subs.f90
   interface
-     subroutine findonehorizon_wsort(h,i0,j0,azRay,smax,visibility)
-       use filemanager
-       integer, intent(IN) :: i0,j0
-       real(8), intent(IN) :: h(NSx,NSy),azRay
-       real(8), intent(OUT) :: smax
-       logical, intent(INOUT) :: visibility(NSx,NSy)
-     end subroutine findonehorizon_wsort
-  end interface
-
-  interface
      subroutine findallhorizon(h,i0,j0,naz,smax)
        use filemanager, only : NSx,NSy,RMAX
        implicit none
@@ -38,6 +28,17 @@ module allinterfaces
   end interface
 
   ! begin fieldofview_subs.f90
+  interface
+     subroutine findallhorizon_wsort(h,i0,j0,naz,smax,visibility)
+       use filemanager, only : NSx,NSy,RMAX
+       implicit none
+       integer, intent(IN) :: i0,j0,naz
+       real(8), intent(IN) :: h(NSx,NSy)
+       real(8), intent(OUT) :: smax(naz)
+       logical, intent(OUT) :: visibility(NSx,NSy)
+     end subroutine findallhorizon_wsort
+  end interface
+  
   interface
      subroutine find3dangle(h,i0,j0,unit,visibility)
        use filemanager
@@ -234,7 +235,7 @@ module allinterfaces
   
   ! Fortran 77 programs
   interface
-     subroutine hpsort(n,ra,ind)
+     pure subroutine hpsort(n,ra,ind)
        implicit none
        INTEGER, intent(IN) :: n
        REAL(8), intent(INOUT) :: ra(n)
@@ -243,7 +244,7 @@ module allinterfaces
   end interface
 
   interface
-     subroutine conductionQ(nz,z,dt,Qn,Qnp1,T,ti,rhoc,emiss,Tsurf,Fgeotherm,Fsurf)
+     pure subroutine conductionQ(nz,z,dt,Qn,Qnp1,T,ti,rhoc,emiss,Tsurf,Fgeotherm,Fsurf)
        implicit none
        integer NMAX
        parameter (NMAX=1000)
@@ -255,7 +256,7 @@ module allinterfaces
   end interface
 
   interface
-     subroutine conductionT(nz,z,dt,T,Tsurf,Tsurfp1,ti,rhoc,Fgeotherm,Fsurf)
+     pure subroutine conductionT(nz,z,dt,T,Tsurf,Tsurfp1,ti,rhoc,Fgeotherm,Fsurf)
        implicit none
        integer NMAX
        parameter (NMAX=1000)

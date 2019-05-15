@@ -62,21 +62,21 @@ program asteroid
 
   print *,'a=',a,'ecc=',ecc,'omega=',omega/d2r
   print *,'Latitude=',latitude/d2r,'obliquity=',eps/d2r
-  write(6,'(1x,a7,1x,f5.3)') 'Albedo=',albedo
+  write(*,'(1x,a7,1x,f5.3)') 'Albedo=',albedo
 
   ! orbital period (days)
   Torb = a2Torb(a)
   print *,'Torb=',Torb,'days'
 
-  write(6,*) 'Tss=',flux2T(flux_noatm(a,0d0,0d0,0d0,0d0,0d0),albedo,emiss)
-  write(6,*) 'Tss=',flux2T(So/a**2,albedo,emiss)
-  !write(6,*) 'Tmax=',flux2T(So/(a*(1-ecc))**2,albedo,emiss)
+  print *,'Tss=',flux2T(flux_noatm(a,0d0,0d0,0d0,0d0,0d0),albedo,emiss)
+  print *,'Tss=',flux2T(So/a**2,albedo,emiss)
+  !print *, 'Tmax=',flux2T(So/(a*(1-ecc))**2,albedo,emiss)
 
   ! Insolation - optional
   call insolonly(latitude,a,omega,ecc,eps,Trot,Q0mean,Qmean,Q4mean)
   Qmean = (1-albedo)*Qmean;  Q4mean = (1-albedo)*Q4mean
-  write(6,'(a,4(1x,f5.1))') 'Fluxes (W/m^2):',So/a**2,Q0mean,(1-albedo)*Q0mean/pi,Qmean
-  write(6,'(a,2(1x,f6.2))') 'End-member temperatures (K):', &
+  write(*,'(a,4(1x,f5.1))') 'Fluxes (W/m^2):',So/a**2,Q0mean,(1-albedo)*Q0mean/pi,Qmean
+  write(*,'(a,2(1x,f6.2))') 'End-member temperatures (K):', &
        & flux2T(Qmean,1d0,emiss),flux2T(Q4mean,1d0,emiss)
 
   ! Surface temperature with rotation and conduction
@@ -85,15 +85,11 @@ program asteroid
   !   thIn = ti(n)
   thIn = 15.
   call oneasteroid(latitude,omega,eps,albedo,thIn,Qmean,Tmean,Tmin,Tmax)
-  write(6,*) 'Mean insolation=',Qmean,'W/m^2'
-  write(6,*) 'Mean temperature=',Tmean,'K'
-  write(6,*)  '#',thIn,Tmean,Tmin,Tmax
+  print *, 'Mean insolation=',Qmean,'W/m^2'
+  print *, 'Mean temperature=',Tmean,'K'
+  print *, '#',thIn,Tmean,Tmin,Tmax
   !enddo
-  write(6,*)
+  print *
 
 end program asteroid
-
-
-
-
 

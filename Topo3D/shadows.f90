@@ -50,7 +50,6 @@ program toposhadows
 
   case (2)  ! parallel implementation
      call slicer(NSx,ilower,iupper,extc)
-     !if (ext<=ROIx1 .or. ext>=ROIx2) stop 'argument is outside of region of interest'
      print *,'...creating file horizon....'
      open(unit=21,file='horizon.'//extc,status='unknown',action='write')
 
@@ -66,7 +65,7 @@ program toposhadows
         else
            call findallhorizon_MGR(h,i,j,naz,smax,RMG,LMAX)
         endif
-        write(21,'(2(i4,1x))',advance='no') i,j
+        write(21,'(2(i0,1x))',advance='no') i,j
         call compactoutput(21,smax,naz)
      enddo
   enddo

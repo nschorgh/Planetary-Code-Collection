@@ -6,12 +6,11 @@ Domain with 81x81 pixels, 5m horizontal resolution, sphere diameter 50m
 (created with program maketopo.f90)
 
 
-RUN 0: GEOMETRY (pre-calculate horizons and fields of view)
+PREP STEP: PRE-CALCULATE GEOMETRIC INFORMATION
 
-Three variants were run:
-A) shadows.f90 with 180 azimuth rays, takes 25 seconds with serial implementation
-B) shadows.f90 but with multigrid, takes 18 seconds
-C) fieldofviews.f90, takes 40 minutes
+Two variants were run:
+* shadows.f90 with 180 azimuth rays, takes 22 seconds with serial implementation
+* fieldofviews.f90, takes 1.5 minutes
 
 Input: topo81.xyz
 Output: horizons.topo81  (180 azimuth rays)

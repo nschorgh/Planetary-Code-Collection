@@ -1,6 +1,8 @@
 ChangeLog
 
-8 May 2019: Release v1.1.5 
+May 2019: Updated parts of Topo3D/Test/ and the agreement with the analytical solution got better
+
+8 May 2019: Release v1.1.5  do:10.5281/zenodo.2678125
 
 Apr 2019: work in Topo3D/ directory:
 readhorizons can now read cropped domains; lots of renaming in the Topo3D/ directory to enhance usability; readdem has moved from topos.f90 to crater_common.f90, because input path is now defined in filemanager.
