@@ -15,20 +15,19 @@ SRM = ../Mars/
 
 shadows: filemanager.o topo3d_modules.o multigrid.o shadows.o shadow_subs.o \
 	topo3d_common.o hpsort.o multigrid.o makefile
-	make -C $(SR) common
 	$(CC) $(LFLAGS) shadows.o shadow_subs.o hpsort.o \
 	topo3d_common.o multigrid.o -o $@
 
 fieldofviews: filemanager.o topo3d_modules.o fieldofviews.o topo3d_common.o \
 	shadow_subs.o fieldofview_subs.o hpsort.o makefile
-	make -C $(SR) common
 	$(CC) $(LFLAGS) fieldofviews.o topo3d_common.o hpsort.o \
 	fieldofview_subs.o shadow_subs.o -o $@
 
-cratersQ_snapshot: filemanager.o topo3d_modules.o topo3d_subs.o \
-	topo3d_common.o cratersQ_snapshot.o makefile
-	$(CC) $(LFLAGS) cratersQ_snapshot.o topo3d_subs.o \
-	topo3d_common.o $(SR)flux_noatm.o -o $@
+cratersQ_equilbr: filemanager.o topo3d_modules.o topo3d_subs.o \
+	topo3d_common.o cratersQ_equilbr.o makefile
+	make -C $(SR) common
+	$(CC) $(LFLAGS) cratersQ_equilbr.o topo3d_subs.o topo3d_common.o \
+	$(SR)flux_noatm.o -o $@
 
 cratersQ_moon: filemanager.o topo3d_modules.o topo3d_subs.o cratersQ_moon.o \
 	topo3d_common.o makefile
@@ -70,7 +69,7 @@ fieldproperties: filemanager.o topo3d_modules.o topo3d_common.o \
 
 clean:
 	rm -f  *.o  a.out  *.mod \
-	shadows fieldofviews cratersQ_snapshot cratersQ_moon cratersQ_mars
+	shadows fieldofviews cratersQ_equilbr cratersQ_moon cratersQ_mars
 
 
 

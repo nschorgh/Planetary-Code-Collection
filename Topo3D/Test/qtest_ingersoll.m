@@ -40,6 +40,7 @@ A=0.12;
 emiss=0.95;
 beta=10*pi/180;  % elevation of sun
 D2d=5;
+% analytical solution from Ingersoll et al. (1992), Icarus 100, 40-47.
 f=1/(1+D2d^2/4);
 Tingersoll = (S0*sin(beta)*f*(1-A)/(1-A*f)*(1+A*(1-f)/emiss)/5.67e-8)^0.25;
 hold on

@@ -19,13 +19,14 @@ Output: fieldofviews.topo81
 
 RUN 1: COMPARISON WITH INGERSOLL SOLUTION
 
-cratersQ_snaphost.f90 calculates instantaneous solution, takes 30 seconds
+cratersQ_equilbr.f90 calculates equilibrium solution, takes 30 seconds
 albedo 0.12, emissivity 0.95
 sun elevation 10 degree, solar constant 1365 W/m^2
 
 Output: qinst.topo81 (meaning of columns is in write(21,... )
 Used qinst.m to make figure qinst.png (insolation and temperature)
 Used qtest_ingersoll.m to make figure qtest_ingersoll.eps
+analytical solution according to Ingersoll et al. (1992), Icarus 100, 40-47.
 
 
 RUN 2: ONE SOLAR DAY

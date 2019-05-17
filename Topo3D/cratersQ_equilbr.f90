@@ -1,7 +1,7 @@
-program cratersQ_snapshot
+program cratersQ_equilbr
 !***********************************************************************
-!   cratersQ: program to calculate surface energy balance
-!             for given sun position  
+!   cratersQ_equilbr: program to calculate surface energy balance
+!             for constant sun position; equilibrium solution
 !
 !             zero thermal inertia, no orbit
 !***********************************************************************
@@ -69,7 +69,7 @@ program cratersQ_snapshot
               iii = ii(i,j,k); jjj = jj(i,j,k)
               v1 = viewing_angle(i,j,iii,jjj,h)
               
-              !if (cos(v1)<0. .or. cos(v2)<=0.) stop 'Oh no'
+              !if (cos(v1)<0.) stop 'Oh no'
 
               Qrefl(i,j) = Qrefl(i,j) + albedo(iii,jjj)*Qvis(iii,jjj)*dO12(i,j,k)/pi*cos(v1)
               QIR(i,j) = QIR(i,j) + emiss*sigSB*Tsurf(iii,jjj)**4*dO12(i,j,k)/pi*cos(v1)
@@ -93,13 +93,13 @@ program cratersQ_snapshot
   open(unit=21,file='qinst.dat',status='unknown',action='write')
   do i=2,NSx-1
      do j=2,NSy-1
-        write(21,'(2(i4,1x),f9.2,2x,f6.4,5(1x,f6.1),1x,f5.1)') &  ! instanteneous values
+        write(21,'(2(i4,1x),f9.2,2x,f6.4,5(1x,f6.1),1x,f5.1)') &
              & i,j,h(i,j),surfaceSlope(i,j),Qn(i,j),Qirre(i,j), &
              & Qabs(i,j),Qir(i,j),Qrefl(i,j),Tsurf(i,j)
      enddo
   enddo
   close(21)
 
-end program cratersQ_snapshot
+end program cratersQ_equilbr
  
 

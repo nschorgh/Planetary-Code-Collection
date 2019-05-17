@@ -146,7 +146,7 @@ Documentation: User Guide Sections 4.1, 5.1, 5.3-5.6
 
 Topo3D/shadows.f90: (main program)
 Topo3D/fieldofviews.f90: (main program)
-Topo3D/cratersQ_snapshot.f90: (main program)
+Topo3D/cratersQ_equilbr.f90: (main program)
 Topo3D/cratersQ_moon.f90: (main program)
 Topo3D/cratersQ_mars.f90: (main program)
 Topo3D/insol_mars.f90: (main program)

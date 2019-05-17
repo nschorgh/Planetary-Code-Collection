@@ -1,4 +1,4 @@
-opo3D/
+Topo3D/
 
 Shadowing, illumination, and scattering on 3D topography
 ========================================================
@@ -9,8 +9,8 @@ shadows.f90: (main program)
 fieldofviews.f90: (main program)
 	calculates horizons and field of views
 
-cratersQ_snapshot.f90: (main program)
-	instantaneous surface temperature with 3D shadowing and reflections
+cratersQ_equilbr.f90: (main program)
+	equilibrium surface temperature with 3D shadowing and reflections
 
 cratersQ_moon.f90: (main program)
 	surface temperature with 3D shadowing and reflections for airless body
@@ -28,7 +28,7 @@ topo3d_modules.f90:
 	interface definitions
 
 topo3d_common.f90: 
-	common routines
+	subroutines needed by cratersQ_* and by shadows/fieldofviews
 
 shadow_subs.f90: 
 	subroutines for program shadows

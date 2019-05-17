@@ -1,6 +1,6 @@
 
 subroutine findallhorizon_wsort(h,i0,j0,naz,smax,visibility)
-! finds horizon and determines visibility for one azimuth ray
+! finds horizon and determines visibility for all azimuth rays
   use filemanager, only : NSx,NSy,RMAX
   use allinterfaces, only : horizontaldistance, azimuth, diffangle, hpsort
   implicit none
