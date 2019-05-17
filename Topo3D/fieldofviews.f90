@@ -4,17 +4,17 @@ program fieldofviews
 ! 2. determines visibility of surface elements
 ! 3. calculates subtended angle for every surface element
 !
-! Without input parameter, it executes serially
-! With integer as input parameter, it executes parallel implementation
-! For example, a.out 2    executes second row
+! Without command line parameters, it executes serially
+! With two integers as input parameter, it executes parallel implementation
+!     e.g., 'a.out 6 2'  processes second out of six slices of domain
 !
-! written by Norbert Schorghofer 2010-2015  
+! written by Norbert Schorghofer 2010-2019
 !*****************************************************************************
   use filemanager, only : NSx,NSy
   use allinterfaces
   implicit none
   real(8), parameter :: pi=3.1415926535897932, d2r=pi/180.
-  integer i, j, ext, narg
+  integer i, j, narg, ilower, iupper
   integer, parameter :: naz=180   ! # of azimuths
   real(8) h(NSx,NSy), smax(naz)
   character(5) extc
@@ -27,44 +27,41 @@ program fieldofviews
   
   call readdem(h)
   print *,'...finished reading topography...'
+  print *,'Nsx=',NSx,'Nsy=',NSy,'# azimuths=',naz
 
-  if (narg==0) then  ! serial implementation
+  select case(narg)
+  case (0)  ! serial implementation
      print *,'...creating files horizons.dat and fieldofviews.dat'
      open(unit=21,file='horizons.dat',status='unknown',action='write')
      open(unit=22,file='fieldofviews.dat',status='unknown',action='write')
-     print *,'Nsx=',nsx,'Nsy=',nsy,'# azimuths=',naz
-     do i=2,NSx-1
-        print *,i
-        do j=2,NSy-1
-           visibility(:,:) = .false.
-           call findallhorizon_wsort(h,i,j,naz,smax,visibility)
-           !write(21,'(2(i0,1x),9999(1x,f6.4))') i,j,smax(:)
-           write(21,'(2(i0,1x))',advance='no') i,j
-           call compactoutput(21,smax,naz)
-           call refinevisibility(i,j,h,visibility)
-           call find3dangle(h,i,j,22,visibility)
-        enddo
-     enddo
+     ilower = 2; iupper = NSx-1
 
-  else  ! parallel implementation
-     call getarg(1,extc)
-     read(extc,'(i4)') ext  ! string->integer
-     if (ext<=1 .or. ext>=NSx) stop 'argument is out of bounds'  
-     i = ext  ! replaces loop over i=2,...,NSx-1
-     print *,'...creating file horizon and fieldofview...',i
+  case (2)  ! parallel implementation
+     call slicer(NSx,ilower,iupper,extc)
+     print *,'...creating files horizon and fieldofview...',extc
      open(unit=21,file='horizon.'//extc,status='unknown',action='write')
      open(unit=22,file='fieldofview.'//extc,status='unknown',action='write')
+     ! merge and sort output files with script
+     
+  case default
+     stop 'Number of command line arguments must be zero or two' 
+  end select
+  
+  if (ilower<=1 .or. iupper>=NSx) stop
+  
+  do i=ilower,iupper
+     print *,i
      do j=2,NSy-1
         visibility(:,:) = .false.
         call findallhorizon_wsort(h,i,j,naz,smax,visibility)
+        !write(21,'(2(i0,1x),9999(1x,f6.4))') i,j,smax(:)
         write(21,'(2(i0,1x))',advance='no') i,j
         call compactoutput(21,smax,naz)
         call refinevisibility(i,j,h,visibility)
         call find3dangle(h,i,j,22,visibility)
      enddo
-     ! merge and sort output files with script
-  endif
-  
+  enddo
+
   close(21)
   close(22)
   print *,'Finished'

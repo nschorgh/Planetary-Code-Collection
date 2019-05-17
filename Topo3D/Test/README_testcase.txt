@@ -20,7 +20,7 @@ Output: fieldofviews.topo81
 RUN 1: COMPARISON WITH INGERSOLL SOLUTION
 
 cratersQ_snaphost.f90 calculates instantaneous solution, takes 30 seconds
-albedo 0.1, emissivity 0.95
+albedo 0.12, emissivity 0.95
 sun elevation 10 degree, solar constant 1365 W/m^2
 
 Output: qinst.topo81 (meaning of columns is in write(21,... )
@@ -30,7 +30,7 @@ Used qtest_ingersoll.m to make figure qtest_ingersoll.eps
 
 RUN 2: ONE SOLAR DAY
 
-cratersQ_moon.f90 calculates one solar day, takes 5.5 minutes
+cratersQ_moon.f90 calculates one solar day, takes 6 minutes
 latitude 80 degree, declination 0 degree (hence 10 degree maximum solar elevation)
 time step 1/100th of solar day
 
@@ -41,7 +41,7 @@ Used qmean1.m to make figure qmean.png
 RUN 3: WITH SUBSURFACE CONDUCTION
 
 cratersQ_moon.f90 as Run 2, but with subsurface conduction, takes 1 hour
-domain depth = 5 skin depths, 10+1 solar days, thermal inertia 100 tiu
+domain depth = 5 skin depths, 12 solar days, thermal inertia 100 tiu
 
 Output: qmean.topo81_wsurfcond (meaning of columns is in write(22,... )
 Used qmean_compare.m to make figure qmean_compare.eps

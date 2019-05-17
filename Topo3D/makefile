@@ -52,12 +52,6 @@ insol_mars: filemanager.o topo3d_modules.o topo3d_subs.o \
 	$(CC) $(LFLAGS) insol_mars.o topo3d_common.o topo3d_subs.o \
 	$(SR)flux_noatm.o $(SR)julday.o $(SRM)marsorbit.o
 
-test: filemanager.o topo3d_modules.o test_shadows1pt.o shadow_subs.o \
-	topo3d_common.o hpsort.o multigrid.o makefile
-	make -C $(SR) common
-	$(CC) $(LFLAGS) test_shadows1pt.o shadow_subs.o hpsort.o \
-	topo3d_common.o multigrid.o 
-
 fieldproperties: filemanager.o topo3d_modules.o topo3d_common.o \
 	topo3d_subs.o fieldproperties.o makefile
 	$(CC) $(LFLAGS) fieldproperties.o topo3d_common.o topo3d_subs.o 

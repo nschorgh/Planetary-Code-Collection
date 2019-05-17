@@ -13,7 +13,8 @@ program cratersQ_Moon
   real(8), parameter :: sigSB = 5.6704e-8  
   real(8), parameter :: solarDay = 29.53*86400.
 
-  integer nsteps, n, i, j, nm, k, CCMAX, iii, jjj, nm2
+  integer nsteps, n, i, j, nm, nm2, STEPSPERSOL
+  integer k, CCMAX, iii, jjj
   real(8) tmax, dt, latitude, dtsec
   real(8) R, Decl, HA, sdays
   real(8) azSun, sinbeta, smax, emiss, v
@@ -24,13 +25,18 @@ program cratersQ_Moon
   real(4), dimension(:,:,:), allocatable :: dO12  
   real(8), dimension(NSx,NSy) :: Tsurf, Qvis, skysize, Qabs, albedo, QIRin, QIRre
   real(8) Qmeans(NSx,NSy,4)
-  real(8), dimension(NSx,NSy) :: Qmax1, Qmax2, Tmean, Tmaxi, Tb, Tmaxi2
+  real(8), dimension(NSx,NSy) :: Qmax1, Qmax2, Tmean, Tmaxi, Tb, Tmaxi2, T0m
   real(8), allocatable :: T(:,:,:), Qnm1(:,:)  ! subsurface
   logical, parameter :: reflection=.true., subsurface=.false.
   
-  dt=0.01d0 
-  tmax = 2.
-  latitude = 87.
+  dt=0.01d0
+  STEPSPERSOL = nint(1./dt)
+  if (.not. subsurface) then
+     tmax = 1.+10*dt  ! in units of solar days 
+  else
+     tmax = 12.
+  endif
+  latitude = 80.
   ! azimuth in degrees east of north, 0=north facing
   albedo(:,:) = 0.12d0
   emiss = 0.95d0
@@ -50,10 +56,10 @@ program cratersQ_Moon
 
   latitude=latitude*d2r
   Tsurf=0.; Qrefl=0.; QIRre=0.  
-  Qmeans=0.; Tmean=0.; nm=0
-  Qmax1=0.; Qmax2=0.; 
+  Qmeans(:,:,:)=0.; Tmean=0.; nm=0
+  Qmax1=0.; Qmax2=0.
   Tmaxi=0.; Tmaxi2=0.
-  Tb=0.; nm2=0
+  Tb=0.; nm2=0; T0m=0.
   
   print *,'...reading horizons file...'
   call readhorizons
@@ -110,18 +116,18 @@ program cratersQ_Moon
      if (subsurface) then
         if (n==0) then ! initialization
            Qnm1 = Qabs
-           !Tsurf = 0.
            Tsurf = -200. ! negative of initialization temperature
         endif
 
         ! for faster convergence
-        if (n>=10 .and. n<10+nint(1/dt)) then
-           Tb = Tb+Tsurf
+        if (n>=STEPSPERSOL .and. n<2*STEPSPERSOL) then
+           T0m = T0m+Tsurf
            nm2 = nm2+1
         endif
-        if (n==10+nint(1/dt)) then
-           Tb = Tb/nm2
-           Tsurf = -Tb  ! re-initialize
+        if (n==2*STEPSPERSOL) then
+           T0m = T0m/nm2
+           Tsurf(:,:) = -T0m
+           print *,'re-initialized'
         endif
 
         ! main part
@@ -160,16 +166,16 @@ program cratersQ_Moon
   Qmeans=Qmeans/nm
   Tmean=Tmean/nm
 
-  open(unit=21,file='qmean.dat',status='unknown',action='write')
-  open(unit=22,file='qinst.dat',status='unknown',action='write')
+  open(unit=21,file='qinst.dat',status='unknown',action='write')
+  open(unit=22,file='qmean.dat',status='unknown',action='write')
   do i=2,NSx-1
      do j=2,NSy-1
-        write(21,'(2(i4,1x),f9.2,2x,f6.4,4(1x,f6.1),1x,f5.1,2(1x,f6.1),1x,f5.1)') &
+        !write(21,'(2(i4,1x),f9.2,2x,f6.4,4(1x,f6.1),1x,f5.1)') &  ! instanteneous values
+        !     & i,j,h(i,j),surfaceSlope(i,j),Qn(i,j),Qabs(i,j),Qir(i,j),Qrefl(i,j), &
+        !     & Tsurf(i,j)
+        write(22,'(2(i4,1x),f9.2,2x,f6.4,4(1x,f6.1),1x,f5.1,2(1x,f6.1),1x,f5.1)') &
              & i,j,h(i,j),surfaceSlope(i,j),Qmeans(i,j,1:4), &
              & Tmean(i,j),Qmax1(i,j),Qmax2(i,j),Tmaxi(i,j)
-        write(22,'(2(i4,1x),f9.2,2x,f6.4,4(1x,f6.1),1x,f5.1)') &  ! instanteneous values
-             & i,j,h(i,j),surfaceSlope(i,j),Qn(i,j),Qabs(i,j),Qir(i,j),Qrefl(i,j), &
-             & Tsurf(i,j)
      enddo
   enddo
   close(21)

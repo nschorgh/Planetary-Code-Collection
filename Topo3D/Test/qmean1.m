@@ -18,6 +18,8 @@ hmax=max(h(:));
 figure(1); clf
 set(0,'defaultaxesfontsize',11,'defaulttextfontsize',9)
 set(0,'defaultlinelinewidth',2,'defaultaxesfontsize',9)
+colormap('jet')
+
 
 subplot(2,2,1)
 imagesc(h)
@@ -28,7 +30,7 @@ hold on
 set(hcont,'linewidth',2)
 hold off
 barh1=colorbar;
-set(get(barh1,'ylabel'),'string','Elevation (m)','fontsize',11)
+set(get(barh1,'ylabel'),'string','Elevation (m)')
 axis off
 
 
@@ -37,7 +39,7 @@ imagesc(Qm);
 shading flat
 axis equal ij
 barh=colorbar;
-set(get(barh,'ylabel'),'string','Mean Absorption (W/m^2)','fontsize',11)
+set(get(barh,'ylabel'),'string','Mean Absorption (W/m^2)')
 axis off
 Qmin=min(Qm(:));
 Qmax=max(Qm(:));
@@ -54,7 +56,7 @@ imagesc(Qx);
 shading flat
 axis equal ij
 barh=colorbar;
-set(get(barh,'ylabel'),'string','Peak Absorption (W/m^2)','fontsize',11)
+set(get(barh,'ylabel'),'string','Peak Absorption (W/m^2)')
 axis off
 Qmin=min(Qx(:));
 Qmax=max(Qx(:));
@@ -71,7 +73,7 @@ imagesc(T);
 shading flat
 axis equal ij
 barh=colorbar;
-set(get(barh,'ylabel'),'string','Peak Temperature (K)','fontsize',11)
+set(get(barh,'ylabel'),'string','Peak Temperature (K)')
 axis off
 Qmin=min(T(:));
 Qmax=max(T(:));

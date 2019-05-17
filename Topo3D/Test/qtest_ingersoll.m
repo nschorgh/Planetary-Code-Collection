@@ -31,12 +31,12 @@ box on
 
 
 figure(2); clf
-plot(Tsurf(:,y),'go-')
+plot(Tsurf(:,y),'go-','markersize',3)
 xlabel('Distance (Pixel)')
 ylabel('Temperature (K)')
 
 S0=1365;
-A=0.10;
+A=0.12;
 emiss=0.95;
 beta=10*pi/180;  % elevation of sun
 D2d=5;
@@ -48,4 +48,4 @@ plot([min(k) max(k)],Tingersoll*[1 1],'r-','linewidth',2)
 hold off
 legend('Numerical','Analytical')
 
-%print -depsc qtest.eps
+%print -depsc qtest_ingersoll.eps

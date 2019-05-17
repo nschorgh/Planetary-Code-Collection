@@ -22,7 +22,7 @@ program cratersQ_snapshot
   real(4), dimension(:,:,:), allocatable :: dO12
   
   ! azimuth in degrees east of north, 0=north facing
-  albedo(:,:) = 0.136
+  albedo(:,:) = 0.12
   emiss = 0.95
 
   R=1.
@@ -90,7 +90,7 @@ program cratersQ_snapshot
 
   deallocate(ii, jj, dO12)
 
-  open(unit=21,file='q.dat',status='unknown',action='write')
+  open(unit=21,file='qinst.dat',status='unknown',action='write')
   do i=2,NSx-1
      do j=2,NSy-1
         write(21,'(2(i4,1x),f9.2,2x,f6.4,5(1x,f6.1),1x,f5.1)') &  ! instanteneous values
