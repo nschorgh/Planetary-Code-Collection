@@ -17,13 +17,13 @@ program cratersQ_Moon
   integer k, CCMAX, iii, jjj
   real(8) tmax, dt, latitude, dtsec
   real(8) R, Decl, HA, sdays
-  real(8) azSun, sinbeta, smax, emiss, v
+  real(8) azSun, sinbeta, smax, emiss
   real(8), dimension(NSx,NSy) :: h, surfaceSlope, azFac
   real(8), dimension(NSx,NSy) :: Qn, QIR, Qrefl   ! incoming
   integer, dimension(NSx,NSy) :: cc
   integer(2), dimension(:,:,:), allocatable :: ii,jj
-  real(4), dimension(:,:,:), allocatable :: dO12  
-  real(8), dimension(NSx,NSy) :: Tsurf, Qvis, landsize, Qabs, albedo, QIRin, QIRre
+  real(4), dimension(:,:,:), allocatable :: VF  
+  real(8), dimension(NSx,NSy) :: Tsurf, Qvis, viewsize, Qabs, albedo, QIRin, QIRre
   real(8) Qmeans(NSx,NSy,4)
   real(8), dimension(NSx,NSy) :: Qmax1, Qmax2, Tmean, Tmaxi, Tb, Tmaxi2, T0m
   real(8), allocatable :: T(:,:,:), Qnm1(:,:)  ! subsurface
@@ -65,11 +65,12 @@ program cratersQ_Moon
   call readhorizons
 
   if (reflection) then
-     print *,'...reading huge fieldofviews file...'
-     CCMAX = getmaxfieldsize(NSx,NSy,ffn)
+     print *,'...reading huge viewfactors file...'
+     CCMAX = getmaxfieldsize(NSx,NSy,vfn)
      print *,'... max field of view size=',CCMAX
-     allocate(ii(NSx,NSy,CCMAX), jj(NSx,NSy,CCMAX), dO12(NSx,NSy,CCMAX))
-     call getfieldofview(NSx,NSy,ffn,cc,ii,jj,dO12,landsize,CCMAX)
+     allocate(ii(NSx,NSy,CCMAX), jj(NSx,NSy,CCMAX), VF(NSx,NSy,CCMAX))
+     !call getfieldofview(NSx,NSy,ffn,cc,ii,jj,dO12,landsize,CCMAX)
+     call getviewfactors(NSx,NSy,vfn,cc,ii,jj,VF,viewsize,CCMAX)
   endif
   if (subsurface) allocate(T(1000,NSx,NSy), Qnm1(NSx,NSy))
 
@@ -101,10 +102,10 @@ program cratersQ_Moon
               QIR(i,j)=0.; Qrefl(i,j)=0.; QIRre(i,j)=0.
               do k=1,cc(i,j)
                  iii = ii(i,j,k); jjj = jj(i,j,k)
-                 v = viewing_angle(i,j,iii,jjj,h)
-                 Qrefl(i,j) = Qrefl(i,j) + dO12(i,j,k)/pi*cos(v)*albedo(iii,jjj)*Qvis(iii,jjj)
-                 QIR(i,j) = QIR(i,j) + dO12(i,j,k)/pi*cos(v)*emiss*sigSB*Tsurf(iii,jjj)**4
-                 QIRre(i,j) = QIRre(i,j) + dO12(i,j,k)/pi*cos(v)*(1-emiss)*QIRin(iii,jjj)
+                 !v = viewing_angle(i,j,iii,jjj,h)
+                 Qrefl(i,j) = Qrefl(i,j) + VF(i,j,k)/pi*albedo(iii,jjj)*Qvis(iii,jjj)
+                 QIR(i,j) = QIR(i,j) + VF(i,j,k)/pi*emiss*sigSB*Tsurf(iii,jjj)**4
+                 QIRre(i,j) = QIRre(i,j) + VF(i,j,k)/pi*(1-emiss)*QIRin(iii,jjj)
               enddo
            enddo
         enddo
@@ -160,7 +161,7 @@ program cratersQ_Moon
 
   enddo  ! end of time loop
 
-  if (reflection) deallocate(ii, jj, dO12)
+  if (reflection) deallocate(ii, jj, VF)
   if (subsurface) deallocate(T, Qnm1)
   
   Qmeans=Qmeans/nm

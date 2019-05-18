@@ -19,15 +19,16 @@ program cratersQ_earth
   integer nsteps, n, i, j, nm, k, CCMAX, iii, jjj
   real(8) tmax, edays, dtmin, latitude
   real(8) R, dZenithAngle, dAzimuth, longitude
-  real(8) azSun, sinbeta, emax, emiss, v
+  real(8) azSun, sinbeta, emax, emiss
   real(8), dimension(NSx,NSy) :: h, surfaceSlope, azFac
   real(8), dimension(NSx,NSy) :: Qn, QIR, Qrefl   ! incoming
   integer, dimension(NSx,NSy) :: cc
   integer(2), dimension(:,:,:), allocatable :: ii,jj
-  real(4), dimension(:,:,:), allocatable :: dO12
-  real(8), dimension(NSx,NSy) :: Tsurf, Qvis, skysize, Qabs, albedo, QIRin, QIRre
+  real(4), dimension(:,:,:), allocatable :: VF
+  real(8), dimension(NSx,NSy) :: Tsurf, Qvis, Qabs, albedo, QIRin, QIRre
+  real(8), dimension(NSx,NSy) :: skyview, viewsize
   real(8) Qmeans(NSx,NSy,4), Qmax(NSx,NSy), Tmean(NSx,NSy), Qflat, Qflatm
-  real(8) I0,D0,S0,unsd  ! atmosphere
+  real(8) I0, D0, S0, unsd  ! atmosphere
   real(8), allocatable :: T(:,:,:), Qnm1(:,:)  ! subsurface conduction
   type(cTime) udtTime
   real(8), parameter :: zero=0.
@@ -65,13 +66,17 @@ program cratersQ_earth
   
   print *,'...reading horizons file...'
   call readhorizons
-
+  do concurrent(i=2:NSx-1, j=2:NSy-1)
+     skyview(i,j) = getoneskysize_v2(i,j)/(2*pi)
+  end do
+  
   if (reflection) then
      print *,'...reading huge fieldofviews file...'
-     CCMAX = getmaxfieldsize(NSx,NSy,ffn)
+     CCMAX = getmaxfieldsize(NSx,NSy,vfn)
      print *,'... max field of view size=',CCMAX
-     allocate(ii(NSx,NSy,CCMAX), jj(NSx,NSy,CCMAX), dO12(NSx,NSy,CCMAX))
-     call getfieldofview(NSx,NSy,ffn,cc,ii,jj,dO12,skysize,CCMAX)
+     allocate(ii(NSx,NSy,CCMAX), jj(NSx,NSy,CCMAX), VF(NSx,NSy,CCMAX))
+     !call getfieldofview(NSx,NSy,ffn,cc,ii,jj,dO12,skysize,CCMAX)
+     call getviewfactors(NSx,NSy,vfn,cc,ii,jj,VF,viewsize,CCMAX)
   endif
   if (subsurface) allocate(T(nz,NSx,NSy), Qnm1(NSx,NSy))
   
@@ -94,14 +99,14 @@ program cratersQ_earth
            Qn(i,j)=flux_wshad(R,sinbeta,azSun,surfaceSlope(i,j),azFac(i,j),emax)
         enddo
      enddo
-     Qflat=flux_wshad(R,sinbeta,azSun,zero,zero,zero)
+     Qflat = flux_wshad(R,sinbeta,azSun,zero,zero,zero)
 
      if (atmosphere) then
         unsd = mk_atmosphere(dZenithAngle*d2r,I0,D0)
         S0=1365./R**2  ! must be the same as in flux_wshad
         if (reflection) then
            forall(i=2:NSx-1, j=2:NSy-1)
-              Qn(i,j)=Qn(i,j)*I0 + S0*D0*(1.-skysize(i,j)/(2*pi))
+              Qn(i,j)=Qn(i,j)*I0 + S0*D0*(1.-skyview(i,j)/(2*pi))
            end forall
         else
            Qn(:,:) = Qn(:,:)*I0 + S0*D0
@@ -117,16 +122,15 @@ program cratersQ_earth
               QIR(i,j)=0.; Qrefl(i,j)=0.; QIRre(i,j)=0.
               do k=1,cc(i,j)
                  iii = ii(i,j,k); jjj = jj(i,j,k)
-                 v = viewing_angle(i,j,iii,jjj,h)
-                 Qrefl(i,j) = Qrefl(i,j) + dO12(i,j,k)/pi*cos(v)*albedo(iii,jjj)*Qvis(iii,jjj)
-                 QIR(i,j) = QIR(i,j) + dO12(i,j,k)/pi*cos(v)*emiss*sigSB*Tsurf(iii,jjj)**4
-                 QIRre(i,j) = QIRre(i,j) + dO12(i,j,k)/pi*cos(v)*(1-emiss)*QIRin(iii,jjj)
+                 Qrefl(i,j) = Qrefl(i,j) + VF(i,j,k)/pi*albedo(iii,jjj)*Qvis(iii,jjj)
+                 QIR(i,j) = QIR(i,j) + VF(i,j,k)/pi*emiss*sigSB*Tsurf(iii,jjj)**4
+                 QIRre(i,j) = QIRre(i,j) + VF(i,j,k)/pi*(1-emiss)*QIRin(iii,jjj)
               enddo
            enddo
         enddo
         Qabs(:,:)=(1.-albedo)*(Qn+Qrefl)+emiss*(QIR+QIRre)  ! Q absorbed
         forall(i=2:NSx-1, j=2:NSy-1) !!!!
-           Qabs(i,j)=Qabs(i,j)+Qother*(1.-skysize(i,j)/(2*pi))
+           Qabs(i,j)=Qabs(i,j)+Qother*(1.-skyview(i,j)/(2*pi))
         end forall
      else
         Qabs(:,:)=(1.-albedo)*Qn  + Qother
@@ -161,7 +165,7 @@ program cratersQ_earth
 
   enddo  ! end of time loop
 
-  if (reflection) deallocate(ii, jj, dO12)
+  if (reflection) deallocate(ii, jj, VF)
   if (subsurface) deallocate(T, Qnm1)
 
   Qmeans=Qmeans/nm

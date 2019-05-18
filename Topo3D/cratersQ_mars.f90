@@ -1,4 +1,8 @@
-! Mars thermal model with horizons from 3D topography
+!***************************************************************************
+! cratersQ_mars: Mars thermal model with direct insolation, subsurface
+!                conduction, terrain shadowing, and approximate self-heating
+!***************************************************************************
+
 
 module miscparams
   real(8), parameter :: pi=3.1415926535897932, d2r=pi/180.

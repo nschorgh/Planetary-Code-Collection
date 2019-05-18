@@ -79,9 +79,7 @@ contains
   end function getonehorizon
 
   elemental function getoneskysize(i,j)
-    !***********************************************************************
-    !   calculates sky size (steradian) from horizons
-    !***********************************************************************
+    ! calculates sky size (steradian) from horizons
     use allinterfaces, only: area_spherical_triangle
     implicit none
     real(8) getoneskysize
@@ -98,13 +96,10 @@ contains
        skysize = skysize + dOmega
     enddo
     getoneskysize = skysize
-    
   end function getoneskysize
 
   elemental function getoneskysize_v2(i,j)
-    !***********************************************************************
-    !   calculates sky size (steradian) from horizons
-    !***********************************************************************
+    ! calculates sky size (steradian) from horizons
     implicit none
     real(8) getoneskysize_v2
     integer, intent(IN) :: i,j
@@ -114,7 +109,6 @@ contains
 
     landsize = sum(sin(s(i,j,1:naz)))*dphi
     getoneskysize_v2 = 2*pi-landsize
-    
   end function getoneskysize_v2
 
   elemental function getoneGterm(i,j,alpha,azFac)
@@ -231,6 +225,7 @@ end subroutine equatorial2horizontal
 
 
 subroutine getfieldofview(NSx,NSy,ffn,cc,ia,ja,dOh,landsize,CCMAX)
+  ! reads subtended spherical angles from file
   implicit none
   integer, intent(IN) :: NSx, NSy
   character(len=*), intent(IN) :: ffn
@@ -261,7 +256,41 @@ end subroutine getfieldofview
 
 
 
+subroutine getviewfactors(NSx,NSy,vfn,cc,ia,ja,VF,viewsize,CCMAX)
+  ! reads viewfactors from file
+  implicit none
+  integer, intent(IN) :: NSx, NSy
+  character(len=*), intent(IN) :: vfn
+  integer, intent(IN) :: CCMAX
+  integer, intent(OUT) :: cc(NSx,NSy) ! number of cells in field of view
+  integer(2), intent(OUT), dimension(NSx,NSy,CCMAX) :: ia, ja
+  real(4), intent(OUT), dimension(NSx,NSy,CCMAX) :: VF
+  real(8), intent(OUT) :: viewsize(NSx,NSy)
+  integer i, j, k, i0_2, j0_2, ierr
+  real(8) landsize(NSx,NSy)
+  
+  open(unit=21,file=vfn,status='old',action='read',iostat=ierr)
+  if (ierr>0) stop 'getviewfactors: input file not found'
+  do i=2,NSx-1
+     do j=2,NSy-1
+        read(21,'(2(i5,1x),i6,1x,2(f7.5,1x))',advance='no') & ! format must match
+             & i0_2,j0_2,cc(i,j),landsize(i,j),viewsize(i,j)
+        if (i/=i0_2 .or. j/=j0_2) stop 'getviewfactors: wrong data order'
+        if (cc(i,j)>CCMAX) stop 'getviewfactors: not enough memory allocated'
+        do k=1,cc(i,j)
+           read(21,'(2(i5,1x),g10.4,1x)',advance='no') & ! format must match
+                & ia(i,j,k),ja(i,j,k),VF(i,j,k)
+        enddo
+        read(21,'()')
+     enddo
+  enddo
+  close(21)
+end subroutine getviewfactors
+
+
+
 integer function getmaxfieldsize(NSx,NSy,ffn)
+  ! compatible with fieldofviews.dat and viewfactors.dat
   implicit none
   integer, intent(IN) :: NSx,NSy
   character(len=*), intent(IN) :: ffn

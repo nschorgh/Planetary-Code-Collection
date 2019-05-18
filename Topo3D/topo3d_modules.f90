@@ -184,6 +184,19 @@ module allinterfaces
   end interface
 
   interface
+     subroutine getviewfactors(NSx,NSy,vfn,cc,ia,ja,VF,viewsize,CCMAX)
+       implicit none
+       integer, intent(IN) :: NSx, NSy
+       character(len=*), intent(IN) :: vfn
+       integer, intent(IN) :: CCMAX
+       integer, intent(OUT) :: cc(NSx,NSy) ! number of cells in field of view
+       integer(2), intent(OUT), dimension(NSx,NSy,CCMAX) :: ia, ja
+       real(4), intent(OUT), dimension(NSx,NSy,CCMAX) :: VF
+       real(8), intent(OUT) :: viewsize(NSx,NSy)
+     end subroutine getviewfactors
+  end interface
+  
+  interface
      integer function getmaxfieldsize(NSx,NSy,ffn)
        implicit none
        integer, intent(IN) :: NSx,NSy

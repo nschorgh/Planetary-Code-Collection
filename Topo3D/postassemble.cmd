@@ -4,8 +4,8 @@
 
 /bin/rm -f horizons.dat 
 touch horizons.dat
-#/bin/rm -f fieldofviews.dat
-#touch fieldofviews.dat
+#/bin/rm -f viewfactors.dat
+#touch viewfactors.dat
 
 
 for i in `ls horizon.* | sort -V`;
@@ -14,7 +14,7 @@ do
 done
 #for i in `ls fieldofview.* | sort -V`;
 #do
-#    cat $i >> fieldofviews.dat
+#    cat $i >> viewfactors.dat
 #done
 
 

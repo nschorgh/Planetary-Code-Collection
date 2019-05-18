@@ -1,6 +1,7 @@
 program toposhadows
 !***********************************************************************
 ! calculates horizon for every location and every azimuth
+!
 ! written by Norbert Schorghofer 2010-2018
 !***********************************************************************
   use filemanager, only : NSx,NSy,fileext,dx,dy,RMAX

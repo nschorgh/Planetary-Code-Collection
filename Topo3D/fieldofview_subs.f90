@@ -1,4 +1,3 @@
-
 subroutine findallhorizon_wsort(h,i0,j0,naz,smax,visibility)
 ! finds horizon and determines visibility for all azimuth rays
   use filemanager, only : NSx,NSy,RMAX
@@ -133,6 +132,7 @@ end subroutine findallhorizon_wsort
 
 
 subroutine find3dangle(h,i0,j0,unit,visibility)
+  ! calculate subtended spherical angle and view factor
   use filemanager
   use allinterfaces, except_this_one => find3dangle
   implicit none
@@ -222,19 +222,19 @@ subroutine find3dangle(h,i0,j0,unit,visibility)
   enddo
 
   landsize = sum(dOstack(1:cc))   ! 2*pi- size of sky
-  viewsize = sum(VFstack(1:cc))
+  viewsize = sum(VFstack(1:cc)) 
 
-  write(unit,'(2(i5,1x),i6,1x,f7.5,1x)',advance='no') i0, j0, cc, landsize
+  !write(unit-1,'(2(i5,1x),i6,1x,f7.5,1x)',advance='no') i0, j0, cc, landsize
+  !do i=1,cc
+  !   write(unit-1,'(2(i5,1x),g10.4,1x)',advance='no') cellx(i),celly(i),dOstack(i)
+  !enddo
+  !write(unit-1,"('')")
+
+  write(unit,'(2(i5,1x),i6,1x,2(f7.5,1x))',advance='no') i0, j0, cc, landsize, viewsize
   do i=1,cc
-     write(unit,'(2(i5,1x),g10.4,1x)',advance='no') cellx(i),celly(i),dOstack(i)
+     write(unit,'(2(i5,1x),g10.4,1x)',advance='no') cellx(i),celly(i),VFstack(i)
   enddo
   write(unit,"('')")
-
-  !write(unit+1,'(2(i5,1x),i6,1x,2(f7.5,1x))',advance='no') i0, j0, cc, landsize, viewsize
-  !do i=1,cc
-  !   write(unit+1,'(2(i5,1x),g10.4,1x)',advance='no') cellx(i),celly(i),VFstack(i)
-  !enddo
-  !write(unit+1,"('')")
   
   if (minval(cellx(1:cc))<1 .or. minval(celly(1:cc))<1) stop 'find3dangle: index out of boud'
   if (maxval(cellx(1:cc))>NSx .or. maxval(celly(1:cc))>NSy) stop 'find3dangle: index out of boud'

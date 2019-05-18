@@ -50,7 +50,7 @@ module filemanager
   character(len = *), parameter :: &
        hfn='./'//fileext//'.xyz' ,& ! path and filename for topography (*.xyz)
        sfn='./horizons.'//fileext ,& ! path and filename for horizons.* input 
-       ffn='./fieldofviews.'//fileext  ! path and filename for fieldofviews.* input
+       vfn='./viewfactors.'//fileext  ! path and filename for viewfactors.* input
   ! outputs are written to working directory
 end module filemanager
 

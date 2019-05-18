@@ -15,11 +15,11 @@ program cratersQ_equilbr
   integer n, i, j, k, CCMAX, iii, jjj
   real(8), dimension(NSx,NSy) :: h, surfaceSlope, azFac
   real(8), dimension(NSx,NSy) :: Qn, QIR, Qrefl, QIRre   ! incoming
-  real(8) R, azSun, smax, emiss, betaSun, v1, Qshadow1, Qshadow2
+  real(8) R, azSun, smax, emiss, betaSun, Qshadow1, Qshadow2
   integer, dimension(NSx,NSy) :: cc
   integer(2), dimension(:,:,:), allocatable :: ii,jj
-  real(8), dimension(NSx,NSy) :: Tsurf, Qvis, landsize, Qabs, albedo, QIRin
-  real(4), dimension(:,:,:), allocatable :: dO12
+  real(8), dimension(NSx,NSy) :: Tsurf, Qvis, viewsize, Qabs, albedo, QIRin
+  real(4), dimension(:,:,:), allocatable :: VF
   
   ! azimuth in degrees east of north, 0=north facing
   albedo(:,:) = 0.12
@@ -35,11 +35,12 @@ program cratersQ_equilbr
   print *,'...reading horizons file...'
   call readhorizons
 
-  print *,'...reading huge fieldofviews file...'
-  CCMAX = getmaxfieldsize(NSx,NSy,ffn)
+  print *,'...reading huge viewfactors file...'
+  CCMAX = getmaxfieldsize(NSx,NSy,vfn)
   print *,'... max field of view size=',CCMAX
-  allocate(ii(NSx,NSy,CCMAX), jj(NSx,NSy,CCMAX), dO12(NSx,NSy,CCMAX))
-  call getfieldofview(NSx,NSy,ffn,cc,ii,jj,dO12,landsize,CCMAX)
+  allocate(ii(NSx,NSy,CCMAX), jj(NSx,NSy,CCMAX), VF(NSx,NSy,CCMAX))
+  !call getfieldofview(NSx,NSy,ffn,cc,ii,jj,dO12,landsize,CCMAX)
+  call getviewfactors(NSx,NSy,vfn,cc,ii,jj,VF,viewsize,CCMAX)
 
   print *,'...calculating...'  
   print *,'beta=',betaSun/d2r,'azSun=',azSun/d2r
@@ -67,13 +68,13 @@ program cratersQ_equilbr
 
            do k=1,cc(i,j)
               iii = ii(i,j,k); jjj = jj(i,j,k)
-              v1 = viewing_angle(i,j,iii,jjj,h)
+              !v1 = viewing_angle(i,j,iii,jjj,h)
               
               !if (cos(v1)<0.) stop 'Oh no'
 
-              Qrefl(i,j) = Qrefl(i,j) + albedo(iii,jjj)*Qvis(iii,jjj)*dO12(i,j,k)/pi*cos(v1)
-              QIR(i,j) = QIR(i,j) + emiss*sigSB*Tsurf(iii,jjj)**4*dO12(i,j,k)/pi*cos(v1)
-              QIRre(i,j) = QIRre(i,j) + (1-emiss)*QIRin(iii,jjj)*dO12(i,j,k)/pi*cos(v1)
+              Qrefl(i,j) = Qrefl(i,j) + albedo(iii,jjj)*Qvis(iii,jjj)*VF(i,j,k)/pi
+              QIR(i,j) = QIR(i,j) + emiss*sigSB*Tsurf(iii,jjj)**4*VF(i,j,k)/pi
+              QIRre(i,j) = QIRre(i,j) + (1-emiss)*QIRin(iii,jjj)*VF(i,j,k)/pi
            enddo
            if (Qn(i,j)==0.) then
               Qshadow1 = Qshadow1 + Qrefl(i,j)
@@ -88,7 +89,7 @@ program cratersQ_equilbr
      print *,'Iteration',n,Qshadow1,Qshadow2
   enddo
 
-  deallocate(ii, jj, dO12)
+  deallocate(ii, jj, VF)
 
   open(unit=21,file='qinst.dat',status='unknown',action='write')
   do i=2,NSx-1
