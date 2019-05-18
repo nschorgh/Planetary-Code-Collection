@@ -12,11 +12,12 @@ SRM = ../Mars/
 # topo3d_modules.f90 has to be compiled second for module allinterfaces
 # topo3d_subs.f90 contains module newhorizons and should be compiled third
 # conductionT2/Q2 contain modules conductionT/Q (therefore the symlink)
+# multigrid.f90 has module newmultigrid needed by shadows.f90
 
 shadows: filemanager.o topo3d_modules.o multigrid.o shadows.o shadow_subs.o \
-	topo3d_common.o hpsort.o multigrid.o makefile
-	$(CC) $(LFLAGS) shadows.o shadow_subs.o hpsort.o \
-	topo3d_common.o multigrid.o -o $@
+	topo3d_common.o hpsort.o makefile
+	$(CC) $(LFLAGS) shadows.o shadow_subs.o hpsort.o topo3d_common.o \
+	multigrid.o -o $@
 
 fieldofviews: filemanager.o topo3d_modules.o fieldofviews.o topo3d_common.o \
 	shadow_subs.o fieldofview_subs.o hpsort.o makefile
@@ -44,8 +45,8 @@ cratersQ_mars: filemanager.o topo3d_modules.o topo3d_subs.o conductionT2.o \
 	$(SRM)flux_mars.o $(SR)grids.o conductionQ2.o $(SR)tridag.o \
 	conductionT2.o $(SR)julday.o $(SRM)marsorbit.o $(SR)psv.o -o $@
 
-insol_mars: filemanager.o topo3d_modules.o topo3d_subs.o \
-	topo3d_common.o insol_mars.o makefile
+insol_mars: filemanager.o topo3d_modules.o topo3d_subs.o topo3d_common.o \
+	insol_mars.o makefile
 	make -C $(SR) common
 	make -C $(SRM) common-mars
 	$(CC) $(LFLAGS) insol_mars.o topo3d_common.o topo3d_subs.o \
@@ -55,14 +56,14 @@ fieldproperties: filemanager.o topo3d_modules.o topo3d_common.o \
 	topo3d_subs.o fieldproperties.o makefile
 	$(CC) $(LFLAGS) fieldproperties.o topo3d_common.o topo3d_subs.o 
 
-%.o:	%.f makefile
-	$(CC) $(CFLAGS) -c $<
+
 
 %.o:	%.for makefile
 	$(CC) $(CFLAGS) -c $<
 
-%.o:	%.f90 makefile
+%.o:	%.f90 filemanager.f90 makefile
 	$(CC) $(CFLAGS) -c $< 
+
 
 
 .PHONY: clean 

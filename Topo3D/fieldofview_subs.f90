@@ -134,16 +134,17 @@ end subroutine findallhorizon_wsort
 
 subroutine find3dangle(h,i0,j0,unit,visibility)
   use filemanager
-  use allinterfaces, only : xyz2thetaphi, area_spherical_quadrangle
+  use allinterfaces, except_this_one => find3dangle
   implicit none
   integer, intent(IN) :: i0,j0,unit
   real(8), intent(IN) :: h(NSx,NSy)
   logical, intent(IN) :: visibility(NSx,NSy)
   integer i, j, k, cc
-  real(8) r, thetac, phic, dOh, landsize
+  real(8) r, thetac, phic, dOh, landsize, v, viewsize
   integer, parameter :: CCMAX = NSx*NSy 
   integer, dimension(CCMAX) :: cellx, celly
-  real(8), dimension(CCMAX) :: thetastack, phistack, dOstack
+  !real(8), dimension(CCMAX) :: thetastack, phistack
+  real(8), dimension(CCMAX) :: dOstack, VFstack
   real(8), dimension(4) :: hq,xq,yq,theta,phi  ! quadrangle centers
   logical, parameter :: verbose = .false.
 
@@ -211,19 +212,30 @@ subroutine find3dangle(h,i0,j0,unit,visibility)
            cc = cc+1   
            if (cc>CCMAX) stop 'find3dangle: not enough memory allocated'
            cellx(cc)=i; celly(cc)=j
-           thetastack(cc)=thetac; phistack(cc)=phic
+           !thetastack(cc)=thetac; phistack(cc)=phic  ! for optional output
            dOstack(cc)=dOh
+
+           v = viewing_angle(i0,j0,i,j,h)
+           VFstack(cc) = dOh*cos(v)  ! view factor
         endif
      enddo
   enddo
 
   landsize = sum(dOstack(1:cc))   ! 2*pi- size of sky
+  viewsize = sum(VFstack(1:cc))
 
   write(unit,'(2(i5,1x),i6,1x,f7.5,1x)',advance='no') i0, j0, cc, landsize
   do i=1,cc
      write(unit,'(2(i5,1x),g10.4,1x)',advance='no') cellx(i),celly(i),dOstack(i)
   enddo
   write(unit,"('')")
+
+  !write(unit+1,'(2(i5,1x),i6,1x,2(f7.5,1x))',advance='no') i0, j0, cc, landsize, viewsize
+  !do i=1,cc
+  !   write(unit+1,'(2(i5,1x),g10.4,1x)',advance='no') cellx(i),celly(i),VFstack(i)
+  !enddo
+  !write(unit+1,"('')")
+  
   if (minval(cellx(1:cc))<1 .or. minval(celly(1:cc))<1) stop 'find3dangle: index out of boud'
   if (maxval(cellx(1:cc))>NSx .or. maxval(celly(1:cc))>NSy) stop 'find3dangle: index out of boud'
 end subroutine find3dangle

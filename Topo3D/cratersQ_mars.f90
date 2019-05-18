@@ -39,7 +39,7 @@ program cratersQ_mars
   real(8), allocatable, dimension(:,:) :: Qn   ! incoming
   real(8), allocatable, dimension(:,:) :: Tsurf, albedo, m
   real(8), allocatable, dimension(:,:) :: Qmean, Qmax, Tmean, Tmaxi, Qdirect
-  real(8), allocatable, dimension(:,:) :: viewfactor, gterm
+  real(8), allocatable, dimension(:,:) :: skyview, gterm
   real(8), allocatable, dimension(:,:) :: mmax, frosttime, maxfrosttime, Qnm1
   real(8), allocatable :: Fsurf(:,:), T(:,:,:), Tbottom(:,:), Tref(:)  ! subsurface
   real(8), allocatable, dimension(:,:) :: mmin, co2last, co2first, h2olast !, EH2Ocum
@@ -59,13 +59,13 @@ program cratersQ_mars
   allocate(Qn(NSx,NSy), Qnm1(NSx,NSy), Qdirect(NSx,NSy))
   allocate(Tsurf(NSx,NSy), m(NSx,NSy))
   allocate(albedo(NSx,NSy)); albedo = albedo0
-  allocate(viewfactor(NSx,NSy), gterm(NSx,NSy))
+  allocate(skyview(NSx,NSy), gterm(NSx,NSy))
   allocate(Qmean(NSx,NSy), Qmax(NSx,NSy), Tmean(NSx,NSy), Tmaxi(NSx,NSy))
   allocate(frosttime(NSx,NSy), maxfrosttime(NSx,NSy))
   allocate(mmax(NSx,NSy), mmin(NSx,NSy))
   allocate(co2last(NSx,NSy), co2first(NSx,NSy), h2olast(NSx,NSy))
   !allocate(EH2Ocum(NSx,NSy))
-  Qn=0.; Qnm1=0.; m=0.; Qdirect=0.; viewfactor=0.
+  Qn=0.; Qnm1=0.; m=0.; Qdirect=0.; skyview=0.
   Qmean=0.; Qmax=0.; Tmean=0.; Tmaxi=0.
   frosttime=0.; maxfrosttime=0.; mmax=0.; mmin=0
   co2last=-9.; co2first=-9.; h2olast=-9.;
@@ -112,7 +112,7 @@ program cratersQ_mars
   print *,'...reading horizons file...'
   call readhorizons
   do concurrent(i=2:NSx-1, j=2:Nsy-1)
-     viewfactor(i,j) = getoneskysize_v2(i,j)/(2*pi)
+     skyview(i,j) = getoneskysize_v2(i,j)/(2*pi)
      gterm(i,j) = getoneGterm(i,j,surfaceSlope(i,j),azFac(i,j))
   end do
   
@@ -164,8 +164,8 @@ program cratersQ_mars
            call flux_mars2(marsR,marsDec,latitude,HA,fracIR,fracDust, &
                 & surfaceSlope(i,j),azFac(i,j),emax,Qdirect(i,j),Qscat,Qlw)
            ! absorbed direct insolation and contributions from atmosphere
-           Qn(i,j) = (1-albedo(i,j))*(Qdirect(i,j)+Qscat*viewfactor(i,j)) &
-                & + emiss*Qlw*viewfactor(i,j)
+           Qn(i,j) = (1-albedo(i,j))*(Qdirect(i,j)+Qscat*skyview(i,j)) &
+                & + emiss*Qlw*skyview(i,j)
            ! contribution from land in field of view
            if (n>0) then 
               QIR = gterm(i,j)*emiss*sigSB*Tsurf(1,1)**4

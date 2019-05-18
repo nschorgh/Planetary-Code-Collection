@@ -172,14 +172,14 @@ module allinterfaces
   end interface
 
   interface
-     subroutine getfieldofview(NSx,NSy,ffn,cc,ia,ja,dOh,skysize,CCMAX)
+     subroutine getfieldofview(NSx,NSy,ffn,cc,ia,ja,dOh,landsize,CCMAX)
        integer, intent(IN) :: NSx, NSy
        character(len=*), intent(IN) :: ffn
        integer, intent(IN) :: CCMAX
        integer, intent(OUT) :: cc(NSx,NSy) ! number of cells in field of view
        integer(2), intent(OUT), dimension(NSx,NSy,CCMAX) :: ia, ja
        real(4), intent(OUT), dimension(NSx,NSy,CCMAX) :: dOh
-       real(8), intent(OUT) :: skysize(NSx,NSy)
+       real(8), intent(OUT) :: landsize(NSx,NSy)
      end subroutine getfieldofview
   end interface
 

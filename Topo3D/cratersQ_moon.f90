@@ -23,7 +23,7 @@ program cratersQ_Moon
   integer, dimension(NSx,NSy) :: cc
   integer(2), dimension(:,:,:), allocatable :: ii,jj
   real(4), dimension(:,:,:), allocatable :: dO12  
-  real(8), dimension(NSx,NSy) :: Tsurf, Qvis, skysize, Qabs, albedo, QIRin, QIRre
+  real(8), dimension(NSx,NSy) :: Tsurf, Qvis, landsize, Qabs, albedo, QIRin, QIRre
   real(8) Qmeans(NSx,NSy,4)
   real(8), dimension(NSx,NSy) :: Qmax1, Qmax2, Tmean, Tmaxi, Tb, Tmaxi2, T0m
   real(8), allocatable :: T(:,:,:), Qnm1(:,:)  ! subsurface
@@ -69,7 +69,7 @@ program cratersQ_Moon
      CCMAX = getmaxfieldsize(NSx,NSy,ffn)
      print *,'... max field of view size=',CCMAX
      allocate(ii(NSx,NSy,CCMAX), jj(NSx,NSy,CCMAX), dO12(NSx,NSy,CCMAX))
-     call getfieldofview(NSx,NSy,ffn,cc,ii,jj,dO12,skysize,CCMAX)
+     call getfieldofview(NSx,NSy,ffn,cc,ii,jj,dO12,landsize,CCMAX)
   endif
   if (subsurface) allocate(T(1000,NSx,NSy), Qnm1(NSx,NSy))
 

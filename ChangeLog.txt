@@ -1,6 +1,6 @@
 ChangeLog
 
-May 2019: Updated parts of Topo3D/Test/ and the agreement with the analytical solution got better
+May 2019: Updated parts of Topo3D/Test/ and the agreement with the analytical solution improved
 
 8 May 2019: Release v1.1.5  do:10.5281/zenodo.2678125
 

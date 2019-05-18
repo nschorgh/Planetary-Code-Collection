@@ -17,13 +17,15 @@ program fieldproperties
   logical, parameter :: fieldofview=.false.
 
   call readdem(h)
-
+  !call difftopo(NSx,NSy,h,dx,dy,surfaceSlope,azFac)
+  
   print *,'...reading horizons file...'
   call readhorizons
   do i=2,NSx-1
      do j=2,NSy-1
-        skysize1(i,j)=getoneskysize(i,j)
-        skysize2(i,j)=getoneskysize_v2(i,j)
+        skysize1(i,j) = getoneskysize(i,j)
+        skysize2(i,j) = getoneskysize_v2(i,j)
+        !gterm(i,j ) = getoneGterm(i,j,surfaceSlope(i,j),azFac(i,j))
      enddo
   enddo
   

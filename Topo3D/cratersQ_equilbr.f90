@@ -18,7 +18,7 @@ program cratersQ_equilbr
   real(8) R, azSun, smax, emiss, betaSun, v1, Qshadow1, Qshadow2
   integer, dimension(NSx,NSy) :: cc
   integer(2), dimension(:,:,:), allocatable :: ii,jj
-  real(8), dimension(NSx,NSy) :: Tsurf, Qvis, skysize, Qabs, albedo, QIRin
+  real(8), dimension(NSx,NSy) :: Tsurf, Qvis, landsize, Qabs, albedo, QIRin
   real(4), dimension(:,:,:), allocatable :: dO12
   
   ! azimuth in degrees east of north, 0=north facing
@@ -39,7 +39,7 @@ program cratersQ_equilbr
   CCMAX = getmaxfieldsize(NSx,NSy,ffn)
   print *,'... max field of view size=',CCMAX
   allocate(ii(NSx,NSy,CCMAX), jj(NSx,NSy,CCMAX), dO12(NSx,NSy,CCMAX))
-  call getfieldofview(NSx,NSy,ffn,cc,ii,jj,dO12,skysize,CCMAX)
+  call getfieldofview(NSx,NSy,ffn,cc,ii,jj,dO12,landsize,CCMAX)
 
   print *,'...calculating...'  
   print *,'beta=',betaSun/d2r,'azSun=',azSun/d2r

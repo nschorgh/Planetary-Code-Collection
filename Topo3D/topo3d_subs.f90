@@ -230,7 +230,7 @@ end subroutine equatorial2horizontal
 
 
 
-subroutine getfieldofview(NSx,NSy,ffn,cc,ia,ja,dOh,skysize,CCMAX)
+subroutine getfieldofview(NSx,NSy,ffn,cc,ia,ja,dOh,landsize,CCMAX)
   implicit none
   integer, intent(IN) :: NSx, NSy
   character(len=*), intent(IN) :: ffn
@@ -238,7 +238,7 @@ subroutine getfieldofview(NSx,NSy,ffn,cc,ia,ja,dOh,skysize,CCMAX)
   integer, intent(OUT) :: cc(NSx,NSy) ! number of cells in field of view
   integer(2), intent(OUT), dimension(NSx,NSy,CCMAX) :: ia, ja
   real(4), intent(OUT), dimension(NSx,NSy,CCMAX) :: dOh
-  real(8), intent(OUT) :: skysize(NSx,NSy)
+  real(8), intent(OUT) :: landsize(NSx,NSy)
   integer i, j, k, i0_2, j0_2, ierr
 
   open(unit=20,file=ffn,status='old',action='read',iostat=ierr)
@@ -246,7 +246,7 @@ subroutine getfieldofview(NSx,NSy,ffn,cc,ia,ja,dOh,skysize,CCMAX)
   do i=2,NSx-1
      do j=2,NSy-1
         read(20,'(2(i5,1x),i6,1x,f7.5,1x)',advance='no') & ! format must match
-             & i0_2,j0_2,cc(i,j),skysize(i,j) 
+             & i0_2,j0_2,cc(i,j),landsize(i,j) 
         if (i/=i0_2 .or. j/=j0_2) stop 'getfieldofview: wrong data order'
         if (cc(i,j)>CCMAX) stop 'getfieldofview: not enough memory allocated'
         do k=1,cc(i,j)
