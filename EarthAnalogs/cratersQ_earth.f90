@@ -42,7 +42,7 @@ program cratersQ_earth
   latitude = 19.82; longitude = -155.4683  ! Mauna Kea summit
   ! azimuth in degrees east of north, 0=north facing
   albedo(:,:) = 0.05
-  emiss = 0.95
+  emiss = 0.98
 
   ! set some constants
   nsteps=int(tmax*1440./dtmin)       ! calculate total number of timesteps
@@ -143,7 +143,8 @@ program cratersQ_earth
         endif
         do i=2,NSx-1
            do j=2,NSy-1
-              call subsurfaceconduction(T(:,i,j),Tsurf(i,j),dtmin*60.,Qnm1(i,j),Qabs(i,j),emiss)
+              call subsurfaceconduction(T(:,i,j),Tsurf(i,j), &
+                   & dtmin*60.,Qnm1(i,j),Qabs(i,j),emiss,earthDay)
            enddo
         enddo
         Qnm1 = Qabs
@@ -188,17 +189,17 @@ end program cratersQ_earth
 
 
 
-subroutine subsurfaceconduction(T,Tsurf,dtsec,Qn,Qnp1,emiss)
+subroutine subsurfaceconduction(T,Tsurf,dtsec,Qn,Qnp1,emiss,solarDay)
   ! 1d subsurface conduction
   use allinterfaces, only : conductionQ
   implicit none
   integer, parameter :: NMAX=1000, Ni=5
   real(8), parameter :: pi=3.1415926535897932
-  real(8), parameter :: solarDay = 86400., Fgeotherm = 0.065 
+  real(8), parameter :: Fgeotherm = 0.065 
   integer, parameter :: nz=40
 
   real(8), intent(INOUT) :: T(NMAX), Tsurf
-  real(8), intent(IN) :: dtsec,Qn,Qnp1,emiss
+  real(8), intent(IN) :: dtsec,Qn,Qnp1,emiss,solarDay
   integer i
   real(8) zmax, zfac, Fsurf, Tinit, delta
   real(8) Tsurfold, Told(1:nz)

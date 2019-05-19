@@ -19,8 +19,8 @@ insol_flat: sunpos.o insol_flat.o mk_atmosphere.o flux_noatm.o makefile
 	flux_noatm.o
 
 cratersQ_earth: filemanager.o topo3d_modules.o sunpos.o topo3d_subs.o \
-	cratersQ_earth.o sunpos.o topo3d_common.o mk_atmosphere.o \
-	flux_noatm.o makefile
+	cratersQ_earth.o mk_atmosphere.o topo3d_common.o flux_noatm.o \
+	makefile
 	make -C $(SR) common
 	$(CC) $(LFLAGS) cratersQ_earth.o $(SR)generalorbit.o \
 	topo3d_subs.o topo3d_common.o sunpos.o mk_atmosphere.o \

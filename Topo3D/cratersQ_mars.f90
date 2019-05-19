@@ -47,7 +47,7 @@ program cratersQ_mars
   real(8), allocatable, dimension(:,:) :: skyview, gterm
   real(8), allocatable, dimension(:,:) :: mmax, frosttime, maxfrosttime, Qnm1
   real(8), allocatable :: Fsurf(:,:), T(:,:,:), Tbottom(:,:), Tref(:)  ! subsurface
-  real(8), allocatable, dimension(:,:) :: mmin, co2last, co2first, h2olast
+  real(8), allocatable, dimension(:,:) :: mmin, h2olast
   real(8) dE, Tsurfold, QIR, Qrefl, Qscat, Qlw
   logical, parameter :: subsurface=.true.  ! control panel
   !integer, parameter :: NrMP=3   ! number of monitoring points
@@ -67,12 +67,11 @@ program cratersQ_mars
   allocate(skyview(NSx,NSy), gterm(NSx,NSy))
   allocate(Qmean(NSx,NSy), Qmax(NSx,NSy), Tmean(NSx,NSy), Tmaxi(NSx,NSy))
   allocate(frosttime(NSx,NSy), maxfrosttime(NSx,NSy))
-  allocate(mmax(NSx,NSy), mmin(NSx,NSy))
-  allocate(co2last(NSx,NSy), co2first(NSx,NSy), h2olast(NSx,NSy))
+  allocate(mmax(NSx,NSy), mmin(NSx,NSy), h2olast(NSx,NSy))
   Qn=0.; Qnm1=0.; m=0.; Qdirect=0.; skyview=0.
   Qmean=0.; Qmax=0.; Tmean=0.; Tmaxi=0.
   frosttime=0.; maxfrosttime=0.; mmax=0.; mmin=0
-  co2last=-9.; co2first=-9.; h2olast=-9.;
+  h2olast=-9.
   
   dt=0.02
   tmax = 6.*solsy
@@ -228,8 +227,6 @@ program cratersQ_mars
         where (Tsurf>Tmaxi) Tmaxi=Tsurf
         where (m>mmax) mmax=m
         where (m<mmin) mmin=m ! >0 if there is CO2 growth all year
-        where (m>0. .and. co2first<0.) co2first = marsLs
-        where (m>0.) co2last = marsLs        
         if (subsurface) then
            Tbottom(Mx1:Mx2,My1:My2) = Tbottom(Mx1:Mx2,My1:My2)+T(nz,:,:)
         endif
@@ -275,17 +272,15 @@ program cratersQ_mars
 
   Qmean = Qmean/nm
   Tmean = Tmean/nm
-  where (co2first/=-9.) co2first=co2first/d2r
-  where (co2last/=-9.) co2last=co2last/d2r
   where (h2olast/=-9.) h2olast=h2olast/d2r
 
   open(unit=21,file='qmean.dat',status='unknown',action='write')
   do i=Mx1,Mx2
      do j=My1,My2
-        write(21,'(2(i4,1x),f9.2,2x,f6.4,2(1x,f6.1),2(1x,f5.1),3(1x,f7.1),3(1x,f6.2))') &
+        write(21,'(2(i4,1x),f9.2,2x,f6.4,2(1x,f6.1),2(1x,f5.1),3(1x,f7.1),1x,f6.2)') &
              & i,j,h(i,j),surfaceSlope(i,j),Qmean(i,j),Qmax(i,j), &
              & Tmean(i,j),Tmaxi(i,j),mmax(i,j),maxfrosttime(i,j), &
-             & mmin(i,j),co2first(i,j),co2last(i,j),h2olast(i,j)
+             & mmin(i,j),h2olast(i,j)
      enddo
   enddo
   close(21)

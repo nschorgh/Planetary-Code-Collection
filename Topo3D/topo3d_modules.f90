@@ -290,6 +290,16 @@ module allinterfaces
      end subroutine horizon_MG_core
   end interface
 
+  ! cratersQ_*
+  interface
+     subroutine subsurfaceconduction(T,Tsurf,dtsec,Qn,Qnp1,emiss,solarDay)
+       implicit none
+       integer, parameter :: NMAX=1000
+       real(8), intent(INOUT) :: T(NMAX), Tsurf
+       real(8), intent(IN) :: dtsec,Qn,Qnp1,emiss,solarDay
+     end subroutine subsurfaceconduction
+  end interface
+  
   ! f90 routines in Common/
   interface
      pure function flux_wshad(R,sinbeta,azSun,surfaceSlope,azFac,emax)
