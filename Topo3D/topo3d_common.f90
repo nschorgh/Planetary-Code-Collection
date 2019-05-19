@@ -10,12 +10,13 @@ subroutine readdem(h)
   use filemanager, only : NSx, NSy, hfn
   implicit none
   real(8), intent(OUT) :: h(NSx,NSy)
-  integer j, ierr
+  integer j, ierr, ios
 
   open(unit=20,file=hfn,status='old',action='read',iostat=ierr)
   if (ierr>0) stop 'readdem: input file not found'
   do j=1,NSy
-     read(20,*) h(:,j)
+     read(20,*,iostat=ios) h(:,j)
+     if (ios /= 0) stop 'readdem: unexpected number of rows'
   enddo
   close(20)
 end subroutine readdem

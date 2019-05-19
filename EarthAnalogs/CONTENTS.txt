@@ -16,9 +16,6 @@ insol_flat.f90: (main program)
 	calculates short-wavelength solar irradiance at flat location
 	on Earth; analogues to insol_earth.f90
 
-cratersQ_earth.f90: (main program)
-	surface temperature with 3D shadowing and reflections for Earth
-
 filemanager.f90:
 	input, topography information
 

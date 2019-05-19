@@ -6,7 +6,6 @@ CC = gfortran
 CFLAGS = -O2 -Wall
 LFLAGS = -O2 -Wall
 
-SR = ../Common/
 
 insol_earth: filemanager.o topo3d_modules.o sunpos.o topo3d_subs.o \
 	insol_earth.o mk_atmosphere.o topo3d_common.o flux_noatm.o \
@@ -17,14 +16,6 @@ insol_earth: filemanager.o topo3d_modules.o sunpos.o topo3d_subs.o \
 insol_flat: sunpos.o insol_flat.o mk_atmosphere.o flux_noatm.o makefile
 	$(CC) $(LFLAGS) sunpos.o insol_flat.o mk_atmosphere.o \
 	flux_noatm.o
-
-cratersQ_earth: filemanager.o topo3d_modules.o sunpos.o topo3d_subs.o \
-	cratersQ_earth.o mk_atmosphere.o topo3d_common.o flux_noatm.o \
-	makefile
-	make -C $(SR) common
-	$(CC) $(LFLAGS) cratersQ_earth.o $(SR)generalorbit.o \
-	topo3d_subs.o topo3d_common.o sunpos.o mk_atmosphere.o \
-	$(SR)grids.o $(SR)conductionQ.o $(SR)tridag.o flux_noatm.o 
 
 
 %.o:	%.f makefile
