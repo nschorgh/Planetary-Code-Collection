@@ -6,7 +6,7 @@ end module miscparameters
 
 program insol_driver
 !***********************************************************************
-! modelled after iceages, but only computes insolation
+! Insolation on Mars over the past 20 Myr
 !***********************************************************************
   use miscparameters
   implicit none
@@ -77,7 +77,7 @@ subroutine icesheet(icetime,NP,latitude,ecc,omega,eps)
   integer k
   real(8) Qmean, Q4, Qpeak
   do k=1,NP 
-     call aninsol(latitude(k)*d2r,ecc,omega,eps,Qmean,Q4,Qpeak)
+     call insolonly_mars(latitude(k)*d2r,ecc,omega,eps,Qmean,Q4,Qpeak)
      ! the following format list has been carefully chosen
      write(34,'(f10.0,1x,f6.2,1x,f6.3,1x,f7.5,1x,f5.1,1x,f6.2,1x,f6.4,2x,f5.1)') &
           & icetime,latitude(k),eps/d2r,ecc,omega/d2r,Qmean,Q4,Qpeak
@@ -86,38 +86,37 @@ end subroutine icesheet
 
 
 
-subroutine aninsol(latitude, ecc, omega, eps, Qmean, Q4, Qpeak)
+subroutine insolonly_mars(latitude, ecc, omega, eps, Qmean, Q4, Qpeak)
   use miscparameters
   implicit none
-  real(8), intent(IN) :: latitude  ! in radians
-  real(8), intent(IN) :: ecc, omega, eps
+  real(8), intent(IN) :: latitude  ! [radians]
+  real(8), intent(IN) :: ecc
+  real(8), intent(IN) :: omega, eps  ! [radians]
   real(8), intent(out) :: Qmean, Q4, Qpeak
   real(8), parameter :: dt = 0.01
-  real(8), parameter :: a = 1.52366 ! Mars semimajor axis in a.u.
+  real(8), parameter :: a = 1.52366 ! Mars semimajor axis [AU]
   integer nsteps, n
-  real(8) time, Qnp1, tdays, marsR, marsLs, marsDec, HA
+  real(8) time, Qn, tdays, marsR, marsLs, marsDec, HA
   real(8), external :: flux_noatm
 
-  nsteps=nint(nint(solsperyear)/dt)   ! calculate total number of timesteps
+  nsteps=nint(nint(solsperyear)/dt)   ! total number of timesteps
   Qmean=0.; Q4=0.
   Qpeak = -9.
 
-  time=0.
-  call generalorbit(0.d0,a,ecc,omega,eps,marsLs,marsDec,marsR)
-  HA=2.*pi*time             ! hour angle
   !-----loop over time steps 
   do n=0,nsteps-1
-     time =(n+1)*dt         !   time at n+1 
+     time = n*dt
      tdays = time*(marsDay/earthDay) ! parenthesis may improve roundoff
      call generalorbit(tdays,a,ecc,omega,eps,marsLs,marsDec,marsR)
-     HA=2.*pi*mod(time,1.d0)  ! hour angle
-     Qnp1=flux_noatm(marsR,marsDec,latitude,HA,0.d0,0.d0)
-     Qmean = Qmean + Qnp1
-     Q4 = Q4 + Qnp1**0.25
-     if (Qnp1>Qpeak) Qpeak = Qnp1
+     HA = 2.*pi*mod(time,1.d0)  ! hour angle
+     Qn = flux_noatm(marsR,marsDec,latitude,HA,0.d0,0.d0)
+     if (Qn>0.) then ! in case Qn=-0.
+        Qmean = Qmean + Qn
+        Q4 = Q4 + Qn**0.25
+     endif
+     if (Qn>Qpeak) Qpeak = Qn
   enddo  ! end of time loop
   
   Qmean = Qmean/nsteps;  Q4 = Q4/nsteps
-end subroutine aninsol
-
+end subroutine insolonly_mars
 

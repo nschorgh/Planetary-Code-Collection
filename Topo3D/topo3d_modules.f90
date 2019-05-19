@@ -225,6 +225,14 @@ module allinterfaces
   end interface
 
   interface
+     subroutine marsorbit(dt0,tj,Ls,dec,r)
+       implicit none
+       real*8, intent(IN) :: dt0,tj
+       real*8, intent(OUT) :: Ls,dec,r
+     end subroutine marsorbit
+  end interface
+     
+  interface
      subroutine marsclock24(JDUT,Deltat_J2000,Ls,dec,RM,Longitude_W,LTST)
        implicit none
        real*8, intent(IN) :: JDUT
@@ -236,58 +244,6 @@ module allinterfaces
      end subroutine marsclock24
   end interface
   
-  
-  ! cratersQ_mars.f90
-  interface
-     elemental function evap_ingersoll(T)
-       implicit none
-       real(8) evap_ingersoll
-       real(8), intent(IN) :: T
-     end function evap_ingersoll
-  end interface
-  
-  ! Fortran 77 programs
-  interface
-     pure subroutine hpsort(n,ra,ind)
-       implicit none
-       INTEGER, intent(IN) :: n
-       REAL(8), intent(INOUT) :: ra(n)
-       INTEGER, intent(OUT) :: ind(n)
-     end subroutine hpsort
-  end interface
-
-  interface
-     pure subroutine conductionQ(nz,z,dt,Qn,Qnp1,T,ti,rhoc,emiss,Tsurf,Fgeotherm,Fsurf)
-       implicit none
-       integer NMAX
-       parameter (NMAX=1000)
-       integer, intent(IN) :: nz
-       real*8, intent(IN) :: z(NMAX), dt, Qn, Qnp1, ti(NMAX),rhoc(NMAX), emiss, Fgeotherm
-       real*8, intent(INOUT) :: T(NMAX), Tsurf
-       real*8, intent(OUT) :: Fsurf
-     end subroutine conductionQ
-  end interface
-
-  interface
-     pure subroutine conductionT(nz,z,dt,T,Tsurf,Tsurfp1,ti,rhoc,Fgeotherm,Fsurf)
-       implicit none
-       integer NMAX
-       parameter (NMAX=1000)
-       integer, intent(IN) :: nz
-       real*8, intent(IN) :: z(NMAX), dt, T(NMAX), Tsurf, Tsurfp1, ti(NMAX), rhoc(NMAX)
-       real*8, intent(IN) :: Fgeotherm
-       real*8, intent(OUT) :: Fsurf
-     end subroutine conductionT
-  end interface
-  
-  interface
-     pure function psv(T)
-       implicit none
-       real*8, intent(IN) :: T
-       real*8 psv
-     end function psv
-  end interface
-
   ! begin multigrid.f90
   interface
      subroutine downsample(NSx,NSy,h,hhalf)
@@ -340,6 +296,48 @@ module allinterfaces
        real(8) flux_wshad
        real(8), intent(IN) :: R,azSun,sinbeta,surfaceSlope,azFac,emax
      end function flux_wshad
+  end interface
+
+  ! Fortran 77 programs
+  interface
+     pure subroutine hpsort(n,ra,ind)
+       implicit none
+       INTEGER, intent(IN) :: n
+       REAL(8), intent(INOUT) :: ra(n)
+       INTEGER, intent(OUT) :: ind(n)
+     end subroutine hpsort
+  end interface
+
+  interface
+     pure subroutine conductionQ(nz,z,dt,Qn,Qnp1,T,ti,rhoc,emiss,Tsurf,Fgeotherm,Fsurf)
+       implicit none
+       integer NMAX
+       parameter (NMAX=1000)
+       integer, intent(IN) :: nz
+       real*8, intent(IN) :: z(NMAX), dt, Qn, Qnp1, ti(NMAX),rhoc(NMAX), emiss, Fgeotherm
+       real*8, intent(INOUT) :: T(NMAX), Tsurf
+       real*8, intent(OUT) :: Fsurf
+     end subroutine conductionQ
+  end interface
+
+  interface
+     pure subroutine conductionT(nz,z,dt,T,Tsurf,Tsurfp1,ti,rhoc,Fgeotherm,Fsurf)
+       implicit none
+       integer NMAX
+       parameter (NMAX=1000)
+       integer, intent(IN) :: nz
+       real*8, intent(IN) :: z(NMAX), dt, T(NMAX), Tsurf, Tsurfp1, ti(NMAX), rhoc(NMAX)
+       real*8, intent(IN) :: Fgeotherm
+       real*8, intent(OUT) :: Fsurf
+     end subroutine conductionT
+  end interface
+  
+  interface
+     pure function psv(T)
+       implicit none
+       real*8, intent(IN) :: T
+       real*8 psv
+     end function psv
   end interface
 
 end module allinterfaces

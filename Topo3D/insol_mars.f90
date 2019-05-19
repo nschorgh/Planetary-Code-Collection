@@ -22,12 +22,17 @@ program insol_mars
 
   integer julday, iyr, imm, iday
   real(8) jd, jd_snap, longitude, buf, LTST
-  
+
+  ! whole domain
   integer, parameter :: Mx1=2, Mx2=NSx-1, My1=2, My2=NSy-1
+
+  ! cropped domain
+  !integer, parameter :: My1=3500*2, My2=3660*2, Mx1=980*2, Mx2=1080*2 ! 2m zoom
   
   allocate(h(NSx,NSy), surfaceSlope(NSx,NSy), azFac(NSx,NSy))
-  allocate(Qn(NSx,NSy), Qmean(NSx,NSy), Qmax(NSx,NSy), source=0.d0)
-  allocate(shadowtime(NSx,NSy), maxshadowtime(NSx,NSy), source=0.d0)
+  allocate(Qn(Mx1:Mx2,My1:My2), source=0.d0)
+  allocate(Qmean, Qmax, source=Qn)
+  allocate(shadowtime, maxshadowtime, source=Qn)
   
   dt=0.02; 
   tmax = 2*solsy+1.
@@ -56,12 +61,12 @@ program insol_mars
   nm=0
   
   print *,'...reading horizons file...'
-  call readhorizons
+  call readhorizons(Mx1,Mx2,My1,My2)
 
   ! image taken imm = 5; iday=15; iyr=2014 8:44 UTC  ESP_036561
   longitude = 360 - 202.3 ! west longitude
   imm = 5; iday=15; iyr=2014 
-  jd_snap=dble(julday(imm,iday,iyr)) + (8.+44./60-12)/24.  ! noon UTC
+  jd_snap = dble(julday(imm,iday,iyr)) + (8.+44./60-12)/24.  ! noon UTC
   !call marsclock24(jd_snap,buf,marsLs,marsDec,marsR,Longitude,LTST)
 
 
@@ -116,9 +121,9 @@ program insol_mars
         enddo
         close(25)
      endif
-  
+     
   enddo  ! end of time loop
-
+  
   Qmean = Qmean/nm
 
   open(unit=21,file='qshadow.dat',status='unknown',action='write')

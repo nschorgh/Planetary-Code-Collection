@@ -5,18 +5,19 @@
 
 
 module miscparams
+  ! parameters that never change
   real(8), parameter :: pi=3.1415926535897932, d2r=pi/180.
   real(8), parameter :: sigSB = 5.6704e-8
   real(8), parameter :: Lco2frost=6.0e5 
-  real(8), parameter :: Tco2frost=145.  ! adjust according to elevation
   real(8), parameter :: zero = 0.
-  real(8), parameter :: Tfrost = 200. ! H2O frost point temperature, for diagnostics only
   real(8), parameter :: earthDay = 86400.
-
-  ! thermal model parameters
-  real(8), parameter :: fracIR=0.04, fracDust=0.02
   real(8), parameter :: solsy = 668.60 ! solar days per Mars year
   real(8), parameter :: solarDay = 88775.244  ! Mars
+
+  ! thermal model parameters
+  real(8), parameter :: Tco2frost=145.  ! adjust according to elevation
+  real(8), parameter :: Tfrost = 200. ! H2O frost point temperature, for diagnostics only
+  real(8), parameter :: fracIR=0.04, fracDust=0.02
   real(8), parameter :: emiss = 0.98
   real(8), parameter :: Fgeotherm = 0.0
   integer, parameter :: nz=70 
@@ -46,8 +47,8 @@ program cratersQ_mars
   real(8), allocatable, dimension(:,:) :: skyview, gterm
   real(8), allocatable, dimension(:,:) :: mmax, frosttime, maxfrosttime, Qnm1
   real(8), allocatable :: Fsurf(:,:), T(:,:,:), Tbottom(:,:), Tref(:)  ! subsurface
-  real(8), allocatable, dimension(:,:) :: mmin, co2last, co2first, h2olast !, EH2Ocum
-  real(8) dE, Tsurfold, QIR, Qrefl, Qscat, Qlw !, EH2O
+  real(8), allocatable, dimension(:,:) :: mmin, co2last, co2first, h2olast
+  real(8) dE, Tsurfold, QIR, Qrefl, Qscat, Qlw
   logical, parameter :: subsurface=.true.  ! control panel
   !integer, parameter :: NrMP=3   ! number of monitoring points
   integer k !, i0, j0, i00(NrMP), j00(NrMP)
@@ -68,7 +69,6 @@ program cratersQ_mars
   allocate(frosttime(NSx,NSy), maxfrosttime(NSx,NSy))
   allocate(mmax(NSx,NSy), mmin(NSx,NSy))
   allocate(co2last(NSx,NSy), co2first(NSx,NSy), h2olast(NSx,NSy))
-  !allocate(EH2Ocum(NSx,NSy))
   Qn=0.; Qnm1=0.; m=0.; Qdirect=0.; skyview=0.
   Qmean=0.; Qmax=0.; Tmean=0.; Tmaxi=0.
   frosttime=0.; maxfrosttime=0.; mmax=0.; mmin=0
@@ -105,7 +105,6 @@ program cratersQ_mars
   latitude=latitude*d2r
   Tsurf=200.
   nm=0
-  !EH2Ocum = 0.
 
   !open(unit=31,file='monitorpoints.dat',action='read')
   !do k=1,NrMP
@@ -241,11 +240,8 @@ program cratersQ_mars
         !do k=1,size(i00)
            !i0=i00(k); j0=j00(k)
            !if (i0<Mx1 .or. i0>Mx2 .or. j0<My1 .or. j0>My2) cycle
-           !EH2O = evap_ingersoll(Tsurf(i0,j0))
-           !if (EH2O==EH2O) EH2Ocum = EH2Ocum + EH2O*dtsec   ! skips NaNs
-           !EH2Ocum(i0,j0) = EH2Ocum(i0,j0) + EH2O*dtsec 
-           !write(24,'(f9.3,1x,f7.3,2(1x,i4),2x,f6.1,1x,f5.1,2(1x,g12.4))') &
-           !     & sdays,mod(marsLs/d2r,360.),i0,j0,Qn(i0,j0),Tsurf(i0,j0),EH2O,EH2Ocum(i0,j0)
+           !write(24,'(f9.3,1x,f7.3,2(1x,i4),2x,f6.1,1x,f5.1)') &
+           !     & sdays,mod(marsLs/d2r,360.),i0,j0,Qn(i0,j0),Tsurf(i0,j0)
         !enddo
      endif
      
@@ -258,7 +254,6 @@ program cratersQ_mars
         where (frosttime>maxfrosttime)
            maxfrosttime=frosttime
            h2olast = marsLs  ! last time maxfrosttime increased
-           !EH2Ocum = 0.
         end where
      endif
 
@@ -377,34 +372,6 @@ subroutine subsurfaceconduction_mars(T,Tsurf,dtsec,Qn,Qnp1,m,Fsurf,init)
   endif
 
 end subroutine subsurfaceconduction_mars
-
-
-
-elemental function evap_ingersoll(T)
-  ! Returns sublimation rate (kg/m^2/s)
-  use allinterfaces, only : psv
-  implicit none
-  real(8) evap_ingersoll
-  real(8), intent(IN) :: T
-  real(8) p0,psat,D,Gbuf,rho,R,rhow,nu,drhooverrho,g
-
-  p0=520.  ! atmospheric pressure
-  psat=psv(T)
-  R=8314.5
-  D=20e-4 ! in m^2/s 
-  g=3.7
-  rhow = psat*18/(R*T)
-  rho = p0*44/(R*T)
-  !nu=7e-4  ! kinematic viscosity of CO2
-  nu=16e-4*(T/200)**1.5
-  
-  !drhooverrho=(44-18)*psat/(44*p0-(44-18)*psat) ! Ingersoll (1970)
-  drhooverrho=(44-18)*psat/(44*(p0-psat)) ! diverges at p0=psat
-  Gbuf=(drhooverrho*g/nu**2)**(1./3.);
-  !evap_ingersoll=0.17*D*rhow*Gbuf  ! Ingersoll (1970)
-  evap_ingersoll=0.13*D*rhow*Gbuf
-  
-end function evap_ingersoll
 
 
 
