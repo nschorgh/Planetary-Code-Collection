@@ -135,7 +135,7 @@ subroutine ajsub_asteroid(latitude, albedo, z, ti, rhocv, ecc, omega, eps, &
      Tmean0 = Tmean0-5.
      if (Tmean0<50.) Tmean0=50.
      print *,Tmean0,S1,latitude,cos(latitude)
-     write(6,*) '# initialized with temperature estimate of',Tmean0,'K'
+     write(*,*) '# initialized with temperature estimate of',Tmean0,'K'
      write(34,*) '# initialized with temperature estimate of',Tmean0,'K'
      T(1:nz) = Tmean0 
      Tsurf = Tmean0
@@ -272,7 +272,7 @@ subroutine icechanges(nz,z,typeP,avrho,ypp,Deff,bigstep,Jp,zdepthP,sigma)
      sigma(j) = 0.
      if (dtcorr>bigdtsec) then
         dtcorr=bigdtsec
-        write(6,*) '# icechanges: early return',j,typeP-1
+        print *,'# icechanges: early return',j,typeP-1
         newtypeP = j+1
         goto 30
      endif
@@ -298,7 +298,7 @@ subroutine icechanges(nz,z,typeP,avrho,ypp,Deff,bigstep,Jp,zdepthP,sigma)
      zdepthPnew = sqrt(2*buf*dtstep + zdepthPnew**2) ! 2nd half
      newtypeP = gettype(zdepthPnew,nz,z)
   endif
-  write(6,*) '# advance of ice table',typeP,zdepthP,newtypeP,zdepthPnew
+  print *,'# advance of ice table',typeP,zdepthP,newtypeP,zdepthPnew
 
   zdepthP = zdepthPnew
   if (zdepthP>z(nz)) zdepthP=-9999.

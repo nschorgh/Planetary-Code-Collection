@@ -77,7 +77,7 @@ module allinterfaces
      end subroutine assignthermalproperties
   end interface
 
-  ! Common/{*.f,*.f90}
+  ! Common/*.f90
   interface
      pure function flux_noatm(R,decl,latitude,HA,surfaceSlope,azFac)
        implicit none
@@ -86,24 +86,6 @@ module allinterfaces
      end function flux_noatm
   end interface
 
-  interface
-     pure function colint(y,z,nz,i1,i2)
-       implicit none
-       integer, intent(IN) :: nz, i1, i2
-       real(8), intent(IN) :: y(nz),z(nz)
-       real(8) colint
-     end function colint
-  end interface
-
-  interface
-     pure subroutine dzvector(nz,z,dz) 
-       implicit none
-       integer, intent(IN) :: nz
-       real(8), intent(IN) :: z(nz)
-       real(8), intent(OUT) :: dz(nz)
-     end subroutine dzvector
-  end interface
-  
   interface
      subroutine deriv1(z,nz,y,y0,yNp1,yp)
        implicit none
@@ -129,6 +111,26 @@ module allinterfaces
        real(8), intent(IN) :: z(nz),y(nz)
      end function deriv1_onesided
   end interface
+
+  ! Commmon/grids.f
+  interface
+     pure function colint(y,z,nz,i1,i2)
+       implicit none
+       integer, intent(IN) :: nz, i1, i2
+       real(8), intent(IN) :: y(nz),z(nz)
+       real(8) colint
+     end function colint
+  end interface
+
+  interface
+     pure subroutine dzvector(nz,z,dz) 
+       implicit none
+       integer, intent(IN) :: nz
+       real(8), intent(IN) :: z(nz)
+       real(8), intent(OUT) :: dz(nz)
+     end subroutine dzvector
+  end interface
+  
 end module allinterfaces
 
 

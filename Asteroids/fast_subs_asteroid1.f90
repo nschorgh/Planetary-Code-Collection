@@ -216,7 +216,7 @@ subroutine icechanges(nz,z,avrho,Deff,bigstep,zdepthT,porosity,icefrac)
   endif
   buf = Deff*avrho*beta/(icefrac*icedensity)
   zdepthTnew = sqrt(2*buf*bigdtsec + zdepthT**2)
-  write(6,*) '# advance of ice table',zdepthT,zdepthTnew
+  print *,'# advance of ice table',zdepthT,zdepthTnew
 
   zdepthT = zdepthTnew
   if (zdepthT>z(nz)) zdepthT=-9999.

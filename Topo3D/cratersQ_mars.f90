@@ -8,20 +8,20 @@ module miscparams
   ! parameters that never change
   real(8), parameter :: pi=3.1415926535897932, d2r=pi/180.
   real(8), parameter :: sigSB = 5.6704e-8
-  real(8), parameter :: Lco2frost=6.0e5 
+  real(8), parameter :: Lco2frost=6.0e5  ! [J/kg]
   real(8), parameter :: zero = 0.
-  real(8), parameter :: earthDay = 86400.
+  real(8), parameter :: earthDay = 86400. ! [s]
   real(8), parameter :: solsy = 668.60 ! solar days per Mars year
-  real(8), parameter :: solarDay = 88775.244  ! Mars
+  real(8), parameter :: solarDay = 88775.244  ! Mars [s]
 
   ! thermal model parameters
-  real(8), parameter :: Tco2frost=145.  ! adjust according to elevation
-  real(8), parameter :: Tfrost = 200. ! H2O frost point temperature, for diagnostics only
+  real(8), parameter :: Tco2frost=145. ! adjust according to elevation [K]
+  real(8), parameter :: Tfrost = 200. ! H2O frost point temperature, for diagnostics only [K]
   real(8), parameter :: fracIR=0.04, fracDust=0.02
   real(8), parameter :: emiss = 0.98
-  real(8), parameter :: Fgeotherm = 0.0
+  real(8), parameter :: Fgeotherm = 0.0 ! [W/m^2]
   integer, parameter :: nz=70 
-  real(8), parameter :: thIn = 600.
+  real(8), parameter :: thIn = 600.  ! Thermal inertia
 end module miscparams
 
 
@@ -33,8 +33,8 @@ program cratersQ_mars
   implicit none
 
   real(8), parameter :: albedo0=0.12, co2albedo=0.65
-  real(8) :: latitude = -41.6  ! Palikir Crater
-  real(8), parameter :: longitude = 360 - 202.3 ! west longitude
+  real(8) :: latitude = -41.6  ! [degree] Palikir Crater
+  real(8), parameter :: longitude = 360 - 202.3 ! west longitude [degree]
 
   integer nsteps, n, i, j, nm
   real(8) tmax, dt, dtsec, buf
@@ -70,7 +70,7 @@ program cratersQ_mars
   allocate(mmax(NSx,NSy), mmin(NSx,NSy), h2olast(NSx,NSy))
   Qn=0.; Qnm1=0.; m=0.; Qdirect=0.; skyview=0.
   Qmean=0.; Qmax=0.; Tmean=0.; Tmaxi=0.
-  frosttime=0.; maxfrosttime=0.; mmax=0.; mmin=0
+  frosttime=0.; maxfrosttime=0.; mmax=0.; mmin=1e32
   h2olast=-9.
   
   dt=0.02

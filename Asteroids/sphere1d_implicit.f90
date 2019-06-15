@@ -136,7 +136,7 @@ subroutine conductionT_sphere(nz,dr,dt,T,Tsurf,Tsurfp1,kappa)
   !***********************************************************************
   !   conductionT_sphere: program to calculate the diffusion of
   !                 temperature in a spherically symmetric geometry
-  !   Crank-Nicholson scheme, flux conservative
+  !   Crank-Nicolson scheme, flux conservative
   !
   !   Eqn: T_t = (kappa/r^2)*d/dr(r^2*dT_r)
   !   BC (z=0, r=R): T=T(t)
@@ -194,7 +194,7 @@ subroutine retreat_s(T,zT,Radius,dt,Elatent)
   implicit none
   real*8, intent(IN) :: T  ! scalar temperature [K]
   real*8, intent(IN) :: Radius  ! radius of body [m]
-  real*8, intent(IN) :: dt  ! time step (sec)
+  real*8, intent(IN) :: dt  ! time step [sec]
   real*8, intent(INOUT) :: zT  ! depth of ice table below surface
   real*8, intent(OUT) :: Elatent  ! latent heat, for diagnostics
   real*8, parameter :: pi=3.1415926535897932
