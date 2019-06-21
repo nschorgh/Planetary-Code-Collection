@@ -7,10 +7,10 @@ CFLAGS = -O2 -Wall
 LFLAGS = -O2 -Wall
 
 
-insol_earth: filemanager.o topo3d_modules.o sunpos.o topo3d_subs.o \
-	insol_earth.o mk_atmosphere.o topo3d_common.o flux_noatm.o \
+insol3d_earth: filemanager.o topo3d_modules.o sunpos.o topo3d_subs.o \
+	insol3d_earth.o mk_atmosphere.o topo3d_common.o flux_noatm.o \
 	makefile
-	$(CC) $(LFLAGS) insol_earth.o mk_atmosphere.o sunpos.o \
+	$(CC) $(LFLAGS) insol3d_earth.o mk_atmosphere.o sunpos.o \
 	topo3d_common.o topo3d_subs.o flux_noatm.o 
 
 insol_flat: sunpos.o insol_flat.o mk_atmosphere.o flux_noatm.o makefile

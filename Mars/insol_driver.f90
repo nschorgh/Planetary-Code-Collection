@@ -13,7 +13,7 @@ program insol_driver
   integer, parameter :: NP=1  ! number of input latitudes
   integer, parameter :: earliest=5000   ! start time (kyr)
   integer i, k, iargc, ierr
-  real(8) icetime, junk, ecc, omega, eps, timestep
+  real(8) icetime, ecc, omega, eps, timestep
   real(8), dimension(NP) :: latitude
   real(8), dimension(earliest+1) :: lasktime, laskecc, laskomega, laskeps
   character(10) ext
@@ -29,11 +29,9 @@ program insol_driver
      stop
   endif
   do k=1,NP
-     !read(21,*) latitude(k),junk,junk
      read(21,*) latitude(k)
   enddo
   close(21)
-  junk = junk  ! avoids compiler warning
 
   !ecc = 0.0934;  eps = 25.19*d2r;  omega = 250.87*d2r
   ! Laskar orbital solution http://vo.imcce.fr/insola/earth/online/mars/La2003-04/

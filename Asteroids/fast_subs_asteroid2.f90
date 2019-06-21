@@ -334,7 +334,7 @@ end subroutine compactoutput
 
 
 
-subroutine assignthermalproperties(nz,Tnom,porosity,ti,rhocv,porefill)
+subroutine assignthermalproperties(nz,Tnominal,porosity,ti,rhocv,porefill)
 !*********************************************************
 ! assign thermal properties of soil
 ! specify thermal interia profile here
@@ -342,7 +342,7 @@ subroutine assignthermalproperties(nz,Tnom,porosity,ti,rhocv,porefill)
   use body, only : icedensity
   implicit none
   integer, intent(IN) :: nz
-  real(8), intent(IN) :: Tnom, porosity(nz)
+  real(8), intent(IN) :: Tnominal, porosity(nz)
   real(8), intent(OUT) :: ti(nz), rhocv(nz)
   real(8), intent(IN), optional :: porefill(nz)
   real(8), parameter :: rhodry = 2500  ! bulk density
@@ -360,17 +360,11 @@ subroutine assignthermalproperties(nz,Tnom,porosity,ti,rhocv,porefill)
      stop
   endif
 
-  cdry = heatcapacity(Tnom)
+  cdry = heatcapacity(Tnominal)
   thIn = 15.
-  do j=1,nz
-     rhocv(j) = (1.-porosity(j))*rhodry*cdry
-     !if (z(j)>0.5) thIn=50.
-     k(j) = thIn**2/rhocv(j) 
-     !if (porosity(j)<phi0) then  ! weighted harmonic mean of k and kbulk
-     !   k0 = thIn**2/rhocv(1) 
-     !   k(j) = 1./( (porosity(j)/phi0)/k(j) + (1-porosity(j)/phi0)/kbulk)
-     !endif
-  enddo
+  rhocv(:) = (1.-porosity(:))*rhodry*cdry
+  k(:) = thIn**2/rhocv(:) 
+  
   if (present(porefill)) then
      do j=1,nz
         if (porefill(j)>0) then

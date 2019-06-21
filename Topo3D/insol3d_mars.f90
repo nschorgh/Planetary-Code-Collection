@@ -1,8 +1,8 @@
-program insol_mars
+program insol3d_mars
 !***********************************************************************
-!   insol_mars: program to calculate direct insolation with terrain 
-!               shadowing, Mars orbit, and no atmosphere
-!               (pared down from cratersQ_mars)
+!   insol3d_mars: program to calculate direct insolation with terrain 
+!                 shadowing, Mars orbit, and no atmosphere
+!                 (pared down from cratersQ_mars)
 !***********************************************************************
   use filemanager
   use allinterfaces
@@ -135,4 +135,4 @@ program insol_mars
   enddo
   close(21)
   
-end program insol_mars
+end program insol3d_mars

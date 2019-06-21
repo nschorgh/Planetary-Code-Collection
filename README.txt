@@ -129,7 +129,7 @@ Documentation: Schorghofer, N. (2016) Icarus 276, 88-95.
 
 *Irradiance Model for Terrestrial Analog*
 
-EarthAnalogs/insol_earth.f90: (main program)
+EarthAnalogs/insol3d_earth.f90: (main program)
 EarthAnalogs/insol_flat.f90: (simple main program)
 EarthAnalogs/mk_atmosphere.f90
 EarthAnalogs/sunpos.f90
@@ -148,7 +148,7 @@ Topo3D/fieldofviews.f90: (main program)
 Topo3D/cratersQ_equilbr.f90: (main program)
 Topo3D/cratersQ_moon.f90: (main program)
 Topo3D/cratersQ_mars.f90: (main program)
-Topo3D/insol_mars.f90: (main program)
+Topo3D/insol3d_mars.f90: (main program)
 Topo3D/filemanager.f90
 Topo3D/topo3d_modules.f90
 Topo3D/topo3d_common.f90

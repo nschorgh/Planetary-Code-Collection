@@ -18,7 +18,7 @@ cratersQ_moon.f90: (main program)
 cratersQ_mars.f90: (main program)
 	surface temperature with 3D shadowing for Mars
 
-insol_mars.f90: (main program)
+insol3d_mars.f90: (main program)
 	3D shadowing for Mars
 
 filemanager.f90:
