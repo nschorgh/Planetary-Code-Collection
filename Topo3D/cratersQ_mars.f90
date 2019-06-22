@@ -16,11 +16,11 @@ module miscparams
 
   ! thermal model parameters
   real(8), parameter :: Tco2frost=145. ! adjust according to elevation [K]
-  real(8), parameter :: Tfrost = 200. ! H2O frost point temperature, for diagnostics only [K]
+  real(8), parameter :: Tfrost = 200.  ! H2O frost point temperature, for diagnostics only [K]
   real(8), parameter :: fracIR=0.04, fracDust=0.02
   real(8), parameter :: emiss = 0.98
   real(8), parameter :: Fgeotherm = 0.0 ! [W/m^2]
-  integer, parameter :: nz=70 
+  integer, parameter :: nz=70
   real(8), parameter :: thIn = 600.  ! Thermal inertia
 end module miscparams
 
@@ -50,11 +50,9 @@ program cratersQ_mars
   real(8), allocatable, dimension(:,:) :: mmin, h2olast
   real(8) dE, Tsurfold, QIR, Qrefl, Qscat, Qlw
   logical, parameter :: subsurface=.true.  ! control panel
-  !integer, parameter :: NrMP=3   ! number of monitoring points
-  integer k !, i0, j0, i00(NrMP), j00(NrMP)
-  integer, external :: julday
   real(8) jd, LTST, jd_end
   
+  integer k
   real(8) jd_snap(3), jd_themis(2)  ! Julian dates of snapshots
   character(len=20) fns(3), fnt(2)  ! file names of snapshots
 
@@ -105,12 +103,6 @@ program cratersQ_mars
   Tsurf=200.
   nm=0
 
-  !open(unit=31,file='monitorpoints.dat',action='read')
-  !do k=1,NrMP
-  !   read(31,*) i00(k),j00(k)
-  !enddo
-  !close(31)
-  
   print *,'...reading horizons file...'
   call readhorizons
   do concurrent(i=2:NSx-1, j=2:Nsy-1)
@@ -234,22 +226,16 @@ program cratersQ_mars
 
         write(22,'(f9.3,1x,f7.3,2x,f6.1,1x,f5.1,1x,f6.1)') &
              & sdays,mod(marsLs/d2r,360.d0),Qn(1,1),Tsurf(1,1),m(1,1) ! flat surf ref
-        !do k=1,size(i00)
-           !i0=i00(k); j0=j00(k)
-           !if (i0<Mx1 .or. i0>Mx2 .or. j0<My1 .or. j0>My2) cycle
-           !write(24,'(f9.3,1x,f7.3,2(1x,i4),2x,f6.1,1x,f5.1)') &
-           !     & sdays,mod(marsLs/d2r,360.),i0,j0,Qn(i0,j0),Tsurf(i0,j0)
-        !enddo
      endif
      
      if (sdays > tmax-2*solsy) then  ! longest continuous period below H2O frost point
         where (Tsurf<Tfrost) 
-           frosttime=frosttime+dt
+           frosttime = frosttime+dt
         elsewhere
-           frosttime=0.
+           frosttime = 0.
         end where
         where (frosttime>maxfrosttime)
-           maxfrosttime=frosttime
+           maxfrosttime = frosttime
            h2olast = marsLs  ! last time maxfrosttime increased
         end where
      endif

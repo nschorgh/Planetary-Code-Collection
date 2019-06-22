@@ -1,7 +1,7 @@
-program insol_earth
+program insol3d_earth
 !***********************************************************************
-!   insol_earth: program to calculate direct insolation with shadowing, 
-!                Earth orbit, and Mauna Kea atmosphere
+!   insol_earth3d: program to calculate direct insolation with terrain 
+!                  shadowing, Earth orbit, and Mauna Kea atmosphere
 !
 !   written by Norbert Schorghofer 2010-2016
 !***********************************************************************
@@ -133,5 +133,5 @@ program insol_earth
   enddo
   close(21)
 
-end program insol_earth
+end program insol3d_earth
 

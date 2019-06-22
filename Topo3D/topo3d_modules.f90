@@ -350,4 +350,11 @@ module allinterfaces
      end function psv
   end interface
 
+  interface
+     pure FUNCTION julday(mm,id,iyyy)
+       INTEGER julday
+       INTEGER, intent(IN) ::id,iyyy,mm
+     end FUNCTION julday
+  end interface
+  
 end module allinterfaces

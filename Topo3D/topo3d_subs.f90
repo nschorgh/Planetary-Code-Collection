@@ -13,8 +13,16 @@ contains
     implicit none
     integer, intent(IN), optional :: Mx1,Mx2,My1,My2
     logical crop
-    integer i,j,ia,ja,ierr
+    integer i,j,ia,ja,ierr,naz2
     real(8) sread(naz)
+    integer, external :: countcolumns
+
+    naz2=countcolumns()-2
+    if (naz/=naz2) then
+      print *,'inconsistent number of azimuth rays',naz,naz2
+      stop
+    endif
+    print *,'number of azimuth rays= ',naz
 
     if (present(Mx1).and.present(Mx2).and.present(My1).and.present(My2)) then
        crop = .true.
@@ -313,3 +321,40 @@ integer function getmaxfieldsize(NSx,NSy,ffn)
   getmaxfieldsize = maxsize
 end function getmaxfieldsize
 
+
+integer function countcolumns()
+  ! counts the number of azimuth rays in horizons file
+  ! incorporates code from Léo https://stackoverflow.com/users/10478255/leo
+  use filemanager, only : sfn
+  implicit none
+ 
+  integer i, io, ierr
+  integer, parameter :: MAX_NUM_OF_COLS=999
+  integer, parameter :: MAX_LINE_LENGTH=10000
+  character(len=MAX_LINE_LENGTH) line
+  double precision, dimension(MAX_NUM_OF_COLS) :: test_array
+       
+  open(unit=20,file=sfn,status='old',action='read',iostat=ierr)
+  if (ierr>0) then
+     print *,sfn
+     stop 'countcolumns: Input file not found'
+  endif
+
+  ! Get first line of file.
+  DO
+    READ(20,'(A)',iostat=io) line
+    IF (io/=0) stop "Error reading file."
+    exit 
+  ENDDO
+
+  CLOSE(20)
+
+  do i=1,MAX_NUM_OF_COLS
+    READ(line,*,iostat=io) test_array(1:i)
+    if(io==-1) exit
+  enddo
+
+  !write(*,*) 'number of columns = ', (i-1) 
+  countcolumns = i-1
+  
+end function countcolumns

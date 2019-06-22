@@ -185,7 +185,7 @@ Documentation: User Guide Part 6
 
 
 
-NOTE: Third party source code from Numerical Recipes is covered by a separate copyright. These are files ending with .for.
+NOTE: Third party source code from Numerical Recipes is covered by a separate copyright. These are files ending with .for.  A few code snippets from other sources are also used, as documented in the source code.
 
 
 
