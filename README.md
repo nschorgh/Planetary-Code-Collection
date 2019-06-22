@@ -1,4 +1,5 @@
-# Planetary Code Collection
+Planetary Code Collection
+=========================
 
 *by Norbert Schorghofer*
 
@@ -92,7 +93,7 @@ Mars/lats.ph
 
 
 Other Models for Planetary Surfaces
-===================================
+-----------------------------------
 
 ### Basic Thermal Model for Airless Bodies
 
