@@ -1,5 +1,4 @@
-Planetary Code Collection
-=========================
+# Planetary Code Collection
 
 *by Norbert Schorghofer*
 
@@ -19,7 +18,7 @@ This program collection contains:
 Mars Subsurface Ice Model (M-SIM)
 ---------------------------------
 
-###Mars Thermal Model
+### Mars Thermal Model
 
 Mars/mars_thermal1d.f: (main program)  
 Mars/flux.f  
@@ -36,7 +35,7 @@ Mars/input.par
 *Documentation: User Guide Part 1*  
 
 
-###Vapor Diffusion Model
+### Vapor Diffusion Model
 
 Mars/exper_thermal1d.f: (main program)  
 Mars/vapordiffusioni.f  
@@ -46,7 +45,7 @@ Mars/exper.par
 Documentation: Schorghofer, N. & Aharonson, O. (2005) J. Geophys. Res. 110, E05003, Appendices*  
 
 
-###Equilibrium Ice Table
+### Equilibrium Ice Table
 
 Mars/mars_mapi.f: (main program)  
 Mars/mars_mapt2.f: (main program)  
@@ -68,7 +67,7 @@ Mars/mapgrid.dat
 Documentation: Schorghofer, N. & Aharonson, O. (2005) J. Geophys. Res. 110, E05003*  
 
 
-###Fast Method for Subsurface Ice Dynamics
+### Fast Method for Subsurface Ice Dynamics
 
 Mars/stabgrow_fast.f90: (main program)  
 Mars/exper_fast.f90: (main program)  
@@ -95,7 +94,7 @@ Mars/lats.ph
 Other Models for Planetary Surfaces
 ===================================
 
-###Basic Thermal Model for Airless Bodies
+### Basic Thermal Model for Airless Bodies
 
 Asteroids/asteroid_thermal.f90: (main program)  
 Asteroids/oneasteroid_thermal1d.f90  
@@ -108,7 +107,7 @@ Common/generalorbit.f
 *Documentation: User Guide Part 1*
 
 
-###Asynchronous Models for Temperature, Impact Stirring, and Ice Loss on Asteroids
+### Asynchronous Models for Temperature, Impact Stirring, and Ice Loss on Asteroids
 
 Asteroids/asteroid_fast1.f90: (main program)  
 Asteroids/asteroid_fast2.f90: (main program)  
@@ -131,7 +130,7 @@ Asteroids/lats.0
 *Documentation: Schorghofer, N. (2016) Icarus 276, 88-95*  
 
 
-###Irradiance Model for Terrestrial Analog
+### Irradiance Model for Terrestrial Analog
 
 EarthAnalogs/insol3d_earth.f90: (main program)  
 EarthAnalogs/insol_flat.f90: (simple main program)  
@@ -145,7 +144,7 @@ Topo3D/topo3d_subs.f90
 *Documentation: User Guide Sections 4.1, 5.1, 5.3-5.6*
 
 
-###Shadowing and Illumination
+### Shadowing and Illumination
 
 Topo3D/shadows.f90: (main program)  
 Topo3D/fieldofviews.f90: (main program)  
@@ -175,7 +174,7 @@ Topo3D/topo40.xyz
 *Documentation: User Guide Part 5*  
 
 
-###Monte-Carlo Model for Surface-bounded Exosphere
+### Monte-Carlo Model for Surface-bounded Exosphere
 
 Exosphere/moon_exo.f90: (main program)  
 Exosphere/ceres_exo.f90: (main program)  
@@ -193,7 +192,7 @@ Common/subl_subs.f90
 NOTE: Third party source code from Numerical Recipes is covered by a separate copyright. These are files ending with .for.  A few code snippets from other sources are also used, as documented in the source code.
 
 
-###ACKNOWLEDGMENTS
+### ACKNOWLEDGMENTS
 
 Mar 2016: Thanks to Lior Rubanenko for a bug report in cratersQ_*
 
