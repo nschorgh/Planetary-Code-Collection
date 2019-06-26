@@ -203,6 +203,11 @@ module allinterfaces
        character(len=*), intent(IN) :: ffn
      end function getmaxfieldsize
   end interface
+
+  interface
+     integer function countcolumns()
+     end function countcolumns
+  end interface
   
   ! mk_atmosphere.f90
   interface

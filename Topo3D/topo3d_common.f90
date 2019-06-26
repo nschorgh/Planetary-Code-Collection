@@ -164,7 +164,7 @@ subroutine slicer(NSx,ilower,iupper,extc)
   implicit none
   integer, intent(IN) :: NSx
   integer, intent(OUT) :: ilower, iupper
-  character(5), intent(OUT) :: extc
+  character(4), intent(OUT) :: extc
   integer SLICE  ! number of slices (jobs) the domain is divided into
   integer nr, slicewidth, Mx1, Mx2  ! 1 <= nr <= SLICE
   

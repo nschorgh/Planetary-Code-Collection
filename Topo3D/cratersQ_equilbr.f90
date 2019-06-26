@@ -68,9 +68,6 @@ program cratersQ_equilbr
 
            do k=1,cc(i,j)
               iii = ii(i,j,k); jjj = jj(i,j,k)
-              !v1 = viewing_angle(i,j,iii,jjj,h)
-              
-              !if (cos(v1)<0.) stop 'Oh no'
 
               Qrefl(i,j) = Qrefl(i,j) + albedo(iii,jjj)*Qvis(iii,jjj)*VF(i,j,k)/pi
               QIR(i,j) = QIR(i,j) + emiss*sigSB*Tsurf(iii,jjj)**4*VF(i,j,k)/pi
