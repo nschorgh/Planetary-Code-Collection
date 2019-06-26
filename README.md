@@ -11,8 +11,8 @@ This program collection contains:
 * models for the equilibrium ice table on Mars
 * fast (asynchronously coupled) method for subsurface-atmosphere vapor exchange for Mars
 * fast (asynchronously coupled) method for ice retreat on asteroids
-* Monte-Carlo model for ballistic hops in the exosphere of the Moon and Ceres
 * 3D model of shadowing, illumination, and scattering for airless bodies, Mars, and Mauna Kea
+* Monte-Carlo model for ballistic hops in the exosphere of the Moon and Ceres
 
 
 
@@ -145,7 +145,7 @@ Topo3D/topo3d_subs.f90
 *Documentation: User Guide Sections 4.1, 5.1, 5.3-5.6*
 
 
-### Shadowing and Illumination
+### Terrain Shadowing and Illumination
 
 Topo3D/shadows.f90: (main program)  
 Topo3D/fieldofviews.f90: (main program)  
@@ -159,6 +159,7 @@ Topo3D/topo3d_common.f90
 Topo3D/shadow_subs.f90  
 Topo3D/fieldofview_subs.f90  
 Topo3D/topo3d_subs.f90  
+Topo3D/topo3d_subs_mars.f90  
 Topo3D/multigrid.f90  
 Topo3D/fieldproperties.f90: (main program)  
 Topo3D/hpsort.for  

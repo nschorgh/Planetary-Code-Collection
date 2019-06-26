@@ -299,6 +299,24 @@ module allinterfaces
        real(8), intent(IN) :: dtsec,Qn,Qnp1,emiss,solarDay
      end subroutine subsurfaceconduction
   end interface
+
+  ! topod3d_subs_mars.f90
+  interface
+     subroutine subsurfaceconduction_mars(T,Tsurf,dtsec,Qn,Qnp1,m,Fsurf,init)
+       implicit none
+       real(8), intent(INOUT) :: T(:), Tsurf, m, Fsurf
+       real(8), intent(IN) :: dtsec,Qn,Qnp1
+       logical, intent(IN) :: init
+     end subroutine subsurfaceconduction_mars
+  end interface
+  
+  interface
+     pure function evap_ingersoll(T,p0)
+       implicit none
+       real(8) evap_ingersoll
+       real(8), intent(IN) :: T,p0
+     end function evap_ingersoll
+  end interface
   
   ! f90 routines in Common/
   interface

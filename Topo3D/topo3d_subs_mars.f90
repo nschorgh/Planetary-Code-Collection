@@ -1,0 +1,103 @@
+subroutine subsurfaceconduction_mars(T,Tsurf,dtsec,Qn,Qnp1,m,Fsurf,init)
+  use miscparams, only : pi, sigSB, solsy, Lco2frost, solarDay, nz, Tco2frost, thIn, emiss
+  use conductionQ
+  use conductionT
+  implicit none
+  real(8), intent(INOUT) :: T(nz), Tsurf, m, Fsurf
+  real(8), intent(IN) :: dtsec,Qn,Qnp1
+  logical, intent(IN) :: init
+  real(8), parameter :: Fgeotherm = 0.0 ! [W/m^2]
+  integer i
+  !real(8), parameter :: zmax=3., zfac=1.05d0  ! adjust
+  real(8), parameter :: zmax=13., zfac=1.05d0  ! with rhoc=thIn*1000 (nz=70, 3x seasonal)
+  real(8) Tinit, delta
+  real(8) Fsurfold, dE, Tsurfold, Told(nz)
+  real(8) z(nz), ti(nz), rhocv(nz)
+
+  if (init) then ! initialize grid
+     ti(:) = thIn  ! adjust
+     !rhocv(:) = 1200.*800.
+     rhocv(:) = thIn*1000.  ! makes skin depth invariant
+     
+     delta = thIn/rhocv(1)*sqrt(solarDay/pi)  ! skin depth
+
+     call setgrid(nz,z,zmax,zfac)
+     if (z(6)>delta) then
+        print *,'WARNING: fewer than 6 points within diurnal skin depth'
+     endif
+     do i=1,nz
+        if (z(i)<delta) cycle
+        print *,i-1,' grid points within diurnal skin depth'
+        exit
+     enddo
+     if (z(1)<1.e-5) print *,'WARNING: first grid point is too shallow'
+     open(unit=30,file='z',status='unknown');
+     write(30,*) (z(i),i=1,nz)
+     close(30)
+
+     write(*,*) 'Subsurface model parameters'
+     write(*,*) '   nz=',nz,' zmax=',zmax,' zfac=',zfac
+     write(*,*) '   Thermal inertia=',thIn,' rho*c=',rhocv(1)
+     write(*,*) '   Diurnal and seasonal skin depths=',delta,delta*sqrt(solsy)
+     write(*,*) '   Geothermal flux=',Fgeotherm
+
+     call conductionT2_init(nz,z,dtsec,ti,rhocv,Fgeotherm)
+     call conductionQ2_init(nz,z,dtsec,ti,rhocv,Fgeotherm)
+     
+     return
+  endif
+  
+  if (Tsurf<=0.) then  ! initialize temperature profile
+     Tinit=200.
+     T(1:nz) = Tinit
+     Tsurf = Tinit
+  endif
+
+  Tsurfold=Tsurf
+  Fsurfold=Fsurf
+  Told(1:nz)=T(1:nz)
+  if (Tsurf>Tco2frost.or.m<=0.) then
+     call conductionQ2(nz,Qn,Qnp1,T,emiss,Tsurf,Fsurf)
+  endif
+  if (Tsurf<Tco2frost.or.m>0.) then   ! CO2 condensation                                              
+     T(1:nz)=Told
+     call conductionT2(nz,Tsurfold,Tco2frost,T,Fsurf)
+     Tsurf=Tco2frost
+     dE = (- Qn - Qnp1 + Fsurfold + Fsurf + &
+          &           emiss*sigSB*(Tsurfold**4+Tsurf**4))/2.
+     m = m + dtsec*dE/Lco2frost
+  endif
+
+end subroutine subsurfaceconduction_mars
+
+
+
+pure function evap_ingersoll(T,p0)
+  ! Returns sublimation rate [kg/m^2/s]
+  ! Note: The latent heat of sublimation is 2.838 MJ/kg
+  use allinterfaces, only : psv
+  implicit none
+  real(8) evap_ingersoll
+  real(8), intent(IN) :: T
+  real(8), intent(IN) :: p0  ! atmospheric pressure
+  real(8), parameter :: R=8314.5, g=3.7
+  real(8) psat,Gbuf,rho,rhow,drhooverrho
+  real(8) D   ! vapor diffusivity [m^2/s]
+  real(8) nu  ! kinematic viscosity of CO2
+  real(8) eta ! dynamic viscosity of CO2
+
+  !p0=520.  ! atmospheric pressure
+  psat=psv(T)
+  D = 0.1654*1e-4*1.013e5/p0*(T/273)**1.5  ! Schwertz & Brow (1951)
+  rhow = psat*18/(R*T)
+  rho = p0*44/(R*T)
+  eta = 13.7e-6*(273+240)/(T+240)*(T/273)**1.5  ! Int. Crit. Tbl., vol 5
+  nu = eta/rho
+  
+  !drhooverrho=(44-18)*psat/(44*p0-(44-18)*psat) ! Ingersoll (1970)
+  drhooverrho=(44-18)*psat/(44*(p0-psat)) ! diverges at p0=psat
+  Gbuf=(drhooverrho*g/nu**2)**(1./3.)
+  !evap_ingersoll=0.17*D*rhow*Gbuf  ! Ingersoll (1970)
+  evap_ingersoll=0.12*D*rhow*Gbuf
+  
+end function evap_ingersoll
