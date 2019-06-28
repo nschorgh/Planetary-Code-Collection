@@ -3,7 +3,8 @@ subroutine subsurfaceconduction_mars(T,Tsurf,dtsec,Qn,Qnp1,m,Fsurf,init)
   use conductionQ
   use conductionT
   implicit none
-  real(8), intent(INOUT) :: T(nz), Tsurf, m, Fsurf
+  real(8), intent(INOUT) :: T(:)  ! in interface declared as T(:), not T(nz)
+  real(8), intent(INOUT) :: Tsurf, m, Fsurf
   real(8), intent(IN) :: dtsec,Qn,Qnp1
   logical, intent(IN) :: init
   real(8), parameter :: Fgeotherm = 0.0 ! [W/m^2]

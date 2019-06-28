@@ -208,7 +208,5 @@ Many Thanks to Andy Vaught for developing an open-source Fortran 95 compiler (ww
 
 2001: Samar Khatiwala invented an elegant implementation of the upper radiation boundary condition for the Crank-Nicolson method.
 
-SUPPORT: This code development was supported by NASA, Caltech, and the University of Hawaii. Undoubtedly, some parts were written without support.
-
-
+SUPPORT: This code development was supported mainly by NASA, and in smaller parts also by Caltech and the University of Hawaii. Undoubtedly, some parts were written in my spare time.
 

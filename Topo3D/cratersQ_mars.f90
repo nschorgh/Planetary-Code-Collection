@@ -19,7 +19,6 @@ module miscparams
   real(8), parameter :: Tfrost = 200.  ! H2O frost point temperature, for diagnostics only [K]
   real(8), parameter :: fracIR=0.04, fracDust=0.02
   real(8), parameter :: emiss = 0.98
-  real(8), parameter :: Fgeotherm = 0.0 ! [W/m^2]
   integer, parameter :: nz=70
   real(8), parameter :: thIn = 600.  ! Thermal inertia
 end module miscparams
@@ -66,7 +65,7 @@ program cratersQ_mars
   allocate(Qmean(NSx,NSy), Qmax(NSx,NSy), Tmean(NSx,NSy), Tmaxi(NSx,NSy))
   allocate(frosttime(NSx,NSy), maxfrosttime(NSx,NSy))
   allocate(mmax(NSx,NSy), mmin(NSx,NSy), h2olast(NSx,NSy))
-  Qn=0.; Qnm1=0.; m=0.; Qdirect=0.; skyview=0.
+  Qn=0.; Qnm1=0.; m=0.; Qdirect=0.; skyview=1.
   Qmean=0.; Qmax=0.; Tmean=0.; Tmaxi=0.
   frosttime=0.; maxfrosttime=0.; mmax=0.; mmin=1e32
   h2olast=-9.
@@ -100,7 +99,6 @@ program cratersQ_mars
   call difftopo(NSx,NSy,h,dx,dy,surfaceSlope,azFac)
 
   latitude=latitude*d2r
-  Tsurf=200.
   nm=0
 
   print *,'...reading horizons file...'
@@ -119,6 +117,8 @@ program cratersQ_mars
      Tbottom(:,:)=-9
      Tsurf(:,:)=-9  ! max 3 digits
      Fsurf(:,:)=0.
+  else
+     Tsurf = 200.
   end if
 
   open(unit=22,file='timeseries_flat.dat',status='unknown',action='write')
