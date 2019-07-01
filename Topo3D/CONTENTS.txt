@@ -16,7 +16,13 @@ cratersQ_moon.f90: (main program)
 	surface temperature with 3D shadowing and reflections for airless body
 
 cratersQ_mars.f90: (main program)
-	surface temperature with 3D shadowing for Mars
+	surface temperature with 3D shadowing for Mars, using G-approximation
+
+cratersQ_mars.f90_parallel: (main program)
+	parallel version of cratersQ_mars.f90
+
+cratersQ_mars.f90_full: (main program)
+	surface temperature with 3D shadowing and reflections for Mars
 
 insol3d_mars.f90: (main program)
 	3D shadowing for Mars

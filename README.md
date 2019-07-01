@@ -151,7 +151,9 @@ Topo3D/shadows.f90: (main program)
 Topo3D/fieldofviews.f90: (main program)  
 Topo3D/cratersQ_equilbr.f90: (main program)  
 Topo3D/cratersQ_moon.f90: (main program)  
-Topo3D/cratersQ_mars.f90: (main program)  
+Topo3D/cratersQ_mars.f90: (main program)
+Topo3D/cratersQ_mars_parallel.f90: (main program)  
+Topo3D/cratersQ_mars_full.f90: (main program
 Topo3D/insol3d_mars.f90: (main program)  
 Topo3D/filemanager.f90  
 Topo3D/topo3d_modules.f90  
@@ -208,5 +210,5 @@ Many Thanks to Andy Vaught for developing an open-source Fortran 95 compiler (ww
 
 2001: Samar Khatiwala invented an elegant implementation of the upper radiation boundary condition for the Crank-Nicolson method.
 
-SUPPORT: This code development was supported mainly by NASA, and in smaller parts also by Caltech and the University of Hawaii. Undoubtedly, some parts were written in my spare time.
+SUPPORT: This code development was supported mainly by NASA, and in smaller parts by Caltech and the University of Hawaii. Undoubtedly, some parts were written in my spare time.
 
