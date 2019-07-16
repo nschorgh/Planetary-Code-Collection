@@ -3,7 +3,7 @@
 !                Mars thermal model with direct insolation, subsurface
 !                conduction, terrain shadowing, and approximate self-heating
 !
-! This is the parallel version of cratersQ_mars
+! parallel version of cratersQ_mars
 !***************************************************************************
 
 
@@ -117,7 +117,7 @@ program cratersQ_mars
   write(*,*) 'Nx=',NSx,'Ny=',NSy,'File=',fileext
   write(*,*) 'Region of interest: (',Mx1,',',My1,') x (',Mx2,',',My2,')'
   write(*,*) 'Mean albedo=',sum(albedo)/size(albedo),'Emissivity=',emiss
-  write(*,*) 'CO2 frost temperature=',Tco2frost
+  write(*,*) 'CO2 frost temperature=',Tco2frost,'CO2 albedo=',co2albedo
   write(*,*) 'Reflections:',.FALSE.,'Subsurface:',subsurface
 
   ! Set start date
@@ -149,7 +149,7 @@ program cratersQ_mars
      allocate(T(nz,Mx1:Mx2,My1:My2))
      allocate(Tref(nz))
      allocate(Fsurf(Mx1:Mx2,My1:My2))
-     call subsurfaceconduction_mars(Tref(:),buf,dtsec,zero,zero,buf,buf,.true.)
+     call subsurfaceconduction_mars(Tref(:),buf,dtsec,zero,zero,buf,buf,.true.,thIn=thIn)
      allocate(Tbottom(Mx1:Mx2,My1:My2))
      Tbottom(:,:)=-9.
      Tsurf(:,:)=-9.  ! max 3 digits
@@ -216,11 +216,12 @@ program cratersQ_mars
            do j=My1,My2
               if (h(i,j)<-32000) cycle
               call subsurfaceconduction_mars(T(:,i,j),Tsurf(i,j), &
-                   & dtsec,Qnm1(i,j),Qn(i,j),m(i,j),Fsurf(i,j),.false.)
+                   & dtsec,Qnm1(i,j),Qn(i,j),m(i,j),Fsurf(i,j),.false., &
+                   & Tco2frost=Tco2frost,emiss=emiss)
            enddo
         enddo
         call subsurfaceconduction_mars(Tref(:),Tsurf_flat, &
-             & dtsec,Qnm1_flat,Qn_flat,m_flat,Fsurf_flat,.false.)
+             & dtsec,Qnm1_flat,Qn_flat,m_flat,Fsurf_flat,.false.,Tco2frost=Tco2frost,emiss=emiss)
 
      else  ! no subsurface conduction
         do i=Mx1,Mx2

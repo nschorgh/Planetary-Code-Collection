@@ -83,7 +83,7 @@ program cratersQ_mars
   write(*,*) 'Nx=',NSx,'Ny=',NSy,'File=',fileext
   write(*,*) 'Region of interest: (',Mx1,',',My1,') x (',Mx2,',',My2,')'
   write(*,*) 'Mean albedo=',sum(albedo)/size(albedo),'Emissivity=',emiss
-  write(*,*) 'CO2 frost temperature=',Tco2frost
+  write(*,*) 'CO2 frost temperature=',Tco2frost,'CO2 albedo=',co2albedo
   write(*,*) 'Reflections:',.FALSE.,'Subsurface:',subsurface
 
   ! Set start date
@@ -113,6 +113,7 @@ program cratersQ_mars
      allocate(Tref(nz))
      allocate(Fsurf(NSx,NSy))
      call subsurfaceconduction_mars(Tref(:),buf,dtsec,zero,zero,buf,buf,.true.)
+     !call subsurfaceconduction_mars2(Tref(:),buf,dtsec,zero,zero,buf,buf,.true.,thIn=thIn)
      allocate(Tbottom(NSx,NSy))
      Tbottom(:,:)=-9
      Tsurf(:,:)=-9  ! max 3 digits
@@ -177,10 +178,14 @@ program cratersQ_mars
               if (h(i,j)<-32000) cycle
               call subsurfaceconduction_mars(T(:,i,j),Tsurf(i,j), &
                    & dtsec,Qnm1(i,j),Qn(i,j),m(i,j),Fsurf(i,j),.false.)
+              !call subsurfaceconduction_mars2(T(:,i,j),Tsurf(i,j), &
+              !     & dtsec,Qnm1(i,j),Qn(i,j),m(i,j),Fsurf(i,j),.false.,Tco2frost=Tco2frost,emiss=emiss)
            enddo
         enddo
         call subsurfaceconduction_mars(Tref(:),Tsurf(1,1), &
              & dtsec,Qnm1(1,1),Qn(1,1),m(1,1),Fsurf(1,1),.false.)
+        !call subsurfaceconduction_mars2(Tref(:),Tsurf(1,1), &
+        !     & dtsec,Qnm1(1,1),Qn(1,1),m(1,1),Fsurf(1,1),.false.,Tco2frost=Tco2frost,emiss=emiss)
 
      else  ! no subsurface conduction
         do i=Mx1,Mx2

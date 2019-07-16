@@ -1,5 +1,5 @@
-subroutine subsurfaceconduction_mars(T,Tsurf,dtsec,Qn,Qnp1,m,Fsurf,init)
-  use miscparams, only : pi, sigSB, solsy, Lco2frost, solarDay, nz, Tco2frost, thIn, emiss
+subroutine subsurfaceconduction_mars(T,Tsurf,dtsec,Qn,Qnp1,m,Fsurf,init,Tco2frost,thIn,emiss)
+  use miscparams, only : pi, sigSB, solsy, Lco2frost, solarDay, nz
   use conductionQ
   use conductionT
   implicit none
@@ -7,6 +7,7 @@ subroutine subsurfaceconduction_mars(T,Tsurf,dtsec,Qn,Qnp1,m,Fsurf,init)
   real(8), intent(INOUT) :: Tsurf, m, Fsurf
   real(8), intent(IN) :: dtsec,Qn,Qnp1
   logical, intent(IN) :: init
+  real(8), intent(IN), optional :: Tco2frost, thIn, emiss
   real(8), parameter :: Fgeotherm = 0.0 ! [W/m^2]
   integer i
   !real(8), parameter :: zmax=3., zfac=1.05d0  ! adjust
@@ -16,6 +17,10 @@ subroutine subsurfaceconduction_mars(T,Tsurf,dtsec,Qn,Qnp1,m,Fsurf,init)
   real(8) z(nz), ti(nz), rhocv(nz)
 
   if (init) then ! initialize grid
+     if (.not.present(thIn)) then
+        error stop 'missing argument'
+     end if
+     
      ti(:) = thIn  ! adjust
      !rhocv(:) = 1200.*800.
      rhocv(:) = thIn*1000.  ! makes skin depth invariant
@@ -54,6 +59,10 @@ subroutine subsurfaceconduction_mars(T,Tsurf,dtsec,Qn,Qnp1,m,Fsurf,init)
      Tsurf = Tinit
   endif
 
+  if (.not.present(Tco2frost) .or. .not.present(emiss)) then
+     error stop 'missing argument'
+  end if
+  
   Tsurfold=Tsurf
   Fsurfold=Fsurf
   Told(1:nz)=T(1:nz)
@@ -86,7 +95,7 @@ pure function evap_ingersoll(T,p0)
   real(8) D   ! vapor diffusivity [m^2/s]
   real(8) nu  ! kinematic viscosity of CO2
   real(8) eta ! dynamic viscosity of CO2
-
+  
   !p0=520.  ! atmospheric pressure
   psat=psv(T)
   D = 0.1654*1e-4*1.013e5/p0*(T/273)**1.5  ! Schwertz & Brow (1951)

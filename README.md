@@ -41,9 +41,10 @@ Mars/input.par
 Mars/exper_thermal1d.f: (main program)  
 Mars/vapordiffusioni.f  
 Mars/adsorption.f  
-Mars/exper.par  
+Mars/exper.par
 *Documentation: User Guide Part 2  
 Documentation: Schorghofer, N. & Aharonson, O. (2005) J. Geophys. Res. 110, E05003, Appendices*  
+Mars/Misc/  an animation for illustration  
 
 
 ### Equilibrium Ice Table
@@ -174,8 +175,9 @@ Common/julday.f
 Common/tridag.for  
 Mars/flux_mars.f90  
 Mars/marsorbit.f90  
-Topo3D/topo40.xyz  
+Topo3D/topo40.xyz
 *Documentation: User Guide Part 5*  
+Topo3D/Test/  
 
 
 ### Monte-Carlo Model for Surface-bounded Exosphere

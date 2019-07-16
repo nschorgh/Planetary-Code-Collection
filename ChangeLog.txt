@@ -1,6 +1,6 @@
 ChangeLog
 
-28 Jun 2019: add two more variants of cratersQ_mars
+28 Jun 2019: added two more variants of cratersQ_mars
 
 17 May 2019: Topo3D/  switched from storing subtended angles to viewfactors, which saves a factor of cos(v) later and ultimately provides a speedup by a factor of several.
 

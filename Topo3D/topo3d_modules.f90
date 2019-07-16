@@ -307,11 +307,12 @@ module allinterfaces
 
   ! topod3d_subs_mars.f90
   interface
-     subroutine subsurfaceconduction_mars(T,Tsurf,dtsec,Qn,Qnp1,m,Fsurf,init)
+     subroutine subsurfaceconduction_mars(T,Tsurf,dtsec,Qn,Qnp1,m,Fsurf,init,Tco2frost,thIn,emiss)
        implicit none
        real(8), intent(INOUT) :: T(:), Tsurf, m, Fsurf
        real(8), intent(IN) :: dtsec,Qn,Qnp1
        logical, intent(IN) :: init
+       real(8), intent(IN), optional :: Tco2frost, thIn, emiss
      end subroutine subsurfaceconduction_mars
   end interface
   

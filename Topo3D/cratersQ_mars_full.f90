@@ -1,6 +1,8 @@
 !***************************************************************************
 ! cratersQ_mars_full: Mars thermal model with direct insolation, subsurface
 !                     conduction, terrain shadowing, and full 3D reflection
+!
+! based on cratersQ_mars.f90 but with full 3D reflection
 !***************************************************************************
 
 
@@ -80,8 +82,8 @@ program cratersQ_mars
   write(*,*) 'Calculations performed for latitude=',latitude
   write(*,*) 'fracIR=',fracIR,'fracDust=',fracDust
   write(*,*) 'Nx=',NSx,'Ny=',NSy,'File=',fileext
-  write(*,*) 'Mean albedo=',sum(albedo)/size(albedo)
-  write(*,*) 'Emissivity=',emiss,'CO2 albedo=',co2albedo
+  write(*,*) 'Mean albedo=',sum(albedo)/size(albedo),'Emissivity=',emiss
+  write(*,*) 'CO2 frost temperature=',Tco2frost,'CO2 albedo=',co2albedo
   write(*,*) 'Reflections:',.true.,'Subsurface:',subsurface
 
   ! Set start date
@@ -123,7 +125,7 @@ program cratersQ_mars
      Tbottom(:,:)=-9
      Tsurf(:,:)=-9  ! max 3 digits
      Fsurf(:,:)=0.
-     call subsurfaceconduction_mars(T(:,1,1),buf,dtsec,zero,zero,buf,buf,.true.) ! init
+     call subsurfaceconduction_mars(T(:,1,1),buf,dtsec,zero,zero,buf,buf,.true.,thIn=thIn) ! init
   end if
 
   longitude = 360 - 202.3 ! west longitude
@@ -180,7 +182,8 @@ program cratersQ_mars
            do j=2,NSy-1
               if (h(i,j)<-32000) cycle
               call subsurfaceconduction_mars(T(:,i,j),Tsurf(i,j), &
-                   & dtsec,Qnm1(i,j),Qabs(i,j),m(i,j),Fsurf(i,j),.false.)
+                   & dtsec,Qnm1(i,j),Qabs(i,j),m(i,j),Fsurf(i,j),.false., &
+                   & Tco2frost=Tco2frost,emiss=emiss)
            enddo
         enddo
      else  ! no subsurface conduction
