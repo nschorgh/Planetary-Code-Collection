@@ -17,13 +17,8 @@ module miscparams
   real(8), parameter :: solsy = 668.60 ! solar days per Mars year
   real(8), parameter :: solarDay = 88775.244  ! Mars [s]
 
-  ! thermal model parameters
-  real(8), parameter :: Tco2frost=145. ! adjust according to elevation [K]
-  real(8), parameter :: Tfrost = 200.  ! H2O frost point temperature, for diagnostics only [K]
-  real(8), parameter :: fracIR=0.04, fracDust=0.02
-  real(8), parameter :: emiss = 0.98
-  integer, parameter :: nz=70
-  real(8), parameter :: thIn = 300.  ! Thermal inertia
+  ! thermal model parameter
+  integer, parameter :: nz=70  ! number of vertical grid points
 end module miscparams
 
 
@@ -34,13 +29,24 @@ program cratersQ_mars
   use newhorizons
   implicit none
 
-  real(8), parameter :: albedo0=0.12, co2albedo=0.65
-  real(8) :: latitude = -41.6  ! Palikir Crater
-  real(8), parameter :: longitude = 360 - 202.3 ! west longitude
-
+  ! thermal model parameters
+  real(8) :: latitude  ! [deg]
+  real(8) :: longitude ! west longitude [deg]
+  real(8) :: Tco2frost ! adjust according to elevation [K]
+  real(8) :: Tfrost    ! H2O frost point temperature, for diagnostics only [K]
+  real(8) :: fracIR, fracDust
+  real(8) :: emiss 
+  real(8) :: thIn      ! Thermal inertia [SI units]
+  real(8) :: albedo0, co2albedo
+  real(8) :: dt        ! Time step [sols]
+  real(8) :: tmaxyrs   ! integration time [Mars years]
+  integer imm,idd,iyr
+  namelist /site/ latitude,longitude,Tco2frost,Tfrost,fracIR,fracDust,emiss, &
+       & thIn,albedo0,co2albedo,imm,idd,iyr,dt,tmaxyrs
+  
   integer nsteps, n, i, j, nm
   integer Mx1, Mx2, My1, My2
-  real(8) tmax, dt, dtsec, buf
+  real(8) tmax, dtsec, buf
   real(8) HA, sdays, azSun, emax, sinbeta
   real(8) edays, marsR, marsLs, marsDec
   real(8), allocatable, dimension(:,:) :: h, surfaceSlope, azFac
@@ -57,7 +63,7 @@ program cratersQ_mars
   integer k, i0, j0
   real(8) jd, LTST, jd_end
   character(len=5) ext
-  
+
   real(8) jd_snap(3), jd_themis(2)  ! Julian dates of snapshots
   character(len=20) fns(3), fnt(2)  ! file names of snapshots
   
@@ -87,6 +93,11 @@ program cratersQ_mars
   endif
   
   print *,'File extension ',ext
+
+  ! read input parameters from file
+  open(10,file='site.par')
+  read(10,NML=site)
+  close(10)
   
   allocate(h(NSx,NSy))
   allocate(surfaceSlope(Mx1:Mx2,My1:My2), azFac(Mx1:Mx2,My1:My2))
@@ -104,9 +115,9 @@ program cratersQ_mars
   allocate(co2last, co2first, h2olast, mold=m)
   co2last=-9.; co2first=-9.; h2olast=-9.; mmin=1e32
   
-  dt=0.02
   tmax = 5.*solsy
-
+  tmax = tmaxyrs*solsy
+  
   ! set some constants
   nsteps=int(tmax/dt)       ! calculate total number of timesteps
   dtsec = dt*solarDay
@@ -124,8 +135,7 @@ program cratersQ_mars
   !jd=dble(julday(1,1,2009))  !  JD for noon UTC on imm,iday,iyear
 
   ! Alternatively set end date
-  !jd_end=dble(julday(8,24,2014))  !  JD for noon UTC on imm,iday,iyear
-  jd_end=dble(julday(2,28,2017))  ! includes last themis snapshot
+  jd_end=dble(julday(imm,idd,iyr))  ! JD for noon UTC on imm,idd,iyr
   jd = nint(jd_end - tmax*solarDay/earthDay)
 
   write(*,*) 'Julian start and end date',jd,jd_end

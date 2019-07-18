@@ -7,7 +7,7 @@ shadows.f90: (main program)
 	calculates horizons
 
 fieldofviews.f90: (main program)
-	calculates horizons and field of views
+	calculates horizons and viewfactors
 
 cratersQ_equilbr.f90: (main program)
 	equilibrium surface temperature with 3D shadowing and reflections
@@ -18,7 +18,7 @@ cratersQ_moon.f90: (main program)
 cratersQ_mars.f90: (main program)
 	surface temperature with 3D shadowing for Mars, using G-approximation
 
-cratersQ_mars.f90_parallel: (main program)
+cratersQ_mars_parallel.f90: (main program)
 	parallel version of cratersQ_mars.f90
 
 cratersQ_mars.f90_full: (main program)
@@ -56,6 +56,9 @@ fieldproperties.f90: (main program)
 
 topo40.xyz: 
 	example input topography
+
+site.par:
+	example input file for cratersQ_mars_parallel.f90
 
 postassemble.cmd:
 	simple shell script that merges output of parallel versions

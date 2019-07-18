@@ -1,0 +1,16 @@
+! input parameters for cratersQ_mars_parallel.f90
+&site
+  latitude = -41.6   ! Palikir Crater [deg]
+  longitude = 157.7  ! west longitude [deg]
+  Tco2frost = 145.   ! adjust according to elevation [K]
+  Tfrost = 200.      ! H2O frost point temperature
+  fracIR = 0.04
+  fracDust = 0.02
+  emiss = 0.98
+  thIn = 300.        ! Thermal inertia
+  albedo0 = 0.12     ! frost-free albedo
+  co2albedo = 0.65
+  dt = 0.02          ! time step [sols], e.g., 1/50th of solar day
+  tmaxyrs = 6.	     ! duration [Mars years]
+  imm=2, idd=28, iyr=2017   ! end date
+/

@@ -152,9 +152,9 @@ Topo3D/shadows.f90: (main program)
 Topo3D/fieldofviews.f90: (main program)  
 Topo3D/cratersQ_equilbr.f90: (main program)  
 Topo3D/cratersQ_moon.f90: (main program)  
-Topo3D/cratersQ_mars.f90: (main program)
+Topo3D/cratersQ_mars.f90: (main program)  
 Topo3D/cratersQ_mars_parallel.f90: (main program)  
-Topo3D/cratersQ_mars_full.f90: (main program
+Topo3D/cratersQ_mars_full.f90: (main program)  
 Topo3D/insol3d_mars.f90: (main program)  
 Topo3D/filemanager.f90  
 Topo3D/topo3d_modules.f90  
@@ -175,7 +175,8 @@ Common/julday.f
 Common/tridag.for  
 Mars/flux_mars.f90  
 Mars/marsorbit.f90  
-Topo3D/topo40.xyz
+Topo3D/site.par  
+Topo3D/topo40.xyz  
 *Documentation: User Guide Part 5*  
 Topo3D/Test/  
 

@@ -1,4 +1,4 @@
-arthAnalogs/
+EarthAnalogs/
 
 Irradiance models for terrestrial analogs
 =========================================
@@ -7,14 +7,14 @@ sunpos.f90:
 	position of the Sun from location on Earth
 
 mk_atmosphere.f90:
-	subroutine for 0D atmosphere for Mauna Kea
+	subroutine for 0D atmosphere above Mauna Kea
 
 insol3d_earth.f90: (main program)
-	short-wavelength irradiance with topography
+	short-wavelength irradiance with topography (terrain shadowing)
 
 insol_flat.f90: (main program)
-	calculates short-wavelength solar irradiance at flat location
-	on Earth; analogues to insol_earth.f90
+	short-wavelength solar irradiance at flat location on Earth;
+	analogous to insol3d_earth.f90
 
 (several symoblic links to subroutines in Topo3D/)
 
