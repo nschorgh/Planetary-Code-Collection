@@ -1,5 +1,4 @@
-
-% bowl test
+% Compare numerical solution for bowl-shaped crater with analytical solution
 
 a=load('qinst.topo81');
 Nx=81-2; Ny=81-2;

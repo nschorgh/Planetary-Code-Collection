@@ -1,7 +1,5 @@
 clear all
-%a=load('q.dat');
 a=load('qinst.topo81');
-%a=load('qinst.dat');
 
 Nx=81-2; Ny=81-2; 
 

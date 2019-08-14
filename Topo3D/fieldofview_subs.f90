@@ -86,7 +86,9 @@ subroutine findallhorizon_wsort(h,i0,j0,naz,smax,visibility)
               d2=diffangle(az_neighbor,azRay(ak))
            
               if (d1+d2<=d3+1.d-5) then
-                 if (d1>1.0*d3 .and. d3>1.d-6) cycle  ! as in findallhorizon
+                 if (d1>0.5*d3 .and. d3>1.d-6) cycle
+                 ! in findallhorizon 0.5 is 1.0 instead,
+                 ! but this leads to missing visibilities along zero azimth (ak=1)
                  cc(ak)=cc(ak)+1
                  if (cc(ak)>CCMAX) stop 'findonehorizons_wsort: not enough memory allocated'
                  

@@ -3,7 +3,7 @@
   latitude = -41.6   ! Palikir Crater [deg]
   longitude = 157.7  ! west longitude [deg]
   Tco2frost = 145.   ! adjust according to elevation [K]
-  Tfrost = 200.      ! H2O frost point temperature
+  Tfrost = 200.      ! H2O frost point temperature [K]
   fracIR = 0.04
   fracDust = 0.02
   emiss = 0.98

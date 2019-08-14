@@ -1,8 +1,8 @@
 # Octave script
 
 clear all
-a=load('qmean.topo81');
-b=load('qmean.topo81_wsurfcond');
+a=load('../ThermalLibF/Topo3D/Test/qmean.topo81');
+b=load('../ThermalLibF/Topo3D/Test/qmean.topo81_wsurfcond');
 
 Nx=81-2; Ny=81-2; 
 
@@ -15,7 +15,7 @@ T2=reshape(b(:,12),Ny,Nx);
 figure(1); clf
 set(gcf,'defaultlinelinewidth',2,'defaultaxesfontsize',18,'defaulttextfontsize',18)
 
-T=[50:5:400];
+T=[100:5:450];
 ah1=hist(T1(:),T);
 ah2=hist(T2(:),T);
 hold on
@@ -25,7 +25,7 @@ xlabel('Peak Temperature (K)')
 ylabel('# Pixels')
 box on
 
-legend('Equilibrium I=0','with subsurface I=100','location','northwest')
+legend('Equilibrium I=0','with subsurface I=100','location','northeast')
 title('Temperature Histograms')
 
 print -depsc qmean_compare.eps

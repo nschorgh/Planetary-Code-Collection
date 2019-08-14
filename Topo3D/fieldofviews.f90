@@ -15,7 +15,7 @@ program fieldofviews
   implicit none
   real(8), parameter :: pi=3.1415926535897932, d2r=pi/180.
   integer i, j, narg, ilower, iupper
-  integer, parameter :: naz=180   ! # of azimuths
+  integer, parameter :: naz=360   ! # of azimuths
   real(8) h(NSx,NSy), smax(naz)
   character(5) extc
   logical visibility(NSx,NSy)
@@ -56,9 +56,8 @@ program fieldofviews
      do j=2,NSy-1
         visibility(:,:) = .false.
         call findallhorizon_wsort(h,i,j,naz,smax,visibility)
-        !write(21,'(2(i0,1x),9999(1x,f6.4))') i,j,smax(:)
-        write(21,'(2(i0,1x))',advance='no') i,j
-        call compactoutput(21,smax,naz)
+        !write(21,'(2(i0,1x))',advance='no') i,j
+        !call compactoutput(21,smax,naz)
         call refinevisibility(i,j,h,visibility)
         call find3dangle(h,i,j,23,visibility)
      enddo

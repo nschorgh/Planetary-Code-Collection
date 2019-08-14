@@ -8,13 +8,12 @@ Domain with 81x81 pixels, 5m horizontal resolution, sphere diameter 50m
 
 PREP STEP: PRE-CALCULATE GEOMETRIC INFORMATION
 
-Two variants were run:
-* shadows.f90 with 180 azimuth rays, takes 22 seconds with serial implementation
-* fieldofviews.f90, takes 1.5 minutes
+run shadows.f90 with 180 azimuth rays, takes 22 seconds with serial implementation
+run fieldofviews.f90, takes 100 seconds with serial implementation
 
 Input: topo81.xyz
 Output: horizons.topo81  (180 azimuth rays)
-Output: fieldofviews.topo81 
+Output: fieldofviews.topo81 (internally with 360 azimuth rays)
 
 
 RUN 1: COMPARISON WITH INGERSOLL SOLUTION
