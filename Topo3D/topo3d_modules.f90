@@ -48,6 +48,16 @@ module allinterfaces
        logical, intent(IN) :: visibility(NSx,NSy)
      end subroutine find3dangle
   end interface
+  
+  interface
+     pure function cos_viewing_angle(i0,j0,i,j,h)
+       use filemanager, only : NSx,NSy,dx,dy
+       implicit none
+       real(8) cos_viewing_angle
+       integer, intent(IN) :: i0,j0,i,j
+       real(8), intent(IN) :: h(NSx,NSy)
+     end function cos_viewing_angle
+  end interface
 
   interface
      elemental subroutine xyz2thetaphi(x,y,z,theta,phi)
@@ -90,16 +100,6 @@ module allinterfaces
        real(8) azimuth
        integer, intent(IN) :: i1,j1,i2,j2
      end function azimuth
-  end interface
-
-  interface
-     pure function viewing_angle(i0,j0,i,j,h)
-       use filemanager, only : NSx,NSy,dx,dy
-       implicit none
-       real(8) viewing_angle
-       integer, intent(IN) :: i0,j0,i,j
-       real(8), intent(IN) :: h(NSx,NSy)
-     end function viewing_angle
   end interface
 
   interface

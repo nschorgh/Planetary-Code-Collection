@@ -44,33 +44,6 @@ end function azimuth
 
 
 
-pure function viewing_angle(i0,j0,i,j,h)
-!***********************************************************************
-!  function that calculates angle between surface normal at (i,j)
-!     and vector pointing to (ii,jj) as in findonehorizon_wsort
-!***********************************************************************
-  use filemanager, only : NSx,NSy
-  use allinterfaces, except_this_one => viewing_angle
-  implicit none
-  real(8) viewing_angle
-  integer, intent(IN) :: i0,j0,i,j
-  real(8), intent(IN) :: h(NSx,NSy)
-  real(8), parameter :: pi=3.1415926535897931
-  real(8) az, s, r, surfaceSlope, azFac, slope_along_az
-
-  !r = sqrt(dx*dx*(i-i0)**2+dy*dy*(j-j0)**2)
-  r = horizontaldistance(i,j,i0,j0)
-  az = azimuth(i0,j0,i,j)
-  s = (h(i,j)-h(i0,j0))/r
-
-  call difftopo1(i0,j0,h,surfaceSlope,azFac)
-  slope_along_az=atan(surfaceSlope*cos(azFac-az)) ! an angle
-
-  viewing_angle = pi/2 - atan(s) + slope_along_az 
-end function viewing_angle
-
-
-
 pure subroutine difftopo1(i,j,h,surfaceSlope,az)
   ! calculate slope and azimuth of surface element
   use filemanager, only : NSx,NSy,dx,dy

@@ -32,7 +32,7 @@ program fieldofviews
   select case(narg)
   case (0)  ! serial implementation
      print *,'...creating files horizons.dat and viewfactors.dat'
-     open(unit=21,file='horizons.dat',status='unknown',action='write')
+     !open(unit=21,file='horizons.dat',status='unknown',action='write')
      !open(unit=22,file='fieldofviews.dat',status='unknown',action='write')
      open(unit=23,file='viewfactors.dat',status='unknown',action='write')
      ilower = 2; iupper = NSx-1
@@ -40,7 +40,7 @@ program fieldofviews
   case (2)  ! parallel implementation
      call slicer(NSx,ilower,iupper,extc)
      print *,'...creating files horizon and viewfactor...',extc
-     open(unit=21,file='horizon.'//extc,status='unknown',action='write')
+     !open(unit=21,file='horizon.'//extc,status='unknown',action='write')
      !open(unit=22,file='fieldofview.'//extc,status='unknown',action='write')
      open(unit=23,file='viewfactor.'//extc,status='unknown',action='write')
      ! merge and sort output files with script
@@ -63,7 +63,7 @@ program fieldofviews
      enddo
   enddo
 
-  close(21)
+  !close(21)
   !close(22)
   close(23)
   print *,'Finished'

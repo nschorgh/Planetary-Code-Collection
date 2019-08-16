@@ -51,7 +51,7 @@ end subroutine downsample
 
 real(8) elemental function horizontaldistance1(x1,y1,x2,y2)
   ! distance between two points; must have same units as height
-  ! as in crater_common.f90, but distance based
+  ! as in topo3d_common.f90, but distance based
   implicit none
   real(8), intent(IN) :: x1,y1,x2,y2
   horizontaldistance1 = sqrt((x1-x2)**2+(y1-y2)**2)
@@ -60,7 +60,7 @@ end function horizontaldistance1
 
 
 real(8) elemental function azimuth1(x1,y1,x2,y2)
-  ! as in crater_common.f90, but distance based
+  ! as in topo3d_common.f90, but distance based
   implicit none
   real(8), intent(IN) :: x1,y1,x2,y2
   azimuth1 = atan2(x2-x1,-(y2-y1)) 
