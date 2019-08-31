@@ -305,6 +305,7 @@ integer function getmaxfieldsize(NSx,NSy,ffn)
   integer maxsize
   integer cc, i, j, i0_2, j0_2, ierr
 
+  print *,'reading ',ffn
   open(unit=20,file=ffn,status='old',action='read',iostat=ierr)
   if (ierr>0) stop 'getmaxfieldsize: input file not found'
 

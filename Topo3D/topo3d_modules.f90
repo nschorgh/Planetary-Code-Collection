@@ -3,7 +3,7 @@ module allinterfaces
 
   ! begin shadows_subs.f90
   interface
-     subroutine findallhorizon(h,i0,j0,naz,smax)
+     pure subroutine findallhorizon(h,i0,j0,naz,smax)
        use filemanager, only : NSx,NSy,RMAX
        implicit none
        integer, intent(IN) :: i0,j0,naz

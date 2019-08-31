@@ -1,5 +1,7 @@
 ChangeLog
 
+30 Aug 2019: changed definition of viewfactor by a factor of pi, so a half-sphere integrates to 1.
+
 Aug 2019: fixed a bug in fieldofview_subs.f90 and redid test case
 
 28 Jun 2019: added two more variants of cratersQ_mars

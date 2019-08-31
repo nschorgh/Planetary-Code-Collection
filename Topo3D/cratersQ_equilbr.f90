@@ -69,9 +69,9 @@ program cratersQ_equilbr
            do k=1,cc(i,j)
               iii = ii(i,j,k); jjj = jj(i,j,k)
 
-              Qrefl(i,j) = Qrefl(i,j) + albedo(iii,jjj)*Qvis(iii,jjj)*VF(i,j,k)/pi
-              QIR(i,j) = QIR(i,j) + emiss*sigSB*Tsurf(iii,jjj)**4*VF(i,j,k)/pi
-              QIRre(i,j) = QIRre(i,j) + (1-emiss)*QIRin(iii,jjj)*VF(i,j,k)/pi
+              Qrefl(i,j) = Qrefl(i,j) + albedo(iii,jjj)*Qvis(iii,jjj)*VF(i,j,k)
+              QIR(i,j) = QIR(i,j) + emiss*sigSB*Tsurf(iii,jjj)**4*VF(i,j,k)
+              QIRre(i,j) = QIRre(i,j) + (1-emiss)*QIRin(iii,jjj)*VF(i,j,k)
            enddo
            if (Qn(i,j)==0.) then
               Qshadow1 = Qshadow1 + Qrefl(i,j)

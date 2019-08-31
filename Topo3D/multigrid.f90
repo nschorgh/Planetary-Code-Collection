@@ -154,11 +154,10 @@ pure subroutine horizon_MG_core(x0,y0,h00,naz,smax,i,j,h,P)
 
      d3=diffangle(az,az_neighbor)
      do akak=ak1,ak2
-     !do akak=1,naz
         ak = akak; if (ak<=0) ak = ak+naz
-        !if (azRay(ak)==180) print *,'bad ray'
         d1=diffangle(az,azRay(ak))
         d2=diffangle(az_neighbor,azRay(ak))
+        
         if (d1+d2<=d3+1.d-5) then  
            if (d1>1.0*d3 .and. d3>1.d-6) cycle 
            r_neighbor = horizontaldistance1(in*dxl,jn*dyl,x0,y0)

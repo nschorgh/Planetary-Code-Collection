@@ -37,6 +37,7 @@ program fieldproperties
      print *,'... max field of view size=',CCMAX
      allocate(ii(NSx,NSy,CCMAX), jj(NSx,NSy,CCMAX), dO12(NSx,NSy,CCMAX))
      call getfieldofview(NSx,NSy,ffn,cc,ii,jj,dO12,landsize,CCMAX)
+     !call getviewfactors(NSx,NSy,vfn,cc,ii,jj,dO12,landsize,CCMAX)
   else
      landsize = -9.
   end if

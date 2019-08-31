@@ -103,9 +103,9 @@ program cratersQ_Moon
               do k=1,cc(i,j)
                  iii = ii(i,j,k); jjj = jj(i,j,k)
                  !v = viewing_angle(i,j,iii,jjj,h)
-                 Qrefl(i,j) = Qrefl(i,j) + VF(i,j,k)/pi*albedo(iii,jjj)*Qvis(iii,jjj)
-                 QIR(i,j) = QIR(i,j) + VF(i,j,k)/pi*emiss*sigSB*Tsurf(iii,jjj)**4
-                 QIRre(i,j) = QIRre(i,j) + VF(i,j,k)/pi*(1-emiss)*QIRin(iii,jjj)
+                 Qrefl(i,j) = Qrefl(i,j) + VF(i,j,k)*albedo(iii,jjj)*Qvis(iii,jjj)
+                 QIR(i,j) = QIR(i,j) + VF(i,j,k)*emiss*sigSB*Tsurf(iii,jjj)**4
+                 QIRre(i,j) = QIRre(i,j) + VF(i,j,k)*(1-emiss)*QIRin(iii,jjj)
               enddo
            enddo
         enddo

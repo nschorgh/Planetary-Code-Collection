@@ -12,7 +12,7 @@ end function diffangle
 
 
 
-subroutine findallhorizon(h,i0,j0,naz,smax)
+pure subroutine findallhorizon(h,i0,j0,naz,smax)
 ! finds horizon for all azimuth rays
   use filemanager, only : NSx,NSy,RMAX
   use allinterfaces, only : horizontaldistance, azimuth, diffangle
@@ -69,7 +69,7 @@ subroutine findallhorizon(h,i0,j0,naz,smax)
            if (ak2<ak1) then ! swap
               buf=ak1; ak1=ak2; ak2=buf;
            endif
-           if (ak1>naz .or. ak2>naz) stop 'findallhorizon: index out of bound'
+           if (ak1>naz .or. ak2>naz) error stop 'findallhorizon: index out of bound'
 
            d3=diffangle(az,az_neighbor)
            do akak=ak1,ak2

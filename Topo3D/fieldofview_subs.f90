@@ -146,6 +146,7 @@ subroutine find3dangle(h,i0,j0,unit,visibility)
   integer, intent(IN) :: i0,j0,unit
   real(8), intent(IN) :: h(NSx,NSy)
   logical, intent(IN) :: visibility(NSx,NSy)
+  real(8), parameter :: pi=3.1415926535897931
   integer i, j, k, cc
   real(8) r, thetac, phic, dOh, landsize, cosv, viewsize
   integer, parameter :: CCMAX = NSx*NSy 
@@ -223,7 +224,7 @@ subroutine find3dangle(h,i0,j0,unit,visibility)
            dOstack(cc)=dOh
 
            cosv = cos_viewing_angle(i0,j0,i,j,h)  ! cos(v)
-           VFstack(cc) = dOh*cosv  ! view factor
+           VFstack(cc) = dOh*cosv/pi  ! view factor
         endif
      enddo
   enddo

@@ -12,7 +12,7 @@ for i in `ls horizon.* | sort -V`;
 do
     cat $i >> horizons.dat
 done
-#for i in `ls fieldofview.* | sort -V`;
+#for i in `ls viewfactor.* | sort -V`;
 #do
 #    cat $i >> viewfactors.dat
 #done

@@ -16,11 +16,11 @@ Asynchronously Coupled Model of Ice Loss, Temperature, and Impact Stirring on As
 =======================================================================================
 
 asteroid_fast2.f90: (main program)
-	Asynchronously coupled model of ice loss, temperature, 
-	and impact stirring on asteroids
+	Asynchronously coupled model of ice loss, temperature, and
+	impact stirring on asteroids
 
 asteroid_fast1.f90: (main program)
-	Asynchronously coupled model of ice loss and temperature
+	Asynchronously coupled model of ice loss and temperature 
 	on asteroids; simplified version of asteroid_fast2
 
 impactstirring.f90:
@@ -28,7 +28,7 @@ impactstirring.f90:
 	for use with "fast" model
 
 fast_modules_asteroid.f90:
-	modules for fast1 and fast2
+	modules for asteroid_fast1 and asteroid_fast2
 
 fast_subs_asteroid2.f90 & fast_subs_asteroid1.f90:
 	subroutines and functions for fast1 & fast2 
