@@ -120,7 +120,7 @@ contains
   end function getoneskysize_v2
 
   elemental function getoneGterm(i,j,alpha,azFac)
-    ! quantity used for specific type of approximation
+    ! calculate land view factor from horizons
     implicit none
     real(8) getoneGterm
     integer, intent(IN) :: i,j

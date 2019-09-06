@@ -221,11 +221,11 @@ module allinterfaces
   ! routines in Mars/
   interface
      pure subroutine flux_mars2(R,decl,latitude,HA,fracIR,fracDust, &
-          &   surfaceSlope,azFac,emax,Q,Qscat,Qlw)
+          &   surfaceSlope,azFac,emax,Qdir,Qscat,Qlw)
        implicit none
        real(8), intent(IN) :: R,decl,latitude,HA,surfaceSlope,azFac,emax
        real(8), intent(IN) :: fracIR,fracDust
-       real(8), intent(OUT) :: Q,Qscat,Qlw
+       real(8), intent(OUT) :: Qdir,Qscat,Qlw
      end subroutine flux_mars2
   end interface
 

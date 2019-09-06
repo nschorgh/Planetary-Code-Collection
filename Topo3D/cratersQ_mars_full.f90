@@ -24,7 +24,7 @@ module miscparams
 end module miscparams
 
 
-program cratersQ_mars
+PROGRAM cratersQ_mars
   use filemanager
   use allinterfaces
   use miscparams
@@ -285,5 +285,5 @@ program cratersQ_mars
      close(23)
   endif
   
-end program cratersQ_mars
+END PROGRAM cratersQ_mars
 

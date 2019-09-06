@@ -22,7 +22,7 @@ module miscparams
 end module miscparams
 
 
-program cratersQ_mars
+PROGRAM cratersQ_mars
   use filemanager
   use allinterfaces
   use miscparams
@@ -207,6 +207,8 @@ program cratersQ_mars
            ! absorbed direct insolation and contributions from atmosphere
            Qn(i,j) = (1-albedo(i,j))*(Qdirect(i,j)+Qscat*skyview(i,j)) &
                 & + emiss*Qlw*skyview(i,j)
+           !Qn(i,j) = (1-albedo(i,j))*(Qdirect(i,j)+Qscat*(1-gterm(i,j))) &
+           !     & + emiss*Qlw*(1-gterm(i,j))
            ! contribution from land in field of view
            if (n>0) then 
               QIR = gterm(i,j)*emiss*sigSB*Tsurf_flat**4
@@ -347,7 +349,7 @@ program cratersQ_mars
      close(23)
   endif
 
-end program cratersQ_mars
+END PROGRAM cratersQ_mars
 
 
 
