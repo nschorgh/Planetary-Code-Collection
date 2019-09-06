@@ -1,22 +1,22 @@
 pure function flux_mars77(R,decl,latitude,HA,albedo,fracir,fracscat)
-  !***********************************************************************
-  !   flux_mars77: calculates insolation at Mars
-  !     flat surface only; also works in polar regions
-  !
-  !     R: distance from sun [AU]
-  !     decl: planetocentric solar declination [radians]
-  !     latitude: [radians]
-  !     HA: hour angle [radians from noon, clockwise]
-  !     fracir: fraction of absorption
-  !     fracscat: fraction of scattering
-  !***********************************************************************
+!***********************************************************************
+!   flux_mars77: calculates insolation at Mars
+!     flat surface only; also works in polar regions
+!
+!     R: distance from sun [AU]
+!     decl: planetocentric solar declination [radians]
+!     latitude: [radians]
+!     HA: hour angle [radians from noon, clockwise]
+!     fracir: fraction of absorption
+!     fracscat: fraction of scattering
+!***********************************************************************
   implicit none
   real*8 flux_mars77
   real*8, intent(IN) :: R,decl,latitude,HA,albedo,fracIR,fracScat
   real*8, parameter :: pi=3.1415926535897931, So=1365., d2r=pi/180.
   real*8, parameter :: sigSB=5.6704d-8
   real*8 c1,s1,Qo,solarAttenuation,Q
-  real*8 sinbeta,sinbetaNoon,cosbeta,azSun,buf,Fout
+  real*8 sinbeta,sinbetaNoon,Qdir,Qscat,Fout,Qlw
 
   c1=cos(latitude)*cos(decl)
   s1=sin(latitude)*sin(decl)
@@ -25,34 +25,25 @@ pure function flux_mars77(R,decl,latitude,HA,albedo,fracir,fracscat)
   sinbeta = c1*cos(HA) + s1
   sinbetaNoon = c1 + s1
   sinbetaNoon = max(sinbetaNoon,0.d0)  ! horizon
+
+  Qo = So/(R**2)  ! solar constant at Mars
   
-  cosbeta = sqrt(1-sinbeta**2)
-  ! ha -> az (option 1)
-  ! azSun=asin(-cos(decl)*sin(ha)/cosbeta)
-  ! ha -> az (option 2)
-  buf = (sin(decl)-sin(latitude)*sinbeta)/(cos(latitude)*cosbeta)
-  if (buf>+1.) buf=1.d0   ! roundoff
-  if (buf<-1.) buf=-1.d0  ! roundoff
-  azSun = acos(buf)
-  if (sin(HA)>=0) azSun=2*pi-azSun
-  ! ha -> az (option 3)  without beta
-  ! azSun=sin(latitude)*cos(decl)*cos(ha)-cos(latitude)*sin(decl)
-  ! azSun=atan(sin(ha)*cos(decl)/azSun)
-  ! print *,asin(sinbeta)/d2r,azSun/d2r
-  
-  Qo = So/(R**2)
-  ! atmospheric contributions are based on Kieffer et al. (1977), JGR
+  ! short-wavelength irradiance
   if (sinbeta>0.d0) then
-     solarAttenuation = (1.-albedo)* &
-          &        (1.- fracIR - fracScat)**(1./max(sinbeta,0.04)) 
-     Q = Qo*(sinbeta*solarAttenuation + 0.5*fracScat)
+     solarAttenuation = (1.- fracIR - fracScat)**(1./max(sinbeta,0.04))
+     Qdir = Qo*sinbeta*solarAttenuation
+     Qscat = 0.5*Qo*fracScat
+     Q = (1.-albedo)*(Qdir + Qscat)
   else
      Q = 0.
   endif
-  ! net flux: short-wavelength insolation + IR
+
+  ! atmospheric IR contribution is based on Kieffer et al. (1977), JGR
   Fout = 1.*sigSB*150**4  ! matters only in polar region
-  Q = Q + fracIR*max(Qo*sinbetaNoon,Fout)
-  flux_mars77 = Q
+  Qlw = fracIR*max(Qo*sinbetaNoon,Fout)
+
+  ! net flux = short-wavelength + long-wavelength irradiance
+  flux_mars77 = Q + Qlw
 end function flux_mars77
 
 
@@ -60,8 +51,8 @@ end function flux_mars77
 pure subroutine flux_mars2(R,decl,latitude,HA,fracIR,fracScat, &
      &   surfaceSlope,azFac,emax,Qdir,Qscat,Qlw)
 !***********************************************************************
-!     This subroutine for solar insolation at Mars uses the same 
-!       equations as function flux_mars77, but returns several irradiances
+!   flux_mars2: Insolation at Mars on tilted surface;
+!               returns several irradiances
 !
 !     R: distance from sun [AU]
 !     decl: planetocentric solar declination [radians]
@@ -113,14 +104,20 @@ pure subroutine flux_mars2(R,decl,latitude,HA,fracIR,fracScat, &
   solarAttenuation = (1.- fracIR - fracScat)**(1./max(sinbeta,0.04d0))
   Qdir = Qo*sintheta*solarAttenuation
   ! Fout = 1.*sigSB*150**4
-  ! Qlw = fracIR*max(Qo*sinbetaNoon,Fout)  in polar region
+  ! Qlw = fracIR*max(Qo*sinbetaNoon,Fout)  ! in polar region
   Qlw = fracIR*Qo*sinbetaNoon
   if (sinbeta>0.d0) then
      Qscat = 0.5*fracScat*Qo
   else
      Qscat = 0.
   endif
-  ! absorbed flux = (1-albedo)*(Q+Qscat*viewfactor) + emiss*Qlw*viewfactor
+  
+! For a horizontal surface
+!   absorbed flux = (1-albedo)*(Qdir+Qscat) + emiss*Qlw
+!
+! For a tilted surface
+!   absorbed flux = (1-albedo)*(Qdir+Qscat*viewfactor) + emiss*Qlw*viewfactor
+! in the case of a planar slope, viewfactor=cos(surfaceSlope/2.)**2
 end subroutine flux_mars2
 
 
