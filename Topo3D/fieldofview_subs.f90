@@ -250,6 +250,37 @@ end subroutine find3dangle
 
 
 
+pure subroutine difftopo1(i,j,h,surfaceSlope,az)
+  ! calculate slope and azimuth of surface element
+  use filemanager, only : NSx,NSy,dx,dy
+  implicit none
+  integer, intent(IN) :: i,j
+  real(8), intent(IN) :: h(NSx,NSy)
+  real(8), intent(OUT) :: surfaceSlope,az
+  real(8) sx,sy
+  
+  sx = -1e32; sy=-1e32  ! avoids compiler warning
+
+  if (i>1 .and. i<NSx) then
+     sx=(h(i+1,j)-h(i-1,j))/(2.*dx)
+  else
+    if (i==1) sx=(h(i+1,j)-h(i,j))/dx
+    if (i==NSx) sx=(h(i,j)-h(i-1,j))/dx
+  endif
+
+  if (j>1 .and. j<NSy) then
+     sy=(h(i,j+1)-h(i,j-1))/(2.*dy)
+  else
+     if (j==1) sy=(h(i,j+1)-h(i,j))/dy
+     if (j==NSy) sy=(h(i,j)-h(i,j-1))/dy
+  endif
+
+  surfaceSlope=sqrt(sx**2+sy**2)  
+  az=atan2(sx,-sy)
+end subroutine difftopo1
+
+
+
 pure function cos_viewing_angle(i0,j0,i,j,h)
 !***********************************************************************
 !  function that calculates angle between surface normal at (i,j)

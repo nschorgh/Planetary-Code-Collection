@@ -3,16 +3,6 @@ module allinterfaces
 
   ! begin shadows_subs.f90
   interface
-     pure subroutine findallhorizon(h,i0,j0,naz,smax)
-       use filemanager, only : NSx,NSy,RMAX
-       implicit none
-       integer, intent(IN) :: i0,j0,naz
-       real(8), intent(IN) :: h(NSx,NSy)
-       real(8), intent(OUT) :: smax(naz)
-     end subroutine findallhorizon
-  end interface
-  
-  interface
      elemental function diffangle(a1,a2)
        real(8) diffangle
        real(8), intent(IN) :: a1,a2
@@ -26,6 +16,48 @@ module allinterfaces
        real(8), intent(IN) :: value(nr)
      end subroutine compactoutput
   end interface
+  
+  interface
+     elemental function horizontaldistance(i1,j1,i2,j2)
+       implicit none
+       real(8) horizontaldistance
+       integer, intent(IN) :: i1,j1,i2,j2
+     end function horizontaldistance
+  end interface
+
+  interface
+     pure function azimuth(i1,j1,i2,j2)
+       implicit none
+       real(8) azimuth
+       integer, intent(IN) :: i1,j1,i2,j2
+     end function azimuth
+  end interface
+
+  interface
+     elemental function horizontaldistance1(x1,y1,x2,y2)
+       implicit none
+       real(8) horizontaldistance1
+       real(8), intent(IN) :: x1,y1,x2,y2
+     end function horizontaldistance1
+  end interface
+  
+  interface
+     elemental function azimuth1(x1,y1,x2,y2)
+       implicit none
+       real(8) azimuth1
+       real(8), intent(IN) :: x1,y1,x2,y2
+     end function azimuth1
+  end interface
+
+  interface
+     pure subroutine findallhorizon1(h,i0,j0,naz,smax)
+       use filemanager, only : NSx,NSy,dx,dy
+       implicit none
+       integer, intent(IN) :: i0,j0,naz
+       real(8), intent(IN) :: h(NSx,NSy)
+       real(8), intent(OUT) :: smax(naz)
+     end subroutine findallhorizon1
+  end interface
 
   ! begin fieldofview_subs.f90
   interface
@@ -37,6 +69,16 @@ module allinterfaces
        real(8), intent(OUT) :: smax(naz)
        logical, intent(OUT) :: visibility(NSx,NSy)
      end subroutine findallhorizon_wsort
+  end interface
+
+  interface
+     pure subroutine difftopo1(i,j,h,surfaceSlope,az)
+       use filemanager, only : NSx,NSy,dx,dy
+       implicit none
+       integer, intent(IN) :: i,j
+       real(8), intent(IN) :: h(NSx,NSy)
+       real(8), intent(OUT) :: surfaceSlope,az
+     end subroutine difftopo1
   end interface
   
   interface
@@ -86,32 +128,6 @@ module allinterfaces
      end subroutine readdem
   end interface
 
-  interface
-     elemental function horizontaldistance(i1,j1,i2,j2)
-       implicit none
-       real(8) horizontaldistance
-       integer, intent(IN) :: i1,j1,i2,j2
-     end function horizontaldistance
-  end interface
-
-  interface
-     pure function azimuth(i1,j1,i2,j2)
-       implicit none
-       real(8) azimuth
-       integer, intent(IN) :: i1,j1,i2,j2
-     end function azimuth
-  end interface
-
-  interface
-     pure subroutine difftopo1(i,j,h,surfaceSlope,az)
-       use filemanager, only : NSx,NSy,dx,dy
-       implicit none
-       integer, intent(IN) :: i,j
-       real(8), intent(IN) :: h(NSx,NSy)
-       real(8), intent(OUT) :: surfaceSlope,az
-     end subroutine difftopo1
-  end interface
- 
   interface
      pure function area_spherical_quadrangle(phi,theta)
        implicit none
@@ -257,42 +273,6 @@ module allinterfaces
        real(8), intent(IN) :: h(NSx,NSy)
        real(8), intent(OUT) :: hhalf(NSx/2,NSy/2) ! new dimensions
      end subroutine downsample
-  end interface
-
-  interface
-     real(8) elemental function horizontaldistance1(x1,y1,x2,y2)
-       implicit none
-       real(8), intent(IN) :: x1,y1,x2,y2
-     end function horizontaldistance1
-  end interface
-  
-  interface
-     real(8) elemental function azimuth1(x1,y1,x2,y2)
-       implicit none
-       real(8), intent(IN) :: x1,y1,x2,y2
-     end function azimuth1
-  end interface
-
-  interface
-     pure subroutine findallhorizon_MG1(h,i0,j0,naz,smax)
-       use filemanager, only : NSx,NSy,dx,dy
-       implicit none
-       integer, intent(IN) :: i0,j0,naz
-       real(8), intent(IN) :: h(NSx,NSy)
-       real(8), intent(OUT) :: smax(naz)
-     end subroutine findallhorizon_MG1
-  end interface
-
-  interface
-     pure subroutine horizon_MG_core(x0,y0,h00,naz,smax,i,j,h,P)
-       use filemanager, only : NSx,NSy,dx,dy
-       implicit none
-       real(8), intent(IN) :: x0,y0,h00 
-       integer, intent(IN) :: naz
-       real(8), intent(INOUT) :: smax(naz)
-       integer, intent(IN) :: i,j,P 
-       real(8), intent(IN) :: h(NSx/P,NSy/P)
-     end subroutine horizon_MG_core
   end interface
 
   ! cratersQ_*

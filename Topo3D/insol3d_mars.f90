@@ -20,7 +20,7 @@ program insol3d_mars
   real(8), allocatable, dimension(:,:) :: Qn, Qmean, Qmax
   real(8), allocatable, dimension(:,:) :: shadowtime, maxshadowtime
 
-  integer julday, iyr, imm, iday
+  integer iyr, imm, iday
   real(8) jd, jd_snap, longitude, buf, LTST
 
   ! whole domain

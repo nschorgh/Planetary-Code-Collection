@@ -51,6 +51,9 @@ topo3d_subs_mars.f90:
 multigrid.f90:
 	subroutines for multigrid acceleration
 
+azrays.f90:
+	module that defines azimuth rays
+
 fieldproperties.f90: (main program)
 	processes geometric information, mostly diagnostics
 

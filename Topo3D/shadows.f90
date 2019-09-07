@@ -1,4 +1,4 @@
-program toposhadows
+PROGRAM toposhadows
 !***********************************************************************
 ! calculates horizon for every location and every azimuth
 !
@@ -7,10 +7,11 @@ program toposhadows
   use filemanager, only : NSx,NSy,fileext,dx,dy,RMAX
   use allinterfaces
   use newmultigrid
+  use azRays, only : naz  ! specify # azimuths in azrays.f90
   implicit none
   real(8), parameter :: pi=3.1415926535897932
   integer i, j, narg, ilower, iupper, LACT, LMAX
-  integer, parameter :: naz=180      ! # of azimuths
+  !integer, parameter :: naz=180      ! # of azimuths
   real(8) h(NSx,NSy), smax(naz)
   character(5) extc
   logical :: MULTIGRID = .true.
@@ -61,8 +62,9 @@ program toposhadows
   do i=ilower,iupper
      print *,i
      do j=2,NSy-1
-        if (.not.MULTIGRID) then
-           call findallhorizon(h,i,j,naz,smax)
+        if (.not.MULTIGRID .or. LMAX==1) then
+           !call findallhorizon(h,i,j,naz,smax)
+           call findallhorizon1(h,i,j,naz,smax)
         else
            call findallhorizon_MGR(h,i,j,naz,smax,RMG,LMAX)
         endif
@@ -72,4 +74,4 @@ program toposhadows
   enddo
   
   close(21)
-end program toposhadows
+end PROGRAM toposhadows

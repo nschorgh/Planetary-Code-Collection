@@ -23,58 +23,6 @@ end subroutine readdem
 
 
 
-elemental function horizontaldistance(i1,j1,i2,j2)
-  ! distance between two points; must have same units as height
-  use filemanager, only : dx,dy
-  implicit none
-  real(8) horizontaldistance
-  integer, intent(IN) :: i1,j1,i2,j2
-  horizontaldistance = sqrt(dx*dx*(i1-i2)**2+dy*dy*(j1-j2)**2)
-end function horizontaldistance
-
-
-
-elemental function azimuth(i1,j1,i2,j2)
-  use filemanager, only : dx,dy
-  implicit none
-  real(8) azimuth
-  integer, intent(IN) :: i1,j1,i2,j2
-  azimuth = atan2(dx*(i2-i1),-dy*(j2-j1))   ! this is correct
-end function azimuth
-
-
-
-pure subroutine difftopo1(i,j,h,surfaceSlope,az)
-  ! calculate slope and azimuth of surface element
-  use filemanager, only : NSx,NSy,dx,dy
-  implicit none
-  integer, intent(IN) :: i,j
-  real(8), intent(IN) :: h(NSx,NSy)
-  real(8), intent(OUT) :: surfaceSlope,az
-  real(8) sx,sy
-  
-  sx = -1e32; sy=-1e32  ! avoids compiler warning
-
-  if (i>1 .and. i<NSx) then
-     sx=(h(i+1,j)-h(i-1,j))/(2.*dx)
-  else
-    if (i==1) sx=(h(i+1,j)-h(i,j))/dx
-    if (i==NSx) sx=(h(i,j)-h(i-1,j))/dx
-  endif
-
-  if (j>1 .and. j<NSy) then
-     sy=(h(i,j+1)-h(i,j-1))/(2.*dy)
-  else
-     if (j==1) sy=(h(i,j+1)-h(i,j))/dy
-     if (j==NSy) sy=(h(i,j)-h(i,j-1))/dy
-  endif
-
-  surfaceSlope=sqrt(sx**2+sy**2)  
-  az=atan2(sx,-sy)
-end subroutine difftopo1
-
-
-
 pure function area_spherical_quadrangle(phi,theta)
 ! area of two triangles on sphere
   use allinterfaces, only : area_spherical_triangle

@@ -164,6 +164,7 @@ Topo3D/fieldofview_subs.f90
 Topo3D/topo3d_subs.f90  
 Topo3D/topo3d_subs_mars.f90  
 Topo3D/multigrid.f90  
+Topo3D/azrays.f90  
 Topo3D/fieldproperties.f90: (main program)  
 Topo3D/hpsort.for  
 Common/conductionQ.f  
