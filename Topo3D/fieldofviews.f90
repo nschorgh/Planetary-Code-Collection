@@ -24,7 +24,7 @@ PROGRAM fieldofviews
 
   narg = COMMAND_ARGUMENT_COUNT()
   print *,'narg=',narg
-  
+
   call readdem(h)
   print *,'...finished reading topography...'
   print *,'Nsx=',NSx,'Nsy=',NSy,'# azimuths=',naz
@@ -50,7 +50,7 @@ PROGRAM fieldofviews
   end select
   
   if (ilower<=1 .or. iupper>=NSx) stop
-  
+
   do i=ilower,iupper
      print *,i
      do j=2,NSy-1

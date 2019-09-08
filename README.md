@@ -157,8 +157,9 @@ Topo3D/cratersQ_mars_parallel.f90: (main program)
 Topo3D/cratersQ_mars_full.f90: (main program)  
 Topo3D/insol3d_mars.f90: (main program)  
 Topo3D/filemanager.f90  
-Topo3D/topo3d_modules.f90  
+Topo3D/topo3d_modules.f90   
 Topo3D/topo3d_common.f90  
+Topo3D/topo3d_geometry.f90  
 Topo3D/shadow_subs.f90  
 Topo3D/fieldofview_subs.f90  
 Topo3D/topo3d_subs.f90  

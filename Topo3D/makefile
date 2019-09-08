@@ -18,14 +18,14 @@ SRM = ../Mars/
 
 
 shadows: filemanager.o topo3d_modules.o shadow_subs.o multigrid.o \
-	shadows.o topo3d_common.o hpsort.o makefile
+	shadows.o topo3d_common.o topo3d_geometry.o hpsort.o makefile
 	$(CC) $(LFLAGS) shadows.o shadow_subs.o hpsort.o topo3d_common.o \
-	multigrid.o -o $@
+	multigrid.o topo3d_geometry.o -o $@
 
 fieldofviews: filemanager.o topo3d_modules.o fieldofview_subs.o \
-	topo3d_common.o shadow_subs.o fieldofviews.o hpsort.o makefile
+	topo3d_common.o topo3d_geometry.o fieldofviews.o hpsort.o makefile
 	$(CC) $(LFLAGS) fieldofviews.o topo3d_common.o hpsort.o \
-	fieldofview_subs.o shadow_subs.o -o $@
+	fieldofview_subs.o topo3d_geometry.o -o $@
 
 cratersQ_equilbr: filemanager.o topo3d_modules.o topo3d_subs.o \
 	topo3d_common.o cratersQ_equilbr.o makefile

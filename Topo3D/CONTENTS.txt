@@ -36,6 +36,9 @@ topo3d_modules.f90:
 topo3d_common.f90: 
 	subroutines needed by cratersQ_* and by shadows/fieldofviews
 
+topo3d_geometry.f90: 
+	subroutines needed by shadow* and by fieldofview* 
+
 shadow_subs.f90: 
 	subroutines for program shadows
 
