@@ -1,4 +1,4 @@
-program fieldofviews
+PROGRAM fieldofviews
 !*****************************************************************************
 ! 1. calculates horizon for every location and every azimuth
 ! 2. determines visibility of surface elements
@@ -12,10 +12,10 @@ program fieldofviews
 !*****************************************************************************
   use filemanager, only : NSx,NSy
   use allinterfaces
+  use findviewfactors
   implicit none
-  real(8), parameter :: pi=3.1415926535897932, d2r=pi/180.
   integer i, j, narg, ilower, iupper
-  integer, parameter :: naz=360   ! # of azimuths
+  ! # of azimuths (naz) defined in module findviewfactors
   real(8) h(NSx,NSy), smax(naz)
   character(5) extc
   logical visibility(NSx,NSy)
@@ -55,7 +55,7 @@ program fieldofviews
      print *,i
      do j=2,NSy-1
         visibility(:,:) = .false.
-        call findallhorizon_wsort(h,i,j,naz,smax,visibility)
+        call findallhorizon_wsort_v3(h,i,j,smax,visibility)
         !write(21,'(2(i0,1x))',advance='no') i,j
         !call compactoutput(21,smax,naz)
         call refinevisibility(i,j,h,visibility)
@@ -67,6 +67,7 @@ program fieldofviews
   !close(22)
   close(23)
   print *,'Finished'
-end program fieldofviews
+
+END PROGRAM fieldofviews
 
 

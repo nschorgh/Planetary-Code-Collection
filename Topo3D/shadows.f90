@@ -2,12 +2,12 @@ PROGRAM toposhadows
 !***********************************************************************
 ! calculates horizon for every location and every azimuth
 !
-! written by Norbert Schorghofer 2010-2018
+! written by Norbert Schorghofer 2010-2019
 !***********************************************************************
   use filemanager, only : NSx,NSy,fileext,dx,dy,RMAX
   use allinterfaces
   use newmultigrid
-  use azRays, only : naz  ! specify # azimuths in azrays.f90
+  use azRays, only : naz  ! specify # azimuths at top of shadow_subs.f90
   implicit none
   real(8), parameter :: pi=3.1415926535897932
   integer i, j, narg, ilower, iupper, LACT, LMAX
@@ -74,4 +74,4 @@ PROGRAM toposhadows
   enddo
   
   close(21)
-end PROGRAM toposhadows
+END PROGRAM toposhadows

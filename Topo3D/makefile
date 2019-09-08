@@ -13,16 +13,19 @@ SRM = ../Mars/
 # topo3d_subs.f90 contains module newhorizons and should be compiled third
 # conductionT2/Q2 contain modules conductionT/Q (therefore the symlink)
 # multigrid.f90 has module newmultigrid needed by shadows.f90
+# fieldofview_subs.f90 has module findviewfactors needed by fieldofviews.f90
+# shadow_subs.f90 has module azrays.f90 needed by shadows.f90
 
-shadows: filemanager.o azrays.o topo3d_modules.o shadow_subs.o multigrid.o \
+
+shadows: filemanager.o topo3d_modules.o shadow_subs.o multigrid.o \
 	shadows.o topo3d_common.o hpsort.o makefile
 	$(CC) $(LFLAGS) shadows.o shadow_subs.o hpsort.o topo3d_common.o \
-	multigrid.o azrays.o -o $@
+	multigrid.o -o $@
 
-fieldofviews: filemanager.o azrays.o topo3d_modules.o fieldofviews.o \
-	topo3d_common.o shadow_subs.o fieldofview_subs.o hpsort.o makefile
+fieldofviews: filemanager.o topo3d_modules.o fieldofview_subs.o \
+	topo3d_common.o shadow_subs.o fieldofviews.o hpsort.o makefile
 	$(CC) $(LFLAGS) fieldofviews.o topo3d_common.o hpsort.o \
-	fieldofview_subs.o shadow_subs.o azrays.o -o $@
+	fieldofview_subs.o shadow_subs.o -o $@
 
 cratersQ_equilbr: filemanager.o topo3d_modules.o topo3d_subs.o \
 	topo3d_common.o cratersQ_equilbr.o makefile

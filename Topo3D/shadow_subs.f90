@@ -1,3 +1,17 @@
+module azRays
+  implicit none
+  integer, parameter :: naz=180  ! # of azimuths
+  real(8), parameter :: pi=3.1415926535897931
+  real(8), parameter :: f=naz/(2*pi)
+  
+  integer, private :: ak
+  real(8), parameter :: azRay(naz) = (/ ( (ak-1)/f, ak=1,naz) /)
+  ! inverse mapping:  ak = azRay*f+1
+  ! pre-defining azRay leads to performance improvement in horizon_core
+end module azRays
+
+
+
 elemental function diffangle(a1,a2)
   implicit none
   real(8) diffangle
@@ -35,7 +49,7 @@ end subroutine compactoutput
 subroutine findallhorizon1(h,i0,j0,naz,smax)
   ! find all horizon heights, without use of multigrid
   use filemanager, only : NSx,NSy,dx,dy,RMAX
-  use allinterfaces, only : horizontaldistance
+  use allinterfaces, only : horizontaldistance1
   implicit none
   integer, intent(IN) :: i0,j0,naz
   real(8), intent(IN) :: h(NSx,NSy)
@@ -46,10 +60,11 @@ subroutine findallhorizon1(h,i0,j0,naz,smax)
   smax(:)=0.
   x0 = i0*dx; y0 = j0*dy; h00 = h(i0,j0)
   do i=2,NSx-1
-     if (horizontaldistance(i,1,i0,1)>RMAX) cycle  ! saves computations
+     !if (horizontaldistance(i,1,i0,1)>RMAX) cycle  ! saves computations
+     if (horizontaldistance1(i*dx,1*dy,x0,1*dy)>RMAX) cycle  ! saves computations
      do j=2,NSy-1
-        if (horizontaldistance(i,j,i0,j0)>RMAX) cycle  ! saves computations
-        !if (horizontaldistance1(i*dx,j*dy,x0,y0)>RMAX) cycle  ! saves computations
+        !if (horizontaldistance(i,j,i0,j0)>RMAX) cycle  ! saves computations
+        if (horizontaldistance1(i*dx,j*dy,x0,y0)>RMAX) cycle  ! saves computations
         call horizon_core(x0,y0,h00,smax,i,j,h,1)
      end do
   end do

@@ -1,6 +1,6 @@
 ChangeLog
 
-6 Sep 2019: internal restructuring of horizons calculations, without external consequence
+Sep 2019: internal restructuring of horizons and viewfactor calculations, without external consequence
 
 30 Aug 2019: changed definition of viewfactor by a factor of pi, so a half-sphere integrates to 1.
 

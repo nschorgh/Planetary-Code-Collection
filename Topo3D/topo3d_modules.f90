@@ -61,17 +61,6 @@ module allinterfaces
 
   ! begin fieldofview_subs.f90
   interface
-     subroutine findallhorizon_wsort(h,i0,j0,naz,smax,visibility)
-       use filemanager, only : NSx,NSy,RMAX
-       implicit none
-       integer, intent(IN) :: i0,j0,naz
-       real(8), intent(IN) :: h(NSx,NSy)
-       real(8), intent(OUT) :: smax(naz)
-       logical, intent(OUT) :: visibility(NSx,NSy)
-     end subroutine findallhorizon_wsort
-  end interface
-
-  interface
      pure subroutine difftopo1(i,j,h,surfaceSlope,az)
        use filemanager, only : NSx,NSy,dx,dy
        implicit none
