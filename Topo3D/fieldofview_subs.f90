@@ -92,7 +92,7 @@ contains
        ak=nint(az*f)+1
        
        cc(ak) = cc(ak)+1
-       if (cc(ak)>CCMAX) error stop 'findallhorizons_wsort: not enough memory allocated'
+       if (cc(ak)>CCMAX) error stop 'horizon_core_wsort: not enough memory allocated'
        s = (h(i,j)-h00)/r
        if (s>smax(ak)) smax(ak)=s
        
@@ -127,7 +127,7 @@ contains
        if (ak2<ak1) then ! swap
           buf=ak1; ak1=ak2; ak2=buf;
        endif
-       if (ak1>naz .or. ak2>naz) error stop 'findallhorizons_wsort: index out of bound'
+       if (ak1>naz .or. ak2>naz) error stop 'horizon_core_wsort: index out of bound'
        
        d3=diffangle(az,az_neighbor)
        do akak=ak1,ak2
@@ -141,7 +141,7 @@ contains
              ! in findallhorizon 0.5 is 1.0 instead,
              ! but this leads to missing visibilities along zero azimth (ak=1)
              cc(ak)=cc(ak)+1
-             if (cc(ak)>CCMAX) error stop 'findonehorizons_wsort: not enough memory allocated'
+             if (cc(ak)>CCMAX) error stop 'horizon_core_wsort: not enough memory allocated'
              
              r_neighbor = horizontaldistance1(in*dx,jn*dy,x0,y0)
              ! edge between h1,i0,j0 and h2,in,jn
@@ -183,6 +183,7 @@ subroutine find3dangle(h,i0,j0,unit,visibility)
   real(8), parameter :: pi=3.1415926535897931
   integer i, j, k, cc
   real(8) r, thetac, phic, dOh, landsize, cosv, viewsize
+  real(8) surfaceSlope, azFac
   integer, parameter :: CCMAX = NSx*NSy 
   integer, dimension(CCMAX) :: cellx, celly
   !real(8), dimension(CCMAX) :: thetastack, phistack
@@ -191,6 +192,9 @@ subroutine find3dangle(h,i0,j0,unit,visibility)
   logical, parameter :: verbose = .false.
 
   cc=0
+
+  call difftopo1(i0,j0,h,surfaceSlope,azFac)
+  
   do i=2,NSx-1
      if (dx*abs(i-i0)>RMAX) cycle  ! to save computational cost
      do j=2,NSy-1
@@ -257,7 +261,8 @@ subroutine find3dangle(h,i0,j0,unit,visibility)
            !thetastack(cc)=thetac; phistack(cc)=phic  ! for optional output
            dOstack(cc)=dOh
 
-           cosv = cos_viewing_angle(i0,j0,i,j,h)  ! cos(v)
+           cosv = cos_viewing_angle1(i0*dx,j0*dy,h(i0,j0),surfaceSlope,azFac,i,j,h)  ! cos(v)
+           !cosv = cos_viewing_angle(i0,j0,i,j,h)  ! cos(v)
            VFstack(cc) = dOh*cosv/pi  ! view factor
         endif
      enddo
@@ -315,31 +320,31 @@ end subroutine difftopo1
 
 
 
-pure function cos_viewing_angle(i0,j0,i,j,h)
+pure function cos_viewing_angle1(x0,y0,h00,surfaceSlope,azFac,i,j,h)
 !***********************************************************************
-!  function that calculates angle between surface normal at (i,j)
-!     and vector pointing to (ii,jj) as in findallhorizon_wsort
+!  function that calculates angle between surface normal at (x0,y0,h00)
+!     and vector pointing to (x_i,y_j,h(i,j)) as in findallhorizon_wsort
 !***********************************************************************
-  use filemanager, only : NSx,NSy
-  use allinterfaces, except_this_one => cos_viewing_angle
+  use filemanager, only : NSx,NSy,dx,dy
+  use allinterfaces, only : horizontaldistance1, azimuth1
   implicit none
-  real(8) cos_viewing_angle
-  integer, intent(IN) :: i0,j0,i,j
+  real(8) cos_viewing_angle1
+  integer, intent(IN) :: i,j
+  real(8), intent(IN) :: x0,y0,h00,surfaceSlope,azFac
   real(8), intent(IN) :: h(NSx,NSy)
-  !real(8), parameter :: pi=3.1415926535897931
-  real(8) az, s, r, surfaceSlope, azFac, slope_along_az
+  real(8) az, s, r, slope_along_az
 
   !r = sqrt(dx*dx*(i-i0)**2+dy*dy*(j-j0)**2)
-  r = horizontaldistance(i,j,i0,j0)
-  az = azimuth(i0,j0,i,j)
-  s = (h(i,j)-h(i0,j0))/r
+  r = horizontaldistance1(i*dx,j*dy,x0,y0)
+  az = azimuth1(x0,y0,i*dx,j*dy)
+  s = (h(i,j)-h00)/r
 
-  call difftopo1(i0,j0,h,surfaceSlope,azFac)
+  !call difftopo1(i0,j0,h,surfaceSlope,azFac)
   slope_along_az = surfaceSlope*cos(azFac-az)
 
   !viewing_angle = pi/2 - atan(s) + atan(slope_along_az)
-  cos_viewing_angle = (s-slope_along_az)/sqrt(1+s**2)/sqrt(1+slope_along_az**2)
-end function cos_viewing_angle
+  cos_viewing_angle1 = (s-slope_along_az)/sqrt(1+s**2)/sqrt(1+slope_along_az**2)
+end function cos_viewing_angle1
 
 
 
@@ -359,20 +364,29 @@ subroutine refinevisibility(i0,j0,h,visibility)
 !    for horizon calculation are not the same as azimuth rays connecting 
 !    surface elements
 !***********************************************************************
-  use filemanager, only : NSx,NSy
-  use allinterfaces, only : cos_viewing_angle
+  use filemanager, only : NSx,NSy,dx,dy
+  use allinterfaces, only : cos_viewing_angle1
   implicit none
   integer, intent(IN) :: i0,j0
   real(8), intent(IN) :: h(NSx,NSy)
   logical, intent(INOUT) :: visibility(NSx,NSy)
   integer ii,jj
   real(8) cosv  ! cos(v)
+  real(8) surfaceSlope00, azFac00, x0, y0, h00
+  real(8) surfaceSlope, azFac
 
+  x0 = i0*dx; y0 = j0*dy; h00 = h(i0,j0)
+  call difftopo1(i0,j0,h,surfaceSlope00,azFac00)
+  
   do ii=1,NSx
      do jj=1,NSy
-        cosv = cos_viewing_angle(i0,j0,ii,jj,h)
+        if (.not. visibility(ii,jj)) cycle
+        !cosv = cos_viewing_angle(i0,j0,ii,jj,h)
+        cosv = cos_viewing_angle1(x0,y0,h00,surfaceSlope00,azFac00,ii,jj,h)
         if (cosv<=0.) visibility(ii,jj)=.false.
-        cosv = cos_viewing_angle(ii,jj,i0,j0,h)
+        !cosv = cos_viewing_angle(ii,jj,i0,j0,h)
+        call difftopo1(ii,jj,h,surfaceSlope,azFac)
+        cosv = cos_viewing_angle1(ii*dx,jj*dy,h(ii,jj),surfaceSlope,azFac,i0,j0,h)
         ! sometimes happens for first surface element beyond cusp/horizon
         if (cosv<0.) visibility(ii,jj)=.false.
      enddo

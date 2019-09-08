@@ -1,7 +1,7 @@
 module allinterfaces
   ! interfaces from subroutines and functions
 
-  ! begin shadows_subs.f90
+  ! begin topo3d_geometry.f90
   interface
      elemental function diffangle(a1,a2)
        real(8) diffangle
@@ -18,22 +18,6 @@ module allinterfaces
   end interface
   
   interface
-     elemental function horizontaldistance(i1,j1,i2,j2)
-       implicit none
-       real(8) horizontaldistance
-       integer, intent(IN) :: i1,j1,i2,j2
-     end function horizontaldistance
-  end interface
-
-  interface
-     pure function azimuth(i1,j1,i2,j2)
-       implicit none
-       real(8) azimuth
-       integer, intent(IN) :: i1,j1,i2,j2
-     end function azimuth
-  end interface
-
-  interface
      elemental function horizontaldistance1(x1,y1,x2,y2)
        implicit none
        real(8) horizontaldistance1
@@ -49,6 +33,7 @@ module allinterfaces
      end function azimuth1
   end interface
 
+  ! begin shadows_subs.f90
   interface
      pure subroutine findallhorizon1(h,i0,j0,naz,smax)
        use filemanager, only : NSx,NSy,dx,dy
@@ -81,15 +66,16 @@ module allinterfaces
   end interface
   
   interface
-     pure function cos_viewing_angle(i0,j0,i,j,h)
+     pure function cos_viewing_angle1(x0,y0,h00,surfaceSlope,azFac,i,j,h)
        use filemanager, only : NSx,NSy,dx,dy
        implicit none
-       real(8) cos_viewing_angle
-       integer, intent(IN) :: i0,j0,i,j
+       real(8) cos_viewing_angle1
+       integer, intent(IN) :: i,j
+       real(8), intent(IN) :: x0,y0,h00,surfaceSlope,azFac
        real(8), intent(IN) :: h(NSx,NSy)
-     end function cos_viewing_angle
+     end function cos_viewing_angle1
   end interface
-
+  
   interface
      elemental subroutine xyz2thetaphi(x,y,z,theta,phi)
        implicit none

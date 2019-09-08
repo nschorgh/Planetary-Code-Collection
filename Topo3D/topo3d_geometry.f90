@@ -36,29 +36,6 @@ end subroutine compactoutput
 
 
 
-elemental function horizontaldistance(i1,j1,i2,j2)
-  ! distance between two points; must have same units as height
-  use filemanager, only : dx,dy
-  implicit none
-  real(8) horizontaldistance
-  integer, intent(IN) :: i1,j1,i2,j2
-  
-  horizontaldistance = sqrt(dx*dx*(i1-i2)**2+dy*dy*(j1-j2)**2)
-end function horizontaldistance
-
-
-
-elemental function azimuth(i1,j1,i2,j2)
-  use filemanager, only : dx,dy
-  implicit none
-  real(8) azimuth
-  integer, intent(IN) :: i1,j1,i2,j2
-  
-  azimuth = atan2(dx*(i2-i1),-dy*(j2-j1))   ! this is correct
-end function azimuth
-
-
-
 elemental function horizontaldistance1(x1,y1,x2,y2)
   ! distance between two points; must have same units as height
   ! as in topo3d_common.f90, but distance based
@@ -77,6 +54,6 @@ elemental function azimuth1(x1,y1,x2,y2)
   real(8) azimuth1
   real(8), intent(IN) :: x1,y1,x2,y2
   
-  azimuth1 = atan2(x2-x1,-(y2-y1)) 
+  azimuth1 = atan2(x2-x1,-(y2-y1))  ! this is correct
 end function azimuth1
 
