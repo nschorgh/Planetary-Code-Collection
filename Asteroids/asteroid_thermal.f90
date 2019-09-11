@@ -8,36 +8,33 @@ end module constants
 
 module body
   implicit none
-  real(8) a   ! semimajor axis [AU]
-  real(8) ecc  ! orbital eccentricity
-  real(8) Trot ! length of solar day in Earth days
+  real(8) semia ! semimajor axis [AU]
+  real(8) ecc   ! orbital eccentricity
+  real(8) Trot  ! length of solar day in Earth days
   real(8) emiss ! IR emissivity
+  real(8) albedo
 
   ! default
-  !parameter(a = 3.2, ecc = 0., Trot=10./24.)
-  parameter(emiss=0.96)  
+  !parameter(semia = 3.2, ecc = 0., Trot=10./24.)
+  parameter(emiss = 0.96)
+  !parameter(albedo = 0.05)
 
   ! Ceres
-  parameter(a = 2.76750591, ecc = 0.07582, Trot = 9.076/24.)  ! synodic
-
+  parameter(semia = 2.76750591, ecc = 0.07582, Trot = 9.076/24.)  ! synodic
+  parameter(albedo = 0.09)
+  
   ! 133 P/Elst-Pizarro
-  !parameter(a = 3.1609, ecc=0.1617, Trot=3.471/24.)
-
-  ! P/2005 U1 (Read)
-  !parameter(a = 3.1649, ecc=0.2528)
-
-  ! 118401 (1999 RE70)
-  !parameter(a = 3.1929, ecc=0.1933)
+  !parameter(semia = 3.1609, ecc=0.1617, Trot=3.471/24.)
 
   ! Trojan
-  !parameter(a = 5.2, ecc = 0.)
+  !parameter(semia = 5.2, ecc = 0.)
   
   ! Cybele
-  !parameter (a = 3.433; ecc=0.105, Trot=4.041/24.)
+  !parameter (semia = 3.433; ecc=0.105, Trot=4.041/24.)
 end module body
 
 
-program asteroid
+PROGRAM asteroid_thermal
   use constants, only : pi, d2r, So
   use body
   implicit none
@@ -46,13 +43,10 @@ program asteroid
   real(8) omega  ! [radians]
   real(8) latitude, Qmean, Q4mean, Q0mean
   real(8) Tmean, thIn, Tmin, Tmax, Torb !, ti(13)
-  real(8) albedo
   real(8), external :: flux_noatm, flux2T, a2Torb
 
   ! Ceres
   eps = 4.*d2r; omega = 301.*d2r
-  ! albedo = 0.034  ! Bond albedo
-  albedo = 0.09
 
   ! 133 P/Elst-Pizarro
   ! vernal equinox = 291.8+90=21.8
@@ -60,22 +54,22 @@ program asteroid
 
   latitude = 0.*d2r
 
-  print *,'a=',a,'ecc=',ecc,'omega=',omega/d2r
+  print *,'a=',semia,'ecc=',ecc,'omega=',omega/d2r
   print *,'Latitude=',latitude/d2r,'obliquity=',eps/d2r
   write(*,'(1x,a7,1x,f5.3)') 'Albedo=',albedo
 
   ! orbital period (days)
-  Torb = a2Torb(a)
+  Torb = a2Torb(semia)
   print *,'Torb=',Torb,'days'
 
-  print *,'Tss=',flux2T(flux_noatm(a,0d0,0d0,0d0,0d0,0d0),albedo,emiss)
-  print *,'Tss=',flux2T(So/a**2,albedo,emiss)
-  !print *, 'Tmax=',flux2T(So/(a*(1-ecc))**2,albedo,emiss)
+  print *,'Tss=',flux2T(flux_noatm(semia,0d0,0d0,0d0,0d0,0d0),albedo,emiss)
+  print *,'Tss=',flux2T(So/semia**2,albedo,emiss)
+  !print *, 'Tmax=',flux2T(So/(semia*(1-ecc))**2,albedo,emiss)
 
   ! Insolation - optional
-  call insolonly(latitude,a,omega,ecc,eps,Trot,Q0mean,Qmean,Q4mean)
+  call insolonly(latitude,semia,omega,ecc,eps,Trot,Q0mean,Qmean,Q4mean)
   Qmean = (1-albedo)*Qmean;  Q4mean = (1-albedo)*Q4mean
-  write(*,'(a,4(1x,f5.1))') 'Fluxes (W/m^2):',So/a**2,Q0mean,(1-albedo)*Q0mean/pi,Qmean
+  write(*,'(a,4(1x,f5.1))') 'Fluxes (W/m^2):',So/semia**2,Q0mean,(1-albedo)*Q0mean/pi,Qmean
   write(*,'(a,2(1x,f6.2))') 'End-member temperatures (K):', &
        & flux2T(Qmean,1d0,emiss),flux2T(Q4mean,1d0,emiss)
 
@@ -84,12 +78,12 @@ program asteroid
   !do n= 1,size(ti)
   !   thIn = ti(n)
   thIn = 15.
-  call oneasteroid(latitude,omega,eps,albedo,thIn,Qmean,Tmean,Tmin,Tmax)
+  call oneasteroid(latitude,omega,eps,thIn,Qmean,Tmean,Tmin,Tmax)
   print *, 'Mean insolation=',Qmean,'W/m^2'
   print *, 'Mean temperature=',Tmean,'K'
   print *, '#',thIn,Tmean,Tmin,Tmax
   !enddo
   print *
 
-end program asteroid
+END PROGRAM asteroid_thermal
 

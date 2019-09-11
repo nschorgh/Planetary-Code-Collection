@@ -5,7 +5,7 @@ program asteroid_fast1
 ! simplified version of asteroid_fast2    2016-2017
 !*************************************************************************
   use constants, only : pi, d2r, NMAX
-  use body, only : nz, zfac, zmax, ecc, icedensity
+  use body, only : nz, zfac, zmax, ecc
   use allinterfaces
   implicit none
 
@@ -25,7 +25,7 @@ program asteroid_fast1
      subroutine icelayer_asteroid(bigstep,NP,z,porosity,icefrac,Tinit, &
           & zdepthT,Tmean1,Tmean3,Tmin,Tmax,latitude,albedo,ecc,omega,eps,S0)
        use constants, only : d2r, NMAX
-       use body, only : icedensity, Tnominal, nz
+       use body, only : Tnominal, nz
        implicit none
        integer, intent(IN) :: NP
        real(8), intent(IN) :: bigstep

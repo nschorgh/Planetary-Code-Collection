@@ -346,7 +346,7 @@ subroutine assignthermalproperties(nz,Tnominal,porosity,ti,rhocv,porefill)
   real(8), intent(OUT) :: ti(nz), rhocv(nz)
   real(8), intent(IN), optional :: porefill(nz)
   real(8), parameter :: rhodry = 2500  ! bulk density
-  real(8), parameter :: kbulk = 2. ! conductivity for zero porosity dry rock
+  !real(8), parameter :: kbulk = 2. ! conductivity for zero porosity dry rock
   real(8), parameter :: kice=4.6, cice=1145   ! 140K
   !real(8), parameter :: kice=4.3, cice=1210   ! 150K
   integer j

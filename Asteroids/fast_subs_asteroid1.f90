@@ -12,7 +12,7 @@ subroutine icelayer_asteroid(bigstep,NP,z,porosity,icefrac,Tinit, &
 ! S0 = solar constant relative to present
 !*************************************************************************
   use constants, only : d2r, NMAX
-  use body, only : icedensity, Tnominal, nz
+  use body, only : Tnominal, nz
   use allinterfaces
   implicit none
   integer, intent(IN) :: NP

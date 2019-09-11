@@ -14,11 +14,12 @@ LFLAGS = -O2 -Wall
 SR =  ../Common/
 
 asteroid_thermal: asteroid_thermal.f90 asteroid_thermal.o \
-	oneasteroid_thermal1d.o insolonly.o makefile 
+	oneasteroid_thermal1d.o insolonly.o common_subs.o makefile 
 	make -C $(SR) common
 	$(CC) $(LFLAGS) asteroid_thermal.f90 oneasteroid_thermal1d.o \
 	$(SR)flux_noatm.o $(SR)conductionQ.o $(SR)tridag.o \
-	$(SR)grids.o $(SR)generalorbit.o insolonly.o -o $@
+	$(SR)grids.o $(SR)generalorbit.o insolonly.o common_subs.o \
+	-o $@
 
 asteroid_fast2: fast_modules_asteroid.f90 fast_modules_asteroid.o \
 	asteroid_fast2.o fast_subs_asteroid2.o impactstirring.o \

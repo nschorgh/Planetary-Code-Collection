@@ -1,4 +1,5 @@
 module findviewfactors
+  ! identify hidden versus visible topography
   use filemanager, only : NSx,NSy,dx,dy
 
   integer, parameter :: naz=360
@@ -16,7 +17,7 @@ module findviewfactors
   
 contains
 
-  ! consider explicitly allocationg arrays of size (nax,CCMAX) with initialization function
+  ! consider explicitly allocationg arrays of size (naz,CCMAX) with initialization function
 
   subroutine findallhorizon_wsort_v3(h,i0,j0,smax,visibility)
     ! finds horizon and determines visibility for all azimuth rays
@@ -82,7 +83,6 @@ contains
     real(8) s, slope_along_az
     integer, parameter :: ex(8) = (/ 1, 1, 0, -1, -1, -1, 0, 1 /)
     integer, parameter :: ey(8) = (/ 0, 1, 1, 1, 0, -1, -1, -1 /)
-    real(8), parameter :: pi=3.1415926535897931
     
     r = horizontaldistance1(i*dx,j*dy,x0,y0)
     if (r==0.) return

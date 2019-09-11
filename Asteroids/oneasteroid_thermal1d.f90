@@ -1,17 +1,16 @@
-subroutine oneasteroid(latitude, omega, eps, albedo, thIn, Qmean, Tmean, Tmin, Tmax)
-  ! calculate surface temperatures of body with rotation and conduction
-  ! modules are defined in main program
+subroutine oneasteroid(latitude, omega, eps, thIn, Qmean, Tmean, Tmin, Tmax)
+  ! calculate surface temperatures of airless body with rotation and conduction
   use constants, only : pi, So, d2r
-  use body, only : a, ecc, Trot, emiss
+  use body, only : semia, ecc, Trot, emiss, albedo
   implicit none
   integer n, nr, cc
-  real(8), intent(IN) :: latitude, omega, eps, albedo, thIn
+  real(8), intent(IN) :: latitude, omega, eps, thIn
   real(8), intent(OUT) :: Qmean, Tmean, Tmin, Tmax
   integer, parameter :: nz=110
   integer, parameter :: EQUILTIME=20  ! [orbits]
   real(8) edays, Rau, Ls, decl, HA, Torb, Q, Qp1, dt
-  real(8) z(nz), zmax, delta1, delta2, coslat
-  real(8) Temp(nz), Tsurf, Fsurf, ti(nz), rhoc(nz)
+  real(8) z(nz), zmax, delta1, delta2
+  real(8) coslat, Temp(nz), Tsurf, Fsurf, ti(nz), rhoc(nz)
   !real(8) c, k
   !real(8) Emean, E
   !real(8) rhocmean, Imean
@@ -20,7 +19,7 @@ subroutine oneasteroid(latitude, omega, eps, albedo, thIn, Qmean, Tmean, Tmin, T
   real(8), external :: flux_noatm, flux2T, a2Torb, sublrate
 
   print *,'Latitude=',latitude/d2r
-  Torb = a2Torb(a)
+  Torb = a2Torb(semia)
   nr = 100*nint(Torb/Trot)   ! usually 50, more for low thermal inertia <<10
   dt = Torb/nr*86400
   print *,'dt=',dt/3600.,'hours','  Trot=',Trot*24.,'hours'
@@ -28,10 +27,10 @@ subroutine oneasteroid(latitude, omega, eps, albedo, thIn, Qmean, Tmean, Tmin, T
   ! for one-layer model the value of rho*c does not matter
   !rhoc(:) = 2500.*(1-0.4)*400.
   rhoc(:) = 930*1300. ! solid ice
-  delta1 = thIn/rhoc(1)*sqrt(Trot*86400/pi)  ! Trot has meaning of solar day
+  delta1 = thIn/rhoc(1)*sqrt(Trot*86400/pi)
   delta2 = thIn/rhoc(1)*sqrt(Torb*86400/pi)
   zmax = 5.*delta2
-  print *,'skin depth, orbital =',delta2,'rotat=',delta1
+  print *,'skin depth, orbital =',delta2,'diurnal=',delta1
   print *,'nz =',nz
   call setgrid(nz,z,zmax,1.05d0)
   cc=0
@@ -45,7 +44,7 @@ subroutine oneasteroid(latitude, omega, eps, albedo, thIn, Qmean, Tmean, Tmin, T
   !close(30)
 
   coslat = max(cos(latitude),cos(latitude+eps/2),cos(latitude-eps/2))
-  Tsurf=flux2T(So/a**2*coslat/pi,albedo,emiss)
+  Tsurf=flux2T(So/semia**2*coslat/pi,albedo,emiss) ! effective temperature
   if (abs(coslat)<0.01) Tsurf=50;  ! avoids NaNs
   print *,'initialization temperature=',Tsurf
   Temp(:)=Tsurf
@@ -53,17 +52,17 @@ subroutine oneasteroid(latitude, omega, eps, albedo, thIn, Qmean, Tmean, Tmin, T
   Tmin=1e32; Tmax=-1e32
   !Emean=0.
   !rhocmean =0.; Imean=0.; 
-  call generalorbit(0.d0,a,ecc,omega,eps,Ls,decl,Rau) 
+  call generalorbit(0.d0,semia,ecc,omega,eps,Ls,decl,Rau) 
   HA = 0.
-  Q= (1-albedo)*flux_noatm(Rau,decl,latitude,HA,slope,az)
+  Q = (1-albedo)*flux_noatm(Rau,decl,latitude,HA,slope,az)
 
   do n=1,EQUILTIME*nr
-     !if (mod(n,10000)==0) print *,real(n)/real(20*nr)*100,'% done'
+     !if (mod(n,10000)==0) print *,real(n)/real(EQUILTIME*nr)*100,'% done'
 
      edays = n*Torb/real(nr)
-     call generalorbit(edays,a,ecc,omega,eps,Ls,decl,Rau) 
+     call generalorbit(edays,semia,ecc,omega,eps,Ls,decl,Rau) 
      HA = mod(edays/Trot,1.d0)*2.*pi  ! Trot in solar days
-     Qp1= (1-albedo)*flux_noatm(Rau,decl,latitude,HA,slope,az)
+     Qp1 = (1-albedo)*flux_noatm(Rau,decl,latitude,HA,slope,az)
 
      !do j=1,nz
      !   c = heatcapacity(Temp(j))
@@ -83,9 +82,6 @@ subroutine oneasteroid(latitude, omega, eps, albedo, thIn, Qmean, Tmean, Tmin, T
         !rhocmean = rhocmean + rhoc(1)
         !Imean = Imean + ti(1)
         !E=sublrate(Tsurf)*18.015*1.66054e-27
-        !if (mod(n,1007)==0) then  ! not a multiple of 50
-        !   write(60,*) edays,Tsurf,E
-        !endif
         !Emean = Emean+E
      endif
   enddo
@@ -96,43 +92,6 @@ subroutine oneasteroid(latitude, omega, eps, albedo, thIn, Qmean, Tmean, Tmin, T
   !print *,'Sublimation loss=',Emean*86400*365.24,'kg/m^2/yr = mm/yr'
 end subroutine oneasteroid
 
-
-function flux2T(Q,albedo,emiss)
-  ! convert incoming flux Q to equilibrium temperature
-  implicit none
-  real(8), intent(IN) :: Q, emiss, albedo
-  real*8, parameter :: sigSB=5.6704d-8
-  real(8) flux2T
-
-  flux2T = ((1.-albedo)*Q/sigSB/emiss)**0.25
-end function flux2T
-
-
-pure function a2Torb(a)
-  ! returns orbital period in Earth days
-  implicit none
-  real(8), parameter :: pi=3.1415926535897932
-  real(8), intent(IN) :: a  ! semimajor axis [AU]
-  real(8) a2Torb  
-
-  a2Torb = sqrt(4*pi**2/(6.674e-11*1.989e30)*(a*149.598e9)**3)/86400.
-end function a2Torb
-
-
-function heatcapacity(T)
-  implicit none
-  real(8), intent(IN) :: T
-  real(8) :: c, heatcapacity
-
-  ! heat capacity from Ledlow et al. (1992), <350K
-  !c = 0.1812 + 0.1191*(T/300.-1) + 0.0176*(T/300.-1)**2 + &
-  !     0.2721*(T/300.-1)**3 + 0.1869*(T/300.-1)**4
-  !c = c*1000*4.184  ! cal/(g K) -> J/(kg K)
-
-  ! heat capacity from Winter & Saari (1969),  20K<T<500K
-  c = -0.034*T**0.5 + 0.008*T - 0.0002*T**1.5
-  heatcapacity = c*1000   ! J/(g K) -> J/(kg K)
-end function heatcapacity
 
 
 function conductivity(T)
