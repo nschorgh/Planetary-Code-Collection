@@ -8,13 +8,7 @@ LFLAGS = -O2 -Wall
 
 SR = ../Common/
 SRM = ../Mars/
-# filemanager.f90 has to be compiled first for module filemanager
-# topo3d_modules.f90 has to be compiled second for module allinterfaces
-# topo3d_subs.f90 contains module newhorizons and should be compiled third
-# conductionT2/Q2 contain modules conductionT/Q (therefore the symlink)
-# multigrid.f90 has module newmultigrid needed by shadows.f90
-# fieldofview_subs.f90 has module findviewfactors needed by fieldofviews.f90
-# shadow_subs.f90 has module azrays.f90 needed by shadows.f90
+
 
 
 shadows: filemanager.o topo3d_modules.o shadow_subs.o multigrid.o \
@@ -81,6 +75,13 @@ fieldproperties: filemanager.o topo3d_modules.o topo3d_common.o \
 	topo3d_subs.o fieldproperties.o makefile
 	$(CC) $(LFLAGS) fieldproperties.o topo3d_common.o topo3d_subs.o 
 
+# filemanager.f90 has to be compiled first for module filemanager
+# topo3d_modules.f90 has to be compiled second for module allinterfaces
+# topo3d_subs.f90 contains module newhorizons and should be compiled third
+# conductionT2/Q2 contain modules conductionT/Q (therefore the symlink)
+# multigrid.f90 has module newmultigrid needed by shadows.f90
+# fieldofview_subs.f90 has module findviewfactors needed by fieldofviews.f90
+# shadow_subs.f90 has module azRays needed by shadows.f90
 
 
 %.o:	%.for makefile

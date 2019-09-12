@@ -9,7 +9,7 @@ This program collection contains:
 * semi-implicit one-dimensional thermal model for planetary surfaces
 * explicit subsurface vapor diffusion and ice deposition model
 * models for the equilibrium ice table on Mars
-* fast (asynchronously coupled) method for subsurface-atmosphere vapor exchange for Mars
+* fast (asynchronously coupled) method for subsurface-atmosphere vapor exchange on Mars
 * fast (asynchronously coupled) method for ice retreat on asteroids
 * 3D model of shadowing, illumination, and scattering for airless bodies, Mars, and Mauna Kea
 * Monte-Carlo model for ballistic hops in the exosphere of the Moon and Ceres

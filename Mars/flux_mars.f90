@@ -1,6 +1,6 @@
 pure function flux_mars77(R,decl,latitude,HA,albedo,fracir,fracscat)
 !***********************************************************************
-!   flux_mars77: calculates insolation at Mars
+! flux_mars77: calculates insolation at Mars
 !     flat surface only; also works in polar regions
 !
 !     R: distance from sun [AU]
@@ -13,7 +13,7 @@ pure function flux_mars77(R,decl,latitude,HA,albedo,fracir,fracscat)
   implicit none
   real*8 flux_mars77
   real*8, intent(IN) :: R,decl,latitude,HA,albedo,fracIR,fracScat
-  real*8, parameter :: pi=3.1415926535897931, So=1365., d2r=pi/180.
+  real*8, parameter :: So=1365.
   real*8, parameter :: sigSB=5.6704d-8
   real*8 c1,s1,Qo,solarAttenuation,Q
   real*8 sinbeta,sinbetaNoon,Qdir,Qscat,Fout,Qlw
@@ -51,8 +51,8 @@ end function flux_mars77
 pure subroutine flux_mars2(R,decl,latitude,HA,fracIR,fracScat, &
      &   surfaceSlope,azFac,emax,Qdir,Qscat,Qlw)
 !***********************************************************************
-!   flux_mars2: Insolation at Mars on tilted surface;
-!               returns several irradiances
+! flux_mars2: Insolation at Mars on tilted surface;
+!             returns several irradiances
 !
 !     R: distance from sun [AU]
 !     decl: planetocentric solar declination [radians]
@@ -68,7 +68,7 @@ pure subroutine flux_mars2(R,decl,latitude,HA,fracIR,fracScat, &
 !     Qlw: diffuse long-wavelength irradiance from atmosphere [W/m^2]
 !***********************************************************************
   implicit none
-  real(8), parameter :: pi=3.1415926535897931, So=1365., d2r=pi/180.
+  real(8), parameter :: pi=3.1415926535897931, So=1365.
   real(8), intent(IN) :: R,decl,latitude,HA,surfaceSlope,azFac,emax
   real(8), intent(IN) :: fracIR,fracScat
   real(8), intent(OUT) :: Qdir,Qscat,Qlw
@@ -119,6 +119,3 @@ pure subroutine flux_mars2(R,decl,latitude,HA,fracIR,fracScat, &
 !   absorbed flux = (1-albedo)*(Qdir+Qscat*viewfactor) + emiss*Qlw*viewfactor
 ! in the case of a planar slope, viewfactor=cos(surfaceSlope/2.)**2
 end subroutine flux_mars2
-
-
-

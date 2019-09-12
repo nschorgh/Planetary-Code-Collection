@@ -1,4 +1,4 @@
-program allofmoon
+PROGRAM allofmoon
 !***********************************************************************
 ! surface temperatures of airless body with H2O exosphere
 !***********************************************************************
@@ -145,7 +145,8 @@ program allofmoon
   close(20); close(21)
   close(30)
   close(40); close(41)
-end program allofmoon
+END PROGRAM allofmoon
+
 
 
 subroutine deblank(chr)
@@ -170,6 +171,7 @@ subroutine deblank(chr)
   if(j < len(chr)) chr(j+1:) = " "  ! clear the rest of the string
   return
 end subroutine deblank
+
 
 
 subroutine SurfaceTemperature(dtsec,HAi,time,Tsurf,Qn)
@@ -261,6 +263,7 @@ subroutine SurfaceTemperature(dtsec,HAi,time,Tsurf,Qn)
 end subroutine SurfaceTemperature
 
 
+
 subroutine particles2sigma(Np, p_r, p_s, sigma)
   ! calculates areal density sigma from particle coordinates
   use grid, only: veclen
@@ -308,6 +311,7 @@ subroutine particles2sigma(Np, p_r, p_s, sigma)
   write(40,'(999999(1x,g11.5))') sigma
   close(40)
 end subroutine particles2sigma
+
 
 
 subroutine fallmap(unit, fall)

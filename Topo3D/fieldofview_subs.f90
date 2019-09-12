@@ -323,7 +323,7 @@ end subroutine difftopo1
 pure function cos_viewing_angle1(x0,y0,h00,surfaceSlope,azFac,i,j,h)
 !***********************************************************************
 !  function that calculates angle between surface normal at (x0,y0,h00)
-!     and vector pointing to (x_i,y_j,h(i,j)) as in findallhorizon_wsort
+!     and vector pointing to (x_i,y_j,h(i,j)) as in horizon_core_wsort
 !***********************************************************************
   use filemanager, only : NSx,NSy,dx,dy
   use allinterfaces, only : horizontaldistance1, azimuth1
@@ -387,7 +387,7 @@ subroutine refinevisibility(i0,j0,h,visibility)
         !cosv = cos_viewing_angle(ii,jj,i0,j0,h)
         call difftopo1(ii,jj,h,surfaceSlope,azFac)
         cosv = cos_viewing_angle1(ii*dx,jj*dy,h(ii,jj),surfaceSlope,azFac,i0,j0,h)
-        ! sometimes happens for first surface element beyond cusp/horizon
+        ! sometimes happens for first surface element beyond cusp at horizon
         if (cosv<0.) visibility(ii,jj)=.false.
      enddo
   enddo

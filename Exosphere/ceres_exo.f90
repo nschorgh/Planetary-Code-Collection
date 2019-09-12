@@ -1,10 +1,9 @@
-program exospherebody
-
-  !***********************************************************************
+PROGRAM exospherebody
+!***********************************************************************
 ! surface temperatures of airless body with H2O exosphere
 !***********************************************************************
   use grid
-  use body, only: solarDay, dtsec, Rbody
+  use body, only: solarDay, dtsec
   implicit none
 
   integer, parameter :: Np=40000  ! maximum number of computational particles
@@ -118,7 +117,8 @@ program exospherebody
   close(20); close(21)
   close(30)
   close(40); close(41)
-end program exospherebody
+END PROGRAM exospherebody
+
 
 
 subroutine SurfaceTemperature(dtsec,HAi,time,Tsurf,Qn)

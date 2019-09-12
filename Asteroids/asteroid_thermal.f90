@@ -26,9 +26,6 @@ module body
   ! 133 P/Elst-Pizarro
   !parameter(semia = 3.1609, ecc=0.1617, Trot=3.471/24.)
 
-  ! Trojan
-  !parameter(semia = 5.2, ecc = 0.)
-  
   ! Cybele
   !parameter (semia = 3.433; ecc=0.105, Trot=4.041/24.)
 end module body
