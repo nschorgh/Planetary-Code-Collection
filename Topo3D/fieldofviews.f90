@@ -1,18 +1,18 @@
 PROGRAM fieldofviews
-!*****************************************************************************
+!************************************************************************
 ! 1. calculates horizon for every location and every azimuth
 ! 2. determines visibility of surface elements
 ! 3. calculates view factors for every surface element
 !
 ! Without command line arguments, it executes serially
-! With two integers as input arguments, it executes parallel implementation
+! With two integers as input arguments, it executes in parallel 
 !     e.g., 'a.out 6 2'  processes second out of six slices of domain
 !
 ! written by Norbert Schorghofer 2010-2019
-!*****************************************************************************
+!************************************************************************
   use filemanager, only : NSx,NSy
   use allinterfaces
-  use findviewfactors
+  use findvisibletopo
   implicit none
   integer i, j, narg, ilower, iupper
   ! # of azimuths (naz) defined in module findviewfactors
@@ -60,8 +60,8 @@ PROGRAM fieldofviews
         !call compactoutput(21,smax,naz)
         call refinevisibility(i,j,h,visibility)
         call find3dangle(h,i,j,23,visibility)
-     enddo
-  enddo
+     end do
+  end do
 
   !close(21)
   !close(22)

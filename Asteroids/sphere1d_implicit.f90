@@ -1,6 +1,6 @@
-program sphere1d_implicit
-  ! 1D spherically symmetric heat equation and ice retreat
-  ! solved with semi-implicit method
+PROGRAM sphere1d_implicit
+! 1D spherically symmetric heat equation and ice retreat
+! solved with semi-implicit method
   implicit none
   integer, parameter :: nz=100
   integer, parameter :: NB=58 ! max number of bodies
@@ -24,7 +24,9 @@ program sphere1d_implicit
   
   Radius = 500.  ! body radius
   dr = Radius/nz
-  forall(i=1:nz) z(i) = i*dr
+  do concurrent (i=1:nz)
+     z(i) = i*dr
+  end do
 
   kappa = 0.25/(0.5*2600*500)  ! kappa=k/rhoc
 
@@ -116,7 +118,7 @@ program sphere1d_implicit
      endif
      
      !if (zT /= zT) stop  ! NaN
-  enddo
+  end do
   close(20)
   
   open(unit=30,file='depths_sphere.'//nn,action='write')
@@ -128,27 +130,27 @@ program sphere1d_implicit
      end do
   end do
   close(30)
-end program sphere1d_implicit
+END PROGRAM sphere1d_implicit
 
 
 
 subroutine conductionT_sphere(nz,dr,dt,T,Tsurf,Tsurfp1,kappa)
-  !***********************************************************************
-  !   conductionT_sphere: program to calculate the diffusion of
-  !                 temperature in a spherically symmetric geometry
-  !   Crank-Nicolson scheme, flux conservative
-  !
-  !   Eqn: T_t = (kappa/r^2)*d/dr(r^2*dT_r)
-  !   BC (z=0, r=R): T=T(t)
-  !   BC (z=R, r=0): center of sphere, dT_r=0
-  !
-  !   kappa = thermal diffusivity [m^2/s]
-  !   T = radial temperature profile [K]
-  !   Tsurf, Tsurfp1 = surface temperatures at times n and n+1
-  !
-  !   Grid: surface is at z=0
-  !         T(nz) is at center of sphere
-  !***********************************************************************
+!***********************************************************************
+!   conductionT_sphere: program to calculate the diffusion of
+!                 temperature in a spherically symmetric geometry
+!   Crank-Nicolson scheme, flux conservative
+!
+!   Eqn: T_t = (kappa/r^2)*d/dr(r^2*dT_r)
+!   BC (z=0, r=R): T=T(t)
+!   BC (z=R, r=0): center of sphere, dT_r=0
+!
+!   kappa = thermal diffusivity [m^2/s]
+!   T = radial temperature profile [K]
+!   Tsurf, Tsurfp1 = surface temperatures at times n and n+1
+!
+!   Grid: surface is at z=0
+!         T(nz) is at center of sphere
+!***********************************************************************
   implicit none
   integer, intent(IN) :: nz
   real*8, intent(IN) :: dr, dt, Tsurf, Tsurfp1, kappa

@@ -64,7 +64,8 @@ contains
     
     s = atan(s)  ! slope -> angle
   end subroutine readhorizons
-    
+  
+  
   elemental function getonehorizon(i0,j0,azSun)
     ! returns elevation of horizon along azimuth azSun
     implicit none
@@ -74,6 +75,11 @@ contains
     real(8), parameter :: pi=3.1415926535897932
     integer k
     real(8) a, daz, smax
+
+    if (azSun/=azSun) then ! azSun can be NaN for zenith
+       getonehorizon = 0.
+       return
+    endif
     
     daz = 2*pi/real(naz)
     k = floor(modulo(azSun,2*pi)/daz)
@@ -85,7 +91,8 @@ contains
     smax = s(i0,j0,k+1)*(1.-a) + s(i0,j0,k+2)*a
     getonehorizon = smax
   end function getonehorizon
-
+  
+  
   elemental function getoneskysize(i,j)
     ! calculates sky size (steradian) from horizons
     use allinterfaces, only: area_spherical_triangle
@@ -106,6 +113,7 @@ contains
     getoneskysize = skysize
   end function getoneskysize
 
+  
   elemental function getoneskysize_v2(i,j)
     ! calculates sky size (steradian) from horizons
     implicit none
@@ -119,6 +127,7 @@ contains
     getoneskysize_v2 = 2*pi-landsize
   end function getoneskysize_v2
 
+  
   elemental function getoneGterm(i,j,alpha,azFac)
     ! calculate land view factor from horizons
     implicit none

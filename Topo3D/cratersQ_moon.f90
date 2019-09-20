@@ -1,10 +1,10 @@
-program cratersQ_Moon
-!****************************************************************************
-!   cratersQ: program to calculate insolation with shadowing and reflections
-!             for airless body
+PROGRAM cratersQ_Moon
+!************************************************************************
+!   cratersQ: program to calculate direct insolation, terrain shadowing,
+!             and diffuse reflections for airless body
 !  
 !   written by Norbert Schorghofer 2010-2016 
-!****************************************************************************
+!************************************************************************
   use filemanager
   use allinterfaces
   use newhorizons
@@ -36,8 +36,7 @@ program cratersQ_Moon
   else
      tmax = 12.
   endif
-  latitude = 80.
-  ! azimuth in degrees east of north, 0=north facing
+  latitude = 80. ! [degree]
   albedo(:,:) = 0.12d0
   emiss = 0.95d0
 
@@ -91,8 +90,8 @@ program cratersQ_Moon
         do j=2,NSy-1
            smax = getonehorizon(i,j,azSun)
            Qn(i,j)=flux_wshad(R,sinbeta,azSun,surfaceSlope(i,j),azFac(i,j),smax)
-        enddo
-     enddo
+        end do
+     end do
 
      if (reflection) then
         Qvis(:,:) = Qn + Qrefl
@@ -106,9 +105,9 @@ program cratersQ_Moon
                  Qrefl(i,j) = Qrefl(i,j) + VF(i,j,k)*albedo(iii,jjj)*Qvis(iii,jjj)
                  QIR(i,j) = QIR(i,j) + VF(i,j,k)*emiss*sigSB*Tsurf(iii,jjj)**4
                  QIRre(i,j) = QIRre(i,j) + VF(i,j,k)*(1-emiss)*QIRin(iii,jjj)
-              enddo
-           enddo
-        enddo
+              end do
+           end do
+        end do
         Qabs(:,:)=(1.-albedo(:,:))*(Qn+Qrefl)+emiss*(QIR+QIRre)  ! Q absorbed
      else
         Qabs(:,:)=(1.-albedo(:,:))*Qn
@@ -135,8 +134,8 @@ program cratersQ_Moon
         do i=2,NSx-1
            do j=2,NSy-1
               call subsurfaceconduction(T(:,i,j),Tsurf(i,j),dtsec,Qnm1(i,j),Qabs(i,j),emiss,solarDay)
-           enddo
-        enddo
+           end do
+        end do
         Qnm1 = Qabs
      else
         Tsurf = (Qabs/sigSB/emiss)**0.25
@@ -159,7 +158,7 @@ program cratersQ_Moon
         nm=nm+1
      endif
 
-  enddo  ! end of time loop
+  end do  ! end of time loop
 
   if (reflection) deallocate(ii, jj, VF)
   if (subsurface) deallocate(T, Qnm1)
@@ -177,11 +176,11 @@ program cratersQ_Moon
         write(22,'(2(i4,1x),f9.2,2x,f6.4,4(1x,f6.1),1x,f5.1,2(1x,f6.1),1x,f5.1)') &
              & i,j,h(i,j),surfaceSlope(i,j),Qmeans(i,j,1:4), &
              & Tmean(i,j),Qmax1(i,j),Qmax2(i,j),Tmaxi(i,j)
-     enddo
-  enddo
+     end do
+  end do
   close(21)
   close(22)
-end program cratersQ_Moon
+END PROGRAM cratersQ_Moon
  
 
 
@@ -215,7 +214,7 @@ subroutine subsurfaceconduction(T,Tsurf,dtsec,Qn,Qnp1,emiss,solarDay)
         if (z(i)<delta) cycle
         print *,i-1,' grid points within diurnal skin depth'
         exit
-     enddo
+     end do
      if (z(1)<1.e-5) print *,'WARNING: first grid point is too shallow'
      open(unit=30,file='z',status='unknown');
      write(30,*) (z(i),i=1,nz)
@@ -248,7 +247,7 @@ subroutine subsurfaceconduction(T,Tsurf,dtsec,Qn,Qnp1,emiss,solarDay)
         Qartiold = ((Ni-k+1)*Qn + (k-1)*Qnp1)/real(Ni)
         Qarti = ((Ni-k)*Qn + k*Qnp1)/real(Ni)
         call conductionQ(nz,z,dtsec/Ni,Qartiold,Qarti,T,ti,rhocv,emiss,Tsurf,Fgeotherm,Fsurf)
-     enddo
+     end do
   endif
   
 end subroutine subsurfaceconduction

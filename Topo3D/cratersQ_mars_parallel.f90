@@ -1,10 +1,10 @@
-!***************************************************************************
+!************************************************************************
 ! cratersQ_mars_parallel:
-!                Mars thermal model with direct insolation, subsurface
-!                conduction, terrain shadowing, and approximate self-heating
+!             Mars thermal model with direct insolation, subsurface
+!             conduction, terrain shadowing, and approximate self-heating
 !
 ! parallel version of cratersQ_mars
-!***************************************************************************
+!************************************************************************
 
 
 module miscparams

@@ -1,16 +1,16 @@
-!*****************************************************
+!************************************************************************
 ! Subroutines for fast asteroid method
-!*****************************************************
+!************************************************************************
 
 
 subroutine icelayer_asteroid(bigstep,NP,z,porosity,icefrac,Tinit, &
      & zdepthT,Tmean1,Tmean3,Tmin,Tmax,latitude,albedo,ecc,omega,eps,S0)
-!*************************************************************************
+!************************************************************************
 ! bigstep = time step [Earth years]
 ! latitude  [degree]
 ! eps = axis tilt [radians]  
 ! S0 = solar constant relative to present
-!*************************************************************************
+!************************************************************************
   use constants, only : d2r, NMAX
   use body, only : Tnominal, nz
   use allinterfaces
@@ -45,7 +45,7 @@ subroutine icelayer_asteroid(bigstep,NP,z,porosity,icefrac,Tinit, &
         if (z(j)>zdepthT(k)) then
            Diff(j) = 0.
         endif
-     enddo
+     end do
      
      ! run thermal model
      call ajsub_asteroid(latitude(k)*d2r, albedo(k), z, ti, rhocv, & 
@@ -69,7 +69,7 @@ subroutine icelayer_asteroid(bigstep,NP,z,porosity,icefrac,Tinit, &
         jump = 0
         do j=1,nz
            if (zdepth_old(k)<z(j).and.zdepthT(k)>z(j)) jump=jump+1
-        enddo
+        end do
      else
         jump=-9
      endif
@@ -77,13 +77,13 @@ subroutine icelayer_asteroid(bigstep,NP,z,porosity,icefrac,Tinit, &
           &        bigstep,latitude(k),zdepthT(k),avrho,jump,Deff
      zdepth_old(k) = zdepthT(k)
 
-  enddo  ! end of big loop
+  end do  ! end of big loop
 end subroutine icelayer_asteroid
 
 
 
-subroutine ajsub_asteroid(latitude, albedo, z, ti, rhocv, ecc, omega, eps, &
-     &     S0, typeT, rhosatav, Tinit, Tmean1, Tmean3, Tmin, Tmaxi)
+subroutine ajsub_asteroid(latitude, albedo, z, ti, rhocv, ecc, omega, &
+     &     eps, S0, typeT, rhosatav, Tinit, Tmean1, Tmean3, Tmin, Tmaxi)
 !***********************************************************************
 !  A 1D thermal model that also returns various time-averaged quantities
 !
@@ -123,7 +123,9 @@ subroutine ajsub_asteroid(latitude, albedo, z, ti, rhocv, ecc, omega, eps, &
      Tsurf = Tmean0
      tmax = 3*EQUILTIME*solsperyear
   else
-     forall(j=1:nz) T(j) = (Tmean1*(z(nz)-z(j))+Tmean3*z(j))/z(nz)
+     do concurrent (j=1:nz)
+        T(j) = (Tmean1*(z(nz)-z(j))+Tmean3*z(j))/z(nz)
+     end do
      Tsurf = Tmean1
      tmax = EQUILTIME*solsperyear
   endif
@@ -166,7 +168,7 @@ subroutine ajsub_asteroid(latitude, albedo, z, ti, rhocv, ecc, omega, eps, &
         if (Tsurf>Tmaxi) Tmaxi=Tsurf
      endif
 
-  enddo  ! end of time loop
+  end do  ! end of time loop
   
   Tmean1 = Tmean1/nm; Tmean3 = Tmean3/nm
   rhosatav = rhosatav/nm
@@ -194,9 +196,9 @@ end subroutine outputmoduleparameters
 
 
 subroutine icechanges(nz,z,avrho,Deff,bigstep,zdepthT,porosity,icefrac)
-!***********************************************************
+!***********************************************************************
 ! advances ice interface, allows for deflation
-!***********************************************************
+!***********************************************************************
   use body, only : icedensity
   implicit none
   integer, intent(IN) :: nz
@@ -226,9 +228,9 @@ end subroutine icechanges
 
 
 subroutine assignthermalproperties1(nz,z,Tnom,porosity,ti,rhocv,icefrac,zdepthT)
-!*********************************************************
+!***********************************************************************
 ! assign thermal properties of soil
-!*********************************************************
+!***********************************************************************
   use body, only : icedensity
   implicit none
   integer, intent(IN) :: nz
@@ -249,7 +251,7 @@ subroutine assignthermalproperties1(nz,z,Tnom,porosity,ti,rhocv,icefrac,zdepthT)
      rhocv(j) = (1.-porosity)*rhodry*cdry
      !if (z(j)>0.5) thIn=50.
      k(j) = thIn**2/rhocv(j) 
-  enddo
+  end do
   if (present(icefrac)) then
      do j=1,nz
         if (z(j)>zdepthT) then
@@ -257,7 +259,7 @@ subroutine assignthermalproperties1(nz,z,Tnom,porosity,ti,rhocv,icefrac,zdepthT)
            k(j) = k(j) + icefrac*kice  ! in the eye of the beholder, icefrac <= porosity
            rhocv(j) = rhocv(j) + icedensity*cice*icefrac
         endif
-     enddo
+     end do
   end if
 
   ti(1:nz) = sqrt(k(1:nz)*rhocv(1:nz))

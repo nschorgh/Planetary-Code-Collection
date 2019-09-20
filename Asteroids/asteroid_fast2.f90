@@ -1,4 +1,4 @@
-program asteroid_fast
+PROGRAM asteroid_fast
 !***********************************************************************
 ! Asynchronously coupled model of temperature and ice retreat on asteroids
 ! written by Norbert Schorghofer 2012-2015
@@ -33,7 +33,7 @@ program asteroid_fast
   endif
   do k=1,NP
      read(21,*,iostat=ierr) latitude(k),albedo(k)
-  enddo
+  end do
   close(21)
 
   !tstart = 1e6  ! Earth years
@@ -54,7 +54,9 @@ program asteroid_fast
 
   ! porosity can decrease with depth, but should be constant within stirring depth
   porosity(:) = 0.4d0   ! dry porosity
-  forall (i=1:nz) sigma(i,:) = porosity(i)*icedensity
+  do concurrent (i=1:nz)
+     sigma(i,:) = porosity(i)*icedensity
+  end do
   open(unit=30,file='poro.'//ext,action='write',status='unknown')
   write(30,'(999(f7.5,1x))') porosity(1:nz)
   close(30)
@@ -72,7 +74,7 @@ program asteroid_fast
      call outputskindepths(nz,z,zmax,porosity)
      print *,'  Initial ice depth=',zdepthP(k)
      print *
-  enddo
+  end do
   call outputmoduleparameters
   print *
 
@@ -93,7 +95,7 @@ program asteroid_fast
           &  Tmean1(k),Tmean3(k),Tmin(k),Tmax(k)
      write(36,'(f12.0,2x,f7.3,2x)',advance='no') icetime,latitude(k)
      call compactoutput(36,sigma(1:nz,k),nz)
-  enddo
+  end do
 
   icetime = - earliest*timestep
   print *,icetime
@@ -111,9 +113,9 @@ program asteroid_fast
         ! variables were evaluated at previous time step
         write(37,501) icetime,latitude(k),zdepthP(k), &
              & Tmean1(k),Tmean3(k),Tmin(k),Tmax(k)
-     enddo
+     end do
      omega = mod(omega + 36.*d2r,2*pi)  ! sweep
-  enddo
+  end do
 
   
   icetime = -(earliest-1)*timestep
@@ -129,7 +131,7 @@ program asteroid_fast
              & Tmean1(k),Tmean3(k),Tmin(k),Tmax(k)
         write(36,'(f12.0,2x,f7.3,2x)',advance='no') icetime,latitude(k)
         call compactoutput(36,sigma(1:nz,k),nz)
-     enddo
+     end do
      print *,icetime
      if (any(-icetime == (/ 4.498d9, 4.450d9, 4d9 /))) then   ! with 1e5
      !if (any(-icetime == (/ 4.498d9, 4.460d9, 4d9 /))) then   ! with 2e5
@@ -137,7 +139,7 @@ program asteroid_fast
      endif
      if (icetime>=0.) exit
      omega = mod(omega + 36.*d2r,2*pi)  ! sweep
-  enddo
+  end do
 
   close(34)
   close(36)
@@ -145,7 +147,7 @@ program asteroid_fast
 
 501 format (f12.0,2x,f7.3,2x,2x,f11.5,4(2x,f6.2)) 
 
-end program asteroid_fast
+END PROGRAM asteroid_fast
 
 
 
@@ -175,7 +177,7 @@ subroutine outputskindepths(nz,z,zmax,porosity)
      if (z(i)<delta) cycle
      print *,'  ',i-1,' grid points within dry diurnal skin depth'
      exit
-  enddo
+  end do
   print *,'  zmax=',zmax/(sqrt(solsperyear)*delta),'times seasonal dry skin depth'
   print *,'  zmax=',zmax/(sqrt(solsperyear)*delta*stretch),'times seasonal filled skin depth'
   write(*,'(3x,a,3(1x,f6.1))') 'Nominal thermal inertia extremes',thIn,newti

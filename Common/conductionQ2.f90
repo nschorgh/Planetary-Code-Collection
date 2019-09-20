@@ -111,9 +111,9 @@ contains
 !   Set RHS         
     r(1) = gamma(1)*(annp1+ann) + &
          &     (1.-alpha(1)-gamma(1)+gamma(1)*bn)*T(1) + alpha(1)*T(2)
-    forall(i=2:nz-1)
+    do concurrent (i=2:nz-1)
        r(i) = gamma(i)*T(i-1) + (1.-alpha(i)-gamma(i))*T(i) + alpha(i)*T(i+1)
-    end forall
+    end do
     r(nz) = gamma(nz)*T(nz-1) + (1.-gamma(nz))*T(nz) + r_geo
     
 !   Solve for T at n+1

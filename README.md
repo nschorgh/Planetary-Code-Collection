@@ -182,7 +182,7 @@ Topo3D/topo40.xyz
 Topo3D/Test/  
 
 
-### Monte-Carlo Model for Surface-bounded Exosphere
+### Monte-Carlo Model for Surface-bounded Exospheres
 
 Exosphere/moon_exo.f90: (main program)  
 Exosphere/ceres_exo.f90: (main program)  
@@ -201,6 +201,8 @@ NOTE: Third party source code from Numerical Recipes is covered by a separate co
 
 
 ### ACKNOWLEDGMENTS
+
+2019: Thanks to Sam Potter for comments that helped me speed up the view factor calculations  
 
 Mar 2016: Thanks to Lior Rubanenko for a bug report in cratersQ_*
 

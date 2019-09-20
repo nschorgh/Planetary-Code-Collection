@@ -1,5 +1,7 @@
-module findviewfactors
-  ! identify hidden versus visible topography
+module findvisibletopo
+!***********************************************************************
+! identify hidden versus visible topography
+!***********************************************************************
   use filemanager, only : NSx,NSy,dx,dy
 
   integer, parameter :: naz=360
@@ -49,8 +51,8 @@ contains
           
           call horizon_core_wsort(x0,y0,h00,surfaceSlope,azFac,i,j,h)
           
-       enddo  ! end of j loop
-    enddo  ! end of i loop
+       end do  ! end of j loop
+    end do  ! end of i loop
     
     do ak = 1,naz
        ! sort by distance from (i0,j0)
@@ -63,7 +65,7 @@ contains
              smaxlocal=slocal(ak,j)
              visibility(celli(ak,j),cellj(ak,j))=.true.
           endif
-       enddo
+       end do
     end do
     
   end subroutine findallhorizon_wsort_v3
@@ -168,12 +170,12 @@ contains
   end subroutine horizon_core_wsort
 
 
-end module findviewfactors
+end module findvisibletopo
 
 
 
 subroutine find3dangle(h,i0,j0,unit,visibility)
-  ! calculate subtended spherical angle and view factor
+! calculate subtended spherical angle and view factor
   use filemanager
   use allinterfaces, except_this_one => find3dangle
   implicit none
@@ -232,7 +234,7 @@ subroutine find3dangle(h,i0,j0,unit,visibility)
 !-------get spherical angle
         do k=1,4
            call xyz2thetaphi(xq(k),yq(k),hq(k),theta(k),phi(k))
-        enddo
+        end do
 
         if (visibility(i,j)) then
            dOh = area_spherical_quadrangle(phi,theta)
@@ -265,8 +267,8 @@ subroutine find3dangle(h,i0,j0,unit,visibility)
            !cosv = cos_viewing_angle(i0,j0,i,j,h)  ! cos(v)
            VFstack(cc) = dOh*cosv/pi  ! view factor
         endif
-     enddo
-  enddo
+     end do
+  end do
 
   landsize = sum(dOstack(1:cc))   ! 2*pi- size of sky
   viewsize = sum(VFstack(1:cc)) 
@@ -274,13 +276,13 @@ subroutine find3dangle(h,i0,j0,unit,visibility)
   !write(unit-1,'(2(i5,1x),i6,1x,f7.5,1x)',advance='no') i0, j0, cc, landsize
   !do i=1,cc
   !   write(unit-1,'(2(i5,1x),g10.4,1x)',advance='no') cellx(i),celly(i),dOstack(i)
-  !enddo
+  !end do
   !write(unit-1,"('')")
 
   write(unit,'(2(i5,1x),i6,1x,2(f7.5,1x))',advance='no') i0, j0, cc, landsize, viewsize
   do i=1,cc
      write(unit,'(2(i5,1x),g10.4,1x)',advance='no') cellx(i),celly(i),VFstack(i)
-  enddo
+  end do
   write(unit,"('')")
   
   if (minval(cellx(1:cc))<1 .or. minval(celly(1:cc))<1) stop 'find3dangle: index out of boud'
@@ -290,7 +292,7 @@ end subroutine find3dangle
 
 
 pure subroutine difftopo1(i,j,h,surfaceSlope,az)
-  ! calculate slope and azimuth of surface element
+! calculate slope and azimuth of surface element
   use filemanager, only : NSx,NSy,dx,dy
   implicit none
   integer, intent(IN) :: i,j
@@ -389,6 +391,6 @@ subroutine refinevisibility(i0,j0,h,visibility)
         cosv = cos_viewing_angle1(ii*dx,jj*dy,h(ii,jj),surfaceSlope,azFac,i0,j0,h)
         ! sometimes happens for first surface element beyond cusp at horizon
         if (cosv<0.) visibility(ii,jj)=.false.
-     enddo
-  enddo
+     end do
+  end do
 end subroutine refinevisibility

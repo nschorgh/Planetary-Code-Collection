@@ -1,7 +1,8 @@
 ! Functions that parametrize sublimation rates into vacuum
 
+
 function sublrate(T)
-  ! sublimation rate of H2O in #molecules/m^2/s
+  ! sublimation rate of H2O [#molecules/m^2/s]
   implicit none
   real(8), intent(IN) :: T
   real(8) sublrate
@@ -15,6 +16,7 @@ function sublrate(T)
   ! amorphous ice according to Sack & Baragiola (1993)
   !sublrate = 1.82e21*1e4*T**3.5*exp(-0.45*1.6022e-19/(kB*T))
 end function sublrate
+
 
 
 pure function padsr(x)
@@ -37,8 +39,9 @@ pure function padsr(x)
 end function padsr
 
 
+
 pure real(8) function restime_species(T)
-  ! sublimation rate in #molecules/m^2/s
+  ! sublimation rate [#molecules/m^2/s]
   implicit none
   real*8, intent(IN) :: T
   real*8, parameter :: pi=3.1415926535897932, kB = 1.38065e-23, u=1.66054e-27

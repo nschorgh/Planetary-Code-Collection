@@ -80,7 +80,7 @@ fieldproperties: filemanager.o topo3d_modules.o topo3d_common.o \
 # topo3d_subs.f90 contains module newhorizons and should be compiled third
 # conductionT2/Q2 contain modules conductionT/Q (therefore the symlink)
 # multigrid.f90 has module newmultigrid needed by shadows.f90
-# fieldofview_subs.f90 has module findviewfactors needed by fieldofviews.f90
+# fieldofview_subs.f90 has module findvisibletopo needed by fieldofviews.f90
 # shadow_subs.f90 has module azRays needed by shadows.f90
 
 
