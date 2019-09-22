@@ -7,8 +7,9 @@ C     choice of z(1) and z(2) is compatible with conductionQ
       parameter (NMAX=1000)
       integer nz, i
       real*8 zfac, zmax, z(NMAX), dz
+
+      dz = zmax/nz
       do i=1,nz
-         dz = zmax/nz
          z(i) = (i-0.5)*dz
       enddo
       if (zfac>1.) then
@@ -31,6 +32,7 @@ C     produces zfac with desired number of points within depth delta
       real*8 zmax, delta
       integer j
       real*8 f,g,gprime
+      
       if (nz_max<nz_delta .or. nz_delta<=1) then
          stop 'inappropriate input to smartzfac'
       endif
@@ -62,6 +64,7 @@ c     column integrates y
       real(8) colint
       integer i
       real(8) dz(nz)
+      
       dz(1)=(z(2)-0.)/2
       do i=2,nz-1
          dz(i) = (z(i+1)-z(i-1))/2.
@@ -79,6 +82,7 @@ c     matches colint
       real(8) z(nz)
       real(8) dz(nz)   ! output
       integer i
+      
       dz(1)=(z(2)-0.)/2
       do i=2,nz-1
          dz(i) = (z(i+1)-z(i-1))/2.

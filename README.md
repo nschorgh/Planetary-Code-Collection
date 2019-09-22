@@ -26,7 +26,7 @@ Mars/flux.f
 Mars/flux_mars.f90  
 Mars/marsorbit.f90  
 Mars/soilthprop.f  
-Common/conductionQ.f  
+Common/conductionQ.f90  
 Common/conductionT.f  
 Common/grids.f  
 Common/julday.for  
@@ -57,7 +57,7 @@ Mars/jsubv.f90
 Mars/marsorbit.f90  
 Mars/flux_mars.f90  
 Mars/soilthprop.f  
-Common/conductionQ.f  
+Common/conductionQ.f90  
 Common/conductionT.f  
 Common/tridag.for  
 Common/grids.f  
@@ -80,7 +80,7 @@ Mars/fast_subs_exper.f90
 Mars/fast_subs_mars.f90  
 Mars/soilthprop.f  
 Mars/insol_driver.f90 (main program)  
-Common/conductionQ.f  
+Common/conductionQ.f90  
 Common/conductionT.f  
 Common/tridag.for  
 Common/grids.f  
@@ -102,7 +102,7 @@ Asteroids/asteroid_thermal.f90: (main program)
 Asteroids/oneasteroid_thermal1d.f90  
 Asteroids/insolonly.f90   
 Common/flux_noatm.f90  
-Common/conductionQ.f  
+Common/conductionQ.f90  
 Common/tridag.for  
 Common/grids.f  
 Common/generalorbit.f  
@@ -119,7 +119,7 @@ Asteroids/fast_subs_asteroid2.f90
 Asteroids/impactstirring.f90  
 Asteroids/common_subs.f90  
 Asteroids/sphere1d_implicit.f90: (main program)  
-Common/conductionQ.f  
+Common/conductionQ.f90  
 Common/derivs.f90  
 Common/flux_noatm.f90  
 Common/generalorbit.f  
@@ -167,9 +167,9 @@ Topo3D/topo3d_subs_mars.f90
 Topo3D/multigrid.f90  
 Topo3D/fieldproperties.f90: (main program)  
 Topo3D/hpsort.for  
-Common/conductionQ.f  
-Common/conductionQ2.f  
-Common/conductionT2.f  
+Common/conductionQ.f90    
+Common/conductionQ2.f90  
+Common/conductionT2.f90  
 Common/flux_noatm.f90  
 Common/grids.f  
 Common/julday.f  

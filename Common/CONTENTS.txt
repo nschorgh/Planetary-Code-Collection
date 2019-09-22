@@ -22,7 +22,7 @@ psvco2.f:
 generalorbit.f: 
 	distance, longitude, and declination of the sun from orbital elements
 
-conductionQ.f:
+conductionQ.f90:
 	1D thermal conduction with heterogeneous thermal properties and 
 	flux/radiation boundary condition, semi-implicit solver
 
