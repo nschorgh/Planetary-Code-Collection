@@ -26,7 +26,7 @@ int main(void)  {
     thIn = 120.;
     albedo = 0.2;
     latitude = 5.; // [degree]
-    zmax = 2.5; zfac = 1.05;  /* set the spatial resolution */
+    zmax = 2.5; zfac = 1.05;  // set the spatial grid
     
     for (i=1; i <= nz; i++) {
        rhocv[i] = 1200.*800.;
@@ -52,7 +52,6 @@ int main(void)  {
     fprintf(fout0,"\n");
     fclose(fout0);
     
-    // print *,z(1:nz) 
     latitude *= d2r;
     HA = 0.; // hour angle
     /*  solar insolation */
@@ -75,7 +74,7 @@ int main(void)  {
 	     fprintf(fout2, "\n");
 	  }
        }
-    } /* end the loop */
+    } /* end of time loop */
     
     fclose(fout1);
     fclose(fout2);
