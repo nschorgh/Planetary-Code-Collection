@@ -3,7 +3,7 @@ ChangeLog
 
 23 Sep 2019: added C version of conductionQ and its dependencies
 
-20 Sep 2019: The long-used and much-used subroutine conductionQ received an upgrade. It now iterates when the surface temperature, which is the initial value for the linearization of the thermal radiation term, changes too fast. It was also converted from Fortran 77 to Fortran 90. The old version of conductionQ is still available in release 1.1.5 and all earlier releases. The new version is conductionQ.f90. The change has also been propagated into conductionQ2.f90
+20 Sep 2019: The long-used and much-used subroutine conductionQ received an upgrade. It now iterates when the surface temperature, which is the initial value for the linearization of the thermal radiation term, changes too fast. It was also converted from Fortran 77 to Fortran 90 (or Fortran 2008 actually). The old version of conductionQ is still available in release 1.1.5 and all earlier releases. The new version is conductionQ.f90. The change has also been propagated into conductionQ2.f90
 
 Sep 2019: internal restructuring of horizons and viewfactor calculations, without external consequence
 

@@ -64,7 +64,7 @@ ran2.for:
 	uniform random number generator from Numerical Recipes (C); changed real to real*8
 
 
-C/
+Cversion/
 	C version of conductionQ
 
 

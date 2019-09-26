@@ -1,8 +1,7 @@
 
 
 void conductionQ(int, double [], double, double, double,
-		double [], double [], double [], double,
-		double, double *);
+		double [], double [], double [], double, double, double *);
 
 double flux_noatm(double R, double decl, double latitude, double HA,
 		  double surfaceSlope, double azFac);

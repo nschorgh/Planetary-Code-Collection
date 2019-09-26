@@ -19,7 +19,7 @@ void setgrid(int nz, double z[], double zmax, double zfac)
       z[2] = 3*z[1];
       for (i=3; i<=nz; i++) {
 	 z[i] = (1. + zfac) * z[i-1] - zfac * z[i-2];
-	 // same as z[i+1] - z[i] = zfac * (z[i] - z[i-1])  ???
+	 // same as z[i+1] - z[i] = zfac * (z[i] - z[i-1]) 
       }
    }
 }

@@ -63,8 +63,6 @@ int main(void)  {
        //printf("%f %f\n",time,Qn);
        HA = 2*pi*fmod( time/Period, 1.); //  hour angle 
        Qnp1 = (1-albedo)*flux_noatm(Rau, Decl, latitude, HA, zero, zero);
-       //conductionQ(nz, z, dt, Qn, Qnp1, T, ti, rhocv, emiss, &Tsurf, 
-       //	   Fgeo, &Fsurf);
        conductionQ(nz, z, dt, Qn, Qnp1, T, ti, rhocv, emiss, Fgeo, &Fsurf);
        Qn = Qnp1;
        if (n%3==0) {
