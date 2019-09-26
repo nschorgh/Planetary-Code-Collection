@@ -27,7 +27,7 @@ Mars/flux_mars.f90
 Mars/marsorbit.f90  
 Mars/soilthprop.f  
 Common/conductionQ.f90  
-Common/conductionT.f  
+Common/conductionT.f90  
 Common/grids.f  
 Common/julday.for  
 Common/psvco2.f  
@@ -58,7 +58,7 @@ Mars/marsorbit.f90
 Mars/flux_mars.f90  
 Mars/soilthprop.f  
 Common/conductionQ.f90  
-Common/conductionT.f  
+Common/conductionT.f90  
 Common/tridag.for  
 Common/grids.f  
 Common/julday.for  
@@ -81,7 +81,7 @@ Mars/fast_subs_mars.f90
 Mars/soilthprop.f  
 Mars/insol_driver.f90 (main program)  
 Common/conductionQ.f90  
-Common/conductionT.f  
+Common/conductionT.f90  
 Common/tridag.for  
 Common/grids.f  
 Common/generalorbit.f  
