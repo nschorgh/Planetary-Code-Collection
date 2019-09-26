@@ -287,6 +287,27 @@ module allinterfaces
      end function flux_wshad
   end interface
 
+  interface
+     subroutine conductionQ(nz,z,dt,Qn,Qnp1,T,ti,rhoc,emiss,Tsurf,Fgeotherm,Fsurf)
+       implicit none
+       integer, intent(IN) :: nz
+       real*8, intent(IN) :: z(nz), dt, Qn, Qnp1, ti(nz),rhoc(nz), emiss, Fgeotherm
+       real*8, intent(INOUT) :: T(nz), Tsurf
+       real*8, intent(OUT) :: Fsurf
+     end subroutine conductionQ
+  end interface
+  
+  interface
+     subroutine conductionT(nz,z,dt,T,Tsurf,Tsurfp1,ti,rhoc,Fgeotherm,Fsurf)
+       implicit none
+       integer, intent(IN) :: nz
+       real*8, intent(IN) :: z(nz), dt, Tsurf, Tsurfp1, ti(nz), rhoc(nz)
+       real*8, intent(IN) :: Fgeotherm
+       real*8, intent(INOUT) :: T(nz)
+       real*8, intent(OUT) :: Fsurf
+     end subroutine conductionT
+  end interface
+  
   ! Fortran 77 programs
   interface
      pure subroutine hpsort(n,ra,ind)
@@ -297,30 +318,6 @@ module allinterfaces
      end subroutine hpsort
   end interface
 
-  interface
-     pure subroutine conductionQ(nz,z,dt,Qn,Qnp1,T,ti,rhoc,emiss,Tsurf,Fgeotherm,Fsurf)
-       implicit none
-       integer NMAX
-       parameter (NMAX=1000)
-       integer, intent(IN) :: nz
-       real*8, intent(IN) :: z(NMAX), dt, Qn, Qnp1, ti(NMAX),rhoc(NMAX), emiss, Fgeotherm
-       real*8, intent(INOUT) :: T(NMAX), Tsurf
-       real*8, intent(OUT) :: Fsurf
-     end subroutine conductionQ
-  end interface
-
-  interface
-     pure subroutine conductionT(nz,z,dt,T,Tsurf,Tsurfp1,ti,rhoc,Fgeotherm,Fsurf)
-       implicit none
-       integer NMAX
-       parameter (NMAX=1000)
-       integer, intent(IN) :: nz
-       real*8, intent(IN) :: z(NMAX), dt, T(NMAX), Tsurf, Tsurfp1, ti(NMAX), rhoc(NMAX)
-       real*8, intent(IN) :: Fgeotherm
-       real*8, intent(OUT) :: Fsurf
-     end subroutine conductionT
-  end interface
-  
   interface
      pure function psv(T)
        implicit none

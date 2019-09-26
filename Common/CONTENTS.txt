@@ -26,7 +26,7 @@ conductionQ.f90:
 	1D thermal conduction with heterogeneous thermal properties and 
 	flux/radiation boundary condition, semi-implicit solver
 
-conductionT.f:
+conductionT.f90:
 	1D thermal conduction with heterogeneous thermal properties and 
 	upper temperature boundary condition, semi-implicit solver
 
@@ -63,4 +63,11 @@ julday.for:
 ran2.for: 
 	uniform random number generator from Numerical Recipes (C); changed real to real*8
 
+
+C/
+	C version of conductionQ
+
+
+Test/
+	Validation and example runs
 

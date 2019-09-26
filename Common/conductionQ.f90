@@ -10,17 +10,19 @@ subroutine conductionQ(nz,z,dt,Qn,Qnp1,T,ti,rhoc,emiss,Tsurf, &
 !   BC (z=0): Q(t) + kT_z = em*sig*T^4
 !   BC (z=L): heat flux = Fgeotherm
 !
+!   nz = number of grid points
+!   dt = time step
+!   Qn,Qnp1 = net solar insolation at time steps n and n+1 [W/m^2]
+!   T = vertical temperature profile [K]  (in- and output)  
 !   ti = thermal inertia [J m^-2 K^-1 s^-1/2]  VECTOR
 !   rhoc = rho*c  VECTOR where rho=density [kg/m^3] and 
 !                              c=specific heat [J K^-1 kg^-1]
 !   ti and rhoc are not allowed to vary in the layers immediately 
 !               adjacent to the surface or the bottom
-!   T = vertical temperature profile [K]
-!   Qn,Qnp1 = net solar insolation at time steps n and n+1 [W/m^2]
 !   emiss = emissivity
-!   Tsurf = surface temperature [K]
+!   Tsurf = surface temperature [K]  (in- and output)
 !   Fgeotherm = geothermal heat flux at bottom boundary [W/m^2]
-!   Fsurf = heat flux at surface [W/m^2]
+!   Fsurf = heat flux at surface [W/m^2]  (output)
 !
 !   Grid: surface is at z=0
 !         z(0)=0, z(2)=3*z(1), i.e., the top layer has half the width
@@ -45,12 +47,9 @@ subroutine conductionQ(nz,z,dt,Qn,Qnp1,T,ti,rhoc,emiss,Tsurf, &
   real*8 k(nz), k1, alpha(nz), gamma(nz), Tr
   real*8 a(nz), b(nz), c(nz), r(nz), Told(nz)
   real*8 arad, brad, ann, annp1, bn, buf, dz, beta
-
   
   ! set some constants
-  do concurrent (i=1:nz)
-     k(i) = ti(i)**2/rhoc(i) ! thermal conductivity
-  enddo
+  k(:) = ti(:)**2/rhoc(:) ! thermal conductivity
   dz = 2.*z(1)
   beta = dt/rhoc(1)/(2.*dz**2)   ! assumes rhoc(0)=rhoc(1)
   alpha(1) = beta*k(2)
@@ -66,11 +65,9 @@ subroutine conductionQ(nz,z,dt,Qn,Qnp1,T,ti,rhoc,emiss,Tsurf, &
   k1 = k(1)/dz
   
   ! elements of tridiagonal matrix
-  do concurrent (i=1:nz)
-     a(i) = -gamma(i)   !  a(1) is not used
-     b(i) = 1. + alpha(i) + gamma(i) !  b(1) has to be reset at every timestep
-     c(i) = -alpha(i)   !  c(nz) is not used
-  enddo
+  a(:) = -gamma(:)   !  a(1) is not used
+  b(:) = 1. + alpha(:) + gamma(:) !  b(1) has to be reset at every timestep
+  c(:) = -alpha(:)   !  c(nz) is not used
   b(nz) = 1. + gamma(nz)
 
   Tr = Tsurf            ! 'reference' temperature
@@ -101,7 +98,7 @@ subroutine conductionQ(nz,z,dt,Qn,Qnp1,T,ti,rhoc,emiss,Tsurf, &
   Tsurf = 0.5*(annp1 + bn*T(1) + T(1)) ! (T0+T1)/2
 
   ! iterative predictor-corrector
-  if (Tsurf > 1.2*Tr .or. Tsurf<0.8*Tr) then  ! linearization error expected
+  if (Tsurf > 1.2*Tr .or. Tsurf < 0.8*Tr) then  ! linearization error expected
      ! redo until Tr is within 20% of new surface temperature
      ! (under most circumstances, the 20% threshold is never exceeded)
      iter = iter+1
