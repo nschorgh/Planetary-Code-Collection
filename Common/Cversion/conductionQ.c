@@ -100,7 +100,7 @@ void conductionQ(int nz, double z[], double dt, double Qn, double Qnp1,
     dt / rhoc[nz] * Fgeotherm / (z[nz] - z[nz-1]);   // assumes rhoc[nz+1]=rhoc[nz]
   
   /*  Solve for T at n+1 */
-  tridag(a, b, c, r, T, nz);  // update by tridiagonal inversion 
+  tridag(a, b, c, r, T, (unsigned long)nz);  // update by tridiagonal inversion 
   
   T[0] = 0.5 * (annp1 + bn * T[1] + T[1]);
 
