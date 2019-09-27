@@ -70,7 +70,7 @@ PROGRAM cratersQ_mars
   
   dt=0.02
   !tmax = 2*solsy+1.
-  tmax = 6.*solsy /2. !!!!
+  tmax = 6.*solsy
   !latitude = -41.6
   latitude = -30.
 

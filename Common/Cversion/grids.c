@@ -26,3 +26,14 @@ void setgrid(int nz, double z[], double zmax, double zfac)
 
 
 
+void heatflux_from_temperature(int nz, double z[], double T[],
+			       double k[], double H[]) {
+/*    calculates heat flux from temperature profile
+      like k, the heat flux H is defined mid-point
+*/
+  
+   H[1] = -k[1] * (T[1]-T[0]) / z[1];
+   for (int j=2; j<=nz; j++) {
+      H[j] = -k[j] * (T[j]-T[j-1]) / (z[j]-z[j-1]);
+   }
+} /* heatflux_from_temperature */

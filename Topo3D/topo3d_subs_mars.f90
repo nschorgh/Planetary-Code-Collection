@@ -89,14 +89,13 @@ pure function evap_ingersoll(T,p0)
   implicit none
   real(8) evap_ingersoll
   real(8), intent(IN) :: T
-  real(8), intent(IN) :: p0  ! atmospheric pressure
+  real(8), intent(IN) :: p0  ! atmospheric pressure [Pa]
   real(8), parameter :: R=8314.5, g=3.7
   real(8) psat,Gbuf,rho,rhow,drhooverrho
   real(8) D   ! vapor diffusivity [m^2/s]
   real(8) nu  ! kinematic viscosity of CO2
   real(8) eta ! dynamic viscosity of CO2
   
-  !p0=520.  ! atmospheric pressure
   psat=psv(T)
   D = 0.1654*1e-4*1.013e5/p0*(T/273)**1.5  ! Schwertz & Brow (1951)
   rhow = psat*18/(R*T)
@@ -104,10 +103,10 @@ pure function evap_ingersoll(T,p0)
   eta = 13.7e-6*(273+240)/(T+240)*(T/273)**1.5  ! Int. Crit. Tbl., vol 5
   nu = eta/rho
   
-  !drhooverrho=(44-18)*psat/(44*p0-(44-18)*psat) ! Ingersoll (1970)
-  drhooverrho=(44-18)*psat/(44*(p0-psat)) ! diverges at p0=psat
-  Gbuf=(drhooverrho*g/nu**2)**(1./3.)
-  !evap_ingersoll=0.17*D*rhow*Gbuf  ! Ingersoll (1970)
-  evap_ingersoll=0.12*D*rhow*Gbuf
+  !drhooverrho = (44-18)*psat/(44*p0-(44-18)*psat) ! Ingersoll (1970)
+  drhooverrho = (44-18)*psat/(44*(p0-psat)) ! diverges at p0=psat
+  Gbuf = (drhooverrho*g/nu**2)**(1./3.)
+  !evap_ingersoll = 0.17*D*rhow*Gbuf  ! Ingersoll (1970)
+  evap_ingersoll = 0.12*D*rhow*Gbuf
   
 end function evap_ingersoll

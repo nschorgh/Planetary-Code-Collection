@@ -32,7 +32,7 @@ end subroutine deriv1
 subroutine deriv2_full(z,nz,a,b,a0,b0,bNp1,yp2)
   ! second derivative (a*b_z)_z on irregular grid
   ! fixed upper b.c. a(0)=a0, b(0)=b0
-  ! 2nd order corner-free
+  ! 2nd order, without cross-terms
   implicit none
   integer, intent(IN) :: nz
   real*8, intent(IN) :: z(nz),a(nz),b(nz),a0,b0,bNp1
@@ -106,11 +106,11 @@ subroutine deriv2(z,nz,a,b,a0,b0,bNp1,yp2,c)
        &  -c(1,1)*a0*b(1)+c(1,1)*(a(1)+a0)*b0 &
        &  -c(3,1)*a(2)*b(1)+c(3,1)*(a(1)+a(2))*b(2)
 
-  forall(j=2:nz-1)
+  do concurrent (j=2:nz-1)
      yp2(j) = -c(2,j)*a(j)*b(j) &   
           &  -c(1,j)*a(j-1)*b(j) + c(1,j)*(a(j)+a(j-1))*b(j-1) &
           &  -c(3,j)*a(j+1)*b(j) + c(3,j)*(a(j)+a(j+1))*b(j+1)
-  end forall
+  enddo
 
   ! lower bc: b_z = 0
   !yp(nz)= 2.*a(nz)*(b(nz-1)-b(nz))/(z(nz)-z(nz-1))**2
