@@ -8,18 +8,18 @@ module miscparams
   ! parameters that never change
   real(8), parameter :: pi=3.1415926535897932, d2r=pi/180.
   real(8), parameter :: sigSB = 5.6704e-8
-  real(8), parameter :: Lco2frost=6.0e5  ! [J/kg]
+  real(8), parameter :: Lco2frost = 6.0e5  ! [J/kg]
   real(8), parameter :: zero = 0.
   real(8), parameter :: earthDay = 86400. ! [s]
   real(8), parameter :: solsy = 668.60 ! solar days per Mars year
   real(8), parameter :: solarDay = 88775.244  ! Mars [s]
 
   ! thermal model parameters
-  real(8), parameter :: Tco2frost=145. ! adjust according to elevation [K]
+  real(8), parameter :: Tco2frost = 145. ! adjust according to elevation [K]
   real(8), parameter :: Tfrost = 200.  ! H2O frost point temperature, for diagnostics only [K]
-  real(8), parameter :: fracIR=0.04, fracDust=0.02
+  real(8), parameter :: fracIR = 0.04, fracDust = 0.02
   real(8), parameter :: emiss = 0.98
-  integer, parameter :: nz=70
+  integer, parameter :: nz = 70
   real(8), parameter :: thIn = 600.  ! Thermal inertia
 end module miscparams
 
@@ -104,8 +104,9 @@ PROGRAM cratersQ_mars
   print *,'...reading horizons file...'
   call readhorizons
   do concurrent(i=2:NSx-1, j=2:Nsy-1)
-     skyview(i,j) = getoneskysize_v2(i,j)/(2*pi)
      gterm(i,j) = getoneGterm(i,j,surfaceSlope(i,j),azFac(i,j))
+     skyview(i,j) = getoneskysize_v2(i,j)/(2*pi)  ! =(sky size)/(2*pi)
+     ! skyview(i,j) = 1.-gterm(i,j)  ! weighted by cosine
   end do
   
   if (subsurface) then ! initialize subsurface component
@@ -161,8 +162,6 @@ PROGRAM cratersQ_mars
            ! absorbed direct insolation and contributions from atmosphere
            Qn(i,j) = (1-albedo(i,j))*(Qdirect(i,j)+Qscat*skyview(i,j)) &
                 & + emiss*Qlw*skyview(i,j)
-           !Qn(i,j) = (1-albedo(i,j))*(Qdirect(i,j)+Qscat*(1-gterm(i,j))) &
-           !     & + emiss*Qlw*(1-gterm(i,j))
            ! contribution from land in field of view
            if (n>0) then 
               QIR = gterm(i,j)*emiss*sigSB*Tsurf(1,1)**4

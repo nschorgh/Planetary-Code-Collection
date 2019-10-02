@@ -9,17 +9,17 @@
 module miscparams
   real(8), parameter :: pi=3.1415926535897932, d2r=pi/180.
   real(8), parameter :: sigSB = 5.6704e-8
-  real(8), parameter :: Lco2frost=6.0e5  ! [J/kg]
+  real(8), parameter :: Lco2frost = 6.0e5  ! [J/kg]
   real(8), parameter :: zero = 0.
-  real(8), parameter :: solsy = 668.60 ! solar days per Mars year
+  real(8), parameter :: solsy = 669. ! solar days per Mars year
   real(8), parameter :: solarDay = 88775.244  ! Mars [s]
 
   ! thermal model parameters
-  real(8), parameter :: Tco2frost=145. ! adjust according to elevation [K]
+  real(8), parameter :: Tco2frost = 145. ! adjust according to elevation [K]
   real(8), parameter :: Tfrost = 200.  ! H2O frost point temperature, for diagnostics only
-  real(8), parameter :: fracIR=0.04, fracDust=0.02
+  real(8), parameter :: fracIR = 0.04, fracDust = 0.02
   real(8), parameter :: emiss = 0.98d0
-  integer, parameter :: nz=70
+  integer, parameter :: nz = 70
   real(8), parameter :: thIn = 400.
 end module miscparams
 
@@ -108,6 +108,8 @@ PROGRAM cratersQ_mars
   ! only use skyviews with IR contribution
   do concurrent(i=2:NSx-1, j=2:NSy-1)
      skyview(i,j) = getoneskysize_v2(i,j)/(2*pi)
+     !gterm(i,j) = getoneGterm(i,j,surfaceSlope(i,j),azFac(i,j))
+     !skyview(i,j) = 1.-getoneGterm(i,j,surfaceSlope(i,j),azFac(i,j))
   end do
   print *,'max/min of skyview:',maxval(skyview(2:NSx-1,2:NSy-1)), &
        & minval(skyview(2:NSx-1,2:NSy-1))
@@ -122,10 +124,12 @@ PROGRAM cratersQ_mars
   
   if (subsurface) then
      allocate(Fsurf(NSx,NSy), T(nz,NSx,NSy), Tbottom(NSx,NSy))
-     Tbottom(:,:)=-9
-     Tsurf(:,:)=-9  ! max 3 digits
-     Fsurf(:,:)=0.
-     call subsurfaceconduction_mars(T(:,1,1),buf,dtsec,zero,zero,buf,buf,.true.,thIn=thIn) ! init
+     Tbottom(:,:) = 0.
+     Tsurf(:,:) = 200.
+     Fsurf(:,:) = 0.
+     ! initialize private variables in module
+     call subsurfaceconduction_mars(T(:,1,1),buf,dtsec,zero,zero,buf,buf,.true.,thIn=thIn)
+     T(:,:,:) = 200.
   end if
 
   longitude = 360 - 202.3 ! west longitude
@@ -139,7 +143,7 @@ PROGRAM cratersQ_mars
 
      !call marsorbit(dt0_j2000,edays,marsLs,marsDec,marsR)
      !call generalorbit(edays,a,ecc,omega,eps,marsLs,marsDec,marsR)
-     !HA=2.*pi*mod(sdays,1.)   ! hour angle
+     !HA=2.*pi*mod(sdays,1.d0)   ! hour angle
      call marsclock24(jd+edays,buf,marsLs,marsDec,marsR,Longitude,LTST)
      HA=2.*pi*mod(LTST+12,24.d0)/24
      
@@ -230,7 +234,6 @@ PROGRAM cratersQ_mars
         i=41
         do j=46,49
            write(25,225) i,j,sdays,marsLs/d2r,Qdirect(i,j),Qabs(i,j),Tsurf(i,j),m(i,j)
-           write(27,*) i,j,sdays,marsLs/d2r,Qdirect(i,j),Qabs(i,j),Tsurf(i,j),m(i,j)
         end do
 
      endif

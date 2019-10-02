@@ -66,10 +66,10 @@ subroutine subsurfaceconduction_mars(T,Tsurf,dtsec,Qn,Qnp1,m,Fsurf,init,Tco2fros
   Tsurfold=Tsurf
   Fsurfold=Fsurf
   Told(1:nz)=T(1:nz)
-  if (Tsurf>Tco2frost.or.m<=0.) then
+  if (Tsurf>Tco2frost .or. m<=0.) then
      call conductionQ2(nz,Qn,Qnp1,T,emiss,Tsurf,Fsurf)
   endif
-  if (Tsurf<Tco2frost.or.m>0.) then   ! CO2 condensation                                              
+  if (Tsurf<Tco2frost .or. m>0.) then   ! CO2 condensation                                              
      T(1:nz)=Told
      call conductionT2(nz,Tsurfold,Tco2frost,T,Fsurf)
      Tsurf=Tco2frost
@@ -86,6 +86,7 @@ pure function evap_ingersoll(T,p0)
   ! Returns sublimation rate [kg/m^2/s]
   ! Note: The latent heat of sublimation is 2.838 MJ/kg
   use allinterfaces, only : psv
+  use, intrinsic :: ieee_arithmetic
   implicit none
   real(8) evap_ingersoll
   real(8), intent(IN) :: T
@@ -105,8 +106,13 @@ pure function evap_ingersoll(T,p0)
   
   !drhooverrho = (44-18)*psat/(44*p0-(44-18)*psat) ! Ingersoll (1970)
   drhooverrho = (44-18)*psat/(44*(p0-psat)) ! diverges at p0=psat
-  Gbuf = (drhooverrho*g/nu**2)**(1./3.)
-  !evap_ingersoll = 0.17*D*rhow*Gbuf  ! Ingersoll (1970)
-  evap_ingersoll = 0.12*D*rhow*Gbuf
+  if (drhooverrho>0.) then
+     Gbuf = (drhooverrho*g/nu**2)**(1./3.)
+     !evap_ingersoll = 0.17*D*rhow*Gbuf  ! Ingersoll (1970)
+     evap_ingersoll = 0.12*D*rhow*Gbuf
+  else
+     !evap_ingersoll = 1./0.  ! a smart compiler accepts this
+     evap_ingersoll = ieee_value(1.d0,ieee_positive_inf)  ! for other compilers
+  endif
   
 end function evap_ingersoll
