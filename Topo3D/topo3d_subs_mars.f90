@@ -44,7 +44,7 @@ subroutine subsurfaceconduction_mars(T,Tsurf,dtsec,Qn,Qnp1,m,Fsurf,init,Tco2fros
      write(*,*) 'Subsurface model parameters'
      write(*,*) '   nz=',nz,' zmax=',zmax,' zfac=',zfac
      write(*,*) '   Thermal inertia=',thIn,' rho*c=',rhocv(1)
-     write(*,*) '   Diurnal and seasonal skin depths=',delta,delta*sqrt(solsy)
+     write(*,*) '   (Scaled) diurnal and seasonal skin depths=',delta,delta*sqrt(solsy)
      write(*,*) '   Geothermal flux=',Fgeotherm
 
      call conductionT2_init(nz,z,dtsec,ti,rhocv,Fgeotherm)

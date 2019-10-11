@@ -69,9 +69,7 @@ PROGRAM cratersQ_mars
   h2olast_sols=-9; meltfirst_sols=-9.; del=-9.
   
   dt=0.02
-  !tmax = 2*solsy+1.
   tmax = 6.*solsy
-  !latitude = -41.6
   latitude = -30.
 
   ! set some constants
@@ -107,9 +105,9 @@ PROGRAM cratersQ_mars
   call readhorizons(2,NSx-1,2,NSy-1)
   ! only use skyviews with IR contribution
   do concurrent(i=2:NSx-1, j=2:NSy-1)
-     skyview(i,j) = getoneskysize_v2(i,j)/(2*pi)
+     !skyview(i,j) = getoneskysize_v2(i,j)/(2*pi)
      !gterm(i,j) = getoneGterm(i,j,surfaceSlope(i,j),azFac(i,j))
-     !skyview(i,j) = 1.-getoneGterm(i,j,surfaceSlope(i,j),azFac(i,j))
+     skyview(i,j) = 1.-getoneGterm(i,j,surfaceSlope(i,j),azFac(i,j))
   end do
   print *,'max/min of skyview:',maxval(skyview(2:NSx-1,2:NSy-1)), &
        & minval(skyview(2:NSx-1,2:NSy-1))
@@ -289,4 +287,3 @@ PROGRAM cratersQ_mars
   endif
   
 END PROGRAM cratersQ_mars
-
