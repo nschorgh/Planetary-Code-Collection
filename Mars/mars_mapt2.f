@@ -17,14 +17,13 @@ C***********************************************************************
       real*8 junk, Tb, pfrost, rhoc, psv, patm
       external psv
 
-C-------set input parameters
+C-----set input parameters
       dt=0.01
       nz=80; zfac=1.05;
       fracIR=0.04; fracDust=0.02
       !Fgeotherm=0.028
       Fgeotherm=0.
       icefrac = 0.4
-      !icefrac = 0.453   ! Paige 
       slp=0.; azFac=0.
       patm = 600.
 
@@ -46,12 +45,14 @@ C-------set input parameters
       open(unit=38,file='seasonrho4',status='unknown')
       open(unit=39,file='seasonrho3',status='unknown')
 
-      do 
-!         read(20,*,end=80) lon,latitude,albedo,thIn,Tfrost,zdepth
-         read(20,*,end=80) 
-     &        lon,latitude,albedo,thIn,Tfrost,slp,azFac,zdepth
+      do
+c        read output of mars_mapi
+         read(20,*,end=80) lon,latitude,albedo,thIn,Tfrost,zdepth
+c        read output of mars_mapiqh2v
+!         read(20,*,end=80) 
+!     &        lon,latitude,albedo,thIn,Tfrost,slp,azFac,zdepth
          print *,lon,latitude,albedo,thIn,Tfrost,zdepth
-         if (albedo==-9999..or.thIn==-9999.) cycle
+         if (albedo==-9999. .or. thIn==-9999.) cycle
          slp=slp*d2r; azFac=azFac*d2r
          rhoc = 800.*(150 + 100.*sqrt(34.2+0.714*thIn)) ! empirical relation
 !        rhoc = 1004640.

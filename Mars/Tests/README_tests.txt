@@ -1,7 +1,7 @@
 Examples for validation:
 ========================
 
-1. Basic thermal model for mars
+1. Basic thermal model for Mars
 
 make mars_thermal
 
