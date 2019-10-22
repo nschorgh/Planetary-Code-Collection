@@ -1,5 +1,8 @@
 ChangeLog
 
+21 Oct 2019: Added Mars/Tests/
+
+12 Oct 2019: Release v1.1.6  doi:10.5281/zenodo.3483924
 
 23 Sep 2019: added C version of conductionQ and its dependencies
 
@@ -13,11 +16,11 @@ Aug 2019: fixed a bug in fieldofview_subs.f90 and redid test case
 
 28 Jun 2019: added two more variants of cratersQ_mars
 
-17 May 2019: Topo3D/  switched from storing subtended angles to viewfactors, which saves a factor of cos(v) later and ultimately provides a speedup by a factor of several.
+17 May 2019: Topo3D/  switched from storing subtended angles to storing viewfactors, which saves a factor of cos(v) later and ultimately provides a speedup by a factor of several.
 
 May 2019: Updated parts of Topo3D/Test/ and the agreement with the analytical solution improved
 
-8 May 2019: Release v1.1.5  do:10.5281/zenodo.2678125
+8 May 2019: Release v1.1.5  doi:10.5281/zenodo.2678125
 
 Apr 2019: work in Topo3D/ directory:
 readhorizons can now read cropped domains; lots of renaming in the Topo3D/ directory to enhance usability; readdem has moved from topos.f90 to crater_common.f90, because input path is now defined in filemanager.
