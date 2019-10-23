@@ -1,6 +1,6 @@
       subroutine jsub(zdepth, latitude, albedo0, thIn, pfrost, nz,
      &     rhoc, fracIR, fracDust, Fgeotherm, dt, zfac, icefrac, 
-     &     surfaceSlope, azFac, mode, avdrho, Tb, patm)
+     &     mode, avdrho, Tb, patm)
 C***********************************************************************
 C  jsub: runs thermal model for Mars and returns difference in mean 
 C        annual vapor density between surface and ice at depth zdepth
@@ -15,7 +15,7 @@ C
 C  mode = 0  ends after fixed amount of time and then outputs all data
 C  mode = 1  ends when certain accuracy is reached and outputs no data
 C
-C  latitude, surfaceSlope, and azFac  must be in RADIANS
+C  latitude must be in RADIANS
 C  thermal emission from slope is implemented by changing emissivity
 C  variable icefrac can also have meaning of porosity
 C***********************************************************************
@@ -34,7 +34,7 @@ C***********************************************************************
       integer nz, mode
       real*8 zdepth, latitude, albedo0, thIn, pfrost, rhoc
       real*8 fracIR, fracDust, Fgeotherm, dt, zfac, icefrac
-      real*8 surfaceSlope, azFac, avdrho, Tb, patm
+      real*8 avdrho, Tb, patm
 
       integer nsteps, n, i, nm, din
       integer julday, iyr, imm, iday
@@ -47,8 +47,8 @@ C***********************************************************************
       real*8 Tpeak(NMAX), Tlow(NMAX), Tco2frost
       real*8 rhosatav(NMAX), rhoavs, Tbold, marsLsold, oldtime
       real*8 dirho(NMAX), dirholowz, dirholowLs(NMAX)
-      real*8 flux, psv, tfrostco2
-      external julday, flux, psv, tfrostco2
+      real*8 flux_mars77, psv, tfrostco2
+      external julday, flux_mars77, psv, tfrostco2
 
       if (mode==0) then  ! full mode
          tmax = 7020.
@@ -59,8 +59,8 @@ C***********************************************************************
       endif
 
       iyr=1996; imm=10; iday=5
-      nsteps=int(tmax/dt)       ! calculate total number of timesteps
-      emiss0 = 1.*cos(surfaceSlope/2.)**2   ! emissivity
+      nsteps = int(tmax/dt)      ! calculate total number of timesteps
+      emiss0 = 1.   ! emissivity
       zmax=5.*26.*thIn/rhoc*sqrt(marsDay/pi)
       !print *,'skindepth,diurnal=',thIn/rhoc*sqrt(marsDay/pi)
       !print *,'skindepth,annual=',thIn/rhoc*sqrt(solsperyear*marsDay/pi)
@@ -86,7 +86,7 @@ C     All time is referenced to dt0_j2000
       dt0_j2000 = jd + dcor/earthDay - 2451545.d0 
       !call marsorbit(dt0_j2000,0.d0,marsLs,marsDec,marsR)
 
-      albedo=albedo0
+      albedo = albedo0
       emiss = emiss0
       do i=1,nz
          T(i) = Tmean2
@@ -117,43 +117,46 @@ C     All time is referenced to dt0_j2000
       tdays = time*(marsDay/earthDay) ! parenthesis may improve roundoff
       call marsorbit(dt0_j2000,tdays,marsLs,marsDec,marsR)
       HA=2.*pi*time             ! hour angle
-      Qn=flux(marsR,marsDec,latitude,HA,albedo,
-     &     fracir,fracdust,surfaceSlope,azFac)
+!      Qn=flux(marsR,marsDec,latitude,HA,albedo,
+!     &     fracir,fracdust,surfaceSlope,azFac)
+      Qn = flux_mars77(marsR,marsDec,latitude,HA,albedo,fracir,fracdust)
 C-----loop over time steps 
       do n=0,nsteps-1
-         time =(n+1)*dt         !   time at n+1 
+         time = (n+1)*dt         !   time at n+1 
          tdays = time*(marsDay/earthDay) ! parenthesis may improve roundoff
          call marsorbit(dt0_j2000,tdays,marsLs,marsDec,marsR) 
-         HA=2.*pi*mod(time,1.d0)  ! hour angle
-         Qnp1=flux(marsR,marsDec,latitude,HA,albedo,
-     &        fracir,fracdust,surfaceSlope,azFac)
+         HA = 2.*pi*mod(time,1.d0) ! hour angle
+!         Qnp1=flux(marsR,marsDec,latitude,HA,albedo,
+!     &        fracir,fracdust,surfaceSlope,azFac)
+         Qnp1 = flux_mars77(marsR,marsDec,latitude,HA,albedo,
+     &        fracir,fracdust)
 
-         Tsurfold=Tsurf
-         Fsurfold=Fsurf
+         Tsurfold = Tsurf
+         Fsurfold = Fsurf
          do i=1,nz; Told(i)=T(i); enddo
-         if (Tsurf>Tco2frost.or.m<=0.) then
+         if (Tsurf>Tco2frost .or. m<=0.) then
             call conductionQ(nz,z,dt*marsDay,Qn,Qnp1,T,ti,rhocv,emiss,
      &           Tsurf,Fgeotherm,Fsurf)
          endif
-         if (Tsurf<Tco2frost.or.m>0.) then ! CO2 condensation
+         if (Tsurf<Tco2frost .or. m>0.) then ! CO2 condensation
             do i=1,nz; T(i)=Told(i); enddo
             call conductionT(nz,z,dt*marsDay,T,Tsurfold,Tco2frost,ti,
      &              rhocv,Fgeotherm,Fsurf) 
-            Tsurf=Tco2frost
+            Tsurf = Tco2frost
             dE = (- Qn - Qnp1 + Fsurfold + Fsurf +
      &           emiss*sigSB*(Tsurfold**4+Tsurf**4))/2.
             m = m + dt*marsDay*dE/Lco2frost
          endif
          if (Tsurf>Tco2frost.or.m<=0.) then
-            albedo=albedo0
-            emiss =emiss0
+            albedo = albedo0
+            emiss = emiss0
          else
-            albedo=co2albedo
-            emiss =co2emiss*cos(surfaceSlope/2.)**2
+            albedo = co2albedo
+            emiss = co2emiss
          endif
          Qn=Qnp1
 
-         if (time>=tmax-solsperyear.and.mode==0) then
+         if (time>=tmax-solsperyear .and. mode==0) then
             do i=1,nz
                if (T(i)>Tpeak(i)) Tpeak(i)=T(i)
                if (T(i)<Tlow(i)) Tlow(i)=T(i)
@@ -164,18 +167,18 @@ C-----loop over time steps
             nm=nm+1
          endif
 
-         if (time>=tmax-solsperyear-2.and.mode==0) then
+         if (time>=tmax-solsperyear-2 .and. mode==0) then
             if (mod(time,1.d0)-oldtime<0.) then
                if (din==100) then  ! 100 steps in a day
-                  dirholowz=1.e32
+                  dirholowz = 1.e32
                   do i=1,nz
-                     dirho(i)=dirho(i)/100.
+                     dirho(i) = dirho(i)/100.
                      if (dirho(i)<dirholowz) dirholowz=dirho(i)
                      if (dirho(i)<dirholowLs(i)) dirholowLs(i)=dirho(i)
                   enddo
                   !write(38,'(f7.3,1x,g9.3)') marsLs*180./pi,dirholowz
                endif
-               oldtime=mod(time,1.d0)
+               oldtime = mod(time,1.d0)
                do i=1,nz
                   dirho(i)=0.
                   din=0
@@ -189,12 +192,12 @@ C-----loop over time steps
 
          if (mode==1) then
             if (marsLs<marsLsold) then
-               Tmean2=Tmean2/nm
+               Tmean2 = Tmean2/nm
                if (abs(Tmean2-Tbold)<0.05) exit
-               Tbold=Tmean2
+               Tbold = Tmean2
                Tmean2=0.; nm=0
             else
-               Tmean2=Tmean2+T(nz)
+               Tmean2 = Tmean2+T(nz)
                nm=nm+1
             endif
          endif
@@ -203,16 +206,16 @@ C-----loop over time steps
       enddo  ! end of time loop
 
       if (mode==0) then
-         rhoavs=rhoavs/nm
+         rhoavs = rhoavs/nm
          do i=1,nz
-            rhosatav(i)=rhosatav(i)/nm
+            rhosatav(i) = rhosatav(i)/nm
          enddo
          !if (avrho1pre>=0.) rhoavs=avrho1pre    ! new 2011-09-19
          Tmean1 = Tmean1/nm
          !write(31,'(999(f6.2,1x))') (Tpeak(i),i=1,nz)
          !write(32,'(999(f6.2,1x))') (Tlow(i),i=1,nz)
          !write(35,'(999(g10.4,1x))') (rhosatav(i),i=1,nz)
-         if (zdepth<=0.or.zdepth>=z(nz)) then
+         if (zdepth<=0 .or. zdepth>=z(nz)) then
             avdrho = rhosatav(nz)-rhoavs ! no ice
          else
             do i=1,nz

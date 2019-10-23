@@ -1,5 +1,8 @@
 ChangeLog
 
+22 Oct 2019: flux -> flux_mars77  in jsub, mars_mapi, mars_mapt2, and fast_subs_mars
+Functions flux and flux_mars77 do not return the exact same results, because in flux_mars77 the atmospheric short-wavelength scattered irradiance is multiplied with (1-albedo).
+
 21 Oct 2019: Added Mars/Tests/
 
 12 Oct 2019: Release v1.1.6  doi:10.5281/zenodo.3483924

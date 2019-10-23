@@ -18,7 +18,7 @@ C***********************************************************************
       integer nz, j
       real*8 dt, zmax, zfac, zdepth, icefrac, zacc
       real*8 latitude, thIn, albedo0, fracIR, fracDust, delta
-      real*8 Fgeotherm, rhoc, lon, Tfrost, pfrost, slp, azFac
+      real*8 Fgeotherm, rhoc, lon, Tfrost, pfrost
       real*8 avdrho, junk, Tb, p0 !, htopo
       real*8 psv, rtbis, frostpoint
       external psv, rtbis, frostpoint
@@ -33,8 +33,7 @@ C-----set input parameters
       icefrac = 0.4  ! porosity for layertype 1
       !icefrac = 0.97  ! layertype 2
 
-      zacc=0.1   ! desired min. relative accuracy of ice table depth
-      slp=0.; azFac=0.
+      zacc = 0.1  ! desired min. relative accuracy of ice table depth
       p0 = 600.
 
       print *,'RUNNING MARS_MAP-ICE TABLE'
@@ -44,7 +43,6 @@ C-----set input parameters
       write(*,*) 'ice fraction=',icefrac
       write(*,*) 'Fgeotherm=',Fgeotherm
       write(*,*) 'Minimum ice depth accuracy dz/z=',zacc
-      write(*,*) 'Slope=',slp/d2r,' azimuth=',azFac/d2r
       write(*,*) 'Atmospheric pressure=',p0
 
       open(unit=20,file='mapgrid.dat',status='old') ! the only input
@@ -71,23 +69,23 @@ c      open(unit=35,file='rhosatav',status='unknown')
 C        zdepth input is ignored
 C        Empirical relation from Mellon & Jakosky:
          rhoc = 800.*(150.+100.*sqrt(34.2+0.714*thIn))
-         delta=thIn/rhoc*sqrt(marsDay/pi) ! diurnal skin depth
-         zmax=5.*26.*delta 
+         delta = thIn/rhoc*sqrt(marsDay/pi) ! diurnal skin depth
+         zmax = 5.*26.*delta 
          Tb = -1.e32
 
          call jsub(zmax, latitude*d2r, albedo0, thIn, pfrost,
      &        nz/2, rhoc, fracIR, fracDust, Fgeotherm, 4.*dt, zfac, 
-     &        icefrac, slp, azFac, 1, junk, Tb, p0)
+     &        icefrac, 1, junk, Tb, p0)
          call jsub(zmax, latitude*d2r, albedo0, thIn, pfrost,
      &        nz,   rhoc, fracIR, fracDust, Fgeotherm,    dt, zfac,
-     &        icefrac, slp, azFac, 0, avdrho, Tb, p0)
+     &        icefrac, 0, avdrho, Tb, p0)
          print *, zmax,avdrho
          if (avdrho>=0.) then 
             zdepth=-9999.
          else  
-            zdepth=rtbis(delta/2.,zmax,zacc,avdrho,
+            zdepth = rtbis(delta/2.,zmax,zacc,avdrho,
      &           latitude*d2r,albedo0,thIn,pfrost,nz,rhoc,fracIR,
-     &           fracDust,Fgeotherm,dt,zfac,icefrac,slp,azFac,p0)
+     &           fracDust,Fgeotherm,dt,zfac,icefrac,p0)
             print *,'Equilibrium ice table depth= ',zdepth
          endif
          write(33,'(f7.2,1x,f7.3,2x,f5.3,2x,f5.1,1x,f7.1,2x,f10.4)') 
@@ -106,7 +104,7 @@ C        Empirical relation from Mellon & Jakosky:
 
       FUNCTION rtbis(x1,x2,xacc,fmid,
      &     latitude,albedo0,thIn,pfrost,nz,rhoc,fracIR,fracDust,
-     &     Fgeotherm,dt,zfac,icefrac,surfaceSlope,azFac,patm)
+     &     Fgeotherm,dt,zfac,icefrac,patm)
 C     finds root with bisection method a la Numerical Recipes (C)
       implicit none
       INTEGER JMAX
@@ -115,22 +113,21 @@ C     finds root with bisection method a la Numerical Recipes (C)
       INTEGER j
       REAL*8 dx,f,fmid,xmid,Tb,rhoc
       real*8 latitude,albedo0,thIn,pfrost,fracIR,fracDust,Fgeotherm,dt
-      real*8 zfac,icefrac,surfaceSlope,azFac,xlower,xupper,fupper,flower
+      real*8 zfac,icefrac,xlower,xupper,fupper,flower
       real*8 patm
       integer nz
 !      call jsub(x2,
 !     &     latitude,albedo0,thIn,pfrost,nz,fracIR,fracDust,
-!     &     Fgeotherm,dt,zfac,icefrac,surfaceSlope,azFac,
-!     &     0,fmid,Tb,patm)
+!     &     Fgeotherm,dt,zfac,icefrac,0,fmid,Tb,patm)
 !      print *,x2,fmid
 
       Tb = -1.e32
       call jsub(x1,
      &     latitude,albedo0,thIn,pfrost,nz/2,rhoc,fracIR,fracDust,
-     &     Fgeotherm,4.*dt,zfac,icefrac,surfaceSlope,azFac,1,f,Tb,patm)
+     &     Fgeotherm,4.*dt,zfac,icefrac,1,f,Tb,patm)
       call jsub(x1,
      &     latitude,albedo0,thIn,pfrost,nz,rhoc,fracIR,fracDust,
-     &     Fgeotherm,dt,zfac,icefrac,surfaceSlope,azFac,0,f,Tb,patm)
+     &     Fgeotherm,dt,zfac,icefrac,0,f,Tb,patm)
       print *,x1,f
       if(f*fmid.ge.0.) stop 'root must be bracketed in rtbis'
       if(f.lt.0.)then
@@ -148,12 +145,10 @@ C     finds root with bisection method a la Numerical Recipes (C)
         Tb = -1.e32
         call jsub(xmid,
      &       latitude,albedo0,thIn,pfrost,nz/2,rhoc,fracIR,fracDust,
-     &       Fgeotherm,4.*dt,zfac,icefrac,surfaceSlope,azFac,
-     &       1,fmid,Tb,patm)
+     &       Fgeotherm,4.*dt,zfac,icefrac,1,fmid,Tb,patm)
         call jsub(xmid,
      &       latitude,albedo0,thIn,pfrost,nz,rhoc,fracIR,fracDust,
-     &       Fgeotherm,dt,zfac,icefrac,surfaceSlope,azFac,
-     &       0,fmid,Tb,patm)
+     &       Fgeotherm,dt,zfac,icefrac,0,fmid,Tb,patm)
         print *,xmid,fmid
         if(fmid.le.0.) then
            rtbis=xmid
