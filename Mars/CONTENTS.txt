@@ -19,7 +19,7 @@ mars_thermal1d.f: (main program)
 flux_mars.f90:
 	Incoming flux with Mars atmosphere and distant horizon
 
-soilthprop.f:
+soilthprop.f90:
 	parametrization of soil thermal properties for Mars
 
 input.par:

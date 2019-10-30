@@ -24,26 +24,26 @@ fieldofviews: filemanager.o topo3d_modules.o fieldofview_subs.o \
 cratersQ_equilbr: filemanager.o topo3d_modules.o topo3d_subs.o \
 	topo3d_common.o cratersQ_equilbr.o makefile
 	make -C $(SR) common
-	$(CC) $(LFLAGS) cratersQ_equilbr.o topo3d_subs.o topo3d_common.o \
-	$(SR)flux_noatm.o -o $@
+	$(CC) $(LFLAGS) cratersQ_equilbr.o topo3d_subs.o \
+	topo3d_common.o $(SR)flux_noatm.o -o $@
 
-cratersQ_moon: filemanager.o topo3d_modules.o topo3d_subs.o cratersQ_moon.o \
-	topo3d_common.o makefile
+cratersQ_moon: filemanager.o topo3d_modules.o topo3d_subs.o \
+	cratersQ_moon.o topo3d_common.o makefile
 	make -C $(SR) common
-	$(CC) $(LFLAGS) cratersQ_moon.o topo3d_common.o $(SR)generalorbit.o \
-	topo3d_subs.o $(SR)grids.o $(SR)conductionQ.o $(SR)flux_noatm.o \
-	$(SR)tridag.o -o $@
+	$(CC) $(LFLAGS) cratersQ_moon.o topo3d_common.o \
+	$(SR)generalorbit.o topo3d_subs.o $(SR)grids.o $(SR)conductionQ.o \
+	$(SR)flux_noatm.o $(SR)tridag.o -o $@
 
-insol3d_mars: filemanager.o topo3d_modules.o topo3d_subs.o topo3d_common.o \
-	insol3d_mars.o makefile
+insol3d_mars: filemanager.o topo3d_modules.o topo3d_subs.o \
+	topo3d_common.o insol3d_mars.o makefile
 	make -C $(SR) common
 	make -C $(SRM) common-mars
 	$(CC) $(LFLAGS) insol3d_mars.o topo3d_common.o topo3d_subs.o \
 	$(SR)flux_noatm.o $(SR)julday.o $(SRM)marsorbit.o
 
-cratersQ_mars: filemanager.o topo3d_modules.o topo3d_subs.o conductionT2.o \
-	conductionQ2.o cratersQ_mars.o topo3d_common.o topo3d_subs_mars.o \
-	makefile
+cratersQ_mars: filemanager.o topo3d_modules.o topo3d_subs.o \
+	conductionT2.o conductionQ2.o cratersQ_mars.o topo3d_common.o \
+	topo3d_subs_mars.o makefile
 	make -C $(SR) common
 	make -C $(SRM) common-mars
 	$(CC) $(LFLAGS) cratersQ_mars.o topo3d_common.o topo3d_subs.o \
@@ -52,24 +52,24 @@ cratersQ_mars: filemanager.o topo3d_modules.o topo3d_subs.o conductionT2.o \
 	topo3d_subs_mars.o -o $@
 
 cratersQ_mars_parallel: filemanager.o topo3d_modules.o topo3d_subs.o \
-	conductionT2.o conductionQ2.o cratersQ_mars_parallel.o topo3d_common.o \
-	topo3d_subs_mars.o makefile
+	conductionT2.o conductionQ2.o cratersQ_mars_parallel.o \
+	topo3d_common.o topo3d_subs_mars.o makefile
 	make -C $(SR) common
 	make -C $(SRM) common-mars
-	$(CC) $(LFLAGS) cratersQ_mars_parallel.o topo3d_common.o topo3d_subs.o \
-	$(SRM)flux_mars.o $(SR)grids.o conductionQ2.o $(SR)tridag.o \
-	conductionT2.o $(SR)julday.o $(SRM)marsorbit.o $(SR)psv.o \
-	topo3d_subs_mars.o 
+	$(CC) $(LFLAGS) cratersQ_mars_parallel.o topo3d_common.o \
+	topo3d_subs.o $(SRM)flux_mars.o $(SR)grids.o conductionQ2.o \
+	$(SR)tridag.o conductionT2.o $(SR)julday.o $(SRM)marsorbit.o \
+	$(SR)psv.o topo3d_subs_mars.o 
 
 cratersQ_mars_full: filemanager.o topo3d_modules.o topo3d_subs.o \
-	conductionT2.o conductionQ2.o cratersQ_mars_full.o topo3d_common.o \
-	topo3d_subs_mars.o makefile
+	conductionT2.o conductionQ2.o cratersQ_mars_full.o \
+	topo3d_common.o topo3d_subs_mars.o makefile
 	make -C $(SR) common
 	make -C $(SRM) common-mars
-	$(CC) $(LFLAGS) cratersQ_mars_full.o topo3d_common.o topo3d_subs.o \
-	$(SRM)flux_mars.o $(SR)grids.o conductionQ2.o $(SR)tridag.o \
-	conductionT2.o $(SR)julday.o $(SRM)marsorbit.o $(SR)psv.o \
-	topo3d_subs_mars.o 
+	$(CC) $(LFLAGS) cratersQ_mars_full.o topo3d_common.o \
+	topo3d_subs.o $(SRM)flux_mars.o $(SR)grids.o conductionQ2.o \
+	$(SR)tridag.o conductionT2.o $(SR)julday.o $(SRM)marsorbit.o \
+	$(SR)psv.o topo3d_subs_mars.o 
 
 fieldproperties: filemanager.o topo3d_modules.o topo3d_common.o \
 	topo3d_subs.o fieldproperties.o makefile

@@ -44,26 +44,26 @@ mars_mapi: mars_mapi.o marsorbit.o jsub.o flux_mars.o soilthprop.o makefile
 mars_mapiqh2v: mars_mapiqh2v.o jsubv.o marsorbit.o flux.o soilthprop.o \
 	makefile
 	make -C $(SR) common
-	$(CC) $(LFLAGS) mars_mapiqh2v.o jsubv.o $(SR)julday.o \
-	marsorbit.o flux.o $(SR)conductionQ.o $(SR)tridag.o \
-	$(SR)conductionT.o $(SR)grids.o $(SR)psv.o soilthprop.o
+	$(CC) $(LFLAGS) mars_mapiqh2v.o jsubv.o $(SR)julday.o marsorbit.o \
+	flux.o $(SR)conductionQ.o $(SR)tridag.o $(SR)conductionT.o \
+	$(SR)grids.o $(SR)psv.o soilthprop.o
 
 stabgrow_fast: fast_modules.o fast_subs_exper.o stabgrow_fast.o \
 	fast_subs_univ.o soilthprop.o makefile        
 	make -C $(SR) common
-	$(CC) $(LFLAGS) stabgrow_fast.o fast_subs_univ.o \
-	fast_subs_exper.o $(SR)tridag.o $(SR)conductionT.o \
-	$(SR)grids.o soilthprop.o $(SR)psv.o $(SR)derivs.o -o $@
+	$(CC) $(LFLAGS) stabgrow_fast.o fast_subs_univ.o fast_subs_exper.o \
+	$(SR)tridag.o $(SR)conductionT.o $(SR)grids.o soilthprop.o \
+	$(SR)psv.o $(SR)derivs.o -o $@
 
-exper_fast: fast_modules.o exper_fast.o fast_subs_univ.o \
-	fast_subs_exper.o soilthprop.o makefile
+exper_fast: fast_modules.o exper_fast.o fast_subs_univ.o fast_subs_exper.o \
+	soilthprop.o makefile
 	make -C $(SR) common
 	$(CC) $(LFLAGS) exper_fast.o $(SR)tridag.o $(SR)conductionT.o \
 	$(SR)grids.o soilthprop.o $(SR)psv.o $(SR)derivs.o \
 	fast_subs_univ.o fast_subs_exper.o -o $@
 
-mars_fast: fast_modules.o mars_fast.o fast_subs_univ.o \
-	fast_subs_mars.o flux_mars.o soilthprop.o makefile
+mars_fast: fast_modules.o mars_fast.o fast_subs_univ.o fast_subs_mars.o \
+	flux_mars.o soilthprop.o makefile
 	make -C $(SR) common
 	$(CC) $(LFLAGS) mars_fast.o $(SR)tridag.o $(SR)conductionT.o \
 	$(SR)grids.o soilthprop.o $(SR)psv.o $(SR)derivs.o \
@@ -77,13 +77,10 @@ insol_driver: insol_driver.o $(SR)generalorbit.o $(SR)flux_noatm.o \
 	$(SR)flux_noatm.o
 
 
-common-mars: marsorbit.o vapordiffusioni.o flux.o flux_mars.o \
-	soilthprop.o 
+common-mars: marsorbit.o vapordiffusioni.o flux.o flux_mars.o soilthprop.o 
+
 
 %.o:	%.f makefile
-	$(CC) $(CFLAGS) -c $<
-
-%.o:	%.for makefile
 	$(CC) $(CFLAGS) -c $<
 
 %.o:	%.f90 makefile

@@ -25,7 +25,7 @@ Mars/mars_thermal1d.f: (main program)
 Mars/flux.f  
 Mars/flux_mars.f90  
 Mars/marsorbit.f90  
-Mars/soilthprop.f  
+Mars/soilthprop.f90  
 Common/conductionQ.f90  
 Common/conductionT.f90  
 Common/grids.f  
@@ -56,7 +56,7 @@ Mars/jsub.f
 Mars/jsubv.f90  
 Mars/marsorbit.f90  
 Mars/flux_mars.f90  
-Mars/soilthprop.f  
+Mars/soilthprop.f90  
 Common/conductionQ.f90  
 Common/conductionT.f90  
 Common/tridag.for  
@@ -78,7 +78,7 @@ Mars/fast_modules.f90
 Mars/fast_subs_univ.f90  
 Mars/fast_subs_exper.f90  
 Mars/fast_subs_mars.f90  
-Mars/soilthprop.f  
+Mars/soilthprop.f90  
 Mars/insol_driver.f90 (main program)  
 Common/conductionQ.f90  
 Common/conductionT.f90  

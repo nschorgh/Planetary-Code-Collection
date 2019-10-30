@@ -1,7 +1,7 @@
-      program mars_thermal1d
+      PROGRAM mars_thermal1d
 C***********************************************************************
 C   mars_thermal1d:  program to calculate the diffusion of temperature 
-C   into the ground
+C                    into the ground
 C   Eqn: T_t = (D*T_z)_z   where D=k/(rho*c)
 C   BC (z=0): Q(t) + k*T_z = em*sig*T^4 + L*dm/dt
 C   BC (z=L): geothermal flux
@@ -31,12 +31,12 @@ C***********************************************************************
       real*8 jd, temp1, dcor, dt0_j2000, flux
       real*8 ti(NMAX), Tsurf, rhocv(NMAX), z(NMAX), albedo0, Told(NMAX)
       real*8 co2albedo, Fgeotherm, Tsurfold, Fsurf, Fsurfold, m, dE
-      real*8 co2emiss, Tmean, Tmean2, geof, ps, pb, psv, nul
+      real*8 co2emiss, Tmean, Tmean2, geof, ps, pb, psv, zero
       integer julday, iyr, imm, iday
       character*100 dum1
       character*40 fileout1, fileout2   ! character array for output filenames
       external julday, flux, psv
-      parameter (nul=0.)
+      parameter (zero=0.)
 
 C-------read input       
       open(unit=20,file='input.par',status='old')
@@ -68,7 +68,7 @@ C     set some constants
       albedo = albedo0
       dtsec = dt*marsDay
 
-      jd=dble(julday(imm,iday,iyr))  !  JD for noon UTC on iyear/imm/iday
+      jd = dble(julday(imm,iday,iyr))  !  JD for noon UTC on iyear/imm/iday
       temp1 = (jd-2451545.d0)/36525.d0
       dcor = (64.184d0 + 95.*temp1 + 35.*temp1**2) ! correction in sec
 C     All time is referenced to dt0_j2000
@@ -97,15 +97,15 @@ C     All time is referenced to dt0_j2000
 C-----Initialize
       Tmean = 210.15     ! black-body temperature of planet
       geof = cos(latitude*d2r)/pi
-      Tmean=(589.*(1.-albedo0)*geof/sigSB)**0.25  ! better estimate
+      Tmean = (589.*(1.-albedo0)*geof/sigSB)**0.25  ! better estimate
       do i=1,nz
          T(i) = Tmean
          ! z(i) = (i-0.5)*dz
       enddo
       Tsurf = Tmean
-      latitude=latitude*d2r
-      surfaceSlope=surfaceSlope*d2r
-      azFac=azFac*d2r
+      latitude = latitude*d2r
+      surfaceSlope = surfaceSlope*d2r
+      azFac = azFac*d2r
       Tmean=0.; Tmean2=0.; nm=0     ! recycle variable Tmean
       ps=0.; pb=0.
 
@@ -119,8 +119,10 @@ C-----Initialize
          exit
       enddo
       if (z(1)<1.e-5) print *,'WARNING: first grid point is too shallow'
-!      call smartgrid(nz,z,0.05d0,thermalInertia,rhoc,0.5d0,ti,rhocv,1,nul)
-!      call smartgrid_allice(nz,z,0.07d0,thermalInertia,rhoc,ti,rhocv)
+!      call smartgrid(nz,z,0.05d0,thermalInertia,rhoc,0.5d0,ti,rhocv,
+!     &     1,zero)
+!      call smartgrid(nz,z,0.07d0,thermalInertia,rhoc,zero,ti,rhocv,
+!     &     3,zero)
       open(unit=30,file='z',status='unknown');
       write(30,*) (z(i),i=1,nz)
       close(30)
@@ -139,32 +141,32 @@ C-----Initialize
       m=0.; Fsurf=0.
       open(unit=21,file=fileout1,status='unknown') ! surface temperature
       open(unit=22,file=fileout2,status='unknown') ! temperature profile
-      HA=2.*pi*time   ! hour angle
+      HA = 2.*pi*time   ! hour angle
 C     net flux: solar insolation + IR
-      Qn=flux(marsR,marsDec,latitude,HA,albedo,
+      Qn = flux(marsR,marsDec,latitude,HA,albedo,
      &     fracir,fracdust,surfaceSlope,azFac)
 !      Qn=flux_mars77(marsR,marsDec,latitude,HA,albedo,fracir,fracdust)
 
 C-----loop over time steps 
       do n=0,nsteps-1
-         time =(n+1)*dt   !   time at n+1 
+         time = (n+1)*dt   !   time at n+1 
 C        Solar insolation and IR at future time step
          tdays = time*(marsDay/earthDay)  ! parenthesis may improve roundoff
          call marsorbit(dt0_j2000,tdays,marsLs,marsDec,marsR); 
-         HA=2.*pi*mod(time,1.d0)    ! hour angle
-         Qnp1=flux(marsR,marsDec,latitude,HA,albedo,
+         HA = 2.*pi*mod(time,1.d0)    ! hour angle
+         Qnp1 = flux(marsR,marsDec,latitude,HA,albedo,
      &        fracir,fracdust,surfaceSlope,azFac)
 !         Qnp1=flux_mars77(marsR,marsDec,latitude,HA,albedo,fracir,fracdust)
          Tsurfold=Tsurf
          Fsurfold=Fsurf
 
          do i=1,nz; Told(i)=T(i); enddo
-         if (Tsurf>Tco2frost.or.m<=0.) then   
+         if (Tsurf>Tco2frost .or. m<=0.) then   
             call conductionQ(nz,z,dtsec,Qn,Qnp1,T,ti,rhocv,emiss,
      &           Tsurf,Fgeotherm,Fsurf)
          endif
 
-         if (Tsurf<Tco2frost.or.m>0.) then   ! CO2 condensation
+         if (Tsurf<Tco2frost .or. m>0.) then   ! CO2 condensation
             do i=1,nz; T(i)=Told(i); enddo
             call conductionT(nz,z,dtsec,T,Tsurfold,Tco2frost,ti,
      &              rhocv,Fgeotherm,Fsurf) 
@@ -173,11 +175,11 @@ C        Solar insolation and IR at future time step
      &           emiss*sigSB*(Tsurfold**4+Tsurf**4))/2.
             m = m + dtsec*dE/Lco2frost;
          endif
-         if (Tsurf>Tco2frost.or.m<=0.) then
-            albedo=albedo0
+         if (Tsurf>Tco2frost .or. m<=0.) then
+            albedo = albedo0
             emiss = 1.*cos(surfaceSlope/2.)**2
          else
-            albedo=co2albedo
+            albedo = co2albedo
             emiss = co2emiss*cos(surfaceSlope/2.)**2
          endif
 
@@ -185,11 +187,11 @@ C        Solar insolation and IR at future time step
 
 c--------only output and diagnostics below this line
          if (time>=tmax-solsy) then
-            Tmean=Tmean+Tsurf
-            Tmean2=Tmean2+T(nz)
+            Tmean = Tmean+Tsurf
+            Tmean2 = Tmean2+T(nz)
             ps = ps + min(psv(Tsurf),0.12d0)/Tsurf
             pb = pb + psv(T(nz))/T(nz)
-            nm=nm+1
+            nm = nm+1
          endif
          if (time>=tmax-solsy.and.mod(n,10)==0) then
 !         if (mod(n,max(1,nsteps/100000))==0) then
@@ -199,12 +201,13 @@ c--------only output and diagnostics below this line
             write(22,'(f12.4,1000(1x,f6.2))') time,(T(i),i=1,nz)
          endif
 
-      enddo                     ! end the loop
+      enddo                     ! end the time loop
 
       close(21)
       close(22)
 
       print *,Tmean/nm,Tmean2/nm,ps/nm,pb/nm
-      end
+
+      END
  
 
