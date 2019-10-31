@@ -1,12 +1,12 @@
 module thermalmodelparam_mars
-  ! parameter for thermal model
+  ! parameters for thermal model
   ! they are only used in the subroutines below
   real(8), parameter :: dt = 0.02  ! in units of Mars solar days
   !real(8), parameter :: Fgeotherm = 0.
-  real(8), parameter :: Fgeotherm = 0.028  ! W/m^2
+  real(8), parameter :: Fgeotherm = 0.028  ! [W/m^2]
   real(8), parameter :: Lco2frost=6.0e5, co2albedo=0.60, co2emiss=1.
   real(8), parameter :: emiss0 = 1.  ! emissivity of dry surface
-  integer, parameter :: EQUILTIME = 15 ! (Mars years)
+  integer, parameter :: EQUILTIME = 15 ! [Mars years]
 end module thermalmodelparam_mars
 
 
@@ -50,7 +50,7 @@ subroutine icelayer_mars(bigstep,nz,NP,thIn,rhoc,z,porosity,pfrost, &
   do k=1,NP   ! big loop
 
      Diff = 4e-4*600./p0(k)
-     fracIR=0.04*p0(k)/600.; fracDust=0.02*p0(k)/600.
+     fracIR = 0.04*p0(k)/600.; fracDust = 0.02*p0(k)/600.
      B = Diff*bigstep*86400.*365.24/(porosity*icedensity)
 
      typeT = -9
@@ -182,7 +182,7 @@ subroutine ajsub_mars(typeT, latitude, albedo0, pfrost, nz, z, ti, rhocv, &
      ! not so good when Fgeotherm is on
   endif
   
-  albedo= albedo0
+  albedo = albedo0
   emiss = emiss0
   do i=1,nz
      if (T(i)<Tco2frost) T(i)=Tco2frost
@@ -206,7 +206,7 @@ subroutine ajsub_mars(typeT, latitude, albedo0, pfrost, nz, z, ti, rhocv, &
      time = (n+1)*dt         !   time at n+1 
      tdays = time*(marsDay/earthDay) ! parenthesis may improve roundoff
      call generalorbit(tdays,a,ecc,omega,eps,marsLs,marsDec,marsR)
-     HA=2.*pi*mod(time,1.d0)  ! hour angle
+     HA = 2.*pi*mod(time,1.d0)  ! hour angle
 !     Qnp1=flux(marsR,marsDec,latitude,HA,albedo,fracir,fracdust,0.d0,0.d0)
      Qnp1 = flux_mars77(marsR,marsDec,latitude,HA,albedo,fracir,fracdust)
      
@@ -288,7 +288,6 @@ subroutine ajsub_mars(typeT, latitude, albedo0, pfrost, nz, z, ti, rhocv, &
        & porefill(:), typeF, zdepthF, B, ypp(:), typeG, zdepthG)
 
 end subroutine ajsub_mars
-
 
 
 

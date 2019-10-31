@@ -32,7 +32,6 @@ Common/grids.f
 Common/julday.for  
 Common/psvco2.f  
 Common/tridag.for  
-Mars/input.par  
 *Documentation: User Guide Part 1*  
 
 
@@ -41,7 +40,6 @@ Mars/input.par
 Mars/exper_thermal1d.f: (main program)  
 Mars/vapordiffusioni.f  
 Mars/adsorption.f  
-Mars/exper.par  
 *Documentation: User Guide Part 2  
 Documentation: Schorghofer, N. & Aharonson, O. (2005) J. Geophys. Res. 110, E05003, Appendices*  
 Mars/Misc/  an animation for illustration  
@@ -64,8 +62,7 @@ Common/grids.f
 Common/julday.for  
 Common/psv.f  
 Common/psvco2.f  
-Mars/mapgrid.dat  
-*Documentation: Users Guide Section 3.1  
+*Documentation: User Guide Section 3.1  
 Documentation: Schorghofer, N. & Aharonson, O. (2005) J. Geophys. Res. 110, E05003*  
 
 
@@ -88,8 +85,6 @@ Common/generalorbit.f
 Common/psv.f  
 Common/psvco2.f  
 Common/derivs.f90  
-Mars/input_fast.par  
-Mars/lats.ph  
 *Documentation: Schorghofer, N. (2010) Icarus 208, 598-607*  
 
 
@@ -128,7 +123,6 @@ Common/psv.f
 Common/ran2.for  
 Common/subl_subs.f90  
 Common/tridag.for  
-Asteroids/lats.0  
 *Documentation: Schorghofer, N. (2016) Icarus 276, 88-95*  
 
 
@@ -176,8 +170,6 @@ Common/julday.f
 Common/tridag.for  
 Mars/flux_mars.f90  
 Mars/marsorbit.f90  
-Topo3D/site.par  
-Topo3D/topo40.xyz  
 *Documentation: User Guide Part 5*  
 Topo3D/Test/  
 

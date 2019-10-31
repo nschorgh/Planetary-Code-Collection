@@ -17,10 +17,10 @@ mars_thermal1d.f: (main program)
 	prototype example of how to call conductionQ/T with seasonal CO2 frost cover
 
 flux_mars.f90:
-	Incoming flux with Mars atmosphere and distant horizon
+	Insolation with poor man's Mars atmosphere and distant horizon
 
 soilthprop.f90:
-	parametrization of soil thermal properties for Mars
+	thermal properties of icy soil on Mars
 
 input.par:
 	Example input file for mars_thermal1d.f
@@ -29,7 +29,7 @@ input.par:
 
 exper_thermal1d.f: (main program)
 	1D diffusion of temperature and optionally also water vapor with prescribed 
-	surface temperature (for laboratory setting)
+	surface temperature for laboratory setting
 
 exper.par:
 	Example input file for exper_thermal1d.f
@@ -47,7 +47,7 @@ jsub.f:
 	net flux between ice table and surface, includes thermal model
 
 jsubv.f90:
-	vectorized version of jsub, includes emission from one surface to another
+	vectorized version of jsub, includes emission from one surface to another for planar slopes
 
 mars_mapi.f: (main program)
 	determines equilibrium ice table depth for a list of locations (such as the entire 

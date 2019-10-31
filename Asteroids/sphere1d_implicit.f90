@@ -2,63 +2,50 @@ PROGRAM sphere1d_implicit
 ! 1D spherically symmetric heat equation and ice retreat
 ! solved with semi-implicit method
   implicit none
-  integer, parameter :: nz=100
-  integer, parameter :: NB=58 ! max number of bodies
-  integer i, ierr, id, unit, narg
+  integer, parameter :: nz = 100    ! number of grid points
+  integer i, ierr
 
   real*8 semia, ecc, Q, time0
-  real*8, parameter :: So=1365
-  real*8, parameter :: A=0.05, emiss=0.96
-  character(2) :: nn
+  real*8, parameter :: So = 1365    ! solar constant [W/m^2]
+  real*8, parameter :: A = 0.05     ! albedo
+  real*8, parameter :: emiss = 0.96 ! infrared emissivity
   
-  logical :: init(NB) = .true.
-  real*8 z(nz), dr, kappa, Radius, dtsec, time(NB), oldtime(NB), Deltat
-  real*8 T(nz,NB), Tsurf(NB), Tsurfm1(NB), Teff
+  logical :: init = .true.
+  real*8 z(nz), dr, kappa, Radius, dtsec, time, oldtime, Deltat
+  real*8 T(nz), Tsurf, Tsurfm1, Teff
 
-  real*8 zT(NB)  ! depth of ice table
+  real*8 zT  ! depth of ice table
   real*8 Tatz, Elatent
   real*8, external :: interp1, flux2T
 
-  zT(:) = 0.
-  time(:) = 0.  ! earliest time in input file
+  zT = 0.
+  time = 0.  ! earliest time in input file
   
-  Radius = 500.  ! body radius
+  Radius = 500.  ! body radius [m]
   dr = Radius/nz
   do concurrent (i=1:nz)
      z(i) = i*dr
   end do
 
-  kappa = 0.25/(0.5*2600*500)  ! kappa=k/rhoc
+  kappa = 0.25/(0.5*2600*500)  ! thermal diffusivity kappa=k/rhoc [m^2/s]
 
-  narg = COMMAND_ARGUMENT_COUNT()
-  if (narg==0) then
-     nn='21'
-  else
-     call getarg(1,nn)
-  endif
-  print *,'processing extension ',nn
-  if (nn(2:2)==' ') then ! single digit input
-     nn(2:2)=nn(1:1)
-     nn(1:1)='0'
-  endif
-  
-  open(unit=29,file='info_sphere',action='write')
-  write(29,*) 'albedo=',A,'emissivity=',emiss
-  write(29,*) 'Radius=',Radius,'spatial resolution=',dr
-  write(29,*) 'thermal diffusivity=',kappa
-  write(29,*) 'initial ice depth=',zT(1)
-  close(29)
-  
-  !open(unit=20,file='/arsia/Orbits/OMBr10201_follow.out',action='read',iostat=ierr,status='old') ! 11 columns
-  !open(unit=20,file='/arsia/Orbits/OMBr10201_clean.out',action='read',iostat=ierr,status='old') ! 4 columns
-  open(unit=20,file='/arsia/Orbits/OMBr102'//nn//'_clean.out',action='read',iostat=ierr,status='old') ! 4 columns
+  write(*,*) 'albedo=',A,'emissivity=',emiss
+  write(*,*) 'Radius=',Radius,'spatial resolution=',dr
+  write(*,*) 'thermal diffusivity=',kappa
+  write(*,*) 'initial ice depth=',zT
+
+  ! example input file provided by Henry Hsieh
+  open(unit=20,file='orbit_A0000240.dat',action='read',iostat=ierr,status='old')
   if (ierr>0) stop 'input file not found'
 
   if (nz>1000) stop 'tridag is only set up for N<=1000'
+  open(unit=31,file='depths_sphere.dat',action='write')
 
+  read(20,*) ! skip headerline
+  
   do  ! time loop
-     !read(20,*,iostat=ierr) time0,semia,ecc,u,u,u,u,u,u,u,id
-     read(20,*,iostat=ierr) time0,semia,ecc,id
+     read(20,*,iostat=ierr) time0,semia,ecc
+     
      if (ierr<0) then
         print *,'reached end of file'
         exit
@@ -68,76 +55,66 @@ PROGRAM sphere1d_implicit
         exit
      endif
 
-     !if (id/=26) cycle  ! follow only one body
-     
-     oldtime(id) = time(id)
-     time(id) = time0 ! years
-     Deltat = time(id)-oldtime(id)  ! usually 300 yrs
+     oldtime = time
+     time = time0
+     Deltat = time0-oldtime  ! usually 1000 yrs
      !print *,Deltat
-     if (Deltat<0. .or. Deltat>1000.) error stop 'Deltat'
-     dtsec=Deltat*86400*365.24
-     
-     !if (time(id)<0.) cycle
-     if (id>NB .or. id<1) error stop 'particle id out of range'
+     if (Deltat<0. .or. Deltat>1001.) stop 'Deltat'
+     dtsec = Deltat*86400*365.24  ! yr -> sec
      
      !--orbital elements -> surface temperature
      Q = So/semia**2/sqrt(1-ecc**2) ! annual mean insolation
      !Q = Q*faintsun(1e8-time)
-     if (.not.init(id)) Tsurfm1(id) = Tsurf(id)
+     if (.not.init) Tsurfm1 = Tsurf
      Teff = flux2T(Q/4.,A,emiss)
 
      ! options for surface temperature
-     Tsurf(id) = Teff ! upper bound
+     Tsurf = Teff ! upper bound
      !call insolonly1(latitude,semia,omega,ecc,obliq,Q0mean,Qmean,Q4mean)
-     !print *,Tsurf(id),flux2T(Qmean,A,emiss),flux2T(Q4mean,A,emiss)
-     !Tsurf(id) = flux2T(Q4mean,A,emiss)  ! cold end-member
+     !print *,Tsurf,flux2T(Qmean,A,emiss),flux2T(Q4mean,A,emiss)
+     !Tsurf = flux2T(Q4mean,A,emiss)  ! cold end-member
      
-     if (init(id)) then ! initialization
-        print *,'initializing particle',id,Tsurf(id)
-        T(:,id) = Tsurf(id)
-        Tsurfm1(id) = Tsurf(id)
-        init(id) = .false.
+     if (init) then ! initialization
+        print *,'initializing particle',Tsurf
+        T(:) = Tsurf
+        Tsurfm1 = Tsurf
+        init = .false.
      end if
      
      !--thermal evolution
-     call conductionT_sphere(nz,dr,dtsec,T(:,id),Tsurfm1(id),Tsurf(id),kappa)
+     call conductionT_sphere(nz,dr,dtsec,T(:),Tsurfm1,Tsurf,kappa)
      
      !--ice evolution
-     if (zT(id)>=0. .and. zT(id)<Radius) then
-        Tatz = interp1(real(0.,8),z,Tsurf(id),T(:,id),zT(id),nz)
-        call retreat_s(Tatz,zT(id),Radius,dtsec,Elatent)
-        if (zT(id)>Radius) zT(id)=-9999.
+     if (zT>=0. .and. zT<Radius) then
+        Tatz = interp1(real(0.,8),z,Tsurf,T(:),zT,nz)
+        call retreat_s(Tatz,zT,Radius,dtsec,Elatent)
+        if (zT>Radius) zT=-9999.
      else
         Tatz = -9999.
      end if
 
      ! lots of output
-     unit = 100+id
-     if (id==26) then
-        !write(unit,'(f11.0,1x,f7.4,1x,f6.4,3(1x,f5.1),1x,f8.3,1x,i2)') time(id),semia,ecc,Tsurf(id),T(nz,id),Tatz,zT(id),id
-     endif
+     write(31,'(f11.0,1x,f7.4,1x,f6.4,3(1x,f5.1),1x,f8.3)') time,semia,ecc,Tsurf,T(nz),Tatz,zT
      
-     !if (zT /= zT) stop  ! NaN
   end do
   close(20)
   
-  open(unit=30,file='depths_sphere.'//nn,action='write')
-  do id=1,NB
-     if (init(id)) cycle
-     write(30,*) nn,id,time(id),Tsurf(id),T(nz,id),zT(id)
-     do i=1,nz
-        write(40,*) id,z(i),T(i,id)
-     end do
+  close(31)
+
+  ! radial temperature profile at end of run
+  open(unit=40,file='z.dat',action='write')
+  do i=1,nz
+     write(40,*) z(i),T(i)
   end do
-  close(30)
+  close(40)
 END PROGRAM sphere1d_implicit
 
 
 
 subroutine conductionT_sphere(nz,dr,dt,T,Tsurf,Tsurfp1,kappa)
 !***********************************************************************
-!   conductionT_sphere: program to calculate the diffusion of
-!                 temperature in a spherically symmetric geometry
+!   conductionT_sphere: solve heat equation in a
+!                       spherically symmetric geometry
 !   Crank-Nicolson scheme, flux conservative
 !
 !   Eqn: T_t = (kappa/r^2)*d/dr(r^2*dT_r)
@@ -199,15 +176,15 @@ subroutine retreat_s(T,zT,Radius,dt,Elatent)
   real*8, intent(IN) :: dt  ! time step [sec]
   real*8, intent(INOUT) :: zT  ! depth of ice table below surface
   real*8, intent(OUT) :: Elatent  ! latent heat, for diagnostics
-  real*8, parameter :: pi=3.1415926535897932
-  real*8, parameter :: Lh2o=2.834e6 ! latent heat of sublimation [J/kg]
+  real*8, parameter :: pi = 3.1415926535897932
+  real*8, parameter :: Lh2o = 2.834e6 ! latent heat of sublimation [J/kg]
   real*8, parameter :: R = 8314.5 ! universal gas constant
-  real*8, parameter :: rhoice = 930.
+  real*8, parameter :: rhoice = 930. ! [kg/m^3]
   real*8 D, rhos, buf, diam, porosity
   real*8, external :: psv, vapordiffusivity
   real*8 zTold, dV
   
-  diam=100d-3; porosity=0.5
+  diam = 100d-3; porosity = 0.5
   D=vapordiffusivity(diam,porosity,T)
   
   rhos = psv(T)*18/(R*T) ! p = n k T

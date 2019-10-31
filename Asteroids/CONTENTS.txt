@@ -30,14 +30,20 @@ impactstirring.f90:
 fast_modules_asteroid.f90:
 	modules for asteroid_fast1 and asteroid_fast2
 
-fast_subs_asteroid2.f90 & fast_subs_asteroid1.f90:
-	subroutines and functions for fast1 & fast2 
+fast_subs_asteroid2.f90:
+	subroutines and functions for asteroid_fast2 
+
+fast_subs_asteroid1.f90:
+	subroutines and functions for asteroid_fast1
+
+common_subs.f90:
+	functions used by many of these programs
 
 sphere1d_implicit.f90: (main program)
 	semi-implicit solver for 1D spherically symmetric heat equation and ice retreat
 
-common_subs.f90:
-	functions used by many of these programs
+orbit_A0000240.dat:
+	sample input for sphere1_implicit
 
 test_gardening1.f90
 

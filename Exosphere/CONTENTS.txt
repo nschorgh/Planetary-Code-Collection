@@ -9,7 +9,8 @@ moon_exo.f90: (main program)
 
 ceres_exo.f90: (main program)
 	event driven Monte Carlo model for ballistic hops of 
-	water molecules on the Cerean surface
+	water molecules on the Cerean surface;
+	can be used for other airless bodies as well
 
 montecarlo.f90:
 	ballistic hops, event scheduler
@@ -24,10 +25,9 @@ body.f90:
 	module with body specific parameters
 
 gasdev.for: 
-	generates gaussian distribution, from Numerical Recipes (C), change real to real*8
+	generates Gaussian distribution, from Numerical Recipes (C), changed real to real*8
 
 makefile:
 	shows file dependencies
-
 
 

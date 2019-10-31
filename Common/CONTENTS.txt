@@ -31,7 +31,7 @@ conductionT.f90:
 	upper temperature boundary condition, semi-implicit solver
 
 grids.f:
-	creates appropriate 1D grids, calculates thermal properties of soil with ice
+	creates appropriate 1D grids
 
 derivs.f90: 
 	first and second derivatives on irregular grid
