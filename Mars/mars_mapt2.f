@@ -47,12 +47,8 @@ C-----set input parameters
       do
 c        read output of mars_mapi
          read(20,*,end=80) lon,latitude,albedo,thIn,Tfrost,zdepth
-c        read output of mars_mapiqh2v
-!         read(20,*,end=80) 
-!     &        lon,latitude,albedo,thIn,Tfrost,slp,azFac,zdepth
          print *,lon,latitude,albedo,thIn,Tfrost,zdepth
          if (albedo==-9999. .or. thIn==-9999.) cycle
-         !slp=slp*d2r; azFac=azFac*d2r
          rhoc = 800.*(150 + 100.*sqrt(34.2+0.714*thIn)) ! empirical relation
 !        rhoc = 1004640.
 

@@ -62,6 +62,9 @@ mars_mapt2.f: (main program)
 mars_mapiqh2v.f90: (main program)
 	Version of mars_mapi that uses jsubv and slope coupling, configured for cluster
 
+mapgrid.slp:
+	Example input file for mars_mapiqh2v.f90
+
 
 
 fast_modules.f90:

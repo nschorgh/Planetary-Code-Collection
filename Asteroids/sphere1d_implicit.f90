@@ -23,7 +23,7 @@ PROGRAM sphere1d_implicit
   
   Radius = 500.  ! body radius [m]
   dr = Radius/nz
-  do concurrent (i=1:nz)
+  do i=1,nz
      z(i) = i*dr
   end do
 
@@ -45,15 +45,8 @@ PROGRAM sphere1d_implicit
   
   do  ! time loop
      read(20,*,iostat=ierr) time0,semia,ecc
-     
-     if (ierr<0) then
-        print *,'reached end of file'
-        exit
-     endif
-     if (ierr>0) then
-        print *,'read error'
-        exit
-     endif
+     if (ierr<0) stop 'reached end of file'
+     if (ierr>0) stop 'read error'
 
      oldtime = time
      time = time0

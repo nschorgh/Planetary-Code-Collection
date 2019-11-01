@@ -16,10 +16,10 @@ pure function flux_mars77(R,decl,latitude,HA,albedo,fracir,fracscat)
   real*8, parameter :: So=1365.
   real*8, parameter :: sigSB=5.6704d-8
   real*8 c1,s1,Qo,solarAttenuation,Q
-  real*8 sinbeta,sinbetaNoon,Qdir,Qscat,Fout,Qlw
+  real*8 sinbeta,sinbetaNoon,Qdir,Qscat,Qlw,Fout
 
-  c1=cos(latitude)*cos(decl)
-  s1=sin(latitude)*sin(decl)
+  c1 = cos(latitude)*cos(decl)
+  s1 = sin(latitude)*sin(decl)
   ! beta = 90 minus incidence angle for horizontal surface
   ! beta = elevation of sun above (horizontal) horizon 
   sinbeta = c1*cos(HA) + s1
@@ -38,7 +38,7 @@ pure function flux_mars77(R,decl,latitude,HA,albedo,fracir,fracscat)
      Q = 0.
   endif
 
-  ! atmospheric IR contribution is based on Kieffer et al. (1977), JGR
+  ! atmospheric IR contribution based on Kieffer et al. (1977), JGR 82, 4249
   Fout = 1.*sigSB*150**4  ! matters only in polar region
   Qlw = fracIR*max(Qo*sinbetaNoon,Fout)
 
@@ -57,7 +57,7 @@ pure subroutine flux_mars2(R,decl,latitude,HA,fracIR,fracScat, &
 !     R: distance from sun [AU]
 !     decl: planetocentric solar declination [radians]
 !     latitude: [radians]
-!     HA: hour angle [radians from noon, clockwise]
+!     HA: hour angle (radians from noon, clockwise)
 !     fracIR: fraction of absorption
 !     fracScat: fraction of scattering
 !     surfaceSlope: >0, [radians]
@@ -69,16 +69,17 @@ pure subroutine flux_mars2(R,decl,latitude,HA,fracIR,fracScat, &
 !***********************************************************************
   implicit none
   real(8), parameter :: pi=3.1415926535897931, So=1365.
+  real(8), parameter :: sigSB=5.6704d-8
   real(8), intent(IN) :: R,decl,latitude,HA,surfaceSlope,azFac,emax
   real(8), intent(IN) :: fracIR,fracScat
   real(8), intent(OUT) :: Qdir,Qscat,Qlw
   real(8) c1,s1,solarAttenuation,Qo
-  real(8) sinbeta,sinbetaNoon,cosbeta,sintheta,azSun,buf
+  real(8) sinbeta,sinbetaNoon,cosbeta,sintheta,azSun,buf,Fout
   
-  c1=cos(latitude)*cos(decl)
-  s1=sin(latitude)*sin(decl)
-! beta = 90 minus incidence angle for horizontal surface
-! beta = elevation of sun above (horizontal) horizon 
+  c1 = cos(latitude)*cos(decl)
+  s1 = sin(latitude)*sin(decl)
+  ! beta = 90 minus incidence angle for horizontal surface
+  ! beta = elevation of sun above (horizontal) horizon 
   sinbeta = c1*cos(HA) + s1
   sinbetaNoon = c1 + s1
   sinbetaNoon = max(sinbetaNoon,0.d0)  ! horizon
@@ -88,7 +89,7 @@ pure subroutine flux_mars2(R,decl,latitude,HA,fracIR,fracScat, &
   if (buf>+1.) buf=+1.d0  ! roundoff
   if (buf<-1.) buf=-1.d0  ! roundoff
   azSun = acos(buf)
-  if (sin(HA)>=0) azSun=2*pi-azSun
+  if (sin(HA)>=0) azSun = 2*pi-azSun
   
 ! theta = 90 minus incidence angle for sloped surface
   sintheta = cos(surfaceSlope)*sinbeta - &  
@@ -103,9 +104,8 @@ pure subroutine flux_mars2(R,decl,latitude,HA,fracIR,fracScat, &
   Qo = So/R**2  ! solar constant at Mars
   solarAttenuation = (1.- fracIR - fracScat)**(1./max(sinbeta,0.04d0))
   Qdir = Qo*sintheta*solarAttenuation
-  ! Fout = 1.*sigSB*150**4
-  ! Qlw = fracIR*max(Qo*sinbetaNoon,Fout)  ! in polar region
-  Qlw = fracIR*Qo*sinbetaNoon
+  Fout = 1.*sigSB*150**4  ! matters only in polar region
+  Qlw = fracIR*max(Qo*sinbetaNoon,Fout) 
   if (sinbeta>0.d0) then
      Qscat = 0.5*fracScat*Qo
   else
@@ -117,5 +117,6 @@ pure subroutine flux_mars2(R,decl,latitude,HA,fracIR,fracScat, &
 !
 ! For a tilted surface
 !   absorbed flux = (1-albedo)*(Qdir+Qscat*viewfactor) + emiss*Qlw*viewfactor
-! in the case of a planar slope, viewfactor=cos(surfaceSlope/2.)**2
+!   then add irradiance from land in field of view  
+!   in the case of a planar slope, viewfactor = cos(surfaceSlope/2.)**2
 end subroutine flux_mars2
