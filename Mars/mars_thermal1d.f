@@ -28,14 +28,14 @@ C***********************************************************************
       real*8 Qn, Qnp1, tdays, dtsec
       real*8 marsR, marsLs, marsDec, HA
       real*8 surfaceSlope, azFac, zfac
-      real*8 jd, temp1, dcor, dt0_j2000, flux
+      real*8 jd, temp1, dcor, dt0_j2000, flux_mars77
       real*8 ti(NMAX), Tsurf, rhocv(NMAX), z(NMAX), albedo0, Told(NMAX)
       real*8 co2albedo, Fgeotherm, Tsurfold, Fsurf, Fsurfold, m, dE
       real*8 co2emiss, Tmean, Tmean2, geof, ps, pb, psv, zero
       integer julday, iyr, imm, iday
       character*100 dum1
       character*40 fileout1, fileout2   ! character array for output filenames
-      external julday, flux, psv
+      external julday, flux_mars77, psv
       parameter (zero=0.)
 
 C-------read input       
@@ -143,9 +143,9 @@ C-----Initialize
       open(unit=22,file=fileout2,status='unknown') ! temperature profile
       HA = 2.*pi*time   ! hour angle
 C     net flux: solar insolation + IR
-      Qn = flux(marsR,marsDec,latitude,HA,albedo,
-     &     fracir,fracdust,surfaceSlope,azFac)
-!      Qn=flux_mars77(marsR,marsDec,latitude,HA,albedo,fracir,fracdust)
+!      Qn = flux(marsR,marsDec,latitude,HA,albedo,
+!     &     fracir,fracdust,surfaceSlope,azFac)
+      Qn = flux_mars77(marsR,marsDec,latitude,HA,albedo,fracir,fracdust)
 
 C-----loop over time steps 
       do n=0,nsteps-1
@@ -154,9 +154,10 @@ C        Solar insolation and IR at future time step
          tdays = time*(marsDay/earthDay)  ! parenthesis may improve roundoff
          call marsorbit(dt0_j2000,tdays,marsLs,marsDec,marsR); 
          HA = 2.*pi*mod(time,1.d0)    ! hour angle
-         Qnp1 = flux(marsR,marsDec,latitude,HA,albedo,
-     &        fracir,fracdust,surfaceSlope,azFac)
-!         Qnp1=flux_mars77(marsR,marsDec,latitude,HA,albedo,fracir,fracdust)
+!         Qnp1 = flux(marsR,marsDec,latitude,HA,albedo,
+!     &        fracir,fracdust,surfaceSlope,azFac)
+         Qnp1 = flux_mars77(marsR,marsDec,latitude,HA,albedo,
+     &        fracir,fracdust)
          Tsurfold=Tsurf
          Fsurfold=Fsurf
 
