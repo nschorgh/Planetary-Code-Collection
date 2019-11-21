@@ -12,7 +12,7 @@ This program collection contains:
 * fast (asynchronously coupled) method for subsurface-atmosphere vapor exchange on Mars
 * fast (asynchronously coupled) method for ice retreat on asteroids
 * 3D model of shadowing, illumination, and scattering for airless bodies, Mars, and Mauna Kea
-* Monte-Carlo model for ballistic hops in the exosphere of the Moon and Ceres
+* Monte-Carlo model for ballistic hops in the exospheres of the Moon and Ceres
 
 
 
@@ -166,7 +166,7 @@ Common/conductionQ2.f90
 Common/conductionT2.f90  
 Common/flux_noatm.f90  
 Common/grids.f  
-Common/julday.f  
+Common/julday.for    
 Common/tridag.for  
 Mars/flux_mars.f90  
 Mars/marsorbit.f90  
@@ -178,6 +178,7 @@ Topo3D/Test/
 
 Exosphere/moon_exo.f90: (main program)  
 Exosphere/ceres_exo.f90: (main program)  
+Exosphere/body.f90  
 Exosphere/montecarlo.f90  
 Exosphere/geogrid.f90  
 Exosphere/geogrid_D.f90  
@@ -202,7 +203,7 @@ Mar 2016: Thanks to Lior Rubanenko for a bug report in cratersQ_*
 
 2006: Troy Hudson discovered a grid-point offset in conductionT and conductionQ, which has been corrected.
 
-2005: Thanks to Mischa Kreslavsky for providing correct formulas for energy balance on a slope.
+2005: Thanks to Mischa Kreslavsky for providing formulas for energy balance on a planar slope.
 
 Many Thanks to Andy Vaught for developing an open-source Fortran 95 compiler (www.g95.org).  The early versions of this code were developed with this compiler.
 

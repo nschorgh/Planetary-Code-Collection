@@ -12,6 +12,9 @@ ceres_exo.f90: (main program)
 	water molecules on the Cerean surface;
 	can be used for other airless bodies as well
 
+body.f90:
+	body specific input parameters
+
 montecarlo.f90:
 	ballistic hops, event scheduler
 

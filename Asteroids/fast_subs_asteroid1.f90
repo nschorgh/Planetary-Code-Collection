@@ -236,7 +236,7 @@ subroutine assignthermalproperties1(nz,z,Tnom,porosity,ti,rhocv,icefrac,zdepthT)
   integer, intent(IN) :: nz
   real(8), intent(IN) :: z(nz), Tnom, porosity
   real(8), intent(OUT) :: ti(nz), rhocv(nz)
-  real(8), intent(IN), optional :: icefrac,zdepthT
+  real(8), intent(IN), optional :: icefrac, zdepthT
   real(8), parameter :: rhodry = 2500  ! bulk density
   real(8), parameter :: kice=4.6, cice=1145   ! 140K
   integer j
@@ -249,14 +249,13 @@ subroutine assignthermalproperties1(nz,z,Tnom,porosity,ti,rhocv,icefrac,zdepthT)
   thIn = 15.
   do j=1,nz
      rhocv(j) = (1.-porosity)*rhodry*cdry
-     !if (z(j)>0.5) thIn=50.
      k(j) = thIn**2/rhocv(j) 
   end do
-  if (present(icefrac)) then
+  if (present(icefrac) .and. present(zdepthT)) then
      do j=1,nz
         if (z(j)>zdepthT) then
            !k(j) = 1./((1.-icefrac)/k(j) + icefrac/kice) 
-           k(j) = k(j) + icefrac*kice  ! in the eye of the beholder, icefrac <= porosity
+           k(j) = k(j) + icefrac*kice  ! icefrac <= porosity
            rhocv(j) = rhocv(j) + icedensity*cice*icefrac
         endif
      end do

@@ -1,5 +1,5 @@
 subroutine insolonly(latitude,a,omega,ecc,eps,Trot,Q0mean,Qmean,Q4mean)
-  ! insolation only
+  ! insolation (incoming solar radiation) averaged over one orbit
   ! structure parallels oneasteroid_thermal1d.f90
   implicit none
   real(8), intent(IN) :: latitude, a, omega, eps, ecc, Trot
