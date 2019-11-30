@@ -1,7 +1,7 @@
       FUNCTION gasdev(idum)
       INTEGER idum
       REAL*8 gasdev
-CU    USES ran1
+CU    USES ran2
       INTEGER iset
       REAL*8 fac,gset,rsq,v1,v2,ran2
       SAVE iset,gset

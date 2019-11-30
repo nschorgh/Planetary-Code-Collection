@@ -1,5 +1,7 @@
 ChangeLog
 
+30 Nov 2019: added Armand distribution as option for inital velocities in Exosphere/montecarlo.f90
+
 22 Oct 2019: flux -> flux_mars77  in jsub, mars_mapi, mars_mapt2, and fast_subs_mars
 Functions flux and flux_mars77 do not return the exact same results, because in flux_mars77 the atmospheric short-wavelength scattered irradiance is multiplied with (1-albedo).
 

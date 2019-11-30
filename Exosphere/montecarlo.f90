@@ -48,35 +48,40 @@ end module exo_species
 
 
 
-
 subroutine hop1(p_r, p_s, p_t, idum, Tsurf, Q)
   ! ballistic flight of one particle
   use body, only: g, Rbody, semia, vescape, siderealDay
   use exo_species 
   implicit none
   real(8), intent(INOUT) :: p_r(2) ! (1)=longitude  (2)=latitude
-  integer, intent(OUT) :: p_s  ! status
-  real(8), intent(INOUT) :: p_t  ! time
+  integer, intent(OUT)   :: p_s    ! status
+  real(8), intent(INOUT) :: p_t    ! time
   integer, intent(INOUT) :: idum
   real(8), intent(IN) :: Tsurf, Q
 
-  real(8) d,v(3),lat,buf,cosaz,sinph2,cosph2,cosdlon,dlon
-  real(8) u,flighttime,destr_rate,vspeed,alpha
+  real(8) d, v(3), lat, sigma, cosaz, sinph2, cosph2, cosdlon, dlon
+  real(8) u, flighttime, destr_rate, vspeed, alpha
   real(8), parameter :: pi=3.1415926535897932, d2r=pi/180.
   integer, external :: inbox
-  real(8), external :: ran2
+  real(8), external :: ran2    ! uniform random number generator
   real(8), external :: gasdev  ! gaussian with unit variance
+  logical, parameter :: CORIOLIS = .false.
 
   ! Gaussian/Maxwellian launch velocities
-  buf = sqrt(Tsurf*8314.5/mmass)
+  sigma = sqrt(Tsurf*8314.5/mmass)  ! standard deviation
   ! gasdev has unit variance
-  v(1) = gasdev(idum)*buf
-  v(2) = gasdev(idum)*buf
-  v(3) = abs(gasdev(idum))*buf
+  v(1) = gasdev(idum)*sigma
+  v(2) = gasdev(idum)*sigma
+  v(3) = abs(gasdev(idum))*sigma
 
-  ! v(1) = v(1) - 2*Rbody*pi/siderealDay*cos(p_r(2)*d2r)  ! Coriolis
+  ! Armand distribution launch velocities; PDF of form vz/sigma*exp(-vz^2/2*sigma^2)
+  ! see e.g. Devroye, p29
+  !v(3) = sqrt(2.)*sigma*sqrt(-log(ran2(idum))) 
+  ! use the same v(1), v(2), and sigma as for Maxwellian
+  
+  if (CORIOLIS) v(1) = v(1) - 2*Rbody*pi/siderealDay*cos(p_r(2)*d2r) 
   vspeed = sqrt(sum(v(:)**2))
-  if (vspeed>vescape) then  ! grav. escape
+  if (vspeed>vescape) then  ! gravitational escape
      p_s = -2  ! destroyed by escape
      p_t = 1d100  ! never use again
      return
@@ -112,20 +117,20 @@ subroutine hop1(p_r, p_s, p_t, idum, Tsurf, Q)
      ! longitude does not matter 
      p_r(1) = 0.  ! just in case
   endif
-  ! p_r(1) = p_r(1) + flighttime/siderealDay*360.  ! Coriolis
+  if (CORIOLIS) p_r(1) = p_r(1) + flighttime/siderealDay*360.
     
   if (p_r(2)>90. .or. p_r(2)<-90) then
      print *,'hop1: this cannot happen',p_r(2)
      !stop
   endif
-  p_r(1)=modulo(p_r(1),360.)   ! 0 <= p_r(1) < 360.
+  p_r(1) = modulo(p_r(1),360.)   ! 0 <= p_r(1) < 360.
   
   p_s = 1
   p_t = p_t + flighttime
 
   ! in-flight destruction
   if (Q>0. .and. taudissoc>0.) then  ! dayside
-     u=ran2(idum)  ! between 0 and 1
+     u = ran2(idum)  ! between 0 and 1
      !if (u<0.004) then ! 0.4%
      destr_rate = flighttime/(taudissoc*semia**2) ! photodissociation
      if (destr_rate>0.2) destr_rate = 1-exp(-destr_rate)
@@ -135,6 +140,7 @@ subroutine hop1(p_r, p_s, p_t, idum, Tsurf, Q)
      endif
   endif
 end subroutine hop1
+
 
 
 function residence_time(T)
@@ -150,6 +156,7 @@ function residence_time(T)
 end function residence_time
 
 
+
 function residence_time2(T,sigma)
   ! residence time that is density dependent
   implicit none
@@ -163,6 +170,7 @@ function residence_time2(T,sigma)
   residence_time2 = residence_time2/frac
   if (T==0.) residence_time2 = 1e32
 end function residence_time2
+
 
 
 function residence_timeR(T)
@@ -184,6 +192,7 @@ function residence_timeR(T)
   ! Integrate[tau/t^2 Exp[-tau/t],{t,0,Infinity},Assumptions->tau>0] = 1
   ! Integrate[tau/t^3 Exp[-tau/t],{t,0,Infinity},Assumptions->tau>0] = 1/tau
 end function residence_timeR
+
 
 
 subroutine montecarlo(Np,idum,p_r,p_s,p_t,p_n,Tsurf,dtsec,ccc,Q) 
@@ -245,6 +254,7 @@ subroutine montecarlo(Np,idum,p_r,p_s,p_t,p_n,Tsurf,dtsec,ccc,Q)
 end subroutine montecarlo
 
 
+
 subroutine production(Np,p_r,p_s,p_n,idum,newcc,Tsurf)
   ! continuous production
   implicit none
@@ -291,6 +301,7 @@ subroutine production(Np,p_r,p_s,p_n,idum,newcc,Tsurf)
 end subroutine production
 
 
+
 subroutine destruction(Np,p_r,p_s,p_t,idum,dtsec,Q,sigma)
   ! destruction on the surface by space weathering
   use body, only : semia
@@ -331,6 +342,7 @@ subroutine destruction(Np,p_r,p_s,p_t,idum,dtsec,Q,sigma)
 end subroutine destruction
 
 
+
 subroutine writeparticles(unit,Np,p_r,p_s,p_t,p_n)
   implicit none
   integer, intent(IN) :: unit, Np
@@ -345,6 +357,7 @@ subroutine writeparticles(unit,Np,p_r,p_s,p_t,p_n)
 end subroutine writeparticles
 
 
+
 subroutine totalnrs(Np,p_s,cc)
   implicit none
   integer, intent(IN) :: Np, p_s(Np)
@@ -357,6 +370,7 @@ subroutine totalnrs(Np,p_s,cc)
   cc(5) = count(p_s==-3)  ! coldtrapped, north
   cc(6) = count(p_s==-4)  ! coldtrapped, south
 end subroutine totalnrs
+
 
 
 pure logical function incoldtrap(p_r)
@@ -392,6 +406,7 @@ pure logical function incoldtrap(p_r)
 
   !if (insidecoldtrap(p_r)>0) incoldtrap = .TRUE.
 end function incoldtrap
+
 
 
 subroutine nonuniformgravity(vspeed,alpha,d,t)
