@@ -83,7 +83,7 @@ end subroutine subsurfaceconduction_mars
 
 
 pure function evap_ingersoll(T,p0)
-  ! Returns sublimation rate [kg/m^2/s]
+  ! Returns sublimation rate of water ice into martian atmosphere [kg/m^2/s]
   ! Note: The latent heat of sublimation is 2.838 MJ/kg
   use allinterfaces, only : psv
   use, intrinsic :: ieee_arithmetic
@@ -92,12 +92,12 @@ pure function evap_ingersoll(T,p0)
   real(8), intent(IN) :: T
   real(8), intent(IN) :: p0  ! atmospheric pressure [Pa]
   real(8), parameter :: R=8314.5, g=3.7
-  real(8) psat,Gbuf,rho,rhow,drhooverrho
+  real(8) psat, Gbuf, rho, rhow, drhooverrho
   real(8) D   ! vapor diffusivity [m^2/s]
-  real(8) nu  ! kinematic viscosity of CO2
-  real(8) eta ! dynamic viscosity of CO2
+  real(8) nu  ! kinematic viscosity of CO2 [m^2/s]
+  real(8) eta ! dynamic viscosity of CO2 [Pa.s]
   
-  psat=psv(T)
+  psat = psv(T)
   D = 0.1654*1e-4*1.013e5/p0*(T/273)**1.5  ! Schwertz & Brow (1951)
   rhow = psat*18/(R*T)
   rho = p0*44/(R*T)
@@ -109,7 +109,7 @@ pure function evap_ingersoll(T,p0)
   if (drhooverrho>0.) then
      Gbuf = (drhooverrho*g/nu**2)**(1./3.)
      !evap_ingersoll = 0.17*D*rhow*Gbuf  ! Ingersoll (1970)
-     evap_ingersoll = 0.12*D*rhow*Gbuf
+     evap_ingersoll = 0.12*D*rhow*Gbuf   ! Schorghofer (2020)
   else
      !evap_ingersoll = 1./0.  ! a smart compiler accepts this
      evap_ingersoll = ieee_value(1.d0,ieee_positive_inf)  ! for other compilers

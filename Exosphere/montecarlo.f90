@@ -67,17 +67,17 @@ subroutine hop1(p_r, p_s, p_t, idum, Tsurf, Q)
   real(8), external :: gasdev  ! gaussian with unit variance
   logical, parameter :: CORIOLIS = .false.
 
-  ! Gaussian/Maxwellian launch velocities
+  ! Maxwell-Boltzmann launch velocities
   sigma = sqrt(Tsurf*8314.5/mmass)  ! standard deviation
   ! gasdev has unit variance
   v(1) = gasdev(idum)*sigma
   v(2) = gasdev(idum)*sigma
   v(3) = abs(gasdev(idum))*sigma
 
-  ! Armand distribution launch velocities; PDF of form vz/sigma*exp(-vz^2/2*sigma^2)
+  ! Armand distribution launch velocities; P(vz)=vz/sigma^2*exp(-vz^2/2*sigma^2)
   ! see e.g. Devroye, p29
   !v(3) = sqrt(2.)*sigma*sqrt(-log(ran2(idum))) 
-  ! use the same v(1), v(2), and sigma as for Maxwellian
+  ! use the same v(1), v(2), and sigma as for Maxwell-Boltzmann
   
   if (CORIOLIS) v(1) = v(1) - 2*Rbody*pi/siderealDay*cos(p_r(2)*d2r) 
   vspeed = sqrt(sum(v(:)**2))
