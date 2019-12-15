@@ -126,7 +126,7 @@ contains
     Tsurf = 0.5*(annp1 + bn*T(1) + T(1)) ! (T0+T1)/2
 
     ! iterative predictor-corrector
-    if (Tsurf > 1.2*Tr .or. Tsurf<0.8*Tr) then  ! linearization error expected
+    if ((Tsurf > 1.2*Tr .or. Tsurf<0.8*Tr) .and. iter<10) then  ! linearization error expected
        ! redo until Tr is within 20% of new surface temperature
        ! (under most circumstances, the 20% threshold is never exceeded)
        iter = iter+1

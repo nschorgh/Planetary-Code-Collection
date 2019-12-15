@@ -98,7 +98,7 @@ subroutine conductionQ(nz,z,dt,Qn,Qnp1,T,ti,rhoc,emiss,Tsurf, &
   Tsurf = 0.5*(annp1 + bn*T(1) + T(1)) ! (T0+T1)/2
 
   ! iterative predictor-corrector
-  if (Tsurf > 1.2*Tr .or. Tsurf < 0.8*Tr) then  ! linearization error expected
+  if ((Tsurf > 1.2*Tr .or. Tsurf < 0.8*Tr) .and. iter<10) then  ! linearization error expected
      ! redo until Tr is within 20% of new surface temperature
      ! (under most circumstances, the 20% threshold is never exceeded)
      iter = iter+1
@@ -107,6 +107,7 @@ subroutine conductionQ(nz,z,dt,Qn,Qnp1,T,ti,rhoc,emiss,Tsurf, &
      goto 30
   endif
   !if (iter>=5) print *,'consider taking shorter time steps',iter
+  !if (iter>=10) print *,'warning: too many iterations'
   
   Fsurf = - k(1)*(T(1)-Tsurf)/z(1) ! heat flux into surface
 end subroutine conductionQ

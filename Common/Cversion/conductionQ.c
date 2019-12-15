@@ -105,7 +105,7 @@ void conductionQ(int nz, double z[], double dt, double Qn, double Qnp1,
   T[0] = 0.5 * (annp1 + bn * T[1] + T[1]);
 
   /* iterative predictor-corrector */
-  if (T[0] > 1.2*Tr || T[0] < 0.8*Tr) {  // linearization error expected
+  if ((T[0] > 1.2*Tr || T[0] < 0.8*Tr) && iter<10) {  // linearization error expected
      /* redo until Tr is within 20% of new surface temperature
        (under most circumstances, the 20% threshold is never exceeded)
      */

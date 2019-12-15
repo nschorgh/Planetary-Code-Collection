@@ -15,7 +15,7 @@ PROGRAM fieldofviews
   use findvisibletopo
   implicit none
   integer i, j, narg, ilower, iupper
-  ! # of azimuths (naz) defined in module findviewfactors
+  ! # of azimuths (naz) defined in module findvisibletopo
   real(8) h(NSx,NSy), smax(naz)
   character(5) extc
   logical visibility(NSx,NSy)
@@ -31,7 +31,7 @@ PROGRAM fieldofviews
 
   select case(narg)
   case (0)  ! serial implementation
-     print *,'...creating files horizons.dat and viewfactors.dat'
+     print *,'...creating file viewfactors.dat'
      !open(unit=21,file='horizons.dat',status='unknown',action='write')
      !open(unit=22,file='fieldofviews.dat',status='unknown',action='write')
      open(unit=23,file='viewfactors.dat',status='unknown',action='write')
@@ -39,7 +39,7 @@ PROGRAM fieldofviews
 
   case (2)  ! parallel implementation
      call slicer(NSx,ilower,iupper,extc)
-     print *,'...creating files horizon and viewfactor...',extc
+     print *,'...creating file viewfactor...',extc
      !open(unit=21,file='horizon.'//extc,status='unknown',action='write')
      !open(unit=22,file='fieldofview.'//extc,status='unknown',action='write')
      open(unit=23,file='viewfactor.'//extc,status='unknown',action='write')
