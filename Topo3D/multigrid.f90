@@ -4,14 +4,14 @@
 subroutine downsample(NSx,NSy,h,hhalf)
   ! downsample 2D array to half resolution
   implicit none
-  integer, intent(IN) :: NSx,NSy
+  integer, intent(IN) :: NSx, NSy
   real(8), intent(IN) :: h(NSx,NSy)
   real(8), intent(OUT) :: hhalf(NSx/2,NSy/2) ! new dimensions
-  integer :: x(NSx/2),y(NSy/2)
-  integer i2,j2,ii,jj,k,r
+  integer :: x(NSx/2), y(NSy/2)
+  integer i2, j2, ii, jj, k, r
   real(8) psum, w(NSx/2,NSy/2)
-  integer, parameter :: ei(5)= (/0, 1, 0, -1, 0 /) ! counter-clockwise
-  integer, parameter :: ej(5)= (/0, 0, 1, 0, -1 /)
+  integer, parameter :: ei(5) = (/0, 1, 0, -1, 0 /) ! counter-clockwise
+  integer, parameter :: ej(5) = (/0, 0, 1, 0, -1 /)
   integer, parameter :: nan = -32000 
 
   do i2=1,NSx/2
@@ -51,18 +51,18 @@ end subroutine downsample
 
 
 module newmultigrid
-  use filemanager, only : NSx,NSy,dx,dy
-  real(8), allocatable :: h2(:,:), h3(:,:), h4(:,:), h5(:,:), h6(:,:)
-  real(8), allocatable :: h7(:,:), h8(:,:), h9(:,:), h10(:,:)
+  use filemanager, only : NSx, NSy, dx, dy
+  real(8), allocatable, private :: h2(:,:), h3(:,:), h4(:,:), h5(:,:), h6(:,:)
+  real(8), allocatable, private :: h7(:,:), h8(:,:), h9(:,:), h10(:,:)
 
   interface
      pure subroutine horizon_core(x0,y0,h00,smax,i,j,h,P)
-       use filemanager, only : NSx,NSy,dx,dy
+       use filemanager, only : NSx, NSy, dx, dy
        use azRays
        implicit none
-       real(8), intent(IN) :: x0,y0,h00 
+       real(8), intent(IN) :: x0, y0, h00 
        real(8), intent(INOUT) :: smax(naz)
-       integer, intent(IN) :: i,j,P 
+       integer, intent(IN) :: i, j, P 
        real(8), intent(IN) :: h(NSx/P,NSy/P)
      end subroutine horizon_core
   end interface
@@ -129,12 +129,12 @@ contains
     ! recursive implementation
     use allinterfaces, only: horizontaldistance1
     implicit none
-    integer, intent(IN) :: i0,j0,naz,L
+    integer, intent(IN) :: i0, j0, naz, L
     real(8), intent(IN) :: h(NSx,NSy)
     real(8), intent(IN) :: RMG
     real(8), intent(OUT) :: smax(naz)
-    integer P,ii,jj
-    real(8) r,x0,y0,h00
+    integer P, ii, jj
+    real(8) r, x0, y0, h00
     logical, parameter :: VERBOSE = .false.
 
     smax=0.
@@ -178,11 +178,11 @@ contains
   pure recursive subroutine findallhorizon_recursive(i,j,h,x0,y0,h00,naz,smax,RMG,L)
     use allinterfaces, only: horizontaldistance1
     implicit none
-    integer, intent(IN) :: naz,L,i,j
+    integer, intent(IN) :: naz, L, i, j
     real(8), intent(IN) :: h(NSx,NSy)
-    real(8), intent(IN) :: x0,y0,h00,RMG
+    real(8), intent(IN) :: x0, y0, h00, RMG
     real(8), intent(INOUT) :: smax(naz)
-    integer ii,jj,P
+    integer ii, jj, P
     real(8) r
     
     ! start with the coarsest grid

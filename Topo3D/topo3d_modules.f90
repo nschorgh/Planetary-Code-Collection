@@ -46,12 +46,11 @@ module allinterfaces
 
   ! begin fieldofview_subs.f90
   interface
-     pure subroutine difftopo1(i,j,h,surfaceSlope,az)
-       use filemanager, only : NSx,NSy,dx,dy
+     pure subroutine difftopo1(NSx,NSy,i,j,h,dx,dy,surfaceSlope,az)
        implicit none
-       integer, intent(IN) :: i,j
-       real(8), intent(IN) :: h(NSx,NSy)
-       real(8), intent(OUT) :: surfaceSlope,az
+       integer, intent(IN) :: NSx, NSy, i, j
+       real(8), intent(IN) :: h(NSx,NSy), dx, dy
+       real(8), intent(OUT) :: surfaceSlope, az
      end subroutine difftopo1
   end interface
   

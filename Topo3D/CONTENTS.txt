@@ -57,6 +57,9 @@ multigrid.f90:
 fieldproperties.f90: (main program)
 	processes geometric information, mostly diagnostics
 
+test_shadows1pt.f90: (main program)
+        calculate horizons for one point (for testing purposes)
+
 topo40.xyz: 
 	example input topography
 

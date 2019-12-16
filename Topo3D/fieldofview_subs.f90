@@ -36,7 +36,7 @@ contains
     cc(:)=0
     smax(:)=0.
 
-    call difftopo1(i0,j0,h,surfaceSlope,azFac)
+    call difftopo1(NSx,NSy,i0,j0,h,dx,dy,surfaceSlope,azFac)
     visibility(:,:) = .false.
     
     x0 = i0*dx; y0 = j0*dy; h00 = h(i0,j0)
@@ -72,11 +72,11 @@ contains
 
   subroutine horizon_core_wsort(x0,y0,h00,smax,surfaceSlope,azFac,i,j,h)
     ! very similar to horizon_core
-    use filemanager, only : NSx,NSy,dx,dy
+    use filemanager, only : NSx, NSy, dx, dy
     use allinterfaces, only : horizontaldistance1, azimuth1, diffangle
     implicit none
-    integer, intent(IN) :: i,j
-    real(8), intent(IN) :: x0,y0,h00,surfaceslope,azFac,h(NSx,NSy)
+    integer, intent(IN) :: i, j
+    real(8), intent(IN) :: x0, y0, h00, surfaceslope, azFac, h(NSx,NSy)
     real(8), intent(INOUT) :: smax(naz)
     
     integer k,in,jn,ak,ak1,ak2,buf,akak
@@ -194,15 +194,18 @@ subroutine find3dangle(h,i0,j0,unit,visibility)
 
   cc=0
 
-  call difftopo1(i0,j0,h,surfaceSlope,azFac)
+  call difftopo1(NSx,NSy,i0,j0,h,dx,dy,surfaceSlope,azFac)
   
   do i=2,NSx-1
-     if (dx*abs(i-i0)>RMAX) cycle  ! to save computational cost
+     !r = dx*abs(i-i0)
+     r = horizontaldistance1(i*dx,1*dy,i0*dx,1*dy)
+     if (r>RMAX) cycle  ! to save computational cost
      do j=2,NSy-1
         dOh=0.
         if (i==i0 .and. j==j0 .and. .not.verbose) cycle
         if (.not.visibility(i,j) .and. .not.verbose) cycle
-        r = sqrt(dx*dx*(i-i0)**2+dy*dy*(j-j0)**2)
+        !r = sqrt(dx*dx*(i-i0)**2+dy*dy*(j-j0)**2)
+        r = horizontaldistance1(i*dx,j*dy,i0*dx,j0*dy)
         if (r>RMAX .and. .not.verbose) cycle  ! to save computational cost
 
         call xyz2thetaphi(dx*(i-i0),dy*(j-j0),h(i,j)-h(i0,j0),thetac,phic)
@@ -290,14 +293,13 @@ end subroutine find3dangle
 
 
 
-pure subroutine difftopo1(i,j,h,surfaceSlope,az)
+pure subroutine difftopo1(NSx,NSy,i,j,h,dx,dy,surfaceSlope,az)
 ! calculate slope and azimuth of surface element
-  use filemanager, only : NSx, NSy, dx, dy
   implicit none
-  integer, intent(IN) :: i, j
-  real(8), intent(IN) :: h(NSx,NSy)
+  integer, intent(IN) :: NSx, NSy, i, j
+  real(8), intent(IN) :: h(NSx,NSy), dx, dy
   real(8), intent(OUT) :: surfaceSlope, az
-  real(8) sx,sy
+  real(8) sx, sy
   
   sx = -1e32; sy = -1e32  ! avoids compiler warning
 
@@ -316,7 +318,7 @@ pure subroutine difftopo1(i,j,h,surfaceSlope,az)
   endif
 
   surfaceSlope = sqrt(sx**2+sy**2)  
-  az = atan2(sx,-sy)
+  az = atan2(sx,-sy)  ! north is up, clockwise
 end subroutine difftopo1
 
 
@@ -335,12 +337,10 @@ pure function cos_viewing_angle1(x0,y0,h00,surfaceSlope,azFac,i,j,h)
   real(8), intent(IN) :: h(NSx,NSy)
   real(8) az, s, r, slope_along_az
 
-  !r = sqrt(dx*dx*(i-i0)**2+dy*dy*(j-j0)**2)
   r = horizontaldistance1(i*dx,j*dy,x0,y0)
   az = azimuth1(x0,y0,i*dx,j*dy)
   s = (h(i,j)-h00)/r
 
-  !call difftopo1(i0,j0,h,surfaceSlope,azFac)
   slope_along_az = surfaceSlope*cos(azFac-az)
 
   !viewing_angle = pi/2 - atan(s) + atan(slope_along_az)
@@ -377,7 +377,7 @@ subroutine refinevisibility(i0,j0,h,visibility)
   real(8) surfaceSlope, azFac
 
   x0 = i0*dx; y0 = j0*dy; h00 = h(i0,j0)
-  call difftopo1(i0,j0,h,surfaceSlope00,azFac00)
+  call difftopo1(NSx,NSy,i0,j0,h,dx,dy,surfaceSlope00,azFac00)
   
   do ii=1,NSx
      do jj=1,NSy
@@ -386,7 +386,7 @@ subroutine refinevisibility(i0,j0,h,visibility)
         cosv = cos_viewing_angle1(x0,y0,h00,surfaceSlope00,azFac00,ii,jj,h)
         if (cosv<=0.) visibility(ii,jj)=.false.
         !cosv = cos_viewing_angle(ii,jj,i0,j0,h)
-        call difftopo1(ii,jj,h,surfaceSlope,azFac)
+        call difftopo1(NSx,NSy,ii,jj,h,dx,dy,surfaceSlope,azFac)
         cosv = cos_viewing_angle1(ii*dx,jj*dy,h(ii,jj),surfaceSlope,azFac,i0,j0,h)
         ! sometimes happens for first surface element beyond cusp at horizon
         if (cosv<0.) visibility(ii,jj)=.false.
