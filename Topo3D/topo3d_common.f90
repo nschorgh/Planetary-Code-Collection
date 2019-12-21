@@ -44,19 +44,19 @@ pure function area_spherical_triangle(phi,theta)
   use allinterfaces, only : distanceonsphere
   implicit none
   real(8), intent(IN) :: phi(3), theta(3)
-  real(8) a,b,c
-  real(8) s, E, area_spherical_triangle, buf
+  real(8) area_spherical_triangle  ! [steradian]  
+  real(8) a, b, c, s, E, buf
 
-  a=distanceonsphere(phi(1),theta(1),phi(2),theta(2))
-  b=distanceonsphere(phi(2),theta(2),phi(3),theta(3))
-  c=distanceonsphere(phi(3),theta(3),phi(1),theta(1))
+  a = distanceonsphere(phi(1),theta(1),phi(2),theta(2))
+  b = distanceonsphere(phi(2),theta(2),phi(3),theta(3))
+  c = distanceonsphere(phi(3),theta(3),phi(1),theta(1))
 
   ! spherical excess
   s = (a+b+c)/2.
-  buf=tan(s/2)*tan((s-a)/2.)*tan((s-b)/2.)*tan((s-c)/2.)
-  !buf=tan((a+b+c)/4.)*tan((-a+b+c)/4.)*tan((a-b+c)/4.)*tan((a+b-c)/4.)
+  buf = tan(s/2)*tan((s-a)/2.)*tan((s-b)/2.)*tan((s-c)/2.)
+  !buf = tan((a+b+c)/4.)*tan((-a+b+c)/4.)*tan((a-b+c)/4.)*tan((a+b-c)/4.)
   if (buf<0.) buf=0.   ! roundoff
-  E=4*atan(sqrt(buf))
+  E = 4*atan(sqrt(buf))
 
   area_spherical_triangle = E
 end function area_spherical_triangle
@@ -72,7 +72,7 @@ elemental function distanceonsphere(phi1,theta1,phi2,theta2)
   lat1=pi/2-theta1; lat2=pi/2-theta2
 
   ! buf = square of half of cord length distance
-  buf = sin((lat1-lat2)/2.)**2+cos(lat1)*cos(lat2)*sin((phi1-phi2)/2.)**2
+  buf = sin((lat1-lat2)/2.)**2 + cos(lat1)*cos(lat2)*sin((phi1-phi2)/2.)**2
   distanceonsphere = 2.*asin(sqrt(buf))
   !distanceonsphere = 2.*atan2(sqrt(buf),sqrt(1-buf))
 end function distanceonsphere
@@ -93,6 +93,7 @@ subroutine slicer(NSx,ilower,iupper,extc)
   read(extc,'(i4)') SLICE  ! string->integer
   call getarg(2,extc)
   read(extc,'(i4)') nr  ! string->integer
+  
   if (SLICE>NSx-2) stop 'not that many slices available'
   if (nr<1 .or. nr>SLICE) stop 'slice id outside of range'
   slicewidth = ceiling((NSx-2)/real(SLICE))

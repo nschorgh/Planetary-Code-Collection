@@ -189,7 +189,7 @@ subroutine find3dangle(h,i0,j0,unit,visibility)
   integer, dimension(CCMAX) :: cellx, celly
   !real(8), dimension(CCMAX) :: thetastack, phistack
   real(8), dimension(CCMAX) :: dOstack, VFstack
-  real(8), dimension(4) :: hq, xq, yq, theta, phi  ! quadrangle centers
+  real(8), dimension(4) :: hq, xq, yq, theta, phi  ! quadrangle corners
   logical, parameter :: verbose = .false.
 
   cc=0

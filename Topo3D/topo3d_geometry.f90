@@ -8,7 +8,7 @@ elemental function diffangle(a1,a2)
   real(8), intent(IN) :: a1,a2
   real(8), parameter :: pi=3.1415926535897932
   real(8) x
-  x=mod(abs(a1-a2),2*pi)
+  x = mod(abs(a1-a2),2*pi)
   if (x<0.) x=x+2*pi
   if (2*pi-x<x) x=2*pi-x
   diffangle = x
@@ -38,22 +38,21 @@ end subroutine compactoutput
 
 elemental function horizontaldistance1(x1,y1,x2,y2)
   ! distance between two points; must have same units as height
-  ! as in topo3d_common.f90, but distance based
   implicit none
   real(8) horizontaldistance1
   real(8), intent(IN) :: x1,y1,x2,y2
   
   horizontaldistance1 = sqrt((x1-x2)**2+(y1-y2)**2)
+  ! horizontaldistance1 = max( abs(x1-x2), abs(y1-y2) )
 end function horizontaldistance1
 
 
 
 elemental function azimuth1(x1,y1,x2,y2)
-  ! as in topo3d_common.f90, but distance based
   implicit none
   real(8) azimuth1
   real(8), intent(IN) :: x1,y1,x2,y2
   
-  azimuth1 = atan2(x2-x1,-(y2-y1))  ! this is correct
+  azimuth1 = atan2(x2-x1, -(y2-y1))  ! this is correct
 end function azimuth1
 
