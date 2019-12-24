@@ -33,6 +33,16 @@ module allinterfaces
      end function azimuth1
   end interface
 
+  interface
+     subroutine downsample(NSx,NSy,h,hhalf)
+       implicit none
+       integer, intent(IN) :: NSx,NSy
+       real(8), intent(IN) :: h(NSx,NSy)
+       real(8), intent(OUT) :: hhalf(NSx/2,NSy/2) ! new dimensions
+     end subroutine downsample
+  end interface
+
+
   ! begin shadows_subs.f90
   interface
      pure subroutine findallhorizon1(h,i0,j0,naz,smax)
@@ -239,16 +249,6 @@ module allinterfaces
      end subroutine marsclock24
   end interface
   
-  ! begin multigrid.f90
-  interface
-     subroutine downsample(NSx,NSy,h,hhalf)
-       implicit none
-       integer, intent(IN) :: NSx,NSy
-       real(8), intent(IN) :: h(NSx,NSy)
-       real(8), intent(OUT) :: hhalf(NSx/2,NSy/2) ! new dimensions
-     end subroutine downsample
-  end interface
-
   ! cratersQ_*
   interface
      subroutine subsurfaceconduction(T,Tsurf,dtsec,Qn,Qnp1,emiss,solarDay)

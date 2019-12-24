@@ -4,7 +4,7 @@ MODULE findvisibletopo
 !***********************************************************************
   use filemanager, only : NSx, NSy, dx, dy
 
-  integer, parameter :: naz = 360
+  integer, parameter, public :: naz = 360
 
   integer, parameter, private :: CCMAX = 6*(NSx+NSy) ! max # of elements in one azimuth ray
   integer, private :: cc(CCMAX)
@@ -14,7 +14,7 @@ MODULE findvisibletopo
   integer, private :: ak
   real(8), parameter, private :: pi=3.1415926535897931
   real(8), parameter, private :: f=naz/(2*pi)
-  real(8), parameter, private :: azRay(naz) = (/ ( (ak-1)/f, ak=1,naz) /)
+  real(8), parameter, public :: azRay(naz) = (/ ( (ak-1)/f, ak=1,naz) /)
   
 contains
 
@@ -151,7 +151,7 @@ contains
              else
                 t = 0.5  ! dirty fix
              endif
-             hcut = h(i,j)*(1-t)+h(in,jn)*t
+             hcut = h(i,j)*(1-t) + h(in,jn)*t
              rcut(ak,cc(ak)) = r*(1-t) + r_neighbor*t  ! could be improved
              s = (hcut-h00) / rcut(ak,cc(ak))
              if (s>smax(ak)) smax(ak)=s

@@ -31,7 +31,7 @@ program test_shadows1pt
 
 
   block ! with multigrid
-    use newmultigrid
+    use multigrid
     integer LMAX, LACT
     real(8) RMG, smax2(naz_h)
     
