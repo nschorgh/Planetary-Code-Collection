@@ -32,35 +32,35 @@ contains
     allocate(h2(NSx/2,NSy/2))
     call downsample(NSx,NSy,h,h2)
     LACT = 2
-    if (min(NSx,NSy)/4>10 .and. LMAX>=3) then
+    if (min(NSx,NSy)/4>8 .and. LMAX>=3) then
        allocate(h3(NSx/4,NSy/4))
        call downsample(NSx/2,NSy/2,h2,h3)
        LACT = 3
-       if (min(NSx,NSy)/8>10 .and. LMAX>=4) then
+       if (min(NSx,NSy)/8>8 .and. LMAX>=4) then
           allocate(h4(NSx/8,NSy/8))
           call downsample(NSx/4,NSy/4,h3,h4)
           LACT = 4
-          if (min(NSx,NSy)/16>10 .and. LMAX>=5) then
+          if (min(NSx,NSy)/16>8 .and. LMAX>=5) then
              allocate(h5(NSx/16,NSy/16));
              call downsample(NSx/8,NSy/8,h4,h5)
              LACT = 5
-             if (min(NSx,NSy)/32>10 .and. LMAX>=6) then
+             if (min(NSx,NSy)/32>8 .and. LMAX>=6) then
                 allocate(h6(NSx/32,NSy/32))
                 call downsample(NSx/16,NSy/16,h5,h6)
                 LACT = 6
-                if (min(NSx,NSy)/64>10 .and. LMAX>=7) then
+                if (min(NSx,NSy)/64>8 .and. LMAX>=7) then
                    allocate(h7(NSx/64,NSy/64))
                    call downsample(NSx/32,NSy/32,h6,h7)
                    LACT = 7
-                   if (min(NSx,NSy)/128>10 .and. LMAX>=8) then
+                   if (min(NSx,NSy)/128>8 .and. LMAX>=8) then
                       allocate(h8(NSx/128,NSy/128))
                       call downsample(NSx/64,NSy/64,h7,h8)
                       LACT = 8
-                      if (min(NSx,NSy)/256>10 .and. LMAX>=9) then
+                      if (min(NSx,NSy)/256>8 .and. LMAX>=9) then
                          allocate(h9(NSx/256,NSy/256))
                          call downsample(NSx/128,NSy/128,h8,h9)
                          LACT = 9
-                         if (min(NSx,NSy)/512>10 .and. LMAX>=10) then
+                         if (min(NSx,NSy)/512>8 .and. LMAX>=10) then
                             allocate(h10(NSx/512,NSy/512))
                             call downsample(NSx/256,NSy/256,h9,h10)
                             LACT = 10
@@ -92,7 +92,7 @@ contains
     
     x0 = i0*dx; y0 = j0*dy; h00 = h(i0,j0)
     
-    P=2**(L-1)
+    P = 2**(L-1)
     if (L>10 .or. L<2) error stop 'findallhorizon_MGR: invalid grid level'
     ! The top loop for the coarsest grid is different from all others
     do ii=1,NSx/P + 1; do jj=1,NSy/P+1  ! +1 so a last odd one gets included too

@@ -59,6 +59,7 @@ contains
        smaxlocal=0.
        do i=1,cc(ak)
           j=arr(i)
+          if (rcut(ak,j) < sqrt(dx**2+dy**2)) cycle ! avoid obstruction by nearby interpolated points
           if (slocal(ak,j)>smaxlocal) then
              smaxlocal = slocal(ak,j)
              visibility(celli(ak,j),cellj(ak,j)) = .true.
@@ -175,6 +176,7 @@ END MODULE findvisibletopo
 
 subroutine find3dangle(h,i0,j0,unit,visibility)
 ! calculate subtended spherical angle and view factor
+! write view factors to file
   use filemanager
   use allinterfaces, except_this_one => find3dangle
   implicit none
@@ -201,7 +203,7 @@ subroutine find3dangle(h,i0,j0,unit,visibility)
      r = horizontaldistance1(i*dx,1*dy,i0*dx,1*dy)
      if (r>RMAX) cycle  ! to save computational cost
      do j=2,NSy-1
-        dOh=0.
+        dOh = 0.
         if (i==i0 .and. j==j0 .and. .not.verbose) cycle
         if (.not.visibility(i,j) .and. .not.verbose) cycle
         !r = sqrt(dx*dx*(i-i0)**2+dy*dy*(j-j0)**2)

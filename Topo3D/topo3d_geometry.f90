@@ -43,7 +43,6 @@ elemental function horizontaldistance1(x1,y1,x2,y2)
   real(8), intent(IN) :: x1,y1,x2,y2
   
   horizontaldistance1 = sqrt((x1-x2)**2+(y1-y2)**2)
-  ! horizontaldistance1 = max( abs(x1-x2), abs(y1-y2) )
 end function horizontaldistance1
 
 
