@@ -1,4 +1,4 @@
-module allinterfaces
+MODULE allinterfaces
   ! interfaces from subroutines and functions
 
   ! begin topo3d_geometry.f90
@@ -42,7 +42,6 @@ module allinterfaces
      end subroutine downsample
   end interface
 
-
   ! begin shadows_subs.f90
   interface
      pure subroutine findallhorizon1(h,i0,j0,naz,smax)
@@ -75,16 +74,14 @@ module allinterfaces
   end interface
   
   interface
-     pure function cos_viewing_angle1(x0,y0,h00,surfaceSlope,azFac,i,j,h)
-       use filemanager, only : NSx,NSy,dx,dy
+     elemental function cos_viewing_angle(x0,y0,h00,surfaceSlope,azFac,xB,yB,hB)
        implicit none
-       real(8) cos_viewing_angle1
-       integer, intent(IN) :: i,j
-       real(8), intent(IN) :: x0,y0,h00,surfaceSlope,azFac
-       real(8), intent(IN) :: h(NSx,NSy)
-     end function cos_viewing_angle1
+       real(8) cos_viewing_angle
+       real(8), intent(IN) :: x0, y0, h00, surfaceSlope, azFac
+       real(8), intent(IN) :: xB, yB, hB
+     end function cos_viewing_angle
   end interface
-  
+
   interface
      elemental subroutine xyz2thetaphi(x,y,z,theta,phi)
        implicit none
@@ -277,6 +274,32 @@ module allinterfaces
        real(8), intent(IN) :: T,p0
      end function evap_ingersoll
   end interface
+
+  ! megagrid_make.f90 
+  interface
+     elemental function horizontaldistance_square(x1,y1,x2,y2)
+       implicit none
+       real(8) horizontaldistance_square
+       real(8), intent(IN) :: x1,y1,x2,y2
+     end function horizontaldistance_square
+  end interface
+
+  interface
+     subroutine findallgridpoints_MGR(i0,j0,RMG,L)
+       implicit none
+       integer, intent(IN) :: i0, j0, L
+       real(8), intent(IN) :: RMG
+     end subroutine findallgridpoints_MGR
+  end interface
+
+  interface
+     recursive subroutine findallgridpoints_recursive(i,j,x0,y0,RMG,L)
+       implicit none
+       integer, intent(IN) :: L, i, j
+       real(8), intent(IN) :: x0, y0
+       real(8), intent(IN) :: RMG
+     end subroutine findallgridpoints_recursive
+  end interface
   
   ! f90 routines in Common/
   interface
@@ -331,5 +354,5 @@ module allinterfaces
        INTEGER, intent(IN) ::id,iyyy,mm
      end FUNCTION julday
   end interface
-  
-end module allinterfaces
+
+END MODULE allinterfaces

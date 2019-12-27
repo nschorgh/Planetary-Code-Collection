@@ -251,13 +251,8 @@ subroutine find3dangle(h,i0,j0,unit,visibility)
         endif
         
         if (verbose) then
-           !write(23,'(4(i5,1x),f7.2,1x,g10.4,1x,l)') &
-           !     & i0,j0,i,j,h(i,j),dOh,visibility(i,j)
-           if (visibility(i,j)) then
-              write(23,'(4(i5,1x),f7.2,1x,g10.4,1x,i1)') i0,j0,i,j,h(i,j),dOh,1
-           else
-              write(23,'(4(i5,1x),f7.2,1x,g10.4,1x,i1)') i0,j0,i,j,h(i,j),dOh,0
-           endif
+           write(23,'(4(i5,1x),f7.2,1x,g10.4,1x,l)') &
+                & i0,j0,i,j,h(i,j),dOh,visibility(i,j)
         endif
         
         if (dOh>0.) then
@@ -267,8 +262,9 @@ subroutine find3dangle(h,i0,j0,unit,visibility)
            !thetastack(cc)=thetac; phistack(cc)=phic  ! for optional output
            dOstack(cc)=dOh
 
-           cosv = cos_viewing_angle1(i0*dx,j0*dy,h(i0,j0),surfaceSlope,azFac,i,j,h)  ! cos(v)
            !cosv = cos_viewing_angle(i0,j0,i,j,h)  ! cos(v)
+           cosv = cos_viewing_angle(i0*dx,j0*dy,h(i0,j0),surfaceSlope,azFac,i*dx,j*dx,h(i,j))
+           
            VFstack(cc) = dOh*cosv/pi  ! view factor
         endif
      end do
@@ -351,6 +347,30 @@ end function cos_viewing_angle1
 
 
 
+elemental function cos_viewing_angle(x0,y0,h00,surfaceSlope,azFac,xB,yB,hB)
+!***********************************************************************
+!  function that calculates angle between surface normal at (x0,y0,h00)
+!     and vector pointing to (xB,yB,h(xB,yB)) as in horizon_core_wsort
+!***********************************************************************
+  use allinterfaces, only : horizontaldistance1, azimuth1
+  implicit none
+  real(8) cos_viewing_angle
+  real(8), intent(IN) :: x0, y0, h00, surfaceSlope, azFac
+  real(8), intent(IN) :: xB, yB, hB
+  real(8) az, s, r, slope_along_az
+
+  r = horizontaldistance1(xB,yB,x0,y0)
+  az = azimuth1(x0,y0,xB,yB)
+  s = (hB-h00)/r
+
+  slope_along_az = surfaceSlope*cos(azFac-az)
+
+  !viewing_angle = pi/2 - atan(s) + atan(slope_along_az)
+  cos_viewing_angle = (s-slope_along_az)/sqrt(1+s**2)/sqrt(1+slope_along_az**2)
+end function cos_viewing_angle
+
+
+
 elemental subroutine xyz2thetaphi(x,y,z,theta,phi)
   implicit none
   real(8), intent(IN) :: x,y,z
@@ -368,7 +388,7 @@ subroutine refinevisibility(i0,j0,h,visibility)
 !    surface elements
 !***********************************************************************
   use filemanager, only : NSx, NSy, dx, dy
-  use allinterfaces, only : cos_viewing_angle1
+  use allinterfaces, only : cos_viewing_angle
   implicit none
   integer, intent(IN) :: i0, j0
   real(8), intent(IN) :: h(NSx,NSy)
@@ -376,22 +396,29 @@ subroutine refinevisibility(i0,j0,h,visibility)
   integer ii, jj
   real(8) cosv  ! cos(v)
   real(8) surfaceSlope00, azFac00, x0, y0, h00
-  real(8) surfaceSlope, azFac
+  real(8) surfaceSlope, azFac, xB, yB, hB
 
   x0 = i0*dx; y0 = j0*dy; h00 = h(i0,j0)
   call difftopo1(NSx,NSy,i0,j0,h,dx,dy,surfaceSlope00,azFac00)
-  
+
   do ii=1,NSx
      do jj=1,NSy
         if (.not. visibility(ii,jj)) cycle
+
+        xB = ii*dx; yB = jj*dy; hB = h(ii,jj)
+        
         !cosv = cos_viewing_angle(i0,j0,ii,jj,h)
-        cosv = cos_viewing_angle1(x0,y0,h00,surfaceSlope00,azFac00,ii,jj,h)
-        if (cosv<=0.) visibility(ii,jj)=.false.
+        cosv = cos_viewing_angle(x0,y0,h00,surfaceSlope00,azFac00,xB,yB,hB)
+        if (cosv<=0.) then
+           visibility(ii,jj) = .false.
+           cycle
+        end if
+        
         !cosv = cos_viewing_angle(ii,jj,i0,j0,h)
         call difftopo1(NSx,NSy,ii,jj,h,dx,dy,surfaceSlope,azFac)
-        cosv = cos_viewing_angle1(ii*dx,jj*dy,h(ii,jj),surfaceSlope,azFac,i0,j0,h)
+        cosv = cos_viewing_angle(xB,yB,hB,surfaceSlope,azFac,x0,y0,h00)
         ! sometimes happens for first surface element beyond cusp at horizon
-        if (cosv<0.) visibility(ii,jj)=.false.
+        if (cosv<0.) visibility(ii,jj) = .false.
      end do
   end do
 end subroutine refinevisibility

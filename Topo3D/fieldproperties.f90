@@ -42,7 +42,7 @@ PROGRAM fieldproperties
      landsize = -9.
   end if
 
-  print *,'...writing sky view factors...'
+  print *,'...writing view factors...'
   open(unit=21,file='tmp.dat',status='unknown',action='write')
   do i=2,NSx-1
      do j=2,NSy-1
