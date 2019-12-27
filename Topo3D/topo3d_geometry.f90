@@ -99,7 +99,7 @@ subroutine downsample(NSx,NSy,h,hhalf)
      enddo
   enddo
   !do j2=1,NSy/2
-  !   write(6,'(9999(f3.1,1x))') w(:,j2)
+  !   write(*,'(9999(f3.1,1x))') w(:,j2)
   !enddo
-  !write(6,*)
+  !write(*,*)
 end subroutine downsample

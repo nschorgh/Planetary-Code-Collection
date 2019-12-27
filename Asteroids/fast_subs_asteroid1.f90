@@ -117,7 +117,7 @@ subroutine ajsub_asteroid(latitude, albedo, z, ti, rhocv, ecc, omega, &
      Tmean0 = Tmean0-5.
      if (Tmean0<50.) Tmean0=50.
      print *,Tmean0,S1,latitude,cos(latitude)
-     write(6,*) '# initialized with temperature estimate of',Tmean0,'K'
+     write(*,*) '# initialized with temperature estimate of',Tmean0,'K'
      write(34,*) '# initialized with temperature estimate of',Tmean0,'K'
      T(1:nz) = Tmean0 
      Tsurf = Tmean0

@@ -118,7 +118,7 @@ contains
           case (2)
              call horizon_core(x0,y0,h00,smax,ii,jj,h2,P)
           end select
-          if (VERBOSE) write(6,*) 'Level',L,P*ii,P*jj,smax(90)
+          if (VERBOSE) print *,'Level',L,P*ii,P*jj,smax(90)
        else
           call findallhorizon_recursive(ii,jj,h,x0,y0,h00,naz,smax,RMG,L-1)
        endif
