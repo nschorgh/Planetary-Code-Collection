@@ -41,19 +41,19 @@ end subroutine findallhorizon1
 
 pure subroutine horizon_core(x0,y0,h00,smax,i,j,h,P)
   ! can be used for single- or multi-grid
-  use filemanager, only : NSx,NSy,dx,dy
+  use filemanager, only : NSx, NSy, dx, dy
   use allinterfaces, only : horizontaldistance1, azimuth1, diffangle
   use azRays
   implicit none
-  real(8), intent(IN) :: x0,y0,h00  ! on fine grid
+  real(8), intent(IN) :: x0, y0, h00  ! on fine grid
   real(8), intent(INOUT) :: smax(naz)
-  integer, intent(IN) :: i,j,P  ! fine or coarse grid
+  integer, intent(IN) :: i, j, P  ! fine or coarse grid
   real(8), intent(IN) :: h(NSx/P,NSy/P) ! fine or coarse grid
 
   integer k,in,jn,ak,ak1,ak2,buf,akak
-  integer nx,ny    ! grid-level specific grid size
+  integer nx, ny    ! grid-level specific grid size
   real(8) az,az_neighbor,t,r,r_neighbor,rcut,s,hcut,d1,d2,d3
-  real(8) dxl,dyl  ! grid-level specific resolution
+  real(8) dxl, dyl  ! grid-level specific resolution
   integer, parameter :: ex(8) = (/ 1, 1, 0, -1, -1, -1, 0, 1 /)
   integer, parameter :: ey(8) = (/ 0, 1, 1, 1, 0, -1, -1, -1 /)
   !real(8) f,azRay(naz)
@@ -70,8 +70,8 @@ pure subroutine horizon_core(x0,y0,h00,smax,i,j,h,P)
   az = azimuth1(x0,y0,i*dxl,j*dyl)
 
   if (floor(az*f)==ceiling(az*f)) then  ! grid point lies on ray
-     ak=nint(az*f)+1
-     s = (h(i,j)-h00)/r
+     ak = nint(az*f)+1
+     s = (h(i,j)-h00) / r
      if (s>smax(ak)) smax(ak)=s
      return
   endif
@@ -79,8 +79,7 @@ pure subroutine horizon_core(x0,y0,h00,smax,i,j,h,P)
   do k=1,8
      in = i+ex(k)
      jn = j+ey(k)
-     if (in>nx .or. jn>ny) cycle
-     if (in<1 .or. jn<1) cycle
+     if (in<1 .or. in>nx .or. jn<1 .or. jn>ny) cycle
      if (horizontaldistance1(x0,y0,in*dxl,jn*dyl) == 0.) cycle
      az_neighbor = azimuth1(x0,y0,in*dxl,jn*dyl)
 
@@ -104,7 +103,7 @@ pure subroutine horizon_core(x0,y0,h00,smax,i,j,h,P)
         d1=diffangle(az,azRay(ak))
         d2=diffangle(az_neighbor,azRay(ak))
         
-        if (d1+d2<=d3+1.d-5) then  
+        if (d1+d2 <= d3+1.d-5) then  
            if (d1>1.0*d3 .and. d3>1.d-6) cycle 
            r_neighbor = horizontaldistance1(in*dxl,jn*dyl,x0,y0)
            ! edge between h1,i0,j0 and h2,in,jn
@@ -113,9 +112,9 @@ pure subroutine horizon_core(x0,y0,h00,smax,i,j,h,P)
            else
               t = 0.5  ! dirty fix
            endif
-           hcut = h(i,j)*(1-t)+h(in,jn)*t
-           rcut = r*(1-t)+r_neighbor*t
-           s = (hcut-h00)/rcut
+           hcut = h(i,j)*(1-t) + h(in,jn)*t
+           rcut = r*(1-t) + r_neighbor*t
+           s = (hcut-h00) / rcut
            if (s>smax(ak)) smax(ak)=s
         endif
      end do  ! end of ak loop
