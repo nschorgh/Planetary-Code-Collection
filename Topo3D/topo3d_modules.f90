@@ -285,6 +285,13 @@ MODULE allinterfaces
   end interface
 
   interface
+     integer function findmaxlevel(LMAX)
+       implicit none
+       integer, intent(IN) :: LMAX
+     end function findmaxlevel
+  end interface
+  
+  interface
      subroutine findallgridpoints_MGR(i0,j0,RMG,L)
        implicit none
        integer, intent(IN) :: i0, j0, L

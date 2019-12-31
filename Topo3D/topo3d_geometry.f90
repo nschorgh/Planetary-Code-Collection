@@ -64,10 +64,12 @@ subroutine downsample(NSx,NSy,h,hhalf)
   real(8), intent(IN) :: h(NSx,NSy)
   real(8), intent(OUT) :: hhalf(NSx/2,NSy/2) ! new dimensions
   integer :: x(NSx/2), y(NSy/2)
-  integer i2, j2, ii, jj, k, r
-  real(8) psum, w(NSx/2,NSy/2)
-  integer, parameter :: ei(5) = (/0, 1, 0, -1, 0 /) ! counter-clockwise
-  integer, parameter :: ej(5) = (/0, 0, 1, 0, -1 /)
+  integer i2, j2, ii, jj, k, r2
+  real(8) psum, w, wsum(NSx/2,NSy/2)
+  !integer, parameter :: ei(5) = (/0, 1, 0, -1, 0 /) ! counter-clockwise
+  !integer, parameter :: ej(5) = (/0, 0, 1, 0, -1 /)
+  integer, parameter :: ei(9) = (/ 0, 1, 1, 0, -1, -1, -1, 0, 1 /)
+  integer, parameter :: ej(9) = (/ 0, 0, 1, 1, 1, 0, -1, -1, -1 /)
   integer, parameter :: nan = -32000 
 
   do i2=1,NSx/2
@@ -79,27 +81,35 @@ subroutine downsample(NSx,NSy,h,hhalf)
         if (x(i2)>NSx .or. y(j2)>NSy) cycle
 
         ! weighted average
-        psum = 0.; w(i2,j2)=0.
-        do k=1,5
+        psum = 0.; wsum(i2,j2)=0.
+        do k = 1,9
            ii = x(i2) + ei(k)
            jj = y(j2) + ej(k)
            if (ii>NSx .or. ii<1) cycle
            if (jj>NSy .or. jj<1) cycle
            if (h(ii,jj)<=nan) cycle
-           r = 1+3*(ei(k)**2+ej(k)**2)  ! should be 1 or 4
-           psum = psum + h(ii,jj)/r           
-           w(i2,j2) = w(i2,j2) + 1./r
+
+           r2 = ei(k)**2 + ej(k)**2  ! 0, 1, or 2
+
+           ! 4 neighbors
+           !w = 1./(2+6*r2)  ! weights 1/2 and 1/8
+
+           ! 8 neighbors
+           w = 1./(4 + 2*r2 + 2*r2**2)  ! weights 1/4, 1/8, 1/16
+           
+           psum = psum + h(ii,jj)*w
+           wsum(i2,j2) = wsum(i2,j2) + w
         enddo
-        if (w(i2,j2)>=1.5) then    ! 1/1 + 4/4 = 2
-           hhalf(i2,j2) = psum/w(i2,j2)
-        else ! only two or fewer valid neighbors
+        
+        if (wsum(i2,j2)>=0.5) then 
+           hhalf(i2,j2) = psum/wsum(i2,j2)
+        else ! too few grid points for averaging
            hhalf(i2,j2) = nan
         endif
 
      enddo
   enddo
   !do j2=1,NSy/2
-  !   write(*,'(9999(f3.1,1x))') w(:,j2)
+  !   write(*,'(9999(f3.1,1x))') wsum(:,j2)
   !enddo
-  !write(*,*)
 end subroutine downsample
