@@ -12,8 +12,8 @@ MODULE findvisibletopo
   integer, dimension(naz,CCMAX), private :: celli, cellj 
 
   integer, private :: ak
-  real(8), parameter, private :: pi=3.1415926535897931
-  real(8), parameter, private :: f=naz/(2*pi)
+  real(8), parameter, private :: pi = 3.1415926535897931
+  real(8), parameter, private :: f = naz/(2*pi)
   real(8), parameter, public :: azRay(naz) = (/ ( (ak-1)/f, ak=1,naz) /)
   
 contains
@@ -175,7 +175,7 @@ END MODULE findvisibletopo
 
 
 subroutine find3dangle(h,i0,j0,unit,visibility)
-! calculate subtended spherical angle and view factor
+! calculate subtended spherical angles and view factors
 ! write view factors to file
   use filemanager
   use allinterfaces, except_this_one => find3dangle
@@ -184,12 +184,11 @@ subroutine find3dangle(h,i0,j0,unit,visibility)
   real(8), intent(IN) :: h(NSx,NSy)
   logical, intent(IN) :: visibility(NSx,NSy)
   real(8), parameter :: pi=3.1415926535897931
-  integer i, j, k, cc
-  real(8) r, thetac, phic, dOh, landsize, cosv, viewsize
+  integer i, j, cc
+  real(8) r, dOh, landsize, cosv, VF, viewsize
   real(8) surfaceSlope, azFac
   integer, parameter :: CCMAX = NSx*NSy 
   integer, dimension(CCMAX) :: cellx, celly
-  !real(8), dimension(CCMAX) :: thetastack, phistack
   real(8), dimension(CCMAX) :: dOstack, VFstack
   real(8), dimension(4) :: hq, xq, yq, theta, phi  ! quadrangle corners
   logical, parameter :: verbose = .false.
@@ -204,13 +203,13 @@ subroutine find3dangle(h,i0,j0,unit,visibility)
      if (r>RMAX) cycle  ! to save computational cost
      do j=2,NSy-1
         dOh = 0.
+        VF = 0.
         if (i==i0 .and. j==j0 .and. .not.verbose) cycle
         if (.not.visibility(i,j) .and. .not.verbose) cycle
-        !r = sqrt(dx*dx*(i-i0)**2+dy*dy*(j-j0)**2)
         r = horizontaldistance1(i*dx,j*dy,i0*dx,j0*dy)
         if (r>RMAX .and. .not.verbose) cycle  ! to save computational cost
 
-        call xyz2thetaphi(dx*(i-i0),dy*(j-j0),h(i,j)-h(i0,j0),thetac,phic)
+        !call xyz2thetaphi(dx*(i-i0),dy*(j-j0),h(i,j)-h(i0,j0),thetac,phic)
 
 !-------get quadrangle centers
         ! upper right
@@ -235,43 +234,34 @@ subroutine find3dangle(h,i0,j0,unit,visibility)
 
         hq = hq - h(i0,j0)
 
-!-------get spherical angle
-        do k=1,4
-           call xyz2thetaphi(xq(k),yq(k),hq(k),theta(k),phi(k))
-        end do
+!-------calculate spherical angle
+        call xyz2thetaphi(xq,yq,hq,theta,phi) ! elemental
 
-        if (visibility(i,j)) then
-           dOh = area_spherical_quadrangle(phi,theta)
-        else
-           dOh = 0.  ! for verbose mode
-        end if
-        if (i==i0 .and. j==j0 .and. verbose) then
-           dOh = 0.
-           thetac = 3.1416/2.; phic = 0.
-        endif
+        dOh = area_spherical_quadrangle(phi,theta)
+        if (i==i0 .and. j==j0 .and. verbose) dOh = 0.
         
         if (verbose) then
            write(23,'(4(i5,1x),f7.2,1x,g10.4,1x,l)') &
                 & i0,j0,i,j,h(i,j),dOh,visibility(i,j)
         endif
 
+        ! cos(v)
+        cosv = cos_viewing_angle(i0*dx,j0*dy,h(i0,j0),surfaceSlope,azFac,i*dx,j*dy,h(i,j))
+        VF = dOh*cosv/pi  ! view factor
+
         !if (dOh<0.) stop 'Does this ever happen?'
         if (dOh>0.) then
            cc = cc+1   
            if (cc>CCMAX) stop 'find3dangle: not enough memory allocated'
            cellx(cc)=i; celly(cc)=j
-           !thetastack(cc)=thetac; phistack(cc)=phic  ! for optional output
-           dOstack(cc)=dOh
-
-           !cosv = cos_viewing_angle(i0,j0,i,j,h)  ! cos(v)
-           cosv = cos_viewing_angle(i0*dx,j0*dy,h(i0,j0),surfaceSlope,azFac,i*dx,j*dx,h(i,j))
-           
-           VFstack(cc) = dOh*cosv/pi  ! view factor
+           dOstack(cc) = dOh
+           VFstack(cc) = VF
         endif
+        
      end do
   end do
 
-  landsize = sum(dOstack(1:cc))   ! 2*pi- size of sky
+  landsize = sum(dOstack(1:cc))   ! 2*pi - (size of sky)
   viewsize = sum(VFstack(1:cc)) 
 
   !write(unit-1,'(2(i5,1x),i6,1x,f7.5,1x)',advance='no') i0, j0, cc, landsize
@@ -279,15 +269,13 @@ subroutine find3dangle(h,i0,j0,unit,visibility)
   !   write(unit-1,'(2(i5,1x),g10.4,1x)',advance='no') cellx(i),celly(i),dOstack(i)
   !end do
   !write(unit-1,"('')")
-
+  
   write(unit,'(2(i5,1x),i6,1x,2(f7.5,1x))',advance='no') i0, j0, cc, landsize, viewsize
   do i=1,cc
      write(unit,'(2(i5,1x),g10.4,1x)',advance='no') cellx(i),celly(i),VFstack(i)
   end do
   write(unit,"('')")
   
-  if (minval(cellx(1:cc))<1 .or. minval(celly(1:cc))<1) stop 'find3dangle: index out of boud'
-  if (maxval(cellx(1:cc))>NSx .or. maxval(celly(1:cc))>NSy) stop 'find3dangle: index out of boud'
 end subroutine find3dangle
 
 
