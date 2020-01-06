@@ -55,8 +55,8 @@ stabgrow_fast: fast_modules.o fast_subs_exper.o stabgrow_fast.o \
 	$(SR)tridag.o $(SR)conductionT.o $(SR)grids.o soilthprop.o \
 	$(SR)psv.o $(SR)derivs.o -o $@
 
-exper_fast: fast_modules.o exper_fast.o fast_subs_univ.o fast_subs_exper.o \
-	soilthprop.o makefile
+exper_fast: fast_modules.o exper_fast.o fast_subs_univ.o \
+	fast_subs_exper.o soilthprop.o makefile
 	make -C $(SR) common
 	$(CC) $(LFLAGS) exper_fast.o $(SR)tridag.o $(SR)conductionT.o \
 	$(SR)grids.o soilthprop.o $(SR)psv.o $(SR)derivs.o \
@@ -70,8 +70,7 @@ mars_fast: fast_modules.o mars_fast.o fast_subs_univ.o fast_subs_mars.o \
 	fast_subs_univ.o flux_mars.o $(SR)conductionQ.o $(SR)psvco2.o \
 	$(SR)generalorbit.o fast_subs_mars.o -o $@
 
-insol_driver: insol_driver.o $(SR)generalorbit.o $(SR)flux_noatm.o \
-	makefile
+insol_driver: insol_driver.o $(SR)generalorbit.o $(SR)flux_noatm.o makefile
 	make -C $(SR) common
 	$(CC) $(LFLAGS) insol_driver.o $(SR)generalorbit.o \
 	$(SR)flux_noatm.o

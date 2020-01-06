@@ -1,4 +1,4 @@
-module azRays
+MODULE azRays
   implicit none
   integer, parameter :: naz = 180  ! # of azimuths
   real(8), parameter :: pi = 3.1415926535897931
@@ -7,8 +7,8 @@ module azRays
   integer, private :: ak
   real(8), parameter :: azRay(naz) = (/ ( (ak-1)/f, ak=1,naz) /)
   ! inverse mapping:  ak = azRay*f+1
-  ! pre-defining azRay leads to performance improvement in horizon_core
-end module azRays
+  ! pre-defining azRay improves performance in horizon_core
+END MODULE azRays
 
 
 
@@ -56,8 +56,6 @@ pure subroutine horizon_core(x0,y0,h00,smax,i,j,h,P)
   real(8) dxl, dyl  ! grid-level specific resolution
   integer, parameter :: ex(8) = (/ 1, 1, 0, -1, -1, -1, 0, 1 /)
   integer, parameter :: ey(8) = (/ 0, 1, 1, 1, 0, -1, -1, -1 /)
-  !real(8) f,azRay(naz)
-  !real(8), parameter :: pi=3.1415926535897931
 
   nx = NSx/P; ny = NSy/P
   dxl = P*dx; dyl = P*dy

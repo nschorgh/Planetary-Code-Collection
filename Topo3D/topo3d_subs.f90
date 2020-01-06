@@ -1,4 +1,4 @@
-module newhorizons
+MODULE newhorizons
   ! reads and privately stores horizon data
   ! and contains functions that calculate values from horizons
   use filemanager, only : NSx, NSy, sfn
@@ -155,8 +155,8 @@ contains
     getoneGterm = cos(alpha)*G1 + sin(alpha)*G2
     ! getoneGterm should never be negative
   end function getoneGterm
-  
-end module newhorizons
+
+END MODULE newhorizons
 
 
 

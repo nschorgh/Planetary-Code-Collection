@@ -1,4 +1,4 @@
-module filemanager 
+MODULE filemanager 
   implicit none
   ! NSx = # pixels in x-direction (longitude)
   ! NSy = # pixels in y-direction (latitude)
@@ -10,6 +10,8 @@ module filemanager
   character(len=*), parameter :: fileext = 'topo40'
   !integer, parameter :: NSx=81, NSy=81
   !character(len=*), parameter :: fileext = 'topo81'
+  !integer, parameter :: NSx=81, NSy=71
+  !character(len=*), parameter :: fileext = 'boulder2'
   real(8), parameter :: dx=5., dy=5., RMAX=1e35
 
   
@@ -86,6 +88,5 @@ module filemanager
        sfn='./horizons.'//fileext ,& ! path and filename for horizons.* input 
        vfn='./viewfactors.'//fileext  ! path and filename for viewfactors.* input
   ! outputs are written to working directory
-end module filemanager
-
+END MODULE filemanager
 

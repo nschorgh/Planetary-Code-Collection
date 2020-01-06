@@ -1,4 +1,4 @@
-! subroutines for multigrid acceleration
+! subroutines for multigrid acceleration of horizons calculation
 
 
 MODULE multigrid
@@ -20,50 +20,56 @@ MODULE multigrid
 
   
 contains
+  
   subroutine downsample_all(h,LMAX,LACT)
     use allinterfaces, only: downsample
     implicit none
     integer, intent(IN) :: LMAX
     real(8), intent(IN) :: h(NSx,NSy)
     integer, intent(OUT) :: LACT  ! levels actually allocated
+    integer, parameter :: MINPWIDTH = 5
+    integer NS
 
+    NS = min(NSx,NSy)
+    
     LACT = 1
-    if (LMAX<2) return
-    allocate(h2(NSx/2,NSy/2))
-    call downsample(NSx,NSy,h,h2)
-    LACT = 2
-    if (min(NSx,NSy)/4>8 .and. LMAX>=3) then
-       allocate(h3(NSx/4,NSy/4))
-       call downsample(NSx/2,NSy/2,h2,h3)
-       LACT = 3
-       if (min(NSx,NSy)/8>8 .and. LMAX>=4) then
-          allocate(h4(NSx/8,NSy/8))
-          call downsample(NSx/4,NSy/4,h3,h4)
-          LACT = 4
-          if (min(NSx,NSy)/16>8 .and. LMAX>=5) then
-             allocate(h5(NSx/16,NSy/16));
-             call downsample(NSx/8,NSy/8,h4,h5)
-             LACT = 5
-             if (min(NSx,NSy)/32>8 .and. LMAX>=6) then
-                allocate(h6(NSx/32,NSy/32))
-                call downsample(NSx/16,NSy/16,h5,h6)
-                LACT = 6
-                if (min(NSx,NSy)/64>8 .and. LMAX>=7) then
-                   allocate(h7(NSx/64,NSy/64))
-                   call downsample(NSx/32,NSy/32,h6,h7)
-                   LACT = 7
-                   if (min(NSx,NSy)/128>8 .and. LMAX>=8) then
-                      allocate(h8(NSx/128,NSy/128))
-                      call downsample(NSx/64,NSy/64,h7,h8)
-                      LACT = 8
-                      if (min(NSx,NSy)/256>8 .and. LMAX>=9) then
-                         allocate(h9(NSx/256,NSy/256))
-                         call downsample(NSx/128,NSy/128,h8,h9)
-                         LACT = 9
-                         if (min(NSx,NSy)/512>8 .and. LMAX>=10) then
-                            allocate(h10(NSx/512,NSy/512))
-                            call downsample(NSx/256,NSy/256,h9,h10)
-                            LACT = 10
+    if (NS/2 > MINPWIDTH .and. LMAX>=2) then
+       allocate(h2(NSx/2,NSy/2))
+       call downsample(NSx,NSy,h,h2)
+       LACT = 2
+       if (NS/4 > MINPWIDTH .and. LMAX>=3) then
+          allocate(h3(NSx/4,NSy/4))
+          call downsample(NSx/2,NSy/2,h2,h3)
+          LACT = 3
+          if (NS/8 > MINPWIDTH .and. LMAX>=4) then
+             allocate(h4(NSx/8,NSy/8))
+             call downsample(NSx/4,NSy/4,h3,h4)
+             LACT = 4
+             if (NS/16 > MINPWIDTH .and. LMAX>=5) then
+                allocate(h5(NSx/16,NSy/16));
+                call downsample(NSx/8,NSy/8,h4,h5)
+                LACT = 5
+                if (NS/32 > MINPWIDTH .and. LMAX>=6) then
+                   allocate(h6(NSx/32,NSy/32))
+                   call downsample(NSx/16,NSy/16,h5,h6)
+                   LACT = 6
+                   if (NS/64 > MINPWIDTH .and. LMAX>=7) then
+                      allocate(h7(NSx/64,NSy/64))
+                      call downsample(NSx/32,NSy/32,h6,h7)
+                      LACT = 7
+                      if (NS/128 > MINPWIDTH .and. LMAX>=8) then
+                         allocate(h8(NSx/128,NSy/128))
+                         call downsample(NSx/64,NSy/64,h7,h8)
+                         LACT = 8
+                         if (NS/256 > MINPWIDTH .and. LMAX>=9) then
+                            allocate(h9(NSx/256,NSy/256))
+                            call downsample(NSx/128,NSy/128,h8,h9)
+                            LACT = 9
+                            if (NS/512 > MINPWIDTH .and. LMAX>=10) then
+                               allocate(h10(NSx/512,NSy/512))
+                               call downsample(NSx/256,NSy/256,h9,h10)
+                               LACT = 10
+                            endif
                          endif
                       endif
                    endif
@@ -75,7 +81,7 @@ contains
   end subroutine downsample_all
 
   
-  subroutine findallhorizon_MGR(h,i0,j0,naz,smax,RMG,L)
+  pure subroutine findallhorizon_MGR(h,i0,j0,naz,smax,RMG,L)
     ! based on shadow_subs.f90, but for multigrid method
     ! recursive implementation
     use allinterfaces, only: horizontaldistance1
@@ -86,9 +92,8 @@ contains
     real(8), intent(OUT) :: smax(naz)
     integer P, ii, jj
     real(8) r, x0, y0, h00
-    logical, parameter :: VERBOSE = .false.
 
-    smax=0.
+    smax(:) = 0.
     
     x0 = i0*dx; y0 = j0*dy; h00 = h(i0,j0)
     
@@ -97,7 +102,7 @@ contains
     ! The top loop for the coarsest grid is different from all others
     do ii=1,NSx/P + 1; do jj=1,NSy/P+1  ! +1 so a last odd one gets included too
        r = horizontaldistance1(P*ii*dx,P*jj*dy,x0,y0)
-       if (r>=P/2*RMG) then  ! do 1 coarse grid cell
+       if (r>=P/2*RMG) then  ! do 1 coarse grid cell (root node)
           select case (L)
           case (10)
              call horizon_core(x0,y0,h00,smax,ii,jj,h10,P)
@@ -118,7 +123,7 @@ contains
           case (2)
              call horizon_core(x0,y0,h00,smax,ii,jj,h2,P)
           end select
-          if (VERBOSE) print *,'Level',L,P*ii,P*jj,smax(90)
+          !print *,'Level',L,P*ii,P*jj,smax(90)
        else
           call findallhorizon_recursive(ii,jj,h,x0,y0,h00,naz,smax,RMG,L-1)
        endif
@@ -140,34 +145,34 @@ contains
     ! if distance is too close, switch to finer grid
     
     P = 2**(L-1)
-    if (L>9) error stop 'findallhorizon_recursive: exceeds maximum number of levels'
+    if (L>=10) error stop 'findallhorizon_recursive: exceeds maximum number of levels'
     if (L<1) error stop 'findallhorizon_recursive: level is zero or negative'
-    do ii=2*i-1,2*i; do jj=2*j-1,2*j
+    do ii=2*i-1,2*i; do jj=2*j-1,2*j ! 4 cells
        r = horizontaldistance1(P*ii*dx,P*jj*dy,x0,y0)
        if (P==1) r = 0.  ! should be redundant
        if (r>=P/2*RMG) then  ! do 1 coarse grid cell
           select case (L)
           case (9)  ! one below the highest
-             call horizon_core(x0,y0,h00,smax,ii,jj,h9,256)
+             call horizon_core(x0,y0,h00,smax,ii,jj,h9,P)
           case (8) 
-             call horizon_core(x0,y0,h00,smax,ii,jj,h8,128)
+             call horizon_core(x0,y0,h00,smax,ii,jj,h8,P)
           case (7)
-             call horizon_core(x0,y0,h00,smax,ii,jj,h7,64)
+             call horizon_core(x0,y0,h00,smax,ii,jj,h7,P)
           case (6)
-             call horizon_core(x0,y0,h00,smax,ii,jj,h6,32)
+             call horizon_core(x0,y0,h00,smax,ii,jj,h6,P)
           case (5)
-             call horizon_core(x0,y0,h00,smax,ii,jj,h5,16)
+             call horizon_core(x0,y0,h00,smax,ii,jj,h5,P)
           case (4)
-             call horizon_core(x0,y0,h00,smax,ii,jj,h4,8)
+             call horizon_core(x0,y0,h00,smax,ii,jj,h4,P)
           case (3)
-             call horizon_core(x0,y0,h00,smax,ii,jj,h3,4)
+             call horizon_core(x0,y0,h00,smax,ii,jj,h3,P)
           case (2)
-             call horizon_core(x0,y0,h00,smax,ii,jj,h2,2)
-          case (1)
-             if (ii<=1 .or. jj<=1 .or. ii>=NSx .or. jj>=NSy) cycle
-             call horizon_core(x0,y0,h00,smax,ii,jj,h,1)
+             call horizon_core(x0,y0,h00,smax,ii,jj,h2,P)
+          case (1)  ! reached finest grid
+             if (ii<=1 .or. jj<=1 .or. ii>=NSx .or. jj>=NSy) cycle ! strip margin
+             call horizon_core(x0,y0,h00,smax,ii,jj,h,P)
           end select
-       else ! do 4 finer cells
+       else ! do 4 finer cells (descend on quad-tree)
           call findallhorizon_recursive(ii,jj,h,x0,y0,h00,naz,smax,RMG,L-1)
        endif
     enddo; enddo

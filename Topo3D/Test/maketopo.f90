@@ -12,14 +12,10 @@ program maketopo
   R = 50*dx
   i0=ceiling(NSx/2.); j0=ceiling(NSy/2.)
 
-  !depthtodiam = 0.5
-  !R=15*dx
-  !i0=NSx/2; j0=NSx*4./5.
-
   ! height of center of sphere above zero level
   z0 = R*(1-4*depthtodiam**2)/(1+4*depthtodiam**2)
   ! crater diameter
-  ! D = 2*depthtodiam*R / (1/4+depthtodiam**2)
+  ! D = 2*depthtodiam*R / (1./4.+depthtodiam**2)
     
   open(unit=20,file='topo.xyz',status='unknown',action='write')
   do j=1,NSy
@@ -27,7 +23,7 @@ program maketopo
         x = dx*(i-i0)
         y = dx*(j-j0)
 
-        ! spherical crater
+        ! spherical (bowl-shaped) crater
         if (x**2+y**2 < R**2) then
            h(i,j) = z0 - sqrt(R**2-x**2-y**2)
         else

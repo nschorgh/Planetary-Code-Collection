@@ -211,7 +211,7 @@ subroutine find3dangle(h,i0,j0,unit,visibility)
 
         !call xyz2thetaphi(dx*(i-i0),dy*(j-j0),h(i,j)-h(i0,j0),thetac,phic)
 
-!-------get quadrangle centers
+!-------get quadrangle corners
         ! upper right
         hq(1) = (h(i+1,j)+h(i+1,j+1)+h(i,j+1)+h(i,j))/4.
         xq(1) = dx*(i-i0+1./2.)
@@ -232,8 +232,8 @@ subroutine find3dangle(h,i0,j0,unit,visibility)
         xq(4) = dx*(i-i0+1./2.)
         yq(4) = dy*(j-j0-1./2.)
 
-        hq = hq - h(i0,j0)
-
+        hq(:) = hq(:) - h(i0,j0)
+        
 !-------calculate spherical angle
         call xyz2thetaphi(xq,yq,hq,theta,phi) ! elemental
 
