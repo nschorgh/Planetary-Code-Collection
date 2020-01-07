@@ -3,8 +3,8 @@
 
 MODULE multigrid
   use filemanager, only : NSx, NSy, dx, dy
-  real(8), allocatable, private :: h2(:,:), h3(:,:), h4(:,:), h5(:,:), h6(:,:)
-  real(8), allocatable, private :: h7(:,:), h8(:,:), h9(:,:), h10(:,:)
+  real(8), allocatable, private, target :: h2(:,:), h3(:,:), h4(:,:), h5(:,:), h6(:,:)
+  real(8), allocatable, private, target :: h7(:,:), h8(:,:), h9(:,:), h10(:,:)
 
   interface
      pure subroutine horizon_core(x0,y0,h00,smax,i,j,h,P)
@@ -20,7 +20,38 @@ MODULE multigrid
 
   
 contains
-  
+
+  subroutine L2coarse(L,hcoarse)
+    ! returns pointer to coarse topography array, levels 2...10
+    implicit none
+    integer, intent(IN) :: L
+    real(8), intent(OUT), pointer :: hcoarse(:,:)
+        
+    select case (L)
+    case (10)
+       hcoarse => h10
+    case (9)
+       hcoarse => h9
+    case (8)
+       hcoarse => h8
+    case (7)
+       hcoarse => h7
+    case (6)
+       hcoarse => h6
+    case (5)
+       hcoarse => h5
+    case (4)
+       hcoarse => h4
+    case (3)
+       hcoarse => h3
+    case (2)
+       hcoarse => h2
+    case default
+       error stop 'L2coarse: level out of range'
+    end select
+  end subroutine L2coarse
+
+
   subroutine downsample_all(h,LMAX,LACT)
     use allinterfaces, only: downsample
     implicit none
@@ -79,9 +110,9 @@ contains
        endif
     endif
   end subroutine downsample_all
-
   
-  pure subroutine findallhorizon_MGR(h,i0,j0,naz,smax,RMG,L)
+  
+  subroutine findallhorizon_MGR(h,i0,j0,naz,smax,RMG,L)
     ! based on shadow_subs.f90, but for multigrid method
     ! recursive implementation
     use allinterfaces, only: horizontaldistance1
@@ -92,6 +123,7 @@ contains
     real(8), intent(OUT) :: smax(naz)
     integer P, ii, jj
     real(8) r, x0, y0, h00
+    real(8), pointer :: hcoarse(:,:)
 
     smax(:) = 0.
     
@@ -103,26 +135,8 @@ contains
     do ii=1,NSx/P + 1; do jj=1,NSy/P+1  ! +1 so a last odd one gets included too
        r = horizontaldistance1(P*ii*dx,P*jj*dy,x0,y0)
        if (r>=P/2*RMG) then  ! do 1 coarse grid cell (root node)
-          select case (L)
-          case (10)
-             call horizon_core(x0,y0,h00,smax,ii,jj,h10,P)
-          case (9)
-             call horizon_core(x0,y0,h00,smax,ii,jj,h9,P)
-          case (8)
-             call horizon_core(x0,y0,h00,smax,ii,jj,h8,P)
-          case (7)
-             call horizon_core(x0,y0,h00,smax,ii,jj,h7,P)
-          case (6)
-             call horizon_core(x0,y0,h00,smax,ii,jj,h6,P)
-          case (5)
-             call horizon_core(x0,y0,h00,smax,ii,jj,h5,P)
-          case (4)
-             call horizon_core(x0,y0,h00,smax,ii,jj,h4,P)
-          case (3)
-             call horizon_core(x0,y0,h00,smax,ii,jj,h3,P)
-          case (2)
-             call horizon_core(x0,y0,h00,smax,ii,jj,h2,P)
-          end select
+          call L2coarse(L,hcoarse)
+          call horizon_core(x0,y0,h00,smax,ii,jj,hcoarse,P)
           !print *,'Level',L,P*ii,P*jj,smax(90)
        else
           call findallhorizon_recursive(ii,jj,h,x0,y0,h00,naz,smax,RMG,L-1)
@@ -131,7 +145,7 @@ contains
   end subroutine findallhorizon_MGR
 
 
-  pure recursive subroutine findallhorizon_recursive(i,j,h,x0,y0,h00,naz,smax,RMG,L)
+  recursive subroutine findallhorizon_recursive(i,j,h,x0,y0,h00,naz,smax,RMG,L)
     use allinterfaces, only: horizontaldistance1
     implicit none
     integer, intent(IN) :: naz, L, i, j
@@ -140,6 +154,7 @@ contains
     real(8), intent(INOUT) :: smax(naz)
     integer ii, jj, P
     real(8) r
+    real(8), pointer :: hcoarse(:,:)
     
     ! start with the coarsest grid
     ! if distance is too close, switch to finer grid
@@ -150,28 +165,14 @@ contains
     do ii=2*i-1,2*i; do jj=2*j-1,2*j ! 4 cells
        r = horizontaldistance1(P*ii*dx,P*jj*dy,x0,y0)
        if (P==1) r = 0.  ! should be redundant
-       if (r>=P/2*RMG) then  ! do 1 coarse grid cell
-          select case (L)
-          case (9)  ! one below the highest
-             call horizon_core(x0,y0,h00,smax,ii,jj,h9,P)
-          case (8) 
-             call horizon_core(x0,y0,h00,smax,ii,jj,h8,P)
-          case (7)
-             call horizon_core(x0,y0,h00,smax,ii,jj,h7,P)
-          case (6)
-             call horizon_core(x0,y0,h00,smax,ii,jj,h6,P)
-          case (5)
-             call horizon_core(x0,y0,h00,smax,ii,jj,h5,P)
-          case (4)
-             call horizon_core(x0,y0,h00,smax,ii,jj,h4,P)
-          case (3)
-             call horizon_core(x0,y0,h00,smax,ii,jj,h3,P)
-          case (2)
-             call horizon_core(x0,y0,h00,smax,ii,jj,h2,P)
-          case (1)  ! reached finest grid
+       if (r>=P/2*RMG) then ! do 1 coarse grid cell
+          if (L>1) then
+             call L2coarse(L,hcoarse)
+             call horizon_core(x0,y0,h00,smax,ii,jj,hcoarse,P)
+          else ! L=1, reached finest grid
              if (ii<=1 .or. jj<=1 .or. ii>=NSx .or. jj>=NSy) cycle ! strip margin
              call horizon_core(x0,y0,h00,smax,ii,jj,h,P)
-          end select
+          end if
        else ! do 4 finer cells (descend on quad-tree)
           call findallhorizon_recursive(ii,jj,h,x0,y0,h00,naz,smax,RMG,L-1)
        endif
