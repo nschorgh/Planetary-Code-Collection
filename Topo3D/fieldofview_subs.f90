@@ -175,8 +175,9 @@ END MODULE findvisibletopo
 
 
 subroutine find3dangle(h,i0,j0,unit,visibility)
-! calculate subtended spherical angles and view factors
-! write view factors to file
+  ! calculate subtended spherical angles and view factors of
+  !     all quadrangles visible from (i0*dx,j0*dy,h(i0,j0))
+  ! write view factors to file
   use filemanager
   use allinterfaces, except_this_one => find3dangle
   implicit none

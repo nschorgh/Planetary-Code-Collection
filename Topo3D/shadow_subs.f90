@@ -14,22 +14,20 @@ END MODULE azRays
 
 subroutine findallhorizon1(h,i0,j0,naz,smax)
   ! find all horizon heights, without use of multigrid
-  use filemanager, only : NSx,NSy,dx,dy,RMAX
+  use filemanager, only : NSx, NSy, dx, dy, RMAX
   use allinterfaces, only : horizontaldistance1
   implicit none
-  integer, intent(IN) :: i0,j0,naz
+  integer, intent(IN) :: i0, j0, naz
   real(8), intent(IN) :: h(NSx,NSy)
   real(8), intent(OUT) :: smax(naz)
-  integer i,j
-  real(8) x0,y0,h00
+  integer i, j
+  real(8) x0, y0, h00
   
-  smax(:)=0.
+  smax(:) = 0.
   x0 = i0*dx; y0 = j0*dy; h00 = h(i0,j0)
   do i=2,NSx-1
-     !if (horizontaldistance(i,1,i0,1)>RMAX) cycle  ! saves computations
      if (horizontaldistance1(i*dx,1*dy,x0,1*dy)>RMAX) cycle  ! saves computations
      do j=2,NSy-1
-        !if (horizontaldistance(i,j,i0,j0)>RMAX) cycle  ! saves computations
         if (horizontaldistance1(i*dx,j*dy,x0,y0)>RMAX) cycle  ! saves computations
         call horizon_core(x0,y0,h00,smax,i,j,h,1)
      end do
@@ -40,13 +38,16 @@ end subroutine findallhorizon1
 
 
 pure subroutine horizon_core(x0,y0,h00,smax,i,j,h,P)
+  ! return elevation of point (i*dxl,j*dxl,h(i,j)) as viewed from point
+  !         (x0,y0,h00) along pre-defined azimuth ray via interpolation
+  ! this automatically finds the relevant azimuth ray(s)
   ! can be used for single- or multi-grid
   use filemanager, only : NSx, NSy, dx, dy
   use allinterfaces, only : horizontaldistance1, azimuth1, diffangle
   use azRays
   implicit none
   real(8), intent(IN) :: x0, y0, h00  ! on fine grid
-  real(8), intent(INOUT) :: smax(naz)
+  real(8), intent(INOUT) :: smax(naz) ! slope (unitless)
   integer, intent(IN) :: i, j, P  ! fine or coarse grid
   real(8), intent(IN) :: h(NSx/P,NSy/P) ! fine or coarse grid
 

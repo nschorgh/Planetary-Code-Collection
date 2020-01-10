@@ -9,11 +9,8 @@ C   written by Norbert Schorghofer, 2003-2004
 C***********************************************************************
 
       implicit none
-      integer NMAX
-      real*8 pi, d2r, marsDay, NULL
-      parameter (NMAX=1000)
+      real*8 pi, d2r, marsDay
       parameter (pi=3.1415926535897932, d2r=pi/180., marsDay=88775.244)
-      parameter (NULL=0.)  ! n/a
 
       integer nz, j
       real*8 dt, zmax, zfac, zdepth, icefrac, zacc

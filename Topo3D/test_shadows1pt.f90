@@ -1,6 +1,6 @@
 program test_shadows1pt
   ! calculate horizons for one point
-  use filemanager, only : NSx, NSy, fileext, dx, dy, RMAX
+  use filemanager, only : NSx, NSy, fileext, dx, dy
   use allinterfaces
   use azRays, naz_h => naz
   implicit none
