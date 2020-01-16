@@ -103,6 +103,8 @@ test: $(OBJFLS) shadow_subs.o multigrid.o fieldofview_subs.o \
 	$(CC) $(LFLAGS) test_shadows1pt.o shadow_subs.o topo3d_common.o \
 	multigrid.o topo3d_geometry.o hpsort.o fieldofview_subs.o
 
+makegaussian: makegaussian.o ran1.o rlft3.o fourn.o nrutil.o makefile
+	gcc -O2 makegaussian.o ran1.o rlft3.o fourn.o nrutil.o -lm	
 
 # filemanager.f90 has to be compiled first for module filemanager
 # topo3d_modules.f90 has to be compiled second for module allinterfaces

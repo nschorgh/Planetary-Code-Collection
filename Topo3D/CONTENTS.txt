@@ -60,6 +60,10 @@ fieldproperties.f90: (main program)
 test_shadows1pt.f90: (main program)
         calculate horizons for one point (for testing purposes)
 
+makegaussian.c: (main program)
+	creates Gaussian surface
+	(3rd party subroutines from Numerical Recipes are not included)
+
 topo40.xyz: 
 	example input topography
 

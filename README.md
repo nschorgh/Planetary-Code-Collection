@@ -160,7 +160,8 @@ Topo3D/topo3d_subs.f90
 Topo3D/topo3d_subs_mars.f90  
 Topo3D/multigrid.f90  
 Topo3D/fieldproperties.f90: (main program)  
-Topo3D/hpsort.for  
+Topo3D/hpsort.for
+Topo3D/makegaussian.c   
 Common/conductionQ.f90    
 Common/conductionQ2.f90  
 Common/conductionT2.f90  

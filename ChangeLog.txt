@@ -1,5 +1,7 @@
 ChangeLog
 
+16 Jan 2020: added makegaussian.c
+
 31 Dec 2019: Topo3D/ changed grid downsampling from 4 neighbors to 8 neighbors
 
 30 Nov 2019: added Armand distribution as option for inital velocities in Exosphere/montecarlo.f90
