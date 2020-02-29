@@ -67,6 +67,17 @@ mapgrid.slp:
 
 
 
+insol_driver.f90: (simple main program)
+  	Insolation quantities over the past 20 Myr
+
+tempr_driver.f90: (main program)
+  	Temperatures over the past 20 Myr
+
+lats.milank:
+	Example input file for tempr_driver.f90
+
+
+
 fast_modules.f90:
 	numerically accelerated routines for growth and depletion of subsurface ice, 
 	Fortran modules
@@ -92,9 +103,6 @@ input_fast.par:
 
 mars_fast.f90: (main program)
 	numerically accelerated growth and depletion of subsurface ice
-
-insol_driver.f90: (simple main program)
-  	Insolation quantities over the past 20 Myr
 
 lats.ph:
 	Example input file for mars_fast.f90
