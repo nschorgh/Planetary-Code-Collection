@@ -68,7 +68,21 @@ Common/psvco2.f
 Documentation: Schorghofer, N. & Aharonson, O. (2005) J. Geophys. Res. 110, E05003*  
 
 
-### Fast Method for Subsurface Ice Dynamics
+### Mars Long-Term Thermal Model
+
+Mars/insol_driver.f90 (main program)  
+Mars/tempr_driver.f90 (main program)  
+Mars/flux_mars.f90  
+Mars/generalorbit.f90  
+Mars/soilthprop.f90  
+Common/conductionQ.f90  
+Common/conductionT.f90  
+Common/grids.f  
+Common/psvco2.f  
+Common/tridag.for  
+
+
+### Fast (asynchronously-coupled) Method for Subsurface Ice Dynamics
 
 Mars/stabgrow_fast.f90: (main program)  
 Mars/exper_fast.f90: (main program)  
