@@ -1,7 +1,7 @@
 module miscparameters
   real(8), parameter :: pi=3.1415926535897932, d2r=pi/180.
   real(8), parameter :: earthDay=86400., marsDay=88775.244, solsperyear=668.60
-  real(8), parameter :: sigSB=5.67051e-8, Lco2frost=6.0e5, co2albedo=0.60
+  real(8), parameter :: sigSB=5.6704e-8, Lco2frost=6.0e5, co2albedo=0.60
 end module miscparameters
 
 
