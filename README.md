@@ -26,8 +26,6 @@ Mars/flux.f
 Mars/flux_mars.f90  
 Mars/marsorbit.f90  
 Mars/soilthprop.f90  
-Mars/insol_driver.f90 (main program)  
-Mars/tempr_driver.f90 (main program)  
 Common/conductionQ.f90  
 Common/conductionT.f90  
 Common/grids.f  

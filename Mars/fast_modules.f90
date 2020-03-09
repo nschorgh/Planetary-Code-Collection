@@ -6,7 +6,7 @@ module miscparameters
   real(8), parameter :: icedensity=927.
   real(8), parameter :: earthDay=86400.
   real(8), parameter :: sigSB=5.6704e-8
-  ! for reference here are some parameters that are literally coded
+  ! for reference here are some parameters that are hard coded
   !   mass of H2O molecule = 18
   !   universal gas constant = 8314 
   !   length of Earth year in days = 365.24
@@ -243,7 +243,15 @@ module allinterfaces
   
   !end fast_subs_exper
 
-  ! Common/*.f
+  ! Other
+  interface
+     pure function flux_mars77(R,decl,latitude,HA,albedo,fracir,fracscat)
+       implicit none
+       real*8 flux_mars77
+       real*8, intent(IN) :: R,decl,latitude,HA,albedo,fracIR,fracScat
+     end function flux_mars77
+  end interface
+
   interface
      pure function colint(y,z,nz,i1,i2)
        implicit none
@@ -252,5 +260,5 @@ module allinterfaces
        real(8) colint
      end function colint
   end interface
-
+  
 end module allinterfaces

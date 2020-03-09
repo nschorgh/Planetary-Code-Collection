@@ -106,7 +106,7 @@ subroutine icelayer_mars(bigstep,nz,NP,thIn,rhoc,z,porosity,pfrost, &
              & z(typeP)-zdepthE(k)>2*(z(typeP)-z(typeP-1))) then  ! trick that avoids oscillations
            deltaz = -avdrhoP(k)/z(typeP)*18./8314.*B  ! conservation of mass 
            if (deltaz>z(typeP)-z(typeP-1)) then  ! also implies avdrhoP<0.
-              mode2=.TRUE.
+              mode2 = .TRUE.
            endif
         endif
      endif
@@ -163,8 +163,7 @@ subroutine ajsub_mars(typeT, latitude, albedo0, pfrost, nz, z, ti, rhocv, &
   real(8) Tsurf, Tco2frost, albedo, Fsurf, m, dE, emiss, T(NMAX)
   real(8) Told(nz), Fsurfold, Tsurfold, Tmean0, avrho2
   real(8) rhosatav0, rhosatav(nz), rlow 
-  real(8), external :: flux_mars77, psv, tfrostco2
-  ! real(8), external :: equildepth   ! defined in allinterfaces.mod
+  real(8), external :: psv, tfrostco2
   
   tmax = EQUILTIME*solsperyear
   nsteps = int(tmax/dt)     ! calculate total number of timesteps
@@ -198,7 +197,7 @@ subroutine ajsub_mars(typeT, latitude, albedo0, pfrost, nz, z, ti, rhocv, &
 
   time=0.
   call generalorbit(0.d0,a,ecc,omega,eps,marsLs,marsDec,marsR)
-  HA=2.*pi*time             ! hour angle
+  HA = 2.*pi*time            ! hour angle
 !  Qn=flux(marsR,marsDec,latitude,HA,albedo,fracir,fracdust,0.d0,0.d0)
   Qn = flux_mars77(marsR,marsDec,latitude,HA,albedo,fracir,fracdust)
   !----loop over time steps 
@@ -236,12 +235,12 @@ subroutine ajsub_mars(typeT, latitude, albedo0, pfrost, nz, z, ti, rhocv, &
      Qn=Qnp1
      
      if (time>=tmax-solsperyear) then
-        Tmean1 = Tmean1+Tsurf
-        Tmean3 = Tmean3+T(nz)
-        avrho1 = avrho1+min(psv(Tsurf),pfrost)/Tsurf
-        rhosatav0 = rhosatav0+psv(Tsurf)/Tsurf
+        Tmean1 = Tmean1 + Tsurf
+        Tmean3 = Tmean3 + T(nz)
+        avrho1 = avrho1 + min(psv(Tsurf),pfrost)/Tsurf
+        rhosatav0 = rhosatav0 + psv(Tsurf)/Tsurf
         do i=1,nz
-           rhosatav(i) = rhosatav(i)+psv(T(i))/T(i)
+           rhosatav(i) = rhosatav(i) + psv(T(i))/T(i)
         enddo
         nm = nm+1
      endif
