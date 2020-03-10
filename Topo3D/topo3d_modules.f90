@@ -137,7 +137,7 @@ MODULE allinterfaces
        implicit none
        integer, intent(IN) :: NSx
        integer, intent(OUT) :: ilower, iupper
-       character(4), intent(OUT) :: extc
+       character(5), intent(OUT) :: extc
      end subroutine slicer
   end interface
   

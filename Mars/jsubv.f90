@@ -49,7 +49,7 @@ subroutine jsubv(NS, zdepth, latitude, albedo0, thIn, pfrost, nz, &
   real*8 Tsurfold(NS), Fsurf(NS), Fsurfold(NS), m(NS), dE, Tco2frost
   real*8 Tmean1(NS), Tmean2(NS), rhoavs(NS), rhoavb(NS), Tbold(NS)
   real*8 Qmean(NS), Qland(NS)
-  real*8 marsLsold, psv  !, tfrostco2
+  real*8 marsLsold, psv
   external julday, flux, psv
 
   logical outf
@@ -65,11 +65,11 @@ subroutine jsubv(NS, zdepth, latitude, albedo0, thIn, pfrost, nz, &
   end select
   
   iyr=1996; imm=10; iday=5  ! starting year and date
-  nsteps=int(tmax/dt)       ! calculate total number of timesteps
+  nsteps = int(tmax/dt)     ! calculate total number of timesteps
   emiss(:) = 1.
   !emiss(:) = 1.*cos(surfaceSlope(:)/2.)**2 
 
-  zmax=5.*26.*thIn/rhoc*sqrt(marsDay/pi)
+  zmax = 5.*26.*thIn/rhoc*sqrt(marsDay/pi)
   ! print *,25.86*thIn/rhoc*sqrt(marsDay/pi)
   if (latitude>=0.) then    ! north
      Tco2frost=147. 
@@ -80,21 +80,23 @@ subroutine jsubv(NS, zdepth, latitude, albedo0, thIn, pfrost, nz, &
 
   if (minval(Tb(:))<=0.) then
      !Tmean1=210.15              ! black-body temperature of planet
-     Tmean1=(589.*(1.-albedo0)*cos(latitude)/pi/5.67e-8)**0.25 ! better estimate
+     Tmean1 = (589.*(1.-albedo0)*cos(latitude)/pi/5.67e-8)**0.25 ! better estimate
   else
-     Tmean1(:)=Tb(:)
+     Tmean1(:) = Tb(:)
   endif
   
-  jd=dble(julday(imm,iday,iyr)) !  JD for noon UTC on iyear/imm/iday
+  jd = dble(julday(imm,iday,iyr)) ! JD for noon UTC on iyear/imm/iday
   temp1 = (jd-2451545.d0)/36525.d0
   dcor = (64.184d0 + 95.*temp1 + 35.*temp1**2) ! correction in sec
 ! All time is referenced to dt0_j2000
   dt0_j2000 = jd + dcor/earthDay - 2451545.d0 
 
-  albedo(:)=albedo0
+  albedo(:) = albedo0
   ti(1:nz,:) = thIn
   rhocv(1:nz,:) = rhoc
-  forall(k=1:NS) T(1:nz,k) = Tmean1(k)
+  do k=1,NS
+     T(1:nz,k) = Tmean1(k)
+  enddo
   where (T(1:nz,:) < Tco2frost) T=Tco2frost
   Tsurf(:) = Tmean1(:)
   m(:)=0.; Fsurf(:)=0.
@@ -108,8 +110,8 @@ subroutine jsubv(NS, zdepth, latitude, albedo0, thIn, pfrost, nz, &
   do k=1,NS
      call setgrid(nz,z(:,k),zmax,zfac)
      call smartgrid(nz,z(:,k),zdepth(k),thIn,rhoc,icefrac,ti(:,k),rhocv(:,k),1,0.d0)
-     if (mode==0.and.outf) write(30,'(999(f8.5,1x))') z(1:nz,k)
-     if (zdepth(k)<=0.or.zdepth(k)>=z(nz,k)) then  ! no ice
+     if (mode==0 .and. outf) write(30,'(999(f8.5,1x))') z(1:nz,k)
+     if (zdepth(k)<=0 .or. zdepth(k)>=z(nz,k)) then  ! no ice
         i0(k) = nz
      else  ! find first grid point in ice
         do i=1,nz
@@ -124,42 +126,42 @@ subroutine jsubv(NS, zdepth, latitude, albedo0, thIn, pfrost, nz, &
   time=0.
   tdays = time*(marsDay/earthDay) ! parenthesis may improve roundoff
   call marsorbit(dt0_j2000,tdays,marsLs,marsDec,marsR); 
-  HA=2.*pi*time             ! hour angle
+  HA = 2.*pi*time           ! hour angle
 
   do k=1,NS
-     Qn(k)=flux(marsR,marsDec,latitude,HA,albedo(k),fracir,fracdust, &
+     Qn(k) = flux(marsR,marsDec,latitude,HA,albedo(k),fracir,fracdust, &
           & surfaceSlope(k),azFac(k))
      ! neglect slope contribution at initialization
   enddo
 
 !-----loop over time steps 
   do n=0,nsteps-1
-     time =(n+1)*dt         !   time at n+1 
+     time = (n+1)*dt        !   time at n+1 
      tdays = time*(marsDay/earthDay) ! parenthesis may improve roundoff
      call marsorbit(dt0_j2000,tdays,marsLs,marsDec,marsR); 
-     HA=2.*pi*mod(time,1.d0)  ! hour angle
+     HA = 2.*pi*mod(time,1.d0) ! hour angle
 
      do k=1,NS
-        Qnp1(k)=flux(marsR,marsDec,latitude,HA,albedo(k),fracir,fracdust, &
+        Qnp1(k) = flux(marsR,marsDec,latitude,HA,albedo(k),fracir,fracdust, &
              & surfaceSlope(k),azFac(k))
-        Qnp1(k)=Qnp1(k) + sigSB*sin(surfaceSlope(k)/2.)**2*emiss(1)*Tsurf(1)**4
+        Qnp1(k) = Qnp1(k) + sigSB*sin(surfaceSlope(k)/2.)**2*emiss(1)*Tsurf(1)**4
      enddo
      Tsurfold(:) = Tsurf(:)
      Fsurfold(:) = Fsurf(:)
      do k=1,NS
-        Told(1:nz)=T(1:nz,k)
+        Told(1:nz) = T(1:nz,k)
         call conductionQ(nz,z(:,k),dtsec,Qn(k),Qnp1(k),T(:,k),ti(:,k), &
              & rhocv(:,k),emiss(k),Tsurf(k),Fgeotherm,Fsurf(k))
-        if (Tsurf(k)<Tco2frost.or.m(k)>0.) then   ! CO2 condensation
-           T(1:nz,k)=Told(1:nz)
+        if (Tsurf(k)<Tco2frost .or. m(k)>0.) then   ! CO2 condensation
+           T(1:nz,k) = Told(1:nz)
            call conductionT(nz,z(:,k),dtsec,T(:,k),Tsurfold(k),Tco2frost, &
                 & ti(:,k),rhocv(:,k),Fgeotherm,Fsurf(k))
-           Tsurf(k)=Tco2frost
+           Tsurf(k) = Tco2frost
            dE = (- Qn(k) - Qnp1(k) + Fsurfold(k) + Fsurf(k) + &
                 & emiss(k)*sigSB*(Tsurfold(k)**4+Tsurf(k)**4))/2.
            m(k) = m(k) + dtsec*dE/Lco2frost
         endif
-        if (Tsurf(k)>Tco2frost.or.m(k)<=0.) then
+        if (Tsurf(k)>Tco2frost .or. m(k)<=0.) then
            albedo(k) = albedo0
            !emiss(k) = 1.
         else
@@ -170,9 +172,9 @@ subroutine jsubv(NS, zdepth, latitude, albedo0, thIn, pfrost, nz, &
 
      Qn(:)=Qnp1(:)
 
-     if (mode==0.and.time>=tmax-solsperyear) then
-        Tmean1(:)=Tmean1(:)+Tsurf(:)
-        Tmean2(:)=Tmean2(:)+T(nz,:)
+     if (mode==0 .and. time>=tmax-solsperyear) then
+        Tmean1(:) = Tmean1(:)+Tsurf(:)
+        Tmean2(:) = Tmean2(:)+T(nz,:)
         do k=1,NS
            rhoavs(k) = rhoavs(k) + min(psv(Tsurf(k)),pfrost)/Tsurf(k)
            rhoavb(k) = rhoavb(k) + psv(T(i0(k),k))/T(i0(k),k)
@@ -184,13 +186,13 @@ subroutine jsubv(NS, zdepth, latitude, albedo0, thIn, pfrost, nz, &
 
      if (mode==1) then
         if (marsLs<marsLsold) then
-           Tmean2(:)=Tmean2(:)/nm
+           Tmean2(:) = Tmean2(:)/nm
            if (maxval(abs(Tmean2(:)-Tbold(:)))<0.05) exit
-           Tbold(:)=Tmean2(:)
+           Tbold(:) = Tmean2(:)
            Tmean2=0.; nm=0
         else
-           Tmean2(:)=Tmean2(:)+T(nz,:)
-           nm=nm+1
+           Tmean2(:) = Tmean2(:)+T(nz,:)
+           nm = nm+1
         endif
      endif
      marsLsold = marsLs
