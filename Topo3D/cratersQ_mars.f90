@@ -1,17 +1,18 @@
-!***************************************************************************
+!************************************************************************
 ! cratersQ_mars: Mars thermal model with direct insolation, subsurface
-!                conduction, terrain shadowing, and approximate self-heating
-!***************************************************************************
+!                conduction, terrain shadowing, sky irradiance, and
+!                approximate terrain irradiance
+!************************************************************************
 
 
 module miscparams
   ! parameters that never change
   real(8), parameter :: pi=3.1415926535897932, d2r=pi/180.
   real(8), parameter :: sigSB = 5.6704e-8
-  real(8), parameter :: Lco2frost = 6.0e5  ! [J/kg]
+  real(8), parameter :: Lco2frost = 6.0e5 ! [J/kg]
   real(8), parameter :: zero = 0.
   real(8), parameter :: earthDay = 86400. ! [s]
-  real(8), parameter :: solsy = 668.60 ! solar days per Mars year
+  real(8), parameter :: solsy = 668.60    ! solar days per Mars year
   real(8), parameter :: solarDay = 88775.244  ! Mars [s]
 
   ! thermal model parameters
@@ -19,8 +20,8 @@ module miscparams
   real(8), parameter :: Tfrost = 200.  ! H2O frost point temperature, for diagnostics only [K]
   real(8), parameter :: fracIR = 0.04, fracDust = 0.02
   real(8), parameter :: emiss = 0.98
-  integer, parameter :: nz = 70
-  real(8), parameter :: thIn = 600.  ! Thermal inertia
+  integer, parameter :: nz = 70      ! number of vertical grid points
+  real(8), parameter :: thIn = 600.  ! Thermal inertia [SI units]
 end module miscparams
 
 
@@ -31,7 +32,7 @@ PROGRAM cratersQ_mars
   use newhorizons
   implicit none
 
-  real(8), parameter :: albedo0=0.12, co2albedo=0.65
+  real(8), parameter :: albedo0 = 0.12, co2albedo = 0.65
   real(8) :: latitude = -41.6  ! [degree] Palikir Crater
   real(8), parameter :: longitude = 360 - 202.3 ! west longitude [degree]
 
@@ -194,8 +195,8 @@ PROGRAM cratersQ_mars
               if (h(i,j)<-32000) cycle
               Tsurf(i,j) = (Qn(i,j)/emiss/sigSB)**0.25
               Tsurfold = (Qnm1(i,j)/emiss/sigSB)**0.25
-              if (Tsurf(i,j)<Tco2frost.or.m(i,j)>0.) then   ! CO2 condensation
-                 Tsurf(i,j)=Tco2frost
+              if (Tsurf(i,j)<Tco2frost .or. m(i,j)>0.) then   ! CO2 condensation
+                 Tsurf(i,j) = Tco2frost
                  dE = - Qn(i,j) + emiss*sigSB*(Tsurf(i,j)**4 + Tsurfold**4)/2.
                  m(i,j) = m(i,j) + dtsec*dE/Lco2frost
               endif
@@ -203,8 +204,8 @@ PROGRAM cratersQ_mars
         enddo
         Tsurf(1,1) = (Qn(1,1)/emiss/sigSB)**0.25
         Tsurfold = (Qnm1(1,1)/emiss/sigSB)**0.25
-        if (Tsurf(1,1)<Tco2frost.or.m(1,1)>0.) then   ! CO2 condensation
-           Tsurf(1,1)=Tco2frost
+        if (Tsurf(1,1)<Tco2frost .or. m(1,1)>0.) then   ! CO2 condensation
+           Tsurf(1,1) = Tco2frost
            dE = - Qn(1,1) + emiss*sigSB*(Tsurf(1,1)**4 + Tsurfold**4)/2.
            m(1,1) = m(1,1) + dtsec*dE/Lco2frost
         endif
@@ -269,7 +270,7 @@ PROGRAM cratersQ_mars
   open(unit=21,file='qmean.dat',status='unknown',action='write')
   do i=Mx1,Mx2
      do j=My1,My2
-        write(21,'(2(i4,1x),f9.2,2x,f6.4,2(1x,f6.1),2(1x,f5.1),3(1x,f7.1),1x,f6.2)') &
+        write(21,'(2(i5,1x),f9.2,2x,f6.4,2(1x,f6.1),2(1x,f5.1),3(1x,f7.1),1x,f6.2)') &
              & i,j,h(i,j),surfaceSlope(i,j),Qmean(i,j),Qmax(i,j), &
              & Tmean(i,j),Tmaxi(i,j),mmax(i,j),maxfrosttime(i,j), &
              & mmin(i,j),h2olast(i,j)
@@ -301,7 +302,7 @@ subroutine writethemissnapshot(fn,h,Tsurf)
   open(unit=27,file=fn,status='unknown',action='write')
   do i=2,NSx-1
      do j=2,NSy-1
-        write(27,'(2(i4,1x),f9.2,1x,f5.1)') i,j,h(i,j),Tsurf(i,j)
+        write(27,'(2(i5,1x),f9.2,1x,f5.1)') i,j,h(i,j),Tsurf(i,j)
      enddo
   enddo
   close(27)
@@ -321,7 +322,7 @@ subroutine writesnapshot(fn,h,Qdirect,m,Qn)
   open(unit=27,file=fn,status='unknown',action='write')
   do i=2,NSx-1
      do j=2,NSy-1
-        write(27,'(2(i4,1x),f9.2,1x,f6.1,1x,f7.1,1x,f6.1)') &
+        write(27,'(2(i5,1x),f9.2,1x,f6.1,1x,f7.1,1x,f6.1)') &
              & i,j,h(i,j),Qdirect(i,j),m(i,j),Qn(i,j)
      enddo
   enddo

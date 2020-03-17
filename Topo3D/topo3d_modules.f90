@@ -356,7 +356,7 @@ MODULE allinterfaces
   end interface
 
   interface
-     pure FUNCTION julday(mm,id,iyyy)
+     FUNCTION julday(mm,id,iyyy)
        INTEGER julday
        INTEGER, intent(IN) ::id,iyyy,mm
      end FUNCTION julday

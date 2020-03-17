@@ -1,4 +1,4 @@
-program asteroid_fast1
+PROGRAM asteroid_fast1
 !*************************************************************************
 ! Asynchronously coupled model of temperature and ice retreat on asteroids
 ! no void spaces
@@ -20,7 +20,6 @@ program asteroid_fast1
   real(8), dimension(NP) :: latitude, albedo, zdepthT
   real(8), dimension(NP) :: Tmean1, Tmean3, Tmin, Tmax
   character(4) ext
-  real(8), external :: faintsun
   interface
      subroutine icelayer_asteroid(bigstep,NP,z,porosity,icefrac,Tinit, &
           & zdepthT,Tmean1,Tmean3,Tmin,Tmax,latitude,albedo,ecc,omega,eps,S0)
@@ -151,7 +150,7 @@ program asteroid_fast1
 
 501 format (f12.0,2x,f7.3,4x,f12.6,4(2x,f6.2)) 
 
-end program asteroid_fast1
+END PROGRAM asteroid_fast1
 
 
 

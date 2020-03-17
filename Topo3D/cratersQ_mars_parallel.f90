@@ -1,7 +1,7 @@
 !************************************************************************
-! cratersQ_mars_parallel:
-!             Mars thermal model with direct insolation, subsurface
-!             conduction, terrain shadowing, and approximate self-heating
+! cratersQ_mars_parallel: Mars thermal model with direct insolation,
+!       subsurface conduction, terrain shadowing, sky irradiance, and
+!       approximate terrain irradiance
 !
 ! parallel version of cratersQ_mars
 !************************************************************************
@@ -11,14 +11,14 @@ module miscparams
   ! parameters that never change
   real(8), parameter :: pi=3.1415926535897932, d2r=pi/180.
   real(8), parameter :: sigSB = 5.6704e-8
-  real(8), parameter :: Lco2frost=6.0e5  ! [J/kg]
+  real(8), parameter :: Lco2frost = 6.0e5 ! [J/kg]
   real(8), parameter :: zero = 0.
   real(8), parameter :: earthDay = 86400. ! [s]
-  real(8), parameter :: solsy = 668.60 ! solar days per Mars year
+  real(8), parameter :: solsy = 668.60    ! solar days per Mars year
   real(8), parameter :: solarDay = 88775.244  ! Mars [s]
 
   ! thermal model parameter
-  integer, parameter :: nz=70  ! number of vertical grid points
+  integer, parameter :: nz = 70  ! number of vertical grid points
 end module miscparams
 
 
@@ -62,13 +62,13 @@ PROGRAM cratersQ_mars
   logical, parameter :: subsurface=.true.  ! control panel
   integer k, i0, j0
   real(8) jd, LTST, jd_end
-  character(len=5) ext
+  character(len=6) ext
 
   real(8) jd_snap(3), jd_themis(2)  ! Julian dates of snapshots
-  character(len=20) fns(3), fnt(2)  ! file names of snapshots
+  character(len=21) fns(3), fnt(2)  ! file names of snapshots
   
   integer narg
-  character(4) extc
+  character(5) extc
   narg = iargc()
   if (narg==2) then ! parallel implementation
      call slicer(NSx,Mx1,Mx2,extc)
@@ -92,7 +92,7 @@ PROGRAM cratersQ_mars
      ext = '.dat'
   endif
   
-  print *,'File extension ',ext
+  print *,'Output file extension ',ext
 
   ! read input parameters from file
   open(10,file='site.par')
@@ -144,8 +144,8 @@ PROGRAM cratersQ_mars
   call readdem(h)
   call difftopo2(h,surfaceSlope,azFac,Mx1,Mx2,My1,My2)
 
-  latitude=latitude*d2r
-  Tsurf=200.
+  latitude = latitude*d2r
+  Tsurf = 200.
   nm=0
 
   print *,'...reading horizons file...'
@@ -241,8 +241,8 @@ PROGRAM cratersQ_mars
               if (h(i,j)<-32000) cycle
               Tsurf(i,j) = (Qn(i,j)/emiss/sigSB)**0.25
               Tsurfold = (Qnm1(i,j)/emiss/sigSB)**0.25
-              if (Tsurf(i,j)<Tco2frost.or.m(i,j)>0.) then   ! CO2 condensation
-                 Tsurf(i,j)=Tco2frost
+              if (Tsurf(i,j)<Tco2frost .or. m(i,j)>0.) then   ! CO2 condensation
+                 Tsurf(i,j) = Tco2frost
                  dE = - Qn(i,j) + emiss*sigSB*(Tsurf(i,j)**4 + Tsurfold**4)/2.
                  m(i,j) = m(i,j) + dtsec*dE/Lco2frost
               endif
@@ -250,8 +250,8 @@ PROGRAM cratersQ_mars
         enddo
         Tsurf_flat = (Qn_flat/emiss/sigSB)**0.25
         Tsurfold = (Qnm1_flat/emiss/sigSB)**0.25
-        if (Tsurf_flat<Tco2frost.or.m_flat>0.) then   ! CO2 condensation
-           Tsurf_flat=Tco2frost
+        if (Tsurf_flat<Tco2frost .or. m_flat>0.) then   ! CO2 condensation
+           Tsurf_flat = Tco2frost
            dE = - Qn_flat + emiss*sigSB*(Tsurf_flat**4 + Tsurfold**4)/2.
            m_flat = m_flat + dtsec*dE/Lco2frost
         endif
@@ -306,12 +306,12 @@ PROGRAM cratersQ_mars
 
      do k=1,3
         if (jd+edays > jd_snap(k)-dt/2 .and. jd+edays <= jd_snap(k)+dt/2) then
-           call writesnapshot(fns(k),h,Qdirect,m,Qn,Mx1,Mx2,My1,My2)
+           call writeQsnapshot(fns(k),h,Qdirect,m,Qn,Mx1,Mx2,My1,My2)
         endif
      end do
      do k=1,2
         if (jd+edays > jd_themis(k)-dt/2 .and. jd+edays <= jd_themis(k)+dt/2) then
-           call writethemissnapshot(fnt(k),h,Tsurf,Mx1,Mx2,My1,My2)
+           call writeTsnapshot(fnt(k),h,Tsurf,Mx1,Mx2,My1,My2)
         endif
      enddo
 
@@ -353,7 +353,7 @@ END PROGRAM cratersQ_mars
 
 
 
-subroutine writethemissnapshot(fn,h,Tsurf,Mx1,Mx2,My1,My2)
+subroutine writeTsnapshot(fn,h,Tsurf,Mx1,Mx2,My1,My2)
   ! output surface temperature snapshot
   use filemanager, only : NSx, NSy
   implicit none
@@ -363,7 +363,7 @@ subroutine writethemissnapshot(fn,h,Tsurf,Mx1,Mx2,My1,My2)
   real(8), intent(IN), dimension(Mx1:Mx2,My1:My2) :: Tsurf
   integer i,j
 
-  print *,'entered writethemissnapshot'
+  print *,'entered writeTsnapshot'
   open(unit=27,file=fn,status='unknown',action='write')
   do i=max(2,Mx1),min(NSx-1,Mx2)
      do j=max(2,My1),min(NSy-1,My2)
@@ -371,13 +371,13 @@ subroutine writethemissnapshot(fn,h,Tsurf,Mx1,Mx2,My1,My2)
      enddo
   enddo
   close(27)
-end subroutine writethemissnapshot
+end subroutine writeTsnapshot
 
 
 
-subroutine writesnapshot(fn,h,Qdirect,m,Qn,Mx1,Mx2,My1,My2)
+subroutine writeQsnapshot(fn,h,Qdirect,m,Qn,Mx1,Mx2,My1,My2)
   ! output snapshot
-  use filemanager, only : NSx, NSy 
+  use filemanager, only : NSx, NSy
   implicit none
   integer, intent(IN) :: Mx1,Mx2,My1,My2
   character(len=*), intent(IN) :: fn
@@ -385,7 +385,7 @@ subroutine writesnapshot(fn,h,Qdirect,m,Qn,Mx1,Mx2,My1,My2)
   real(8), intent(IN), dimension(Mx1:Mx2,My1:My2) :: Qdirect,m,Qn
   integer i,j
 
-  print *,'entered writesnapshot'
+  print *,'entered writeQsnapshot'
   open(unit=27,file=fn,status='unknown',action='write')
   do i=max(2,Mx1),min(NSx-1,Mx2)
      do j=max(2,My1),min(NSy-1,My2)
@@ -394,4 +394,4 @@ subroutine writesnapshot(fn,h,Qdirect,m,Qn,Mx1,Mx2,My1,My2)
      enddo
   enddo
   close(27)
-end subroutine writesnapshot
+end subroutine writeQsnapshot

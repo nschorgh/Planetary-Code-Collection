@@ -51,9 +51,8 @@ insol3d_mars: $(OBJFLS) topo3d_subs.o topo3d_common.o insol3d_mars.o \
 	$(SR)flux_noatm.o $(SR)julday.o $(SRM)marsorbit.o
 
 
-cratersQ_mars: $(OBJFLS) topo3d_subs.o \
-	conductionT2.o conductionQ2.o cratersQ_mars.o topo3d_common.o \
-	topo3d_subs_mars.o makefile
+cratersQ_mars: $(OBJFLS) topo3d_subs.o conductionT2.o conductionQ2.o \
+	cratersQ_mars.o topo3d_common.o topo3d_subs_mars.o makefile
 
 	make -C $(SR) common
 	make -C $(SRM) common-mars

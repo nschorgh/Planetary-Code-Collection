@@ -29,8 +29,7 @@ subroutine icelayer_asteroid(bigstep,NP,z,porosity,Tinit,zdepthP,sigma, &
   real(8) Deff, deltaz, Diff0, Jp, avrhotmp
   real(8), dimension(nz) :: Diff, ypp, avrho, porefill
   real(8), SAVE :: zdepth_old(100)  ! NP<=100
-  integer, external :: gettype
-  real(8), external :: vapordiffusivity, constriction
+  real(8), external :: constriction
 
   do k=1,NP   ! big loop over sites
 

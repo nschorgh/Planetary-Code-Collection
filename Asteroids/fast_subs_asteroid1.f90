@@ -28,8 +28,6 @@ subroutine icelayer_asteroid(bigstep,NP,z,porosity,icefrac,Tinit, &
   real(8) Deff, deltaz, Diff0, avrho
   real(8), dimension(nz) :: Diff
   real(8), SAVE :: zdepth_old(100)  ! NP<=100
-  integer, external :: gettype
-  real(8), external :: vapordiffusivity
 
   do k=1,NP   ! big loop over sites
 
@@ -93,7 +91,7 @@ subroutine ajsub_asteroid(latitude, albedo, z, ti, rhocv, ecc, omega, &
   use body, only : EQUILTIME, dt, solsperyear, Fgeotherm, semia, nz, emiss, solarDay
   use allinterfaces, only : flux_noatm
   implicit none
-  real(8), intent(IN) :: latitude  ! in radians
+  real(8), intent(IN) :: latitude  ! [radians]
   real(8), intent(IN) :: albedo, z(NMAX)
   real(8), intent(IN) :: ti(NMAX), rhocv(NMAX)
   real(8), intent(IN) :: ecc, omega, eps, S0
@@ -103,6 +101,7 @@ subroutine ajsub_asteroid(latitude, albedo, z, ti, rhocv, ecc, omega, &
   real(8), intent(INOUT) :: Tmean1, Tmean3
   real(8), intent(OUT) :: Tmin, Tmaxi
   integer nsteps, n, j, nm
+  real(8), parameter :: zero = 0.
   real(8) tmax, time, Qn, Qnp1, tdays
   real(8) orbitR, orbitLs, orbitDec, HA
   real(8) Tsurf, Fsurf, T(NMAX)
@@ -141,19 +140,19 @@ subroutine ajsub_asteroid(latitude, albedo, z, ti, rhocv, ecc, omega, &
 
   time=0.
   call generalorbit(0.d0,semia,ecc,omega,eps,orbitLs,orbitDec,orbitR)
-  HA=2.*pi*time             ! hour angle
-  Qn=S0*(1-albedo)*flux_noatm(orbitR,orbitDec,latitude,HA,0.d0,0.d0)
+  HA = 2.*pi*time            ! hour angle
+  Qn = S0*(1-albedo)*flux_noatm(orbitR,orbitDec,latitude,HA,zero,zero)
   !----loop over time steps 
   do n=0,nsteps-1
-     time =(n+1)*dt         !   time at n+1 
+     time = (n+1)*dt         !   time at n+1 
      tdays = time*(solarDay/86400.) ! parenthesis may improve roundoff
      call generalorbit(tdays,semia,ecc,omega,eps,orbitLs,orbitDec,orbitR)
-     HA=2.*pi*mod(time,1.d0)  ! hour angle
-     Qnp1=S0*(1-albedo)*flux_noatm(orbitR,orbitDec,latitude,HA,0.d0,0.d0)
+     HA = 2.*pi*mod(time,1.d0)  ! hour angle
+     Qnp1 = S0*(1-albedo)*flux_noatm(orbitR,orbitDec,latitude,HA,zero,zero)
      
      call conductionQ(nz,z,dt*solarDay,Qn,Qnp1,T,ti,rhocv,emiss, &
           &           Tsurf,Fgeotherm,Fsurf)
-     Qn=Qnp1
+     Qn = Qnp1
      
      if (time>=tmax-solsperyear) then
         Tmean1 = Tmean1+Tsurf
@@ -162,7 +161,7 @@ subroutine ajsub_asteroid(latitude, albedo, z, ti, rhocv, ecc, omega, &
            rhosatav = rhosatav+psv(T(typeT))/T(typeT)
         end if
         Evap = Evap + sublrate(Tsurf)
-        nm=nm+1
+        nm = nm+1
 
         if (Tsurf<Tmin) Tmin=Tsurf
         if (Tsurf>Tmaxi) Tmaxi=Tsurf

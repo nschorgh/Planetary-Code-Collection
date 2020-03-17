@@ -112,6 +112,65 @@ module allinterfaces
      end function deriv1_onesided
   end interface
 
+  ! common_subs.f90
+  interface
+     pure function flux2T(Q,albedo,emiss)
+       implicit none
+       real(8) flux2T
+       real(8), intent(IN) :: Q, emiss, albedo
+     end function flux2T
+  end interface
+
+  interface
+     pure function a2Torb(semia)
+       implicit none
+       real(8), intent(IN) :: semia  ! semimajor axis [AU]
+       real(8) a2Torb  
+     end function a2Torb
+  end interface
+
+  interface
+     pure function interp1(x0,x,y0,y,xi,nz)
+       implicit none
+       real(8) interp1
+       integer, intent(IN) :: nz
+       real(8), intent(IN) :: x(nz),y(nz),xi,x0,y0
+     end function interp1
+  end interface
+
+  interface
+     pure function heatcapacity(T)
+       implicit none
+       real(8), intent(IN) :: T  ! [K]
+       real(8) heatcapacity   ! [J/(kg K)]
+     end function heatcapacity
+  end interface
+  
+  interface
+     pure function vapordiffusivity(diam,porosity,T)
+       implicit none
+       real(8) vapordiffusivity
+       real(8), intent(IN) :: diam, porosity, T
+     end function vapordiffusivity
+  end interface
+
+  interface
+     pure function faintsun(t)
+       implicit none
+       real(8) faintsun
+       real(8), intent(IN) :: t   ! time before present [years]
+     end function faintsun
+  end interface
+  
+  interface
+     pure function gettype(zdepth,nz,z)
+       implicit none
+       integer gettype
+       integer, intent(IN) :: nz
+       real(8), intent(IN) :: zdepth, z(nz)
+     end function gettype
+  end interface
+  
   ! Commmon/grids.f
   interface
      pure function colint(y,z,nz,i1,i2)
