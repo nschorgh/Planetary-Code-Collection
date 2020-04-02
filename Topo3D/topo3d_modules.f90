@@ -246,16 +246,6 @@ MODULE allinterfaces
      end subroutine marsclock24
   end interface
   
-  ! cratersQ_*
-  interface
-     subroutine subsurfaceconduction(T,Tsurf,dtsec,Qn,Qnp1,emiss,solarDay)
-       implicit none
-       integer, parameter :: NMAX=1000
-       real(8), intent(INOUT) :: T(NMAX), Tsurf
-       real(8), intent(IN) :: dtsec,Qn,Qnp1,emiss,solarDay
-     end subroutine subsurfaceconduction
-  end interface
-
   ! topod3d_subs_mars.f90
   interface
      subroutine subsurfaceconduction_mars(T,Tsurf,dtsec,Qn,Qnp1,m,Fsurf,init,Tco2frost,thIn,emiss)
