@@ -31,7 +31,8 @@ Common/conductionT.f90
 Common/grids.f  
 Common/julday.for  
 Common/psvco2.f  
-Common/tridag.for  
+Common/tridag.for
+Common/Test/  
 *Documentation: User Guide Part 1*  
 
 
@@ -114,6 +115,7 @@ Common/conductionQ.f90
 Common/tridag.for  
 Common/grids.f  
 Common/generalorbit.f  
+Common/Test/  
 *Documentation: User Guide Part 1*
 
 

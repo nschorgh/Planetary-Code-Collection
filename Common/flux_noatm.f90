@@ -27,7 +27,7 @@ pure function flux_noatm(R,decl,latitude,HA,surfaceSlope,azFac)
   ! ha -> az (option 2)
   buf = (sin(decl)-sin(latitude)*sinbeta)/(cos(latitude)*cosbeta)
   ! buf can be NaN if cosbeta = 0
-  if (buf>+1.) buf=1.d0; if (buf<-1.) buf=-1.d0; ! damn roundoff
+  if (buf>+1.) buf=1.d0; if (buf<-1.) buf=-1.d0; ! roundoff
   azSun = acos(buf)
   if (sin(HA)>=0) azSun=2*pi-azSun
   ! ha -> az (option 3)  without beta
@@ -74,7 +74,7 @@ pure function flux_wshad(R,sinbeta,azSun,surfaceSlope,azFac,emax)
   if (cosbeta==0.) sintheta = cos(surfaceSlope)*sinbeta ! does not use azimuths
 
 !-shadowing
-  sintheta = max(sintheta,0.d0)  ! self-shadowing
+  if (sintheta<0.) sintheta=0.  ! self-shadowing
   if (sinbeta<0.) sintheta=0.  ! horizontal horizon at infinity
   if (sinbeta<sin(emax)) sintheta=0.  ! shadowing from distant horizon
 

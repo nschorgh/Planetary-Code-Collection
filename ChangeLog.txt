@@ -1,5 +1,7 @@
 ChangeLog
 
+14 Apr 2020: dug up analytical solution to heat equation with Stefan-Boltzmann law boundary condition; added to UserGuide section 1.1. 
+
 28 Feb 2020: added tempr_driver.f90 (was used to make Fig. 3 in my 2008 Milankovitch paper)
 
 16 Jan 2020: added makegaussian.c
