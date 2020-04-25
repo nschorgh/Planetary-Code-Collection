@@ -12,7 +12,7 @@ MODULE findvisibletopo
   integer, dimension(naz,CCMAX), private :: celli, cellj 
 
   integer, private :: ak
-  real(8), parameter, private :: pi = 3.1415926535897931
+  real(8), parameter, private :: pi = 3.1415926535897932
   real(8), parameter, private :: f = naz/(2*pi)
   real(8), parameter, public :: azRay(naz) = (/ ( (ak-1)/f, ak=1,naz) /)
   
@@ -184,7 +184,7 @@ subroutine find3dangle(h,i0,j0,unit,visibility)
   integer, intent(IN) :: i0, j0, unit
   real(8), intent(IN) :: h(NSx,NSy)
   logical, intent(IN) :: visibility(NSx,NSy)
-  real(8), parameter :: pi=3.1415926535897931
+  real(8), parameter :: pi=3.1415926535897932
   integer i, j, cc
   real(8) r, dOh, landsize, cosv, VF, viewsize
   real(8) surfaceSlope, azFac

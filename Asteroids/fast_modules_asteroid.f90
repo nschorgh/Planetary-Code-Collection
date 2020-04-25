@@ -17,38 +17,38 @@ module body
   implicit none
 
   real(8) semia  ! semimajor axis [AU]
-  real(8) ecc  ! orbital eccentricity 
-  real(8) Trot ! length of solar day in Earth days
+  real(8) ecc    ! orbital eccentricity 
+  real(8) Trot   ! length of solar day in Earth days
   real(8) solarDay ! length of solar day [seconds]
-  real(8) emiss ! IR emissivity of dry surface
+  real(8) emiss  ! IR emissivity of ice-free surface
   real(8) solsperyear
-  integer nz   ! number of vertical grid points
+  integer nz     ! number of vertical grid points
   real(8) zfac
-  real(8) zmax  ! domain depth
+  real(8) zmax   ! domain depth
 
   ! (1) Ceres
   parameter(semia = 2.76750591)
   !parameter(ecc = 0.075822766)  ! current
   !parameter(ecc = 0.0)
   parameter(ecc = 0.117)  ! proper
-  parameter(Trot = 9.074170/24., solarDay = 9.076*3600.)
+  parameter(solarDay = 9.076*3600.) ! (sidereal period is 9.074170 hr)
   parameter(solsperyear = 4446.)
   parameter(emiss = 0.95d0)
   parameter(nz=160, zfac=1.05d0, zmax=15.)  ! thIn=15
 
   ! 133P/Elst-Pizarro
-  !parameter(semia=3.163, ecc=0.159)  ! proper
-  !parameter(Trot=3.471/24., solarDay=3.471*3600.)
-  !parameter(solsperyear=14192)
+  !parameter(semia = 3.163, ecc = 0.159)  ! proper
+  !parameter(solarDay = 3.471*3600.)
+  !parameter(solsperyear = 14192.)
   !parameter(emiss = 0.95d0)
   !parameter(nz=160, zfac=1.05d0, zmax=20.) 
   
   real(8), parameter :: Tnominal = 140.   ! for Diff and Tinit [K]
   real(8), parameter :: icedensity = 931.  ! 140K  [kg/m^3]
 
-  real(8), parameter :: dt = 0.01  ! in units of solar days
+  real(8), parameter :: dt = 0.01  ! [solar days]
   real(8), parameter :: Fgeotherm = 0.
-  integer, parameter :: EQUILTIME = 20 ! (orbits)
+  integer, parameter :: EQUILTIME = 20 ! [orbits]
 end module body
 
 
@@ -183,7 +183,7 @@ module allinterfaces
      pure function colint(y,z,nz,i1,i2)
        implicit none
        integer, intent(IN) :: nz, i1, i2
-       real(8), intent(IN) :: y(nz),z(nz)
+       real(8), intent(IN) :: y(nz), z(nz)
        real(8) colint
      end function colint
   end interface

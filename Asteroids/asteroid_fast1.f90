@@ -6,10 +6,11 @@ PROGRAM asteroid_fast1
 !  - ice loss by vapor diffusion through porous layer
 !  - mixture of silicates and ice (no void spaces)
 !  - increasing solar luminosity
+!  - allows for deflation (ice fraction > porosity)  
 !  x no redistribution of ice within ice-rich layer
 !  x no impact stirring
 !
-! simplified version of asteroid_fast2    2016-2017
+! mostly a simplified version of asteroid_fast2    2016-2017
 !************************************************************************
   use constants, only : pi, d2r, NMAX
   use body, only : nz, zfac, zmax, ecc

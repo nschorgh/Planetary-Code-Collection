@@ -10,8 +10,8 @@ pure function flux_noatm(R,decl,latitude,HA,surfaceSlope,azFac)
 !**********************************************************************
   implicit none
   real(8) flux_noatm
-  real(8), parameter :: So=1365.  ! solar constant
-  real(8), parameter :: pi=3.1415926535897931, d2r=pi/180.
+  real(8), parameter :: So=1365.  ! solar constant [W/m^2]
+  real(8), parameter :: pi=3.1415926535897932, d2r=pi/180.
   real(8), intent(IN) :: R,decl,latitude,HA,surfaceSlope,azFac
   real(8) c1,s1,sinbeta,cosbeta,sintheta,azSun,buf
   
@@ -61,7 +61,7 @@ pure function flux_wshad(R,sinbeta,azSun,surfaceSlope,azFac,emax)
 !**********************************************************************
   implicit none
   real(8) flux_wshad
-  real(8), parameter :: So=1365.  ! solar constant
+  real(8), parameter :: So=1365.  ! solar constant [W/m^2]
   real(8), intent(IN) :: R,azSun,sinbeta,surfaceSlope,azFac,emax
   real(8) cosbeta,sintheta
   

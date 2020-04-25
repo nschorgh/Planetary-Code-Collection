@@ -218,7 +218,7 @@ elemental subroutine equatorial2horizontal(decl,latitude,HA,sinbeta,azimuth)
 !     azimuth [radians east of north]
 !***********************************************************************
   implicit none
-  real(8), parameter :: pi=3.1415926535897931
+  real(8), parameter :: pi=3.1415926535897932
   real(8), intent(IN) :: decl,latitude,HA
   real(8), intent(OUT) :: sinbeta,azimuth
   real(8) c1,s1,cosbeta,buf

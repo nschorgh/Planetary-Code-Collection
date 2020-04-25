@@ -6,7 +6,7 @@ function sublrate(T)
   implicit none
   real(8), intent(IN) :: T
   real(8) sublrate
-  real(8), parameter :: pi=3.141592653589793, kB = 1.38065e-23
+  real(8), parameter :: pi=3.1415926535897932, kB = 1.38065e-23
   real(8), parameter :: mu = 18.015*1.66054e-27
   real(8), external :: psv
 

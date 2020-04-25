@@ -13,7 +13,7 @@ pure function flux_mars77(R,decl,latitude,HA,albedo,fracir,fracscat)
   implicit none
   real*8 flux_mars77
   real*8, intent(IN) :: R,decl,latitude,HA,albedo,fracIR,fracScat
-  real*8, parameter :: So=1365.
+  real*8, parameter :: So=1365. ! [W/m^2]
   real*8, parameter :: sigSB=5.6704d-8
   real*8 c1,s1,Qo,solarAttenuation,Q
   real*8 sinbeta,sinbetaNoon,Qdir,Qscat,Qlw,Fout
@@ -68,7 +68,7 @@ pure subroutine flux_mars2(R,decl,latitude,HA,fracIR,fracScat, &
 !     Qlw: diffuse long-wavelength irradiance from atmosphere [W/m^2]
 !***********************************************************************
   implicit none
-  real(8), parameter :: pi=3.1415926535897931, So=1365.
+  real(8), parameter :: pi=3.1415926535897932, So=1365.
   real(8), parameter :: sigSB=5.6704d-8
   real(8), intent(IN) :: R,decl,latitude,HA,surfaceSlope,azFac,emax
   real(8), intent(IN) :: fracIR,fracScat
