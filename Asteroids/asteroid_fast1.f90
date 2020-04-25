@@ -1,9 +1,16 @@
 PROGRAM asteroid_fast1
-!*************************************************************************
+!************************************************************************
 ! Asynchronously coupled model of temperature and ice retreat on asteroids
-! no void spaces
+!
+!  - diurnally resolved 1D thermal model
+!  - ice loss by vapor diffusion through porous layer
+!  - mixture of silicates and ice (no void spaces)
+!  - increasing solar luminosity
+!  x no redistribution of ice within ice-rich layer
+!  x no impact stirring
+!
 ! simplified version of asteroid_fast2    2016-2017
-!*************************************************************************
+!************************************************************************
   use constants, only : pi, d2r, NMAX
   use body, only : nz, zfac, zmax, ecc
   use allinterfaces
@@ -65,7 +72,7 @@ PROGRAM asteroid_fast1
   close(30)
 
   ! porosity can decrease with depth, but should be constant within stirring depth
-  porosity = 0.4d0   ! dry porosity
+  porosity = 0.4d0   ! ice-free porosity
   icefrac  = porosity
 
   print *,'RUNNING FAST ASTEROID MODEL'
@@ -174,13 +181,13 @@ subroutine outputskindepths(nz,z,zmax,porosity,icefrac)
 
   delta = thIn/rhoc*sqrt(solarDay/pi)
   stretch = (newti/thIn)*(rhoc/newrhoc)
-  print *,'  dry skin depth - diurnal/seasonal',delta,delta*sqrt(solsperyear)
+  print *,'  ice-free skin depth - diurnal/seasonal',delta,delta*sqrt(solsperyear)
   do i=1,nz
      if (z(i)<delta) cycle
-     print *,'  ',i-1,' grid points within dry diurnal skin depth'
+     print *,'  ',i-1,' grid points within ice-free diurnal skin depth'
      exit
   enddo
-  print *,'  zmax=',zmax/(sqrt(solsperyear)*delta),'times seasonal dry skin depth'
+  print *,'  zmax=',zmax/(sqrt(solsperyear)*delta),'times seasonal ice-free skin depth'
   print *,'  zmax=',zmax/(sqrt(solsperyear)*delta*stretch),'times seasonal filled skin depth'
   write(*,'(3x,a,3(1x,f6.1))') 'Nominal thermal inertia extremes',thIn,newti
   if (i<=5) stop 'Not enough grid points'

@@ -1,8 +1,16 @@
 PROGRAM asteroid_fast
-!***********************************************************************
+!************************************************************************
 ! Asynchronously coupled model of temperature and ice retreat on asteroids
+!
+!  - diurnally resolved 1D thermal model
+!  - ice loss by vapor diffusion through porous layer
+!  - mixture of silicates, ice, and void spaces
+!  - impact stirring
+!  - redistribution of ice within ice-rich layer
+!  - increasing solar luminosity
+! 
 ! written by Norbert Schorghofer 2012-2015
-!***********************************************************************
+!************************************************************************
   use constants, only : pi, d2r, NMAX
   use body, only : nz, zfac, zmax, ecc, icedensity
   use allinterfaces
@@ -52,7 +60,7 @@ PROGRAM asteroid_fast
   close(30)
 
   ! porosity can decrease with depth, but should be constant within stirring depth
-  porosity(:) = 0.4d0   ! dry porosity
+  porosity(:) = 0.4d0   ! ice-free porosity
   do concurrent (i=1:nz)
      sigma(i,:) = porosity(i)*icedensity
   end do
@@ -160,7 +168,7 @@ subroutine outputskindepths(nz,z,zmax,porosity)
   real(8), intent(IN) :: z(NMAX), zmax, porosity(nz)
   integer i
   real(8) delta, stretch, newrhoc, newti, rhoc
-  real(8) rhocv(nz), ti(nz), porefill(nz), thIn
+  real(8) rhocv(nz), ti(nz), thIn, porefill(nz)
 
   call assignthermalproperties(nz,Tnominal,porosity,ti,rhocv)
   thIn = ti(1); rhoc=rhocv(1)
@@ -171,13 +179,13 @@ subroutine outputskindepths(nz,z,zmax,porosity)
 
   delta = thIn/rhoc*sqrt(solarDay/pi)
   stretch = (newti/thIn)*(rhoc/newrhoc)
-  print *,'  dry skin depth - diurnal/seasonal',delta,delta*sqrt(solsperyear)
+  print *,'  ice-free skin depth - diurnal/seasonal',delta,delta*sqrt(solsperyear)
   do i=1,nz
      if (z(i)<delta) cycle
-     print *,'  ',i-1,' grid points within dry diurnal skin depth'
+     print *,'  ',i-1,' grid points within ice-free diurnal skin depth'
      exit
   end do
-  print *,'  zmax=',zmax/(sqrt(solsperyear)*delta),'times seasonal dry skin depth'
+  print *,'  zmax=',zmax/(sqrt(solsperyear)*delta),'times seasonal ice-free skin depth'
   print *,'  zmax=',zmax/(sqrt(solsperyear)*delta*stretch),'times seasonal filled skin depth'
   write(*,'(3x,a,3(1x,f6.1))') 'Nominal thermal inertia extremes',thIn,newti
   if (i<=5) stop 'Not enough grid points'

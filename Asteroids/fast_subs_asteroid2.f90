@@ -337,10 +337,10 @@ end subroutine compactoutput
 
 
 subroutine assignthermalproperties(nz,Tnominal,porosity,ti,rhocv,porefill)
-!***********************************************************************
+!************************************************************************
 ! assign thermal properties of soil
 ! specify thermal interia profile here
-!***********************************************************************
+!************************************************************************
   use body, only : icedensity
   implicit none
   integer, intent(IN) :: nz

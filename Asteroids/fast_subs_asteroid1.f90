@@ -82,11 +82,11 @@ end subroutine icelayer_asteroid
 
 subroutine ajsub_asteroid(latitude, albedo, z, ti, rhocv, ecc, omega, &
      &     eps, S0, typeT, rhosatav, Tinit, Tmean1, Tmean3, Tmin, Tmaxi)
-!***********************************************************************
+!************************************************************************
 !  A 1D thermal model that also returns various time-averaged quantities
 !
 !  Tinit = initalize if .true., otherwise use Tmean1 and Tmean3
-!***********************************************************************
+!************************************************************************
   use constants
   use body, only : EQUILTIME, dt, solsperyear, Fgeotherm, semia, nz, emiss, solarDay
   use allinterfaces, only : flux_noatm
@@ -227,9 +227,9 @@ end subroutine icechanges
 
 
 subroutine assignthermalproperties1(nz,z,Tnom,porosity,ti,rhocv,icefrac,zdepthT)
-!***********************************************************************
+!************************************************************************
 ! assign thermal properties of soil
-!***********************************************************************
+!************************************************************************
   use body, only : icedensity
   implicit none
   integer, intent(IN) :: nz

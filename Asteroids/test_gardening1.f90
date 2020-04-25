@@ -23,7 +23,7 @@ program testgardening
   !where(z<0.10) sigma=0.
 
   do n=1,400
-     call impactstirring(nz,z,bigstep,sigma,1000)
+     call impactstirring(nz,z,bigstep,sigma)
 
      ! optional diagnostics
      m0 = colint(sigma,z,nz,1,nz)
