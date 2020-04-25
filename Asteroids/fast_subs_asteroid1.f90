@@ -110,7 +110,7 @@ subroutine ajsub_asteroid(latitude, albedo, z, ti, rhocv, ecc, omega, &
   
   ! initialize
   if (Tinit) then 
-     S1=S0*1365./semia**2  ! must match solar constant defined in flux_noatm
+     S1 = S0*1365./semia**2  ! must match solar constant defined in flux_noatm
      coslat = max(cos(latitude),cos(latitude+eps),cos(latitude-eps))
      Tmean0 = (S1*(1.-albedo)*coslat/(pi*emiss*sigSB))**0.25 ! estimate
      Tmean0 = Tmean0-5.
@@ -231,6 +231,7 @@ subroutine assignthermalproperties1(nz,z,Tnom,porosity,ti,rhocv,icefrac,zdepthT)
 ! assign thermal properties of soil
 !************************************************************************
   use body, only : icedensity
+  use allinterfaces, only : heatcapacity
   implicit none
   integer, intent(IN) :: nz
   real(8), intent(IN) :: z(nz), Tnom, porosity
@@ -242,7 +243,6 @@ subroutine assignthermalproperties1(nz,z,Tnom,porosity,ti,rhocv,icefrac,zdepthT)
   real(8) cdry  ! heat capacity of dry regolith
   real(8) k(nz)  ! thermal conductivity
   real(8) thIn
-  real(8), external :: heatcapacity
 
   cdry = heatcapacity(Tnom)
   thIn = 15.

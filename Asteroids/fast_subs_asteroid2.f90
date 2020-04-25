@@ -129,7 +129,7 @@ subroutine ajsub_asteroid(latitude, albedo, z, ti, rhocv, ecc, omega, eps, &
   
   ! initialize
   if (Tinit) then 
-     S1=S0*1365./semia**2  ! must match solar constant defined in flux_noatm
+     S1 = S0*1365./semia**2  ! must match solar constant defined in flux_noatm
      coslat = max(cos(latitude),cos(latitude+eps),cos(latitude-eps))
      Tmean0 = (S1*(1.-albedo)*coslat/(pi*emiss*sigSB))**0.25 ! estimate
      Tmean0 = Tmean0-5.
@@ -226,7 +226,6 @@ subroutine avmeth(nz, z, rhosatav, rhosatav0, rlow, typeP, Diff, Diff0, ypp, Jpu
   real(8), intent(IN) :: rhosatav0, rlow, Diff0
   real(8), intent(OUT) :: ypp(nz), Jpump1
   real(8) yp(nz), ap_one, ap(nz)
-  !real(8), external :: deriv1_onesided
 
 !-calculate pumping flux at interface
   call deriv1(z,nz,rhosatav,rhosatav0,rlow,yp)  ! yp also used below
@@ -236,9 +235,9 @@ subroutine avmeth(nz, z, rhosatav, rhosatav0, rlow, typeP, Diff, Diff0, ypp, Jpu
 !-calculate ypp
   call deriv1(z,nz,Diff(:),Diff0,Diff(nz-1),ap)
   if (typeP>0 .and. typeP<nz-2) then
-     ap_one=deriv1_onesided(typeP,z(:),nz,Diff(:))
+     ap_one = deriv1_onesided(typeP,z(:),nz,Diff(:))
      ! print *,typeP,ap(typeP),ap_one
-     ap(typeP)=ap_one
+     ap(typeP) = ap_one
   endif
   call deriv2_simple(z,nz,rhosatav(1:nz),rhosatav0,rlow,ypp(:))
   ypp(:) = ap(:)*yp(1:)+Diff(:)*ypp(:)
@@ -250,7 +249,8 @@ end subroutine avmeth
 subroutine icechanges(nz,z,typeP,avrho,ypp,Deff,bigstep,Jp,zdepthP,sigma)
 !************************************************************************
 ! advances ice interface and grows pore ice
-!************************************************************************
+  !************************************************************************
+  use allinterfaces
   implicit none
   integer, intent(IN) :: nz, typeP
   real(8), intent(IN) :: z(nz), ypp(nz), avrho(nz)
@@ -258,7 +258,6 @@ subroutine icechanges(nz,z,typeP,avrho,ypp,Deff,bigstep,Jp,zdepthP,sigma)
   real(8), intent(INOUT) :: zdepthP, sigma(nz)
   integer j, newtypeP
   real(8) zdepthPnew, buf, bigdtsec, dtcorr, dtstep, dz(nz)
-  integer, external :: gettype
 
   if (typeP<0) return   ! no ice anywhere
   if (zdepthP<0.) print *,'Error: No ice in icechanges'
@@ -336,15 +335,16 @@ end subroutine compactoutput
 
 
 
-subroutine assignthermalproperties(nz,Tnominal,porosity,ti,rhocv,porefill)
+subroutine assignthermalproperties(nz,Tnom,porosity,ti,rhocv,porefill)
 !************************************************************************
 ! assign thermal properties of soil
 ! specify thermal interia profile here
 !************************************************************************
   use body, only : icedensity
+  use allinterfaces, only : heatcapacity
   implicit none
   integer, intent(IN) :: nz
-  real(8), intent(IN) :: Tnominal, porosity(nz)
+  real(8), intent(IN) :: Tnom, porosity(nz)
   real(8), intent(OUT) :: ti(nz), rhocv(nz)
   real(8), intent(IN), optional :: porefill(nz)
   real(8), parameter :: rhodry = 2500  ! bulk density
@@ -353,20 +353,20 @@ subroutine assignthermalproperties(nz,Tnominal,porosity,ti,rhocv,porefill)
   !real(8), parameter :: kice=4.3, cice=1210   ! 150K
   integer j
   real(8) cdry  ! heat capacity of dry regolith
-  real(8) k(nz)  ! thermal conductivity
-  real(8) thIn
-  real(8), external :: heatcapacity
+  real(8) k(nz) ! thermal conductivity
+  real(8) thIn  ! thermal inertia
 
   if (minval(porosity)<0. .or. maxval(porosity)>0.8) then
      print *,'Error: unreasonable porosity',minval(porosity),maxval(porosity)
      stop
   endif
 
-  cdry = heatcapacity(Tnominal)
+  cdry = heatcapacity(Tnom)
   thIn = 15.
-  rhocv(:) = (1.-porosity(:))*rhodry*cdry
-  k(:) = thIn**2/rhocv(:) 
-  
+  do j=1,nz
+     rhocv(j) = (1.-porosity(j))*rhodry*cdry
+     k(j) = thIn**2/rhocv(j) 
+  end do
   if (present(porefill)) then
      do j=1,nz
         if (porefill(j)>0) then
@@ -405,7 +405,7 @@ function constriction(porefill)
   if (porefill>0. .and. porefill<1.) then
      ! eta = 1.
      ! eta = 1-porefill
-     eta = (1-porefill)**2  ! Hudson et al., JGR, 2009
+     eta = (1-porefill)**2  ! Hudson et al., JGR 114, E01002 (2009)
   endif
   if (porefill>=1.) eta = 0.
   constriction = eta

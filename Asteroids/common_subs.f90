@@ -5,9 +5,9 @@
 pure function flux2T(Q,albedo,emiss)
   ! convert incoming flux Q to equilibrium temperature
   implicit none
+  real(8) flux2T
   real(8), intent(IN) :: Q, emiss, albedo
   real(8), parameter :: sigSB = 5.6704d-8
-  real(8) flux2T
 
   flux2T = ((1-albedo)*Q/sigSB/emiss)**0.25
 end function flux2T
@@ -16,12 +16,24 @@ end function flux2T
 pure function a2Torb(semia)
   ! returns orbital period in Earth days
   implicit none
+  real(8) a2Torb  
   real(8), parameter :: pi=3.1415926535897932
   real(8), intent(IN) :: semia  ! semimajor axis [AU]
-  real(8) a2Torb  
 
   a2Torb = sqrt(4*pi**2/(6.674e-11*1.989e30)*(semia*149.598e9)**3)/86400.
 end function a2Torb
+
+
+pure integer function sols_per_year(semia,solarDay)
+  ! number of solar days per orbit, rounded
+  implicit none
+  real(8), parameter :: pi=3.1415926535897932
+  real(8), intent(IN) :: semia, solarDay
+  real(8) T  ! orbital period [sec]
+  
+  T = sqrt(4*pi**2/(6.674e-11*1.989e30)*(semia*149.598e9)**3)
+  sols_per_year = nint(T/solarDay)
+end function sols_per_year
 
 
 pure function interp1(x0,x,y0,y,xi,nz)
@@ -67,9 +79,9 @@ pure function vapordiffusivity(diam,porosity,T)
   ! vapor diffusivity of porous material [m^2/s]
   ! diam = rms grain diameter
   implicit none
+  real(8) vapordiffusivity
   real(8), parameter :: pi = 3.1415926535897932
   real(8), parameter :: Ru = 8314.5
-  real(8) vapordiffusivity
   real(8), intent(IN) :: diam, porosity, T
   real(8) vbar, r
   real(8), parameter :: tau = 2.  ! tortuosity

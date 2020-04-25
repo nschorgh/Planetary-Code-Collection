@@ -130,6 +130,13 @@ module allinterfaces
   end interface
 
   interface
+     pure integer function sols_per_year(semia,solarDay)
+       implicit none
+       real(8), intent(IN) :: semia, solarDay
+     end function sols_per_year
+  end interface
+  
+  interface
      pure function interp1(x0,x,y0,y,xi,nz)
        implicit none
        real(8) interp1
