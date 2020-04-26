@@ -14,6 +14,7 @@ end module constants
 
 
 module body
+  use constants, only : d2r
   implicit none
 
   real(8) semia  ! semimajor axis [AU]
@@ -21,10 +22,10 @@ module body
   real(8) Trot   ! length of solar day in Earth days
   real(8) solarDay ! length of solar day [seconds]
   real(8) emiss  ! IR emissivity of ice-free surface
-  real(8) solsperyear
   integer nz     ! number of vertical grid points
   real(8) zfac
   real(8) zmax   ! domain depth
+  real(8) eps    ! axis tilt (obliquity) [radian]
 
   ! (1) Ceres
   parameter(semia = 2.76750591)
@@ -32,15 +33,16 @@ module body
   !parameter(ecc = 0.0)
   parameter(ecc = 0.117)  ! proper
   parameter(solarDay = 9.076*3600.) ! (sidereal period is 9.074170 hr)
-  parameter(solsperyear = 4446.)
   parameter(emiss = 0.95d0)
+  !parameter(eps = 4.*d2r) ! current
+  parameter(eps = 12.*d2r) ! average
   parameter(nz=160, zfac=1.05d0, zmax=15.)  ! thIn=15
 
   ! 133P/Elst-Pizarro
   !parameter(semia = 3.163, ecc = 0.159)  ! proper
   !parameter(solarDay = 3.471*3600.)
-  !parameter(solsperyear = 14192.)
   !parameter(emiss = 0.95d0)
+  !parameter(eps = 75.*d2r)
   !parameter(nz=160, zfac=1.05d0, zmax=20.) 
   
   real(8), parameter :: Tnominal = 140.   ! for Diff and Tinit [K]
@@ -86,6 +88,15 @@ module allinterfaces
      end function flux_noatm
   end interface
 
+  interface
+     function sublrate(T)
+       implicit none
+       real(8), intent(IN) :: T
+       real(8) sublrate
+       real(8), external :: psv
+     end function sublrate
+  end interface
+  
   interface
      subroutine deriv1(z,nz,y,y0,yNp1,yp)
        implicit none

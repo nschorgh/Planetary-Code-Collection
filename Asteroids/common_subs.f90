@@ -16,7 +16,7 @@ end function flux2T
 pure function a2Torb(semia)
   ! returns orbital period in Earth days
   implicit none
-  real(8) a2Torb  
+  real(8) a2Torb
   real(8), parameter :: pi=3.1415926535897932
   real(8), intent(IN) :: semia  ! semimajor axis [AU]
 
@@ -30,7 +30,8 @@ pure integer function sols_per_year(semia,solarDay)
   real(8), parameter :: pi=3.1415926535897932
   real(8), intent(IN) :: semia, solarDay
   real(8) T  ! orbital period [sec]
-  
+
+  ! the numbers match those in subroutine generalorbit
   T = sqrt(4*pi**2/(6.674e-11*1.989e30)*(semia*149.598e9)**3)
   sols_per_year = nint(T/solarDay)
 end function sols_per_year

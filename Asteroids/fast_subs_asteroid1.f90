@@ -88,8 +88,8 @@ subroutine ajsub_asteroid(latitude, albedo, z, ti, rhocv, ecc, omega, &
 !  Tinit = initalize if .true., otherwise use Tmean1 and Tmean3
 !************************************************************************
   use constants
-  use body, only : EQUILTIME, dt, solsperyear, Fgeotherm, semia, nz, emiss, solarDay
-  use allinterfaces, only : flux_noatm
+  use body, only : EQUILTIME, dt, semia, Fgeotherm, semia, nz, emiss, solarDay
+  use allinterfaces
   implicit none
   real(8), intent(IN) :: latitude  ! [radians]
   real(8), intent(IN) :: albedo, z(NMAX)
@@ -105,10 +105,11 @@ subroutine ajsub_asteroid(latitude, albedo, z, ti, rhocv, ecc, omega, &
   real(8) tmax, time, Qn, Qnp1, tdays
   real(8) orbitR, orbitLs, orbitDec, HA
   real(8) Tsurf, Fsurf, T(NMAX)
-  real(8) Tmean0, S1, coslat, Evap
-  real(8), external :: psv, sublrate
+  real(8) Tmean0, S1, coslat, Evap, solsperyear
+  real(8), external :: psv
   
   ! initialize
+  solsperyear = sols_per_year(semia,solarDay)
   if (Tinit) then 
      S1 = S0*1365./semia**2  ! must match solar constant defined in flux_noatm
      coslat = max(cos(latitude),cos(latitude+eps),cos(latitude-eps))
@@ -180,6 +181,7 @@ end subroutine ajsub_asteroid
 
 subroutine outputmoduleparameters
   use body
+  use allinterfaces, only : sols_per_year
   implicit none
   print *,'Global parameters stored in modules'
   print *,'  Ice bulk density',icedensity,'kg/m^3'
@@ -188,7 +190,7 @@ subroutine outputmoduleparameters
   print *,'  Emissivity of surface=',emiss
   print *,'  Thermal model equilibration time',EQUILTIME,'orbits'
   print *,'  Semimajor axis',semia
-  print *,'  Solar day',solarDay,'Sols per year',solsperyear
+  print *,'  Solar day',solarDay,'Sols per year',sols_per_year(semia,solarDay)
   print *,'  Vertical grid: nz=',nz,' zfac=',zfac,'zmax=',zmax
 end subroutine outputmoduleparameters
 

@@ -12,7 +12,7 @@ PROGRAM asteroid_fast
 ! written by Norbert Schorghofer 2012-2015
 !************************************************************************
   use constants, only : pi, d2r, NMAX
-  use body, only : nz, zfac, zmax, ecc, icedensity
+  use body, only : nz, zfac, zmax, ecc, icedensity, eps
   use allinterfaces
   implicit none
 
@@ -23,7 +23,7 @@ PROGRAM asteroid_fast
   integer i, k, earliest, iargc, ierr
   real(8) tstart  ! (earth) years
   real(8) z(NMAX), icetime, timestep, sigma(nz,NP)
-  real(8) bigstep, bssum, omega, eps, porosity(nz)
+  real(8) bigstep, bssum, omega, porosity(nz)
   real(8), dimension(NP) :: latitude, albedo, zdepthP
   real(8), dimension(NP) :: Tmean1, Tmean3, Tmin, Tmax
   character(7) ext
@@ -48,9 +48,6 @@ PROGRAM asteroid_fast
   timestep = 1e5  ! Earth years
   zdepthP(:) = 0.  ! initial ice depth
 
-  eps = 4.*d2r    ! (1) Ceres, current
-  !eps = 12.*d2r   ! (1) Ceres, average
-  !eps = 75.*d2r   ! Elst-Pizarro
   omega = 0.*d2r
 
   ! set eternal grid
@@ -61,6 +58,7 @@ PROGRAM asteroid_fast
 
   ! porosity can decrease with depth, but should be constant within stirring depth
   porosity(:) = 0.4d0   ! ice-free porosity
+  !porosity(:) = 0.23d0
   do concurrent (i=1:nz)
      sigma(i,:) = porosity(i)*icedensity
   end do
@@ -161,14 +159,14 @@ END PROGRAM asteroid_fast
 subroutine outputskindepths(nz,z,zmax,porosity)
   ! diagnostics only
   use constants, only : pi, NMAX 
-  use body, only : solarDay, solsperyear, Tnominal
+  use body, only : solarDay, semia, Tnominal
   use allinterfaces
   implicit none
   integer, intent(IN) :: nz
   real(8), intent(IN) :: z(NMAX), zmax, porosity(nz)
   integer i
   real(8) delta, stretch, newrhoc, newti, rhoc
-  real(8) rhocv(nz), ti(nz), thIn, porefill(nz)
+  real(8) rhocv(nz), ti(nz), thIn, porefill(nz), solsperyear
 
   call assignthermalproperties(nz,Tnominal,porosity,ti,rhocv)
   thIn = ti(1); rhoc=rhocv(1)
@@ -177,6 +175,7 @@ subroutine outputskindepths(nz,z,zmax,porosity)
   call assignthermalproperties(nz,Tnominal,porosity,ti,rhocv,porefill)
   newti = ti(1); newrhoc=rhocv(1)
 
+  solsperyear = sols_per_year(semia,solarDay)
   delta = thIn/rhoc*sqrt(solarDay/pi)
   stretch = (newti/thIn)*(rhoc/newrhoc)
   print *,'  ice-free skin depth - diurnal/seasonal',delta,delta*sqrt(solsperyear)

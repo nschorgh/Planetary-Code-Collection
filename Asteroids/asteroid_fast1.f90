@@ -6,17 +6,16 @@ PROGRAM asteroid_fast1
 !  - ice loss by vapor diffusion through porous layer
 !  - mixture of silicates and ice (no void spaces)
 !  - increasing solar luminosity
-!  - allows for deflation (ice fraction > porosity)  
+!  - allows for deflation (ice fraction larger than porosity)  
 !  x no redistribution of ice within ice-rich layer
 !  x no impact stirring
 !
 ! mostly a simplified version of asteroid_fast2    2016-2017
 !************************************************************************
   use constants, only : pi, d2r, NMAX
-  use body, only : nz, zfac, zmax, ecc
+  use body, only : nz, zfac, zmax, ecc, eps
   use allinterfaces
   implicit none
-
   integer, parameter :: NP=1    ! # of sites
   integer SPINUPN   ! # number of spin-up steps
   real(8) spinupfac 
@@ -24,26 +23,11 @@ PROGRAM asteroid_fast1
   integer i, k, earliest, iargc, ierr
   real(8) tstart  ! (earth) years
   real(8) z(NMAX), icetime, timestep
-  real(8) bigstep, bssum, omega, eps, porosity, icefrac
+  real(8) bigstep, bssum, omega, porosity, icefrac
   real(8), dimension(NP) :: latitude, albedo, zdepthT
   real(8), dimension(NP) :: Tmean1, Tmean3, Tmin, Tmax
   character(4) ext
-  interface
-     subroutine icelayer_asteroid(bigstep,NP,z,porosity,icefrac,Tinit, &
-          & zdepthT,Tmean1,Tmean3,Tmin,Tmax,latitude,albedo,ecc,omega,eps,S0)
-       use constants, only : d2r, NMAX
-       use body, only : Tnominal, nz
-       implicit none
-       integer, intent(IN) :: NP
-       real(8), intent(IN) :: bigstep
-       real(8), intent(IN) :: z(NMAX), porosity, icefrac
-       logical, intent(IN) :: Tinit
-       real(8), intent(INOUT) :: zdepthT(NP), Tmean1(NP), Tmean3(NP)
-       real(8), intent(OUT) :: Tmin(NP), Tmax(NP)
-       real(8), intent(IN) :: latitude(NP), albedo(NP), ecc, omega, eps, S0
-     end subroutine icelayer_asteroid
-  end interface
-  
+
   ! latitudes
   if (iargc() /= 1) then
      stop 'USAGE: asteroid_fast ext'
@@ -56,14 +40,13 @@ PROGRAM asteroid_fast1
   endif
   do k=1,NP
      read(21,*,iostat=ierr) latitude(k),albedo(k)
-  enddo
+  end do
   close(21)
 
   tstart = 4.5e9  ! Earth years
   timestep = 2e5  ! Earth years
   zdepthT(:) = 0.  ! initial ice depth
 
-  eps = 4.*d2r   ! (1) Ceres, current
   omega = 0.*d2r
 
   ! set eternal grid
@@ -90,7 +73,7 @@ PROGRAM asteroid_fast1
      print *,'  Initial ice depth=',zdepthT(k)
      print *,'  Porosity=',porosity,' Ice fraction=',icefrac
      print *
-  enddo
+  end do
   call outputmoduleparameters
   print *
 
@@ -108,7 +91,7 @@ PROGRAM asteroid_fast1
   do k=1,NP
      write(37,501) icetime,latitude(k),zdepthT(k), &
           &  Tmean1(k),Tmean3(k),Tmin(k),Tmax(k)
-  enddo
+  end do
 
   icetime = - earliest*timestep
   print *,icetime
@@ -126,9 +109,9 @@ PROGRAM asteroid_fast1
         ! variables were evaluated at previous time step
         write(37,501) icetime,latitude(k),zdepthT(k), &
              & Tmean1(k),Tmean3(k),Tmin(k),Tmax(k)
-     enddo
+     end do
      omega = mod(omega + 36.*d2r,2*pi)  ! sweep
-  enddo
+  end do
 
   
   icetime = -(earliest-1)*timestep
@@ -142,7 +125,7 @@ PROGRAM asteroid_fast1
         ! variables were evaluated at previous time step
         write(37,501) icetime,latitude(k),zdepthT(k), &
              & Tmean1(k),Tmean3(k),Tmin(k),Tmax(k)
-     enddo
+     end do
      print *,icetime
      !if (any(-icetime == (/ 4.498d9, 4.450d9, 4d9 /))) then  ! with 1e5
      if (any(-icetime == (/ 4.498d9, 4.460d9, 4d9 /))) then   ! with 2e5
@@ -151,7 +134,7 @@ PROGRAM asteroid_fast1
      endif
      if (icetime>=0.) exit
      omega = mod(omega + 36.*d2r,2*pi)  ! sweep
-  enddo
+  end do
 
   close(34)
   close(37)
@@ -165,14 +148,14 @@ END PROGRAM asteroid_fast1
 subroutine outputskindepths(nz,z,zmax,porosity,icefrac)
   ! diagnostics only
   use constants, only : pi, NMAX 
-  use body, only : solarDay, solsperyear, Tnominal
+  use body, only : solarDay, semia, Tnominal
   use allinterfaces
   implicit none
   integer, intent(IN) :: nz
   real(8), intent(IN) :: z(NMAX), zmax, porosity, icefrac
   integer i
   real(8) delta, stretch, newrhoc, newti, rhoc
-  real(8) rhocv(nz), ti(nz), thIn
+  real(8) rhocv(nz), ti(nz), thIn, solsperyear
 
   call assignthermalproperties1(nz,z,Tnominal,porosity,ti,rhocv)
   thIn = ti(1); rhoc=rhocv(1)
@@ -180,6 +163,7 @@ subroutine outputskindepths(nz,z,zmax,porosity,icefrac)
   call assignthermalproperties1(nz,z,Tnominal,porosity,ti,rhocv,icefrac,0.d0)
   newti = ti(1); newrhoc=rhocv(1)
 
+  solsperyear = sols_per_year(semia,solarDay)
   delta = thIn/rhoc*sqrt(solarDay/pi)
   stretch = (newti/thIn)*(rhoc/newrhoc)
   print *,'  ice-free skin depth - diurnal/seasonal',delta,delta*sqrt(solsperyear)
@@ -187,7 +171,7 @@ subroutine outputskindepths(nz,z,zmax,porosity,icefrac)
      if (z(i)<delta) cycle
      print *,'  ',i-1,' grid points within ice-free diurnal skin depth'
      exit
-  enddo
+  end do
   print *,'  zmax=',zmax/(sqrt(solsperyear)*delta),'times seasonal ice-free skin depth'
   print *,'  zmax=',zmax/(sqrt(solsperyear)*delta*stretch),'times seasonal filled skin depth'
   write(*,'(3x,a,3(1x,f6.1))') 'Nominal thermal inertia extremes',thIn,newti
