@@ -21,7 +21,7 @@ asteroid_fast2.f90: (main program)
 
 asteroid_fast1.f90: (main program)
 	Asynchronously coupled model of ice loss and temperature 
-	on asteroids; simplified version of asteroid_fast2
+	on asteroids; mostly a simplified version of asteroid_fast2
 
 impactstirring.f90:
 	Model of ice homogenization due to impact stirring,
@@ -29,6 +29,7 @@ impactstirring.f90:
 
 fast_modules_asteroid.f90:
 	modules for asteroid_fast1 and asteroid_fast2
+	body-specific parameters are specified in module 'body'
 
 fast_subs_asteroid2.f90:
 	subroutines and functions for asteroid_fast2 

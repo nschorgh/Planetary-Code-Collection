@@ -107,7 +107,7 @@ subroutine ajsub_asteroid(latitude, albedo, z, ti, rhocv, ecc, omega, eps, &
 !  Tinit = initalize if .true., otherwise use Tmean1 and Tmean3
 !************************************************************************
   use constants
-  use body, only : EQUILTIME, dt, semia, Fgeotherm, semia, nz, emiss, solarDay
+  use body, only : EQUILTIME, dt, semia, Fgeotherm, nz, emiss, solarDay
   use allinterfaces
   implicit none
   real(8), intent(IN) :: latitude  ! in radians
@@ -251,7 +251,7 @@ end subroutine avmeth
 subroutine icechanges(nz,z,typeP,avrho,ypp,Deff,bigstep,Jp,zdepthP,sigma)
 !************************************************************************
 ! advances ice interface and grows pore ice
-  !************************************************************************
+!************************************************************************
   use allinterfaces
   implicit none
   integer, intent(IN) :: nz, typeP
