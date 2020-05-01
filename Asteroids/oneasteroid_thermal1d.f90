@@ -16,17 +16,20 @@ subroutine oneasteroid(latitude, omega, eps, thIn, Qmean, Tmean, Tmin, Tmax)
   !real(8) rhocmean, Imean
   real(8), parameter :: slope = 0.*d2r ! [radians]
   real(8), parameter :: az = 0.*d2r ! radians east of north
-  real(8), external :: flux_noatm, flux2T, a2Torb, sublrate
+  real(8), external :: flux_noatm, flux2T, a2Torb, sublrate, heatcapacity
 
   print *,'Latitude=',latitude/d2r
   Torb = a2Torb(semia)
   nr = 100*nint(Torb/Trot)   ! usually 50, more for low thermal inertia <<10
   dt = Torb/nr*86400
   print *,'dt=',dt/3600.,'hours','  Trot=',Trot*24.,'hours'
+  
   ti(:) = thIn
   ! for one-layer model the value of rho*c does not matter
-  !rhoc(:) = 2500.*(1-0.4)*400.
-  rhoc(:) = 930*1300. ! solid ice
+  rhoc(:) = 2500.*(1-0.4)*400.
+  !rhoc(:) = 2500.*(1-0.4)*heatcapacity(120.d0)
+  !rhoc(:) = 930*1300. ! solid ice
+  
   delta1 = thIn/rhoc(1)*sqrt(Trot*86400/pi)
   delta2 = thIn/rhoc(1)*sqrt(Torb*86400/pi)
   zmax = 5.*delta2

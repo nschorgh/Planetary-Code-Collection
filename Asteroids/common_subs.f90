@@ -65,14 +65,18 @@ pure function heatcapacity(T)
   real(8), intent(IN) :: T  ! [K]
   real(8) c, heatcapacity   ! [J/(kg K)]
   
-  ! heat capacity from Ledlow et al., ApJ 348, 640 (1992), <350K
+  ! Ledlow et al., ApJ 348, 640 (1992), <350K
   !c = 0.1812 + 0.1191*(T/300.-1) + 0.0176*(T/300.-1)**2 + &
   !     0.2721*(T/300.-1)**3 + 0.1869*(T/300.-1)**4
   !heatcapacity = c*1000*4.184  ! cal/(g K) -> J/(kg K)
 
-  ! heat capacity from Winter & Saari, ApJ 156, 1135 (1969), 20K<T<500K
+  ! Winter & Saari, ApJ 156, 1135 (1969), 20K<T<500K
   c = -0.034*T**0.5 + 0.008*T - 0.0002*T**1.5
   heatcapacity = c*1000   ! J/(g K) -> J/(kg K)
+
+  ! Hayne et al., JGR 122, 2371 (2017)
+  !c = 8.9093E-09*T**4 -1.2340E-05*T**3 +2.36160E-03*T**2 + 2.7431*T -3.6125
+  !heatcapacity = c
 end function heatcapacity
 
 

@@ -40,6 +40,7 @@ PROGRAM asteroid_thermal
   real(8) omega  ! [radians]
   real(8) latitude, Qmean, Q4mean, Q0mean
   real(8) Tmean, thIn, Tmin, Tmax, Torb !, ti(13)
+  real(8), parameter :: zero = 0.
   real(8), external :: flux_noatm, flux2T, a2Torb
 
   ! Ceres
@@ -59,7 +60,7 @@ PROGRAM asteroid_thermal
   Torb = a2Torb(semia)
   print *,'Torb=',Torb,'days'
 
-  print *,'Tss=',flux2T(flux_noatm(semia,0d0,0d0,0d0,0d0,0d0),albedo,emiss)
+  print *,'Tss=',flux2T(flux_noatm(semia,zero,zero,zero,zero,zero),albedo,emiss)
   print *,'Tss=',flux2T(So/semia**2,albedo,emiss)
   !print *, 'Tmax=',flux2T(So/(semia*(1-ecc))**2,albedo,emiss)
 
@@ -68,7 +69,7 @@ PROGRAM asteroid_thermal
   Qmean = (1-albedo)*Qmean;  Q4mean = (1-albedo)*Q4mean
   write(*,'(a,4(1x,f5.1))') 'Fluxes (W/m^2):',So/semia**2,Q0mean,(1-albedo)*Q0mean/pi,Qmean
   write(*,'(a,2(1x,f6.2))') 'End-member temperatures (K):', &
-       & flux2T(Qmean,1d0,emiss),flux2T(Q4mean,1d0,emiss)
+       & flux2T(Qmean,zero,emiss),flux2T(Q4mean,zero,emiss)
 
   ! Surface temperature with rotation and conduction
   !ti = (/ 10000., 2100., 2000., 1000., 500., 200., 100., 50., 25., 15., 10., 5., 3. /)
