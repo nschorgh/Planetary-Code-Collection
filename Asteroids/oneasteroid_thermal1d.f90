@@ -25,7 +25,6 @@ subroutine oneasteroid(latitude, omega, eps, thIn, Qmean, Tmean, Tmin, Tmax)
   print *,'dt=',dt/3600.,'hours','  Trot=',Trot*24.,'hours'
   
   ti(:) = thIn
-  ! for one-layer model the value of rho*c does not matter
   rhoc(:) = 2500.*(1-0.4)*400.
   !rhoc(:) = 2500.*(1-0.4)*heatcapacity(120.d0)
   !rhoc(:) = 930*1300. ! solid ice
