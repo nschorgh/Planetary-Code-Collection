@@ -23,7 +23,8 @@ exper_thermal: exper_thermal1d.o vapordiffusioni.o soilthprop.o makefile
 	$(SR)tridag.o vapordiffusioni.o $(SR)psv.o $(SR)grids.o \
 	soilthprop.o
 
-mars_thermal: mars_thermal1d.o marsorbit.o flux_mars.o soilthprop.o makefile
+mars_thermal mars_thermal1d: mars_thermal1d.o marsorbit.o flux_mars.o \
+	soilthprop.o makefile
 	make -C $(SR) common
 	$(CC) $(LFLAGS) mars_thermal1d.o $(SR)julday.o marsorbit.o \
 	flux_mars.o $(SR)conductionQ.o $(SR)tridag.o $(SR)conductionT.o \

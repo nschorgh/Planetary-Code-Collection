@@ -59,6 +59,7 @@ program stabgrow
 end program stabgrow
 
 
+
 subroutine diagnoselatent(nz,rhof,rhocv)
   use miscparameters, only : NMAX
   implicit none
@@ -68,7 +69,7 @@ subroutine diagnoselatent(nz,rhof,rhocv)
   real(8), SAVE :: rhofold(NMAX)
   integer j
   do j=1,nz
-     print *,j,(rhof(j)-rhofold(j))*Lh2o/(rhocv(j)+rhocv(j-1))*2.
+     if (j>1) print *,j,(rhof(j)-rhofold(j))*Lh2o/(rhocv(j)+rhocv(j-1))*2.
      rhofold(j) = rhof(j)
   enddo
 end subroutine diagnoselatent
@@ -202,14 +203,5 @@ subroutine ajsub2(nz, z, ti, rhocv, pfrost, Tmean, Tampl, &
        & porefill(:), typeF, zdepthF, B, ypp(:), typeG, zdepthG)
 
 end subroutine ajsub2
-
-
-
-
-
-
-
-
-
 
 

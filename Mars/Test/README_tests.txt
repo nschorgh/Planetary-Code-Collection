@@ -7,7 +7,7 @@ make mars_thermal
 
 ./a.out
 
-reads input.par and produces outputs Tprofile and Tsurface
+reads input.par and produces outputs Tprofile, Tsurface, and z
 
 
 

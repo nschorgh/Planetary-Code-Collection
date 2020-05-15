@@ -22,19 +22,19 @@ C***********************************************************************
       parameter (Tco2frost=145., Lco2frost=6.0e5)
 
       integer nz, nsteps, n, i, nm
-      real*8 T(NMAX),tmax, time, dt, zmax, dz
+      real*8 T(NMAX),tmax, time, dt, zmax, dz, zfac
       real*8 latitude, thermalInertia, albedo, emiss
       real*8 fracIR, fracDust, rhoc, delta
       real*8 Qn, Qnp1, tdays, dtsec
       real*8 marsR, marsLs, marsDec, HA
-      real*8 surfaceSlope, azFac, zfac
+      real*8 surfaceSlope, azFac
       real*8 jd, temp1, dcor, dt0_j2000, flux_mars77
       real*8 ti(NMAX), Tsurf, rhocv(NMAX), z(NMAX), albedo0, Told(NMAX)
       real*8 co2albedo, Fgeotherm, Tsurfold, Fsurf, Fsurfold, m, dE
       real*8 co2emiss, Tmean, Tmean2, geof, ps, pb, psv, zero
       integer julday, iyr, imm, iday
       character*100 dum1
-      character*40 fileout1, fileout2   ! character array for output filenames
+      character*40 fileout1, fileout2  ! character arrays for output filenames
       external julday, flux_mars77, psv
       parameter (zero=0.)
 
@@ -61,7 +61,7 @@ C     if no co2emiss is available in input.par, set it to 1.
 
 C     set some constants
       dz = zmax/nz    ! set the space step
-      nsteps=int(tmax/dt)       ! calculate total number of timesteps
+      nsteps = int(tmax/dt)     ! calculate total number of timesteps
       emiss = 1. ! emissivity
       emiss = emiss*cos(surfaceSlope*d2r/2.)**2
       delta = thermalInertia/rhoc*sqrt(marsDay/pi)  ! skin depth
@@ -119,9 +119,9 @@ C-----Initialize
          exit
       enddo
       if (z(1)<1.e-5) print *,'WARNING: first grid point is too shallow'
-!      call smartgrid(nz,z,0.05d0,thermalInertia,rhoc,0.5d0,ti,rhocv,
-!     &     1,zero)
-!      call smartgrid(nz,z,0.07d0,thermalInertia,rhoc,zero,ti,rhocv,
+      call smartgrid(nz,z,0.1d0,thermalInertia,rhoc,0.4d0,ti,rhocv,
+     &     1,zero)
+!      call smartgrid(nz,z,0.1d0,thermalInertia,rhoc,zero,ti,rhocv,
 !     &     3,zero)
       open(unit=30,file='z',status='unknown');
       write(30,*) (z(i),i=1,nz)
@@ -129,11 +129,10 @@ C-----Initialize
       do i=1,nz
          ti(i) = thermalInertia
          rhocv(i) = rhoc
-         if (z(i)>0.05) then
-!            call soilthprop(0.5d0,1.d0,rhoc,thermalInertia,1,
-!     &           rhocv(i),ti(i))
-            call soilthprop(0.5d0,1.d0,rhoc,thermalInertia,2,
-     &           rhocv(i),ti(i),1.d0)
+         if (z(i)>0.1) then ! assign thermal properties below ice table
+            call soilthprop(0.4d0,1.d0,rhoc,thermalInertia,1,
+     &           rhocv(i),ti(i))
+!            call soilthprop(zero,zero,zero,zero,3,rhocv(i),ti(i),zero)
          endif
       enddo
 
@@ -158,8 +157,8 @@ C        Solar insolation and IR at future time step
 !     &        fracir,fracdust,surfaceSlope,azFac)
          Qnp1 = flux_mars77(marsR,marsDec,latitude,HA,albedo,
      &        fracir,fracdust)
-         Tsurfold=Tsurf
-         Fsurfold=Fsurf
+         Tsurfold = Tsurf
+         Fsurfold = Fsurf
 
          do i=1,nz; Told(i)=T(i); enddo
          if (Tsurf>Tco2frost .or. m<=0.) then   
@@ -171,7 +170,7 @@ C        Solar insolation and IR at future time step
             do i=1,nz; T(i)=Told(i); enddo
             call conductionT(nz,z,dtsec,T,Tsurfold,Tco2frost,ti,
      &              rhocv,Fgeotherm,Fsurf) 
-            Tsurf=Tco2frost
+            Tsurf = Tco2frost
             dE = (- Qn - Qnp1 + Fsurfold + Fsurf +
      &           emiss*sigSB*(Tsurfold**4+Tsurf**4))/2.
             m = m + dtsec*dE/Lco2frost;
@@ -194,8 +193,7 @@ c--------only output and diagnostics below this line
             pb = pb + psv(T(nz))/T(nz)
             nm = nm+1
          endif
-         if (time>=tmax-solsy.and.mod(n,10)==0) then
-!         if (mod(n,max(1,nsteps/100000))==0) then
+         if (time>=tmax-solsy.and.mod(n,5)==0) then
             write(21,'(f12.6,9f10.4)') time,marsLs/d2r,Tsurf,m
          endif
          if (time>=tmax-solsy.and.mod(n,nint(solsy/dt/40.))==0) then

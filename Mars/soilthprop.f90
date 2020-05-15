@@ -5,23 +5,25 @@ pure subroutine soilthprop(porosity,fill,rhocobs,tiobs,layertype, &
 !
 !     porositiy = void space / total volume
 !     rhof = density of free ice in space not occupied by regolith [kg/m^3]
-!     fill = rhof/icedensity <=1 (only relevant for type 1)
+!     fill = rhof/icedensity <=1 (only relevant for layertype 1)
 !     rhocobs = heat capacity per volume of dry regolith [J/m^3]
 !     tiobs = thermal inertia of dry regolith [SI-units]
 !     layertype: 1=interstitial ice, 2=pure ice or ice with dirt
-!     icefrac: fraction of ice in icelayer (only relevant for type 2)
+!                3=pure ice, 4=ice-cemented soil, 5=custom values
+!     icefrac: fraction of ice in icelayer (only relevant for layertype 2)
 !     output are newti and newrhoc
 !***********************************************************************
   implicit none
 
   integer, intent(IN) :: layertype
-  real*8, intent(IN) :: porosity, fill, rhocobs, tiobs, icefrac
+  real*8, intent(IN) :: porosity, fill, rhocobs, tiobs
   real*8, intent(OUT) :: newti, newrhoc
+  real*8, intent(IN) :: icefrac
   real*8 kobs, cice, icedensity, kice
   !parameter (cice=2000.d0, icedensity=926.d0, kice=2.4d0) ! unaffected by scaling
   parameter (cice=1540.d0, icedensity=927.d0, kice=3.2d0) ! at 198 Kelvin
   real*8 fA, ki0, ki, k
-  real*8, parameter :: kw=3.  ! Mellon et al., JGR 102, 19357 (1997)
+  real*8, parameter :: kw=3. ! Mellon et al., JGR 102, 19357 (1997)
 
   kobs = tiobs**2/rhocobs
   ! k, rhoc, and ti are defined in between grid points
@@ -38,9 +40,9 @@ pure subroutine soilthprop(porosity,fill,rhocobs,tiobs,layertype, &
      !enddo
      newrhoc = rhocobs + porosity*fill*icedensity*cice
      if (fill>0.) then
-        !--linear addition (option 1)
+        !--linear addition (option A)
         k = porosity*fill*kice + kobs
-        !--Mellon et al. 1997 (option 2)
+        !--Mellon et al. 1997 (option B)
         ki0 = porosity/(1/kobs-(1-porosity)/kw)
         fA = sqrt(fill)
         ki = (1-fA)*ki0 + fA*kice
@@ -60,10 +62,10 @@ pure subroutine soilthprop(porosity,fill,rhocobs,tiobs,layertype, &
      k = kice 
      newti = sqrt(newrhoc*k)
   
-  case (4)  ! all pore ice, special case of layertype 1
+  case (4)  ! pores completely filled with ice, special case of layertype 1
      newrhoc = rhocobs + porosity*icedensity*cice
-     k = porosity*kice + kobs
-     !k = kw*kice/((1-porosity)*kice+porosity*kw)
+     k = porosity*kice + kobs ! option A, end-member case of type 1, option A 
+     !k = kw*kice/((1-porosity)*kice+porosity*kw) ! option B, harmonic average
      newti = sqrt(newrhoc*k)
 
   case (5)  ! custom values
@@ -117,6 +119,8 @@ subroutine smartgrid(nz,z,zdepth,thIn,rhoc,porosity,ti,rhocv,layertype,icefrac)
         call soilthprop(porosity,NULL,rhoc,thIn,2,newrhoc,newti,icefrac)
      case (3)  ! all ice
         call soilthprop(NULL,NULL,NULL,NULL,3,newrhoc,newti,NULL)
+     case (4)  ! ice + rock + nothing else
+        call soilthprop(porosity,NULL,rhoc,NULL,4,newrhoc,newti,NULL)
      case default
         error stop 'invalid layer type'
      end select
