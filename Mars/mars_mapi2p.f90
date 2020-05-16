@@ -1,21 +1,22 @@
-program mars_mapiq
+program mars_mapi2p
 !***********************************************************************
-!   mars_mapi: program to calculate depth to ice table for a list of
-!              input parameters (can be the entire globe)
+!   mars_mapi2p: program to calculate depth to ice table for a list of
+!            input parameters (can be the entire globe, can also be
+!            a list of slopes); incorporates terrain irradiance for
+!            planar slopes from a flat floor at a different temperature  
 !
-!              output can be used as input for mars_mapt
-!     
-!     Can be used with a driver routine go_mars_mapiq.cmd on clusters
+!     Can be launched with mars_mapi2p_go.cmd
 !     1/20/05: Added new feature to bracket root before loop  -oded
 !     5/10/05: cleaned up  -norbert
 !     5/31/05: vectorized, converted to Fortran 90  -norbert
+!     5/16/20: modernized  -norbert  
 !***********************************************************************
 
   implicit none
-  integer, parameter :: NMAX=1000, NS=2
+  integer, parameter :: NS=10  ! number of slopes for each site
   real*8, parameter :: pi=3.1415926535897932, d2r=pi/180., marsDay=88775.244
   
-  integer nz, iargc, nextrun, j, ii, k
+  integer nz, iargc, job_nr, j, line_nr, k
   real*8 dt, zmax, zfac, zdepth0, icefrac, zacc
   real*8 latitude, thIn, albedo0, fracIR, fracDust, delta
   real*8 Fgeotherm, rhoc, lon, Tfrost, pfrost, slpd, azFacd
@@ -23,31 +24,34 @@ program mars_mapiq
   real*8 psv, rtbis
   external psv, rtbis
   character(40) infile, outfile
+  character(10) line_nr_string, job_nr_string
 
   logical outf
   common /global/ outf
-  outf=.false.
+  outf = .false.   ! additional output (from jsubv)
   
 !-set global input parameters
-  dt=0.02
+  dt = 0.02
   nz=80; zfac=1.05;
   fracIR=0.04; fracDust=0.02
-  !Fgeotherm=0.028
-  Fgeotherm=0.0
+  !Fgeotherm = 0.028
+  Fgeotherm = 0.0
   icefrac = 0.4
   !icefrac = 0.0
-  zacc=0.1   ! desired min. relative accuracy of ice table depth
+  zacc = 0.1  ! desired min. relative accuracy of ice table depth
   
   if (iargc() /= 2) then
-     stop 'USAGE: cat indexlist | mars_mapiq file.in file.out'
+     print *,'USAGE: mars_mapi2p file.in job_nr'
+     print *,"For example: 'a.out mapgrid.slp 2' uses 2nd line of file mapgrid.slp as input"
+     stop
   endif
+
+  call getarg( 1, infile)
+  call getarg( 2, job_nr_string)
+  read(job_nr_string,'(i4)') job_nr  ! string->integer
   
-  call getarg( 1, infile )
-  call getarg( 2, outfile )
   write (*,*) 'infile:  ',infile
-  write (*,*) 'outfile: ',outfile
-  read(*,*) nextrun
-  write (*,*) 'nextrun: ',nextrun
+  write (*,*) 'nextrun: ',job_nr
   
   print *,'RUNNING MARS_MAP-ICE TABLE'
   write(*,*) 'Global model parameters'
@@ -59,34 +63,43 @@ program mars_mapiq
   write(*,*) 'Minimum ice depth accuracy dz/z=',zacc
 
   open(unit=20,file=infile,status='old',action='read'); ! the only input
-  do j=1,nextrun
-     read(20,*,end=90) ii,lon,latitude,albedo0,thIn,Tfrost, &
+  do j=1,job_nr
+     read(20,*,end=90) line_nr,lon,latitude,albedo0,thIn,Tfrost, &
           &        slpd,azFacd,zdepth0
   enddo
   close(20)
-  print *,ii,lon,latitude,albedo0,thIn,Tfrost,slpd,azFacd,zdepth0
+  print *,line_nr,lon,latitude,albedo0,thIn,Tfrost,slpd,azFacd,zdepth0
 
+  write (line_nr_string, "(I0)") line_nr  ! integer->string
+  outfile = 'mapgrid2.'//line_nr_string
+  
   azFac=azFacd*d2r
   if (NS==1)  slp(1) = 0.
   if (NS==2)  slp(1:2) = (/ 0.d0, slpd /)*d2r
   if (NS>2) then
      slp=-9999
      ! first slope MUST be zero; length of the list must be NS
-     ! slp = (/ 0., 10., 20., 30., 40., 50., 60., 70., 80., 90. /)
-     if (minval(slp)<0..or.slp(1)/=0.) stop 'inappropriate slopes or wrong NS'
+     slp = (/ 0., 10., 20., 30., 40., 50., 60., 70., 80., 90. /)
+     if (minval(slp)<0.) stop 'inappropriate slopes or wrong NS'
      slp = slp*d2r
   endif
+  if (slp(1)/=0.) stop 'first slope must be zero'
   
-  if (albedo0==-9999..or.thIn==-9999..or.Tfrost==-9999.) then
+  if (albedo0==-9999. .or. thIn==-9999. .or. Tfrost==-9999.) then
      zdepth = zdepth0   ! otherwise undefined on output
      goto 80
   endif
+
+  if (outf) then  ! units written to from jsubv
+     open(unit=30,file='z.'//line_nr_string,action='write',status='unknown')
+     open(unit=34,file='mapgrid3.'//line_nr_string,action='write',status='unknown')
+  end if
   
   ! zdepth0 input is ignored
   ! Empirical relation from Mellon & Jakosky:
   rhoc = 800.*(150.+100.*sqrt(34.2+0.714*thIn))
-  delta=thIn/rhoc*sqrt(marsDay/pi) ! diurnal skin depth
-  zmax=5.*26.*delta 
+  delta = thIn/rhoc*sqrt(marsDay/pi) ! diurnal skin depth
+  zmax = 5.*26.*delta 
   pfrost = psv(Tfrost)
   Tb(1) = -1.e32
 
@@ -100,9 +113,9 @@ program mars_mapiq
   print *, 'ice depth: ','  rho_ice-rho_surf'
   print *, zmax,'#',avdrho(1)
   if (avdrho(1)>=0.) then   ! no ice
-     zdepth=-9999.
+     zdepth = -9999.
   else  
-     zdepth0=rtbis(delta/4.,zmax, zacc,avdrho(1), &
+     zdepth0 = rtbis(delta/4.,zmax, zacc,avdrho(1), &
           &     latitude*d2r,albedo0,thIn,pfrost,nz,rhoc,fracIR, &
           &     fracDust,Fgeotherm,dt,zfac,icefrac,0.d0,0.d0)
   endif
@@ -132,28 +145,26 @@ program mars_mapiq
   print *,'Equilibrium ice table depths= ',zdepth
 
 80 continue
-  open(unit=33,file=outfile,status='unknown',position='append')
+  open(unit=33,file=outfile,status='unknown',action='write')
   do k=1,NS
      write(33,'(i5,1x,f7.2,1x,f7.3,2x,f0.3,1x,2(f7.1,2x),f5.2,2x,f6.1,2x,f10.4)') &
-          &     ii,lon,latitude,albedo0,thIn,Tfrost,slp(k)/d2r,azFac(k)/d2r,zdepth(k)
+          &     line_nr,lon,latitude,albedo0,thIn,Tfrost,slp(k)/d2r,azFac(k)/d2r,zdepth(k)
   enddo
   close(33)
   
 90 continue
-  
-end program mars_mapiq
+end program mars_mapi2p
 
 
 
 
-FUNCTION rtbis(x1,x2,xacc,fmid, &
+function rtbis(x1,x2,xacc,fmid, &
      &     latitude,albedo0,thIn,pfrost,nz,rhoc,fracIR,fracDust, &
      &     Fgeotherm,dt,zfac,icefrac,surfaceSlope,azFac)
-!     finds root with bisection method a la Numerical Recipes (C)
+  ! finds root with bisection method a la Numerical Recipes (C)
   implicit none
-  INTEGER JMAX
   REAL*8 rtbis,x1,x2,xacc
-  PARAMETER (JMAX=40)
+  INTEGER, PARAMETER :: JMAX=40
   INTEGER j, nz
   REAL*8 dx,f,fmid,xmid,Tb, rhoc
   real*8 latitude,albedo0,thIn,pfrost,fracIR,fracDust,Fgeotherm,dt
@@ -171,14 +182,14 @@ FUNCTION rtbis(x1,x2,xacc,fmid, &
      fmid = f
      return
   endif
-  if(f*fmid.ge.0.) stop 'root must be bracketed in rtbis'
-  rtbis=x2
-  dx=x1-x2
+  if(f*fmid >= 0.) stop 'root must be bracketed in rtbis'
+  rtbis = x2
+  dx = x1-x2
   xupper=x1; fupper=f
   xlower=x2; flower=fmid
   do j=1,JMAX
-     dx=dx*.5
-     xmid=rtbis+dx
+     dx = dx*.5
+     xmid = rtbis+dx
      Tb = -1.e32
      call jsubv(1,xmid, &
           &     latitude,albedo0,thIn,pfrost,nz/2,rhoc,fracIR,fracDust, &
@@ -187,13 +198,13 @@ FUNCTION rtbis(x1,x2,xacc,fmid, &
           &     latitude,albedo0,thIn,pfrost,nz  ,rhoc,fracIR,fracDust, &
           &     Fgeotherm,   dt,zfac,icefrac,surfaceSlope,azFac,0,fmid,Tb)
      print *,xmid,fmid
-     if(fmid.le.0.) then
-        rtbis=xmid
+     if(fmid <= 0.) then
+        rtbis = xmid
         xlower=xmid; flower=fmid
      else
         xupper=xmid; fupper=fmid
      endif
-     if(abs(dx/xmid).lt.xacc .or. fmid.eq.0.) then
+     if(abs(dx/xmid)<xacc .or. fmid==0.) then
         
 !----------do linear interpolation at last
         rtbis = (fupper*xlower - flower*xupper)/(fupper-flower)
@@ -205,9 +216,7 @@ FUNCTION rtbis(x1,x2,xacc,fmid, &
      endif
   enddo
   print *,'too many bisections in rtbis'
-END FUNCTION rtbis
-
-
+end function rtbis
 
 
 
@@ -260,7 +269,7 @@ subroutine rtbisv(NS,x1,x2,xacc,fmid, &
   if (x1(1)/=x2(1)) stop 'rtbisv: incorrect input'
   if (NS<=1) stop 'rtbisv: NS needs to be larger than 1'
   if (x1(1)<0.) then
-     xmid =zmax
+     xmid = zmax
      dx(1) = 0.
      zdepth(1) = -9999.
   else
@@ -295,21 +304,21 @@ subroutine rtbisv(NS,x1,x2,xacc,fmid, &
      endif
   enddo
   if (maxval(f)<0.) return  ! ice stable at the uppermost location everywhere
-  if(minval(f*fmid).ge.0.) stop 'root must be bracketed in rtbis'
+  if(minval(f*fmid) >= 0.) stop 'root must be bracketed in rtbis'
   xupper=x1; fupper=f
   xlower=x2; flower=fmid
   do k=2,NS
      if (fupper(k)*flower(k)<0.) then  ! case II
-        zdepth(k)=x2(k)
-        dx(k)=x1(k)-x2(k)
+        zdepth(k) = x2(k)
+        dx(k) = x1(k)-x2(k)
      end if
-     if (fmid(k)>0..and.f(k)<0.) stop 'rtbisv: impossible case'
+     if (fmid(k)>0. .and. f(k)<0.) stop 'rtbisv: impossible case'
   enddo
   do j=1,JMAX
      do k=2,NS
         if (fupper(k)*flower(k)<0.) then ! case II
-           dx(k)=dx(k)*.5
-           xmid(k)=zdepth(k)+dx(k)
+           dx(k) = dx(k)*.5
+           xmid(k) = zdepth(k)+dx(k)
         endif
      end do
      Tb(:) = -1.e32
@@ -346,6 +355,6 @@ subroutine rtbisv(NS,x1,x2,xacc,fmid, &
      endif
   enddo
   print *,'too many bisections in rtbisv'
-END subroutine rtbisv
+end subroutine rtbisv
 
 

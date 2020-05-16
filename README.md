@@ -50,7 +50,7 @@ Mars/Misc/  an animation for illustration
 
 Mars/mars_mapi.f: (main program)  
 Mars/mars_mapt2.f: (main program)  
-Mars/mars_mapiqh2v.f90: (main program)  
+Mars/mars_mapip2.f90: (main program)  
 Mars/jsub.f  
 Mars/jsubv.f90  
 Mars/marsorbit.f90  
@@ -215,7 +215,7 @@ NOTE: Third party source code from Numerical Recipes is covered by a separate co
 
 Mar 2016: Thanks to Lior Rubanenko for a bug report in cratersQ_*
 
-2010, 2005: Thanks to Oded Aharonson for improvements on mars_mapiq* and a better treatment of the frost/no-frost surface boundary condition.
+2010, 2005: Thanks to Oded Aharonson for improvements on mars_mapi2p and a better treatment of the frost/no-frost surface boundary condition.
 
 2006: Troy Hudson discovered a grid-point offset in conductionT and conductionQ, which has been corrected.
 

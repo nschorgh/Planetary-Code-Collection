@@ -1,5 +1,7 @@
 ChangeLog
 
+May 2020: dusted off mars_mapiqh2v, renamed it to mars_mapi2p, and added example output in Test/
+
 24/25 Apr 2020: revised the type of body parameters in fast_modules_asteroid, so asteroid_fast? can be more easily used with other bodies.
 
 14 Apr 2020: dug up analytical solution to heat equation with Stefan-Boltzmann law boundary condition; added to UserGuide section 1.1. 

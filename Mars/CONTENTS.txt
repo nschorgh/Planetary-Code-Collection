@@ -59,11 +59,13 @@ mapgrid.dat:
 mars_mapt2.f: (main program)
 	calls jsub for a list of locations (such as the entire globe)
 
-mars_mapiqh2v.f90: (main program)
-	Version of mars_mapi that uses jsubv and slope coupling, configured for cluster
+mars_mapi2p.f90: (main program)
+        calculates temperatures on thermally coupled planar slopes
+	also calculates equilibrium ice table depths
+	configured for parallel job execution
 
 mapgrid.slp:
-	Example input file for mars_mapiqh2v.f90
+	Example input file for mars_mapi2p.f90
 
 
 
