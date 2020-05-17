@@ -50,6 +50,7 @@ subroutine jsubv(NS, zdepth, latitude, albedo0, thIn, pfrost, nz, &
   real*8 Tmean1(NS), Tmean2(NS), rhoavs(NS), rhoavb(NS), Tbold(NS)
   real*8 Qmean(NS), Qland(NS)
   real*8 marsLsold, psv
+  real*8 Qdir, Qscat, Qlw, skyviewfactor(NS)
   external julday, flux, psv
 
   logical outf
@@ -129,8 +130,11 @@ subroutine jsubv(NS, zdepth, latitude, albedo0, thIn, pfrost, nz, &
   HA = 2.*pi*time           ! hour angle
 
   do k=1,NS
-     Qn(k) = flux(marsR,marsDec,latitude,HA,albedo(k),fracir,fracdust, &
-          & surfaceSlope(k),azFac(k))
+     !Qn(k) = flux(marsR,marsDec,latitude,HA,albedo(k),fracir,fracdust, &
+     !     & surfaceSlope(k),azFac(k))
+     call flux_mars2(marsR,marsDec,latitude,HA,fracir,fracdust,surfaceSlope(k),azFac(k),0.d0,Qdir,Qscat,Qlw)
+     skyviewfactor(k) = cos(surfaceSlope(k)/2.)**2
+     Qn(k) = (1-albedo(k))*(Qdir+Qscat*skyviewfactor(k)) + emiss(k)*Qlw*skyviewfactor(k)
      ! neglect slope contribution at initialization
   enddo
 
@@ -138,12 +142,15 @@ subroutine jsubv(NS, zdepth, latitude, albedo0, thIn, pfrost, nz, &
   do n=0,nsteps-1
      time = (n+1)*dt        !   time at n+1 
      tdays = time*(marsDay/earthDay) ! parenthesis may improve roundoff
-     call marsorbit(dt0_j2000,tdays,marsLs,marsDec,marsR); 
+     call marsorbit(dt0_j2000,tdays,marsLs,marsDec,marsR)
      HA = 2.*pi*mod(time,1.d0) ! hour angle
 
      do k=1,NS
-        Qnp1(k) = flux(marsR,marsDec,latitude,HA,albedo(k),fracir,fracdust, &
-             & surfaceSlope(k),azFac(k))
+        !Qnp1(k) = flux(marsR,marsDec,latitude,HA,albedo(k),fracir,fracdust, &
+        !     & surfaceSlope(k),azFac(k))
+        call flux_mars2(marsR,marsDec,latitude,HA,fracir,fracdust,surfaceSlope(k),azFac(k),0.d0,Qdir,Qscat,Qlw)
+        Qnp1(k) = (1-albedo(k))*(Qdir+Qscat*skyviewfactor(k)) + emiss(k)*Qlw*skyviewfactor(k)
+        
         Qnp1(k) = Qnp1(k) + sigSB*sin(surfaceSlope(k)/2.)**2*emiss(1)*Tsurf(1)**4
      enddo
      Tsurfold(:) = Tsurf(:)
@@ -163,10 +170,10 @@ subroutine jsubv(NS, zdepth, latitude, albedo0, thIn, pfrost, nz, &
         endif
         if (Tsurf(k)>Tco2frost .or. m(k)<=0.) then
            albedo(k) = albedo0
-           !emiss(k) = 1.
+           emiss(k) = 1.
         else
            albedo(k) = co2albedo
-           !emiss(k) = co2emiss
+           emiss(k) = co2emiss
         endif
      enddo
 

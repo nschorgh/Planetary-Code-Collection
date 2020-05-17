@@ -62,6 +62,7 @@ pure subroutine flux_mars2(R,decl,latitude,HA,fracIR,fracScat, &
 !     fracScat: fraction of scattering
 !     surfaceSlope: >0, [radians]
 !     azFac: azimuth of gradient (radians east of north)
+!            azFac=0 is south-facing  
 !     emax: maximum horizon elevation in direction of azimuth [radians]
 !     Qdir: direct incoming short-wavelength irradiance [W/m^2]
 !     Qscat: diffuse short-wavelength irradiance from atmosphere [W/m^2]

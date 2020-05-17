@@ -7,6 +7,7 @@ pure function flux_noatm(R,decl,latitude,HA,surfaceSlope,azFac)
 !     HA: hour angle (radians from noon, clockwise)
 !     surfaceSlope: >0, (radians) 
 !     azFac: azimuth of topographic gradient (radians east of north)
+!            azFac=0 is south-facing  
 !**********************************************************************
   implicit none
   real(8) flux_noatm
@@ -27,7 +28,8 @@ pure function flux_noatm(R,decl,latitude,HA,surfaceSlope,azFac)
   ! ha -> az (option 2)
   buf = (sin(decl)-sin(latitude)*sinbeta)/(cos(latitude)*cosbeta)
   ! buf can be NaN if cosbeta = 0
-  if (buf>+1.) buf=1.d0; if (buf<-1.) buf=-1.d0; ! roundoff
+  if (buf>+1.) buf=+1.0  ! roundoff
+  if (buf<-1.) buf=-1.0  ! roundoff
   azSun = acos(buf)
   if (sin(HA)>=0) azSun=2*pi-azSun
   ! ha -> az (option 3)  without beta
@@ -35,7 +37,7 @@ pure function flux_noatm(R,decl,latitude,HA,surfaceSlope,azFac)
   !azSun=atan(sin(ha)*cos(decl)/azSun)
 
   ! theta = 90 minus incidence angle for sloped surface
-  sintheta = cos(surfaceSlope)*sinbeta + &
+  sintheta = cos(surfaceSlope)*sinbeta - &
        &     sin(surfaceSlope)*cosbeta*cos(azSun-azFac)
   if (cosbeta==0.) sintheta = cos(surfaceSlope)*sinbeta
   sintheta = max(sintheta,0.d0)  ! horizon

@@ -6,10 +6,10 @@ Mars Subsurface Ice Model (M-SIM) Collection
 
 
 flux.f: 
-	Insolation on horizontal or sloped surface with a poor man's Mars atmosphere
+	insolation on horizontal or sloped surface with a poor man's Mars atmosphere
 
 marsorbit.f90:
-	Position of the sun as seen from Mars; data from Allison & McEwen (2000)
+	position of the sun as seen from Mars; data from Allison & McEwen (2000)
 	marsclock24 = marsorbit + local Mars time
 
 mars_thermal1d.f: (main program)
@@ -17,13 +17,13 @@ mars_thermal1d.f: (main program)
 	prototype example of how to call conductionQ/T with seasonal CO2 frost cover
 
 flux_mars.f90:
-	Insolation with poor man's Mars atmosphere and distant horizon
+	insolation with poor man's Mars atmosphere and distant horizon
 
 soilthprop.f90:
 	thermal properties of icy soil on Mars
 
 input.par:
-	Example input file for mars_thermal1d.f
+	example input file for mars_thermal1d.f
 
 
 
@@ -32,11 +32,12 @@ exper_thermal1d.f: (main program)
 	surface temperature for laboratory setting
 
 exper.par:
-	Example input file for exper_thermal1d.f
+	example input file for exper_thermal1d.f
+
 
 
 vapordiffusioni.f:
-	Diffusion of water vapor with phase transitions on irregular grid, explicit solver
+	diffusion of water vapor with phase transitions on irregular grid, explicit solver
 
 adsorption.f:
 	amount of adsorbed H2O and more
@@ -65,18 +66,21 @@ mars_mapi2p.f90: (main program)
 	configured for parallel job execution
 
 mapgrid.slp:
-	Example input file for mars_mapi2p.f90
+	example input file for mars_mapi2p.f90
 
+mars_mapi2p_go.cmd
+	shell script for parallel execution of mars_mapi2p
+	
 
 
 insol_driver.f90: (simple main program)
-  	Insolation quantities over the past 20 Myr
+  	insolation quantities over the past 20 Myr
 
 tempr_driver.f90: (main program)
-  	Temperatures over the past 20 Myr
+  	temperatures over the past 20 Myr
 
 lats.milank:
-	Example input file for tempr_driver.f90
+	example input file for tempr_driver.f90
 
 
 
@@ -101,13 +105,13 @@ exper_fast.f90: (main program)
 	numerically accelerated growth and depletion of subsurface ice
 
 input_fast.par:
-	Example input file for stabgrow_fast.f90 and exper_fast.f90
+	example input file for stabgrow_fast.f90 and exper_fast.f90
 
 mars_fast.f90: (main program)
 	numerically accelerated growth and depletion of subsurface ice
 
 lats.ph:
-	Example input file for mars_fast.f90
+	example input file for mars_fast.f90
 
 
 

@@ -1,5 +1,9 @@
 ChangeLog
 
+16 May 2020: flux -> flux_mars77 in jsubv. This was the last occurrence of the function flux, and the legendary function flux was removed from the collection. It is superseded by subroutine mars_flux2, which provides a consistent treatment of the sky irradiance for an obstructed sky. For flat ground flux_mars77 can be used.
+
+In this process, it was realized that different parts of the program collection used different conventions for the slope orientation. In functions flux and flux_noatm, zero slope azimuth meant north-facing; in flux_mars2 and flux_wshad zero slope azimuth meant south-facing. With function flux gone, the convection in flux_noatm was changed. Now zero slope azimuth uniformly means south-facing (the azimuth of the direction of steepest decent).
+
 May 2020: dusted off mars_mapiqh2v, renamed it to mars_mapi2p, and added example output in Test/
 
 24/25 Apr 2020: revised the type of body parameters in fast_modules_asteroid, so asteroid_fast? can be more easily used with other bodies.
@@ -12,7 +16,7 @@ May 2020: dusted off mars_mapiqh2v, renamed it to mars_mapi2p, and added example
 
 31 Dec 2019: Topo3D/ changed grid downsampling from 4 neighbors to 8 neighbors
 
-30 Nov 2019: added Armand distribution as option for inital velocities in Exosphere/montecarlo.f90
+30 Nov 2019: added Armand distribution as option for initial velocities in Exosphere/montecarlo.f90
 
 22 Oct 2019: flux -> flux_mars77  in jsub, mars_mapi, mars_mapt2, and fast_subs_mars
 Functions flux and flux_mars77 do not return the exact same results, because in flux_mars77 the atmospheric short-wavelength scattered irradiance is multiplied with (1-albedo).
