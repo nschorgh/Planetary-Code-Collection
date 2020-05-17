@@ -5,7 +5,7 @@ Mars Subsurface Ice Model (M-SIM) Collection
 ============================================
 
 
-flux.f: 
+flux_mars.f: 
 	insolation on horizontal or sloped surface with a poor man's Mars atmosphere
 
 marsorbit.f90:
@@ -15,9 +15,6 @@ marsorbit.f90:
 mars_thermal1d.f: (main program)
 	1D diffusion of temperature for Mars; 
 	prototype example of how to call conductionQ/T with seasonal CO2 frost cover
-
-flux_mars.f90:
-	insolation with poor man's Mars atmosphere and distant horizon
 
 soilthprop.f90:
 	thermal properties of icy soil on Mars

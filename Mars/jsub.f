@@ -16,7 +16,6 @@ C  mode = 0  ends after fixed amount of time and then outputs all data
 C  mode = 1  ends when certain accuracy is reached and outputs no data
 C
 C  latitude must be in RADIANS
-C  thermal emission from slope is implemented by changing emissivity
 C  variable icefrac can also have meaning of porosity
 C***********************************************************************
 
@@ -61,7 +60,7 @@ C***********************************************************************
       iyr=1996; imm=10; iday=5
       nsteps = int(tmax/dt)      ! calculate total number of timesteps
       emiss0 = 1.   ! emissivity
-      zmax=5.*26.*thIn/rhoc*sqrt(marsDay/pi)
+      zmax = 5.*26.*thIn/rhoc*sqrt(marsDay/pi)
       !print *,'skindepth,diurnal=',thIn/rhoc*sqrt(marsDay/pi)
       !print *,'skindepth,annual=',thIn/rhoc*sqrt(solsperyear*marsDay/pi)
 
@@ -79,7 +78,7 @@ C***********************************************************************
          Tmean2=Tb
       endif
 
-      jd=dble(julday(imm,iday,iyr)) !  JD for noon UTC on iyear/imm/iday
+      jd = dble(julday(imm,iday,iyr)) !  JD for noon UTC on iyear/imm/iday
       temp1 = (jd-2451545.d0)/36525.d0
       dcor = (64.184d0 + 95.*temp1 + 35.*temp1**2) ! correction in sec
 C     All time is referenced to dt0_j2000
@@ -116,9 +115,7 @@ C     All time is referenced to dt0_j2000
       time=0.
       tdays = time*(marsDay/earthDay) ! parenthesis may improve roundoff
       call marsorbit(dt0_j2000,tdays,marsLs,marsDec,marsR)
-      HA=2.*pi*time             ! hour angle
-!      Qn=flux(marsR,marsDec,latitude,HA,albedo,
-!     &     fracir,fracdust,surfaceSlope,azFac)
+      HA = 2.*pi*time           ! hour angle
       Qn = flux_mars77(marsR,marsDec,latitude,HA,albedo,fracir,fracdust)
 C-----loop over time steps 
       do n=0,nsteps-1
@@ -126,8 +123,7 @@ C-----loop over time steps
          tdays = time*(marsDay/earthDay) ! parenthesis may improve roundoff
          call marsorbit(dt0_j2000,tdays,marsLs,marsDec,marsR) 
          HA = 2.*pi*mod(time,1.d0) ! hour angle
-!         Qnp1=flux(marsR,marsDec,latitude,HA,albedo,
-!     &        fracir,fracdust,surfaceSlope,azFac)
+         
          Qnp1 = flux_mars77(marsR,marsDec,latitude,HA,albedo,
      &        fracir,fracdust)
 
@@ -154,7 +150,7 @@ C-----loop over time steps
             albedo = co2albedo
             emiss = co2emiss
          endif
-         Qn=Qnp1
+         Qn = Qnp1
 
          if (time>=tmax-solsperyear .and. mode==0) then
             do i=1,nz
@@ -162,9 +158,9 @@ C-----loop over time steps
                if (T(i)<Tlow(i)) Tlow(i)=T(i)
                rhosatav(i)=rhosatav(i)+psv(T(i))/T(i)
             enddo
-            Tmean1=Tmean1+Tsurf
-            rhoavs=rhoavs+min(psv(Tsurf),pfrost)/Tsurf
-            nm=nm+1
+            Tmean1 = Tmean1+Tsurf
+            rhoavs = rhoavs+min(psv(Tsurf),pfrost)/Tsurf
+            nm = nm+1
          endif
 
          if (time>=tmax-solsperyear-2 .and. mode==0) then

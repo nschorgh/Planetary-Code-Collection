@@ -49,9 +49,9 @@ subroutine jsubv(NS, zdepth, latitude, albedo0, thIn, pfrost, nz, &
   real*8 Tsurfold(NS), Fsurf(NS), Fsurfold(NS), m(NS), dE, Tco2frost
   real*8 Tmean1(NS), Tmean2(NS), rhoavs(NS), rhoavb(NS), Tbold(NS)
   real*8 Qmean(NS), Qland(NS)
-  real*8 marsLsold, psv
-  real*8 Qdir, Qscat, Qlw, skyviewfactor(NS)
-  external julday, flux, psv
+  real*8 marsLsold, psv, tfrostco2
+  real*8 Qdir, Qscat, Qlw, skyviewfactor(NS), Qdir1
+  external julday, flux, psv, tfrostco2
 
   logical outf
   common /global/ outf
@@ -68,15 +68,15 @@ subroutine jsubv(NS, zdepth, latitude, albedo0, thIn, pfrost, nz, &
   iyr=1996; imm=10; iday=5  ! starting year and date
   nsteps = int(tmax/dt)     ! calculate total number of timesteps
   emiss(:) = 1.
-  !emiss(:) = 1.*cos(surfaceSlope(:)/2.)**2 
 
   zmax = 5.*26.*thIn/rhoc*sqrt(marsDay/pi)
   ! print *,25.86*thIn/rhoc*sqrt(marsDay/pi)
   if (latitude>=0.) then    ! north
-     Tco2frost=147. 
+     Tco2frost = 147. 
   else                      ! south
-     Tco2frost=143.
+     Tco2frost = 143.
   endif
+  !Tco2frost = tfrostco2(patm)
   dtsec = dt*marsDay
 
   if (minval(Tb(:))<=0.) then
@@ -135,23 +135,28 @@ subroutine jsubv(NS, zdepth, latitude, albedo0, thIn, pfrost, nz, &
      call flux_mars2(marsR,marsDec,latitude,HA,fracir,fracdust,surfaceSlope(k),azFac(k),0.d0,Qdir,Qscat,Qlw)
      skyviewfactor(k) = cos(surfaceSlope(k)/2.)**2
      Qn(k) = (1-albedo(k))*(Qdir+Qscat*skyviewfactor(k)) + emiss(k)*Qlw*skyviewfactor(k)
-     ! neglect slope contribution at initialization
+     ! neglect terrain irradiances at initialization
   enddo
 
-!-----loop over time steps 
+!-loop over time steps 
   do n=0,nsteps-1
      time = (n+1)*dt        !   time at n+1 
      tdays = time*(marsDay/earthDay) ! parenthesis may improve roundoff
      call marsorbit(dt0_j2000,tdays,marsLs,marsDec,marsR)
      HA = 2.*pi*mod(time,1.d0) ! hour angle
 
-     do k=1,NS
-        !Qnp1(k) = flux(marsR,marsDec,latitude,HA,albedo(k),fracir,fracdust, &
-        !     & surfaceSlope(k),azFac(k))
+     ! k=1 (horizontal unobstructed slope)
+     call flux_mars2(marsR,marsDec,latitude,HA,fracir,fracdust,surfaceSlope(1),azFac(1),0.d0,Qdir1,Qscat,Qlw)
+     Qnp1(1) = (1-albedo(1))*(Qdir1+Qscat) + emiss(1)*Qlw
+     do k=2,NS
+        ! direct and sky irradiance
+        !Qnp1(k) = flux(marsR,marsDec,latitude,HA,albedo(k),fracir,fracdust,surfaceSlope(k),azFac(k))
         call flux_mars2(marsR,marsDec,latitude,HA,fracir,fracdust,surfaceSlope(k),azFac(k),0.d0,Qdir,Qscat,Qlw)
         Qnp1(k) = (1-albedo(k))*(Qdir+Qscat*skyviewfactor(k)) + emiss(k)*Qlw*skyviewfactor(k)
-        
-        Qnp1(k) = Qnp1(k) + sigSB*sin(surfaceSlope(k)/2.)**2*emiss(1)*Tsurf(1)**4
+
+        ! terrain irradiance
+        Qnp1(k) = Qnp1(k) + (1.-skyviewfactor(k))*sigSB*emiss(1)*Tsurf(1)**4
+        !Qnp1(k) = Qnp1(k) + (1.-skyviewfactor(k))*(1.-albedo(k))*albedo(1)*Qdir1
      enddo
      Tsurfold(:) = Tsurf(:)
      Fsurfold(:) = Fsurf(:)
@@ -177,7 +182,7 @@ subroutine jsubv(NS, zdepth, latitude, albedo0, thIn, pfrost, nz, &
         endif
      enddo
 
-     Qn(:)=Qnp1(:)
+     Qn(:) = Qnp1(:)
 
      if (mode==0 .and. time>=tmax-solsperyear) then
         Tmean1(:) = Tmean1(:)+Tsurf(:)
@@ -187,7 +192,8 @@ subroutine jsubv(NS, zdepth, latitude, albedo0, thIn, pfrost, nz, &
            rhoavb(k) = rhoavb(k) + psv(T(i0(k),k))/T(i0(k),k)
         enddo
         Qmean(:) = Qmean(:) + Qn(:)
-        Qland(:) = Qland(:) + sigSB*sin(surfaceSlope(:)/2.)**2*emiss(1)*Tsurf(1)**4
+        Qland(:) = Qland(:) + (1-skyviewfactor(:))*sigSB*emiss(1)*Tsurf(1)**4
+        !Qland(:) = Qland(:) + (1-skyviewfactor(:))*(1-albedo(:))*albedo(1)*Qdir1
         nm=nm+1
      endif
 
@@ -204,7 +210,7 @@ subroutine jsubv(NS, zdepth, latitude, albedo0, thIn, pfrost, nz, &
      endif
      marsLsold = marsLs
      
-  enddo 
+  enddo  ! end of time loop
   
   if (mode==0) then
      rhoavs(:) = rhoavs(:)/nm

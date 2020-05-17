@@ -82,7 +82,7 @@ tempr_driver: tempr_driver.o flux_mars.o makefile
 	$(SR)psvco2.o
 
 
-common-mars: marsorbit.o vapordiffusioni.o flux.o flux_mars.o soilthprop.o 
+common-mars: marsorbit.o vapordiffusioni.o flux_mars.o soilthprop.o 
 
 
 %.o:	%.f makefile

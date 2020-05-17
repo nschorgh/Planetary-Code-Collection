@@ -22,7 +22,6 @@ Mars Subsurface Ice Model (M-SIM)
 ### Mars Thermal Model
 
 Mars/mars_thermal1d.f: (main program)  
-Mars/flux.f  
 Mars/flux_mars.f90  
 Mars/marsorbit.f90  
 Mars/soilthprop.f90  
@@ -152,7 +151,7 @@ Common/flux_noatm.f90
 Topo3D/topo3d_modules.f90  
 Topo3D/topo3d_common.f90  
 Topo3D/topo3d_subs.f90  
-*Documentation: User Guide Sections 4.1, 5.1, 5.3-5.6*
+*Documentation: User Guide Sections 4.1, 5.1, 5.3-5.7*  
 
 
 ### Terrain Shadowing and Illumination
