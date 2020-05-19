@@ -7,7 +7,7 @@ end module miscparameters
 
 program tempr_driver
 !***********************************************************************
-! Temperatures on Mars over the past 20 Myr
+! Temperatures on Mars over the past 21 Myr
 !
 ! written by Norbert Schorghofer 2007
 ! modernized 2020 -norbert
@@ -43,8 +43,9 @@ program tempr_driver
      read(21,*) latitude(k),albedo(k),thIn(k)
   enddo
   close(21)
-  
-  rhoc(:) = 1500.*800.*thIn(:)/200. ! makes skin depth independent of thIn (optional)
+
+  ! this optional rescaling makes skin depth independent of thIn
+  rhoc(:) = 1500.*800.*thIn(:)/200.
 
   ! set eternal grid
   zmax = 6.
@@ -54,7 +55,7 @@ program tempr_driver
   close(30)
 
   ! ecc = 0.0934;  eps = 25.19*d2r;  omega = 250.87*d2r  ! today
-  ! Laskar orbital solution http://vo.imcce.fr/insola/earth/online/mars/La2003-04/
+  ! Laskar orbital solution http://vo.imcce.fr/insola/earth/online/mars/mars.html
   open(20,file='INSOLN.LA2004.MARS.ASC',action='read',status='old')
   p0(:) = 600.
   do i = 1,earliest
@@ -69,7 +70,8 @@ program tempr_driver
   print *,'Mean total pressure=',sum(p0(1:earliest))/earliest
   print *,'Number of sites=',NP
   do k=1,NP
-     print *,'  Latitude (deg)',latitude(k),'   rho*c (J/m^3/K)',rhoc(k)
+     print *,'  Latitude (deg)',latitude(k)
+     print *,'  rho*c (J/m^3/K)',rhoc(k),'   thermal inertia',thIn(k)
      delta = thIn(k)/rhoc(k)*sqrt(marsDay/pi)
      do i=1,nz
         if (z(i)<delta) cycle
@@ -102,10 +104,8 @@ program tempr_driver
      call icesheet(nz,NP,latitude,albedo,thIn,rhoc,z, &
           &        ecc,omega,eps,p0(i),Tb,Tmean1,Tmean3,Qmean)
      icetime = lasktime(i)*1000.
+     write(35,'(f11.0,2x,f6.2,2x,f7.5,2x,f5.1)') icetime,eps/d2r,ecc,omega/d2r
      do k=1,NP
-        write(35,'(f11.0,2(2x,f6.2),2x,f7.5,2x,f5.1)') & 
-             & icetime,latitude(k),eps/d2r,ecc,omega/d2r
-        ! variables were evaluated at previous time step ??
         write(37,'(f11.0,2x,f6.2,2(2x,f6.2))') &
              & icetime,latitude(k),Tmean1(k),Tmean3(k)
      enddo
@@ -173,7 +173,7 @@ subroutine ajsub(latitude, albedo0, nz, z, ti, rhocv, &
   real(8), external :: flux_mars77, tfrostco2
   
   tmax = EQUILTIME*solsperyear
-  nsteps = int(tmax/dt)       ! calculate total number of timesteps
+  nsteps = int(tmax/dt)     ! calculate total number of timesteps
 
   ! Tco2frost = 150.
   Tco2frost = tfrostco2(p0)
@@ -198,16 +198,14 @@ subroutine ajsub(latitude, albedo0, nz, z, ti, rhocv, &
 
   time=0.
   call generalorbit(0.d0,a,ecc,omega,eps,marsLs,marsDec,marsR)
-  HA = 2.*pi*time             ! hour angle
-  !Qn = flux(marsR,marsDec,latitude,HA,albedo,fracir,fracdust,0.d0,0.d0)
+  HA = 2.*pi*time            ! hour angle
   Qn = flux_mars77(marsR,marsDec,latitude,HA,albedo,fracir,fracdust)
   !-----loop over time steps 
   do n=0,nsteps-1
-     time = (n+1)*dt         !   time at n+1 
+     time = (n+1)*dt         ! time at n+1 
      tdays = time*(marsDay/earthDay) ! parenthesis may improve roundoff
      call generalorbit(tdays,a,ecc,omega,eps,marsLs,marsDec,marsR)
      HA = 2.*pi*mod(time,1.d0)  ! hour angle
-     !Qnp1 = flux(marsR,marsDec,latitude,HA,albedo,fracir,fracdust,0.d0,0.d0)
      Qnp1 = flux_mars77(marsR,marsDec,latitude,HA,albedo,fracir,fracdust)
      Qmean = Qmean + Qnp1
      Tsurfold = Tsurf
@@ -233,7 +231,7 @@ subroutine ajsub(latitude, albedo0, nz, z, ti, rhocv, &
      endif
      Qn = Qnp1
      
-     if (time>=tmax-solsperyear) then
+     if (time >= tmax-solsperyear) then
         Tmean1 = Tmean1+Tsurf
         Tmean3 = Tmean3+T(nz)
         nm=nm+1
