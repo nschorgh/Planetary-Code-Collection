@@ -26,10 +26,6 @@ program mars_mapi2p
   character(40) infile, outfile
   character(10) line_nr_string, job_nr_string
 
-  logical outf
-  common /global/ outf
-  outf = .false.   ! additional output (from jsubv)
-  
 !-set global input parameters
   dt = 0.02
   nz=80; zfac=1.05;
@@ -90,11 +86,6 @@ program mars_mapi2p
      goto 80
   endif
 
-  if (outf) then  ! units written to from jsubv
-     open(unit=30,file='z.'//line_nr_string,action='write',status='unknown')
-     open(unit=34,file='mapgrid3.'//line_nr_string,action='write',status='unknown')
-  end if
-  
   ! zdepth0 input is ignored
   ! Empirical relation from Mellon & Jakosky:
   rhoc = 800.*(150.+100.*sqrt(34.2+0.714*thIn))

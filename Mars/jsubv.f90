@@ -38,23 +38,23 @@ subroutine jsubv(NS, zdepth, latitude, albedo0, thIn, pfrost, nz, &
   real*8, intent(OUT) :: avdrho(NS)
   real*8, intent(INOUT) :: Tb(NS)
 
+  logical outf
   integer nsteps, n, i, nm, k, i0(NS)
   integer julday, iyr, imm, iday
 
   real*8 T(NMAX,NS),tmax, time, zmax, emiss(NS), albedo(NS)
   real*8 Qn(NS), Qnp1(NS), tdays, dtsec
   real*8 marsR, marsLs, marsDec, HA
-  real*8 jd, temp1, dcor, dt0_j2000, flux
+  real*8 jd, temp1, dcor, dt0_j2000
   real*8 Tsurf(NS), z(NMAX,NS), ti(NMAX,NS), rhocv(NMAX,NS), Told(NMAX)
   real*8 Tsurfold(NS), Fsurf(NS), Fsurfold(NS), m(NS), dE, Tco2frost
   real*8 Tmean1(NS), Tmean2(NS), rhoavs(NS), rhoavb(NS), Tbold(NS)
   real*8 Qmean(NS), Qland(NS)
   real*8 marsLsold, psv, tfrostco2
   real*8 Qdir, Qscat, Qlw, skyviewfactor(NS), Qdir1
-  external julday, flux, psv, tfrostco2
+  external julday, psv, tfrostco2
 
-  logical outf
-  common /global/ outf
+  outf = .false.  ! additional output
 
   select case (mode)
   case (0) ! full mode
@@ -132,7 +132,8 @@ subroutine jsubv(NS, zdepth, latitude, albedo0, thIn, pfrost, nz, &
   do k=1,NS
      !Qn(k) = flux(marsR,marsDec,latitude,HA,albedo(k),fracir,fracdust, &
      !     & surfaceSlope(k),azFac(k))
-     call flux_mars2(marsR,marsDec,latitude,HA,fracir,fracdust,surfaceSlope(k),azFac(k),0.d0,Qdir,Qscat,Qlw)
+     call flux_mars2(marsR,marsDec,latitude,HA,fracir,fracdust, &
+          &          surfaceSlope(k),azFac(k),0.d0,Qdir,Qscat,Qlw)
      skyviewfactor(k) = cos(surfaceSlope(k)/2.)**2
      Qn(k) = (1-albedo(k))*(Qdir+Qscat*skyviewfactor(k)) + emiss(k)*Qlw*skyviewfactor(k)
      ! neglect terrain irradiances at initialization
@@ -146,12 +147,14 @@ subroutine jsubv(NS, zdepth, latitude, albedo0, thIn, pfrost, nz, &
      HA = 2.*pi*mod(time,1.d0) ! hour angle
 
      ! k=1 (horizontal unobstructed slope)
-     call flux_mars2(marsR,marsDec,latitude,HA,fracir,fracdust,surfaceSlope(1),azFac(1),0.d0,Qdir1,Qscat,Qlw)
+     call flux_mars2(marsR,marsDec,latitude,HA,fracir,fracdust, &
+          &          surfaceSlope(1),azFac(1),0.d0,Qdir1,Qscat,Qlw)
      Qnp1(1) = (1-albedo(1))*(Qdir1+Qscat) + emiss(1)*Qlw
      do k=2,NS
         ! direct and sky irradiance
         !Qnp1(k) = flux(marsR,marsDec,latitude,HA,albedo(k),fracir,fracdust,surfaceSlope(k),azFac(k))
-        call flux_mars2(marsR,marsDec,latitude,HA,fracir,fracdust,surfaceSlope(k),azFac(k),0.d0,Qdir,Qscat,Qlw)
+        call flux_mars2(marsR,marsDec,latitude,HA,fracir,fracdust, &
+             &          surfaceSlope(k),azFac(k),0.d0,Qdir,Qscat,Qlw)
         Qnp1(k) = (1-albedo(k))*(Qdir+Qscat*skyviewfactor(k)) + emiss(k)*Qlw*skyviewfactor(k)
 
         ! terrain irradiance
@@ -161,11 +164,13 @@ subroutine jsubv(NS, zdepth, latitude, albedo0, thIn, pfrost, nz, &
      Tsurfold(:) = Tsurf(:)
      Fsurfold(:) = Fsurf(:)
      do k=1,NS
-        Told(1:nz) = T(1:nz,k)
-        call conductionQ(nz,z(:,k),dtsec,Qn(k),Qnp1(k),T(:,k),ti(:,k), &
-             & rhocv(:,k),emiss(k),Tsurf(k),Fgeotherm,Fsurf(k))
+        if (m(k)<=0.) then
+           Told(1:nz) = T(1:nz,k)
+           call conductionQ(nz,z(:,k),dtsec,Qn(k),Qnp1(k),T(:,k),ti(:,k), &
+                & rhocv(:,k),emiss(k),Tsurf(k),Fgeotherm,Fsurf(k))
+        endif
+        if (Tsurf(k)<Tco2frost) T(1:nz,k) = Told(1:nz)
         if (Tsurf(k)<Tco2frost .or. m(k)>0.) then   ! CO2 condensation
-           T(1:nz,k) = Told(1:nz)
            call conductionT(nz,z(:,k),dtsec,T(:,k),Tsurfold(k),Tco2frost, &
                 & ti(:,k),rhocv(:,k),Fgeotherm,Fsurf(k))
            Tsurf(k) = Tco2frost
@@ -188,8 +193,8 @@ subroutine jsubv(NS, zdepth, latitude, albedo0, thIn, pfrost, nz, &
         Tmean1(:) = Tmean1(:)+Tsurf(:)
         Tmean2(:) = Tmean2(:)+T(nz,:)
         do k=1,NS
-           rhoavs(k) = rhoavs(k) + min(psv(Tsurf(k)),pfrost)/Tsurf(k)
-           rhoavb(k) = rhoavb(k) + psv(T(i0(k),k))/T(i0(k),k)
+           rhoavs(k) = rhoavs(k) + min(psv(Tsurf(k)),pfrost) / Tsurf(k)
+           rhoavb(k) = rhoavb(k) + psv(T(i0(k),k)) / T(i0(k),k)
         enddo
         Qmean(:) = Qmean(:) + Qn(:)
         Qland(:) = Qland(:) + (1-skyviewfactor(:))*sigSB*emiss(1)*Tsurf(1)**4
