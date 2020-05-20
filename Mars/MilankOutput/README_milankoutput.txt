@@ -11,7 +11,7 @@ Outputs:
 
    info_geo.21Myr shows general model parameters for each latitude.
 
-   Surface temperatures are stored in out_subsurf.21Myr and compressed with lzma.
+   Surface temperatures are stored in out_subsurf.21Myr
    Columns contain:
       time before present (Earth years)
       latitude (deg)

@@ -165,7 +165,7 @@ subroutine ajsub(latitude, albedo0, nz, z, ti, rhocv, &
   real(8), parameter :: emiss = 1.  ! emissivity
   integer, parameter :: EQUILTIME = 15. ! [Mars years]
 
-  integer nsteps, n, i, nm
+  integer nsteps, n, nm
   real(8) T(nz), tmax, time, Qn, Qnp1, tdays
   real(8) marsR, marsLs, marsDec, HA
   real(8) Tsurf, Tco2frost, albedo, Fsurf, m, dE
@@ -186,10 +186,8 @@ subroutine ajsub(latitude, albedo0, nz, z, ti, rhocv, &
   endif
   
   albedo = albedo0
+  if (Tmean0 < Tco2frost) Tmean0=Tco2frost
   T(1:nz) = Tmean0
-  do i=1,nz
-     if (T(i)<Tco2frost) T(i)=Tco2frost
-  enddo
   Tsurf = T(1)
   m=0.; Fsurf=0.
 
@@ -212,10 +210,11 @@ subroutine ajsub(latitude, albedo0, nz, z, ti, rhocv, &
      Fsurfold = Fsurf
      Told(1:nz) = T(1:nz)
 
-     call conductionQ(nz,z,dt*marsDay,Qn,Qnp1,T,ti,rhocv,emiss, &
-          &           Tsurf,Fgeotherm,Fsurf)
-
-     if (Tsurf<Tco2frost .or. m>0.) then ! CO2 condensation
+     if (m<=0.) then
+        call conductionQ(nz,z,dt*marsDay,Qn,Qnp1,T,ti,rhocv,emiss, &
+             &           Tsurf,Fgeotherm,Fsurf)
+     endif
+     if (Tsurf<Tco2frost .or. m>0.) then ! CO2 frost
         T(1:nz) = Told(1:nz)
         call conductionT(nz,z,dt*marsDay,T,Tsurfold,Tco2frost,ti, &
              &              rhocv,Fgeotherm,Fsurf) 
@@ -231,10 +230,10 @@ subroutine ajsub(latitude, albedo0, nz, z, ti, rhocv, &
      endif
      Qn = Qnp1
      
-     if (time >= tmax-solsperyear) then
+     if (time >= tmax-nint(solsperyear)) then
         Tmean1 = Tmean1+Tsurf
         Tmean3 = Tmean3+T(nz)
-        nm=nm+1
+        nm = nm+1
      endif
 
   enddo  ! end of time loop
