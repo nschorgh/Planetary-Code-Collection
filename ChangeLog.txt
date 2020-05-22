@@ -1,14 +1,16 @@
 ChangeLog
 
+May 2020: Re-calculated mean annual surface temperatures on Mars over 21 Myr and added them to the archive under Mars/MilankOutput/
+
 16 May 2020: flux -> flux_mars77 in jsubv. This was the last occurrence of the function flux, and the legendary function flux was removed from the collection. It is superseded by subroutine mars_flux2, which provides a consistent treatment of the sky irradiance for an obstructed sky. For flat ground flux_mars77 can be used.
 
-In this process, it was realized that different parts of the program collection used different conventions for the slope orientation. In functions flux and flux_noatm, zero slope azimuth meant north-facing; in flux_mars2 and flux_wshad zero slope azimuth meant south-facing. With function flux gone, the convection in flux_noatm was changed. Now zero slope azimuth uniformly means south-facing (the azimuth of the direction of steepest decent).
+In this process, it was realized that different parts of the program collection used different conventions for the slope orientation. In functions flux and flux_noatm, zero slope azimuth meant north-facing; in flux_mars2 and flux_wshad zero slope azimuth meant south-facing. With function flux gone, the convention in flux_noatm was changed. Now zero slope azimuth uniformly means south-facing (the azimuth of the direction of steepest decent).
 
 May 2020: dusted off mars_mapiqh2v, renamed it to mars_mapi2p, and added example output in Test/
 
 24/25 Apr 2020: revised the type of body parameters in fast_modules_asteroid, so asteroid_fast? can be more easily used with other bodies.
 
-14 Apr 2020: dug up analytical solution to heat equation with Stefan-Boltzmann law boundary condition; added to UserGuide section 1.1. 
+14 Apr 2020: dug up analytical solution to heat equation with Stefan-Boltzmann law as boundary condition; added to UserGuide section 1.1. 
 
 28 Feb 2020: added tempr_driver.f90 (was used to make Fig. 3 in my 2008 Milankovitch paper)
 

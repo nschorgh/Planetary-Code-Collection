@@ -15,6 +15,7 @@ program mars_mapi2p
   implicit none
   integer, parameter :: NS=10  ! number of slopes for each site
   real*8, parameter :: pi=3.1415926535897932, d2r=pi/180., marsDay=88775.244
+  real*8, parameter :: zero=0.
   
   integer nz, iargc, job_nr, j, line_nr, k
   real*8 dt, zmax, zfac, zdepth0, icefrac, zacc
@@ -71,7 +72,7 @@ program mars_mapi2p
   
   azFac=azFacd*d2r
   if (NS==1)  slp(1) = 0.
-  if (NS==2)  slp(1:2) = (/ 0.d0, slpd /)*d2r
+  if (NS==2)  slp(1:2) = (/ zero, slpd /)*d2r
   if (NS>2) then
      slp=-9999
      ! first slope MUST be zero; length of the list must be NS
@@ -97,10 +98,10 @@ program mars_mapi2p
   print *,'ice depth on flat slope ...'
   call jsubv(1, zmax, latitude*d2r, albedo0, thIn, pfrost, &
        &     nz/2, rhoc, fracIR, fracDust, Fgeotherm, 2.*dt, zfac, &
-       &     icefrac, 0.d0, 0.d0, 1, avdrho(1), Tb(1))
+       &     icefrac, zero, zero, 1, avdrho(1), Tb(1))
   call jsubv(1, zmax, latitude*d2r, albedo0, thIn, pfrost, &
        &     nz,   rhoc, fracIR, fracDust, Fgeotherm,    dt, zfac, &
-       &     icefrac, 0.d0, 0.d0, 0, avdrho(1), Tb(1))
+       &     icefrac, zero, zero, 0, avdrho(1), Tb(1))
   print *, 'ice depth: ','  rho_ice-rho_surf'
   print *, zmax,'#',avdrho(1)
   if (avdrho(1)>=0.) then   ! no ice
@@ -108,7 +109,7 @@ program mars_mapi2p
   else  
      zdepth0 = rtbis(delta/4.,zmax, zacc,avdrho(1), &
           &     latitude*d2r,albedo0,thIn,pfrost,nz,rhoc,fracIR, &
-          &     fracDust,Fgeotherm,dt,zfac,icefrac,0.d0,0.d0)
+          &     fracDust,Fgeotherm,dt,zfac,icefrac,zero,zero)
   endif
   print *,'Equilibrium ice table depth on flat slope = ',zdepth0
 

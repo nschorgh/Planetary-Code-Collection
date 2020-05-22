@@ -17,7 +17,7 @@ program tempr_driver
   integer, parameter :: NP=1      ! number of sites
   !integer, parameter :: earliest=21000+1  ! start time [kyr]
   integer, parameter :: earliest=5000+1  ! start time [kyr]
-  integer, parameter :: nz=90     ! number of subsurface grid points
+  integer, parameter :: nz=80     ! number of subsurface grid points
   real(8), parameter :: zfac=1.05 ! progressive spacing of grid points
   integer i, k, iargc, ierr
   real(8) zmax, delta, z(nz), icetime
@@ -44,8 +44,9 @@ program tempr_driver
   enddo
   close(21)
 
-  ! this optional rescaling makes skin depth independent of thIn
-  rhoc(:) = 1500.*800.*thIn(:)/200.
+  ! this optional rescaling makes skin depth independent of thIn, and
+  ! hence the same zmax can be used for different thIn
+  rhoc(:) = 1300.*550.*thIn(:)/200.
 
   ! set eternal grid
   zmax = 6.

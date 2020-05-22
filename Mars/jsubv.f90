@@ -30,6 +30,7 @@ subroutine jsubv(NS, zdepth, latitude, albedo0, thIn, pfrost, nz, &
   real*8, parameter :: pi=3.1415926535897932, d2r=pi/180.
   real*8, parameter :: earthDay=86400., marsDay=88775.244, solsperyear=668.60
   real*8, parameter :: sigSB=5.6704d-8, Lco2frost=6.0e5, co2albedo=0.65, co2emiss=1.
+  real*8, parameter :: zero=0.
 
   integer, intent(IN) :: NS, nz, mode
   real*8, intent(IN) :: zdepth(NS), latitude, albedo0, thIn, pfrost, rhoc
@@ -110,7 +111,7 @@ subroutine jsubv(NS, zdepth, latitude, albedo0, thIn, pfrost, nz, &
 
   do k=1,NS
      call setgrid(nz,z(:,k),zmax,zfac)
-     call smartgrid(nz,z(:,k),zdepth(k),thIn,rhoc,icefrac,ti(:,k),rhocv(:,k),1,0.d0)
+     call smartgrid(nz,z(:,k),zdepth(k),thIn,rhoc,icefrac,ti(:,k),rhocv(:,k),1,zero)
      if (mode==0 .and. outf) write(30,'(999(f8.5,1x))') z(1:nz,k)
      if (zdepth(k)<=0 .or. zdepth(k)>=z(nz,k)) then  ! no ice
         i0(k) = nz
@@ -133,7 +134,7 @@ subroutine jsubv(NS, zdepth, latitude, albedo0, thIn, pfrost, nz, &
      !Qn(k) = flux(marsR,marsDec,latitude,HA,albedo(k),fracir,fracdust, &
      !     & surfaceSlope(k),azFac(k))
      call flux_mars2(marsR,marsDec,latitude,HA,fracir,fracdust, &
-          &          surfaceSlope(k),azFac(k),0.d0,Qdir,Qscat,Qlw)
+          &          surfaceSlope(k),azFac(k),zero,Qdir,Qscat,Qlw)
      skyviewfactor(k) = cos(surfaceSlope(k)/2.)**2
      Qn(k) = (1-albedo(k))*(Qdir+Qscat*skyviewfactor(k)) + emiss(k)*Qlw*skyviewfactor(k)
      ! neglect terrain irradiances at initialization
@@ -148,13 +149,13 @@ subroutine jsubv(NS, zdepth, latitude, albedo0, thIn, pfrost, nz, &
 
      ! k=1 (horizontal unobstructed slope)
      call flux_mars2(marsR,marsDec,latitude,HA,fracir,fracdust, &
-          &          surfaceSlope(1),azFac(1),0.d0,Qdir1,Qscat,Qlw)
+          &          surfaceSlope(1),azFac(1),zero,Qdir1,Qscat,Qlw)
      Qnp1(1) = (1-albedo(1))*(Qdir1+Qscat) + emiss(1)*Qlw
      do k=2,NS
         ! direct and sky irradiance
         !Qnp1(k) = flux(marsR,marsDec,latitude,HA,albedo(k),fracir,fracdust,surfaceSlope(k),azFac(k))
         call flux_mars2(marsR,marsDec,latitude,HA,fracir,fracdust, &
-             &          surfaceSlope(k),azFac(k),0.d0,Qdir,Qscat,Qlw)
+             &          surfaceSlope(k),azFac(k),zero,Qdir,Qscat,Qlw)
         Qnp1(k) = (1-albedo(k))*(Qdir+Qscat*skyviewfactor(k)) + emiss(k)*Qlw*skyviewfactor(k)
 
         ! terrain irradiance
