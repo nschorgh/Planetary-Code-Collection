@@ -20,8 +20,7 @@ program tempr_driver
   integer, parameter :: nz=80     ! number of subsurface grid points
   real(8), parameter :: zfac=1.05 ! progressive spacing of grid points
   integer i, k, iargc, ierr
-  real(8) zmax, delta, z(nz), icetime
-  real(8) p0(earliest)
+  real(8) zmax, delta, z(nz), icetime, p0
   real(8), dimension(NP) :: latitude, albedo, thIn, rhoc
   real(8) ecc, omega, eps
   real(8), dimension(NP) :: Tb, Tmean1, Tmean3, Qmean
@@ -58,7 +57,7 @@ program tempr_driver
   ! ecc = 0.0934;  eps = 25.19*d2r;  omega = 250.87*d2r  ! today
   ! Laskar orbital solution http://vo.imcce.fr/insola/earth/online/mars/mars.html
   open(20,file='INSOLN.LA2004.MARS.ASC',action='read',status='old')
-  p0(:) = 600.
+  p0 = 600.
   do i = 1,earliest
      read(20,*) lasktime(i),laskecc(i),laskeps(i),laskomega(i)
   enddo
@@ -68,10 +67,10 @@ program tempr_driver
   print *,'Global model parameters'
   print *,'nz=',nz,' zfac=',zfac,'zmax=',zmax
   print *,'Starting at time',lasktime(earliest)*1000.,'years'
-  print *,'Mean total pressure=',sum(p0(1:earliest))/earliest
+  print *,'Total pressure=',p0
   print *,'Number of sites=',NP
   do k=1,NP
-     print *,'  Latitude (deg)',latitude(k)
+     print *,'  Latitude (deg)',latitude(k),'   albedo',albedo(k)
      print *,'  rho*c (J/m^3/K)',rhoc(k),'   thermal inertia',thIn(k)
      delta = thIn(k)/rhoc(k)*sqrt(marsDay/pi)
      do i=1,nz
@@ -95,7 +94,7 @@ program tempr_driver
 
   ! equilibrate Tb 
   call icesheet(nz,NP,latitude,albedo,thIn,rhoc,z, &
-       &   ecc,omega,eps,p0(earliest),Tb,Tmean1,Tmean3,Qmean)
+       &   ecc,omega,eps,p0,Tb,Tmean1,Tmean3,Qmean)
 
   ! History begins here
   do i = earliest,1,-1
@@ -103,7 +102,7 @@ program tempr_driver
      omega = mod(laskomega(i) + pi,2*pi)
      eps = laskeps(i)
      call icesheet(nz,NP,latitude,albedo,thIn,rhoc,z, &
-          &        ecc,omega,eps,p0(i),Tb,Tmean1,Tmean3,Qmean)
+          &        ecc,omega,eps,p0,Tb,Tmean1,Tmean3,Qmean)
      icetime = lasktime(i)*1000.
      write(35,'(f11.0,2x,f6.2,2x,f7.5,2x,f5.1)') icetime,eps/d2r,ecc,omega/d2r
      do k=1,NP

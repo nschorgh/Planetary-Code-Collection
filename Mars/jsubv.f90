@@ -27,10 +27,9 @@ subroutine jsubv(NS, zdepth, latitude, albedo0, thIn, pfrost, nz, &
 
   implicit none
   integer, parameter :: NMAX=1000
-  real*8, parameter :: pi=3.1415926535897932, d2r=pi/180.
+  real*8, parameter :: pi=3.1415926535897932, d2r=pi/180., zero=0.
   real*8, parameter :: earthDay=86400., marsDay=88775.244, solsperyear=668.60
   real*8, parameter :: sigSB=5.6704d-8, Lco2frost=6.0e5, co2albedo=0.65, co2emiss=1.
-  real*8, parameter :: zero=0.
 
   integer, intent(IN) :: NS, nz, mode
   real*8, intent(IN) :: zdepth(NS), latitude, albedo0, thIn, pfrost, rhoc
@@ -48,10 +47,10 @@ subroutine jsubv(NS, zdepth, latitude, albedo0, thIn, pfrost, nz, &
   real*8 marsR, marsLs, marsDec, HA
   real*8 jd, temp1, dcor, dt0_j2000
   real*8 Tsurf(NS), z(NMAX,NS), ti(NMAX,NS), rhocv(NMAX,NS), Told(NMAX)
-  real*8 Tsurfold(NS), Fsurf(NS), Fsurfold(NS), m(NS), dE, Tco2frost
+  real*8 Tsurfold, Fsurf(NS), Fsurfold, m(NS), dE, Tco2frost
   real*8 Tmean1(NS), Tmean2(NS), rhoavs(NS), rhoavb(NS), Tbold(NS)
   real*8 Qmean(NS), Qland(NS)
-  real*8 marsLsold, psv, tfrostco2
+  real*8 marsLsold, psv, tfrostco2, emiss0
   real*8 Qdir, Qscat, Qlw, skyviewfactor(NS), Qdir1
   external julday, psv, tfrostco2
 
@@ -68,7 +67,8 @@ subroutine jsubv(NS, zdepth, latitude, albedo0, thIn, pfrost, nz, &
   
   iyr=1996; imm=10; iday=5  ! starting year and date
   nsteps = int(tmax/dt)     ! calculate total number of timesteps
-  emiss(:) = 1.
+  emiss0 = 1.  ! frost-free emissivity
+  emiss(:) = emiss0
 
   zmax = 5.*26.*thIn/rhoc*sqrt(marsDay/pi)
   ! print *,25.86*thIn/rhoc*sqrt(marsDay/pi)
@@ -162,26 +162,27 @@ subroutine jsubv(NS, zdepth, latitude, albedo0, thIn, pfrost, nz, &
         Qnp1(k) = Qnp1(k) + (1.-skyviewfactor(k))*sigSB*emiss(1)*Tsurf(1)**4
         !Qnp1(k) = Qnp1(k) + (1.-skyviewfactor(k))*(1.-albedo(k))*albedo(1)*Qdir1
      enddo
-     Tsurfold(:) = Tsurf(:)
-     Fsurfold(:) = Fsurf(:)
+
      do k=1,NS
+        Tsurfold = Tsurf(k)
+        Fsurfold = Fsurf(k)     
+        Told(1:nz) = T(1:nz,k)
         if (m(k)<=0.) then
-           Told(1:nz) = T(1:nz,k)
            call conductionQ(nz,z(:,k),dtsec,Qn(k),Qnp1(k),T(:,k),ti(:,k), &
                 & rhocv(:,k),emiss(k),Tsurf(k),Fgeotherm,Fsurf(k))
         endif
-        if (Tsurf(k)<Tco2frost) T(1:nz,k) = Told(1:nz)
         if (Tsurf(k)<Tco2frost .or. m(k)>0.) then   ! CO2 condensation
-           call conductionT(nz,z(:,k),dtsec,T(:,k),Tsurfold(k),Tco2frost, &
+           T(1:nz,k) = Told(1:nz)
+           call conductionT(nz,z(:,k),dtsec,T(:,k),Tsurfold,Tco2frost, &
                 & ti(:,k),rhocv(:,k),Fgeotherm,Fsurf(k))
            Tsurf(k) = Tco2frost
-           dE = (- Qn(k) - Qnp1(k) + Fsurfold(k) + Fsurf(k) + &
-                & emiss(k)*sigSB*(Tsurfold(k)**4+Tsurf(k)**4))/2.
+           dE = (- Qn(k) - Qnp1(k) + Fsurfold + Fsurf(k) + &
+                & emiss(k)*sigSB*(Tsurfold**4+Tsurf(k)**4))/2.
            m(k) = m(k) + dtsec*dE/Lco2frost
         endif
         if (Tsurf(k)>Tco2frost .or. m(k)<=0.) then
            albedo(k) = albedo0
-           emiss(k) = 1.
+           emiss(k) = emiss0
         else
            albedo(k) = co2albedo
            emiss(k) = co2emiss
