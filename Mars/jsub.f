@@ -64,9 +64,9 @@ C***********************************************************************
       !print *,'skindepth,diurnal=',thIn/rhoc*sqrt(marsDay/pi)
       !print *,'skindepth,annual=',thIn/rhoc*sqrt(solsperyear*marsDay/pi)
 
-      !if (latitude>=0.) then    ! north
+      !if (latitude>=0.) then    ! northern hemisphere
       !   Tco2frost=147.
-      !else                      ! south
+      !else                      ! southern hemisphere
       !   Tco2frost=143.
       !endif
       Tco2frost = tfrostco2(patm)

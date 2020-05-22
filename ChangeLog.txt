@@ -1,5 +1,7 @@
 ChangeLog
 
+22 May 2020: added patm as input to jsubv; changed default hemispheric Tco2frost temperatures
+
 May 2020: Re-calculated mean annual surface temperatures on Mars over 21 Myr and added them to the archive under Mars/MilankOutput/
 
 16 May 2020: flux -> flux_mars77 in jsubv. This was the last occurrence of the function flux, and the legendary function flux was removed from the collection. It is superseded by subroutine mars_flux2, which provides a consistent treatment of the sky irradiance for an obstructed sky. For flat ground flux_mars77 can be used.

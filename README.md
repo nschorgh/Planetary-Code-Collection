@@ -30,8 +30,8 @@ Common/conductionT.f90
 Common/grids.f  
 Common/julday.for  
 Common/psvco2.f  
-Common/tridag.for
-Common/Test/  
+Common/tridag.for  
+Mars/Test/  
 *Documentation: User Guide Part 1*  
 
 
@@ -62,6 +62,7 @@ Common/grids.f
 Common/julday.for  
 Common/psv.f  
 Common/psvco2.f  
+Mars/Test/   
 *Documentation: User Guide Section 3.1  
 Documentation: Schorghofer, N. & Aharonson, O. (2005) J. Geophys. Res. 110, E05003*  
 
@@ -78,6 +79,8 @@ Common/conductionT.f90
 Common/grids.f  
 Common/psvco2.f  
 Common/tridag.for  
+Mars/MilankOutput/  
+Mars/Test/   
 
 
 ### Fast (asynchronously-coupled) Method for Subsurface Ice Dynamics
@@ -98,6 +101,7 @@ Common/generalorbit.f
 Common/psv.f  
 Common/psvco2.f  
 Common/derivs.f90  
+Mars/Test/  
 *Documentation: Schorghofer, N. (2010) Icarus 208, 598-607*  
 
 

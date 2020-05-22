@@ -1,6 +1,6 @@
 subroutine jsubv(NS, zdepth, latitude, albedo0, thIn, pfrost, nz, &
      &     rhoc, fracIR, fracDust, Fgeotherm, dt, zfac, icefrac, & 
-     &     surfaceSlope, azFac, mode, avdrho, Tb)
+     &     surfaceSlope, azFac, mode, avdrho, Tb, patm)
 !***********************************************************************
 !  jsubv: runs thermal model for Mars at several sites simultaneously
 !         allows for thermal emission of slopes to other slopes
@@ -37,6 +37,7 @@ subroutine jsubv(NS, zdepth, latitude, albedo0, thIn, pfrost, nz, &
   real*8, intent(IN) :: surfaceSlope(NS), azFac(NS)
   real*8, intent(OUT) :: avdrho(NS)
   real*8, intent(INOUT) :: Tb(NS)
+  real*8, intent(IN) :: patm
 
   logical outf
   integer nsteps, n, i, nm, k, i0(NS)
@@ -72,12 +73,12 @@ subroutine jsubv(NS, zdepth, latitude, albedo0, thIn, pfrost, nz, &
 
   zmax = 5.*26.*thIn/rhoc*sqrt(marsDay/pi)
   ! print *,25.86*thIn/rhoc*sqrt(marsDay/pi)
-  if (latitude>=0.) then    ! north
-     Tco2frost = 147. 
-  else                      ! south
-     Tco2frost = 143.
-  endif
-  !Tco2frost = tfrostco2(patm)
+  !if (latitude>=0.) then    ! northern hemisphere
+  !   Tco2frost = 147. 
+  !else                      ! southern hemisphere
+  !   Tco2frost = 143.
+  !endif
+  Tco2frost = tfrostco2(patm)
   dtsec = dt*marsDay
 
   if (minval(Tb(:))<=0.) then

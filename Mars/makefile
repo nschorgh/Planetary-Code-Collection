@@ -47,7 +47,7 @@ mars_mapi2p: mars_mapi2p.o jsubv.o marsorbit.o flux_mars.o soilthprop.o \
 	make -C $(SR) common
 	$(CC) $(LFLAGS) mars_mapi2p.o jsubv.o $(SR)julday.o marsorbit.o \
 	flux_mars.o $(SR)conductionQ.o $(SR)tridag.o $(SR)conductionT.o \
-	$(SR)grids.o $(SR)psv.o soilthprop.o
+	$(SR)grids.o $(SR)psv.o soilthprop.o $(SR)psvco2.o 
 
 stabgrow_fast: fast_modules.o fast_subs_exper.o stabgrow_fast.o \
 	fast_subs_univ.o soilthprop.o makefile        
