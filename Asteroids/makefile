@@ -43,8 +43,8 @@ asteroid_fast1: fast_modules_asteroid.f90 fast_modules_asteroid.o \
 
 	$(CC) $(LFLAGS) asteroid_fast1.o fast_subs_asteroid1.o \
 	$(SR)flux_noatm.o $(SR)conductionQ.o $(SR)tridag.o \
-	$(SR)grids.o $(SR)generalorbit.o $(SR)psv.o $(SR)subl_subs.o \
-	common_subs.o -o fast
+	$(SR)grids.o $(SR)generalorbit.o $(SR)psv.o common_subs.o \
+	-o fast
 
 
 test_gardening1: test_gardening1.o impactstirring.o makefile
@@ -55,7 +55,7 @@ test_gardening1: test_gardening1.o impactstirring.o makefile
 	$(SR)ran2.o $(SR)grids.o 
 
 
-sphere1d: sphere1d_implicit.o common_subs.o makefile
+sphere1d sphere1d_implicit: sphere1d_implicit.o common_subs.o makefile
 
 	make CC='$(CC)' CFLAGS='$(CFLAGS)' -C $(SR) common
 

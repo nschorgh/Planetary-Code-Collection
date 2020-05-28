@@ -105,7 +105,7 @@ subroutine ajsub_asteroid(latitude, albedo, z, ti, rhocv, ecc, omega, &
   real(8) tmax, time, Qn, Qnp1, tdays
   real(8) orbitR, orbitLs, orbitDec, HA
   real(8) Tsurf, Fsurf, T(NMAX)
-  real(8) Tmean0, S1, coslat, Evap, solsperyear
+  real(8) Tmean0, S1, coslat, solsperyear
   real(8), external :: psv
   
   ! initialize
@@ -137,7 +137,6 @@ subroutine ajsub_asteroid(latitude, albedo, z, ti, rhocv, ecc, omega, &
   Tmean1=0.; Tmean3=0.
   rhosatav = 0.
   Tmin=+1e32; Tmaxi=-9.
-  Evap = 0.
 
   time=0.
   call generalorbit(0.d0,semia,ecc,omega,eps,orbitLs,orbitDec,orbitR)
@@ -161,7 +160,6 @@ subroutine ajsub_asteroid(latitude, albedo, z, ti, rhocv, ecc, omega, &
         if (typeT>0 .and. typeT<=nz) then
            rhosatav = rhosatav+psv(T(typeT))/T(typeT)
         end if
-        Evap = Evap + sublrate(Tsurf)
         nm = nm+1
 
         if (Tsurf<Tmin) Tmin=Tsurf

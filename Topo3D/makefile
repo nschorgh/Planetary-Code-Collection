@@ -95,9 +95,9 @@ fieldproperties: $(OBJFLS) topo3d_common.o topo3d_subs.o \
 	$(CC) $(LFLAGS) fieldproperties.o topo3d_common.o topo3d_subs.o 
 
 
-test: $(OBJFLS) shadow_subs.o multigrid.o fieldofview_subs.o \
-	topo3d_common.o topo3d_geometry.o hpsort.o test_shadows1pt.o \
-	makefile
+test test_shadows1pt: $(OBJFLS) shadow_subs.o multigrid.o \
+	fieldofview_subs.o topo3d_common.o topo3d_geometry.o hpsort.o \
+	test_shadows1pt.o makefile
 
 	$(CC) $(LFLAGS) test_shadows1pt.o shadow_subs.o topo3d_common.o \
 	multigrid.o topo3d_geometry.o hpsort.o fieldofview_subs.o

@@ -139,7 +139,6 @@ Common/generalorbit.f
 Common/grids.f  
 Common/psv.f  
 Common/ran2.for  
-Common/subl_subs.f90  
 Common/tridag.for  
 *Documentation: Schorghofer, N. (2016) Icarus 276, 88-95*  
 
@@ -201,9 +200,9 @@ Exosphere/body.f90
 Exosphere/montecarlo.f90  
 Exosphere/geogrid.f90  
 Exosphere/geogrid_D.f90  
+Exosphere/subl_subs.f90  
 Exosphere/gasdev.for  
 Common/ran2.for  
-Common/subl_subs.f90  
 *Documentation: User Guide Part 6*  
 
 

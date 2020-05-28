@@ -36,9 +36,6 @@ grids.f:
 derivs.f90: 
 	first and second derivatives on irregular grid
 
-subl_subs.f90:
-	parametrizations of sublimation rates
-
 psv3.f: 
 	vapor pressure of H2O; alternative version of psv.f
 

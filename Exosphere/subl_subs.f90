@@ -19,27 +19,6 @@ end function sublrate
 
 
 
-pure function padsr(x)
-  ! relative vapor pressure of adsorbed H2O
-  ! based on adsorption isotherms by Cadenhead & Stetter (1974)
-  ! see Schorghofer & Aharonson (2014)
-  implicit none
-  real(8), intent(IN) :: x
-  real(8) padsr, b, c
-  real(8), parameter :: a=0.402, x0=2.45
-  
-  if (x<x0) then
-     b = (exp(-a*x0)*(2+a*x0) - 2)/x0**3
-     c = (3 - exp(-a*x0)*(3+a*x0))/x0**2
-     padsr = b*x**3 + c*x**2
-  else
-     padsr = 1 - exp(-a*x)
-  endif
-  ! 0<= padsr <=1
-end function padsr
-
-
-
 pure real(8) function restime_species(T)
   ! sublimation rate [#molecules/m^2/s]
   implicit none

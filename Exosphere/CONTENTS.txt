@@ -27,6 +27,9 @@ geogrid_D.f90:
 body.f90:
 	module with body specific parameters
 
+subl_subs.f90:
+	parametrizations of sublimation rates
+
 gasdev.for: 
 	generates Gaussian distribution, from Numerical Recipes (C), changed real to real*8
 
