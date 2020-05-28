@@ -31,8 +31,8 @@ Common/grids.f
 Common/julday.for  
 Common/psvco2.f  
 Common/tridag.for  
-Mars/Test/  
 *Documentation: User Guide Part 1*  
+Mars/Test/  
 
 
 ### Vapor Diffusion Model
@@ -62,9 +62,9 @@ Common/grids.f
 Common/julday.for  
 Common/psv.f  
 Common/psvco2.f  
-Mars/Test/   
 *Documentation: User Guide Section 3.1  
 Documentation: Schorghofer, N. & Aharonson, O. (2005) J. Geophys. Res. 110, E05003*  
+Mars/Test/   
 
 
 ### Mars Long-Term Thermal Model
@@ -101,8 +101,8 @@ Common/generalorbit.f
 Common/psv.f  
 Common/psvco2.f  
 Common/derivs.f90  
-Mars/Test/  
 *Documentation: Schorghofer, N. (2010) Icarus 208, 598-607*  
+Mars/Test/  
 
 
 Other Models for Planetary Surfaces
@@ -118,8 +118,8 @@ Common/conductionQ.f90
 Common/tridag.for  
 Common/grids.f  
 Common/generalorbit.f  
+*Documentation: User Guide Part 1*  
 Common/Test/  
-*Documentation: User Guide Part 1*
 
 
 ### Asynchronous Models for Temperature, Impact Stirring, and Ice Loss on Asteroids

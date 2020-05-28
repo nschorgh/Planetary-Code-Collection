@@ -1,5 +1,7 @@
 ChangeLog
 
+27 May 2020: changed psv3, added psv2
+
 22 May 2020: added patm as input to jsubv; changed default hemispheric Tco2frost temperatures
 
 May 2020: Re-calculated mean annual surface temperatures on Mars over 21 Myr and added them to the archive under Mars/MilankOutput/
