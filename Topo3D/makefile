@@ -76,9 +76,8 @@ cratersQ_mars_parallel: $(OBJFLS) topo3d_subs.o conductionT2.o \
 	$(SR)psv.o topo3d_subs_mars.o 
 
 
-cratersQ_mars_full: $(OBJFLS) topo3d_subs.o conductionT2.o \
-	conductionQ2.o cratersQ_mars_full.o topo3d_common.o \
-	topo3d_subs_mars.o makefile
+cratersQ_mars_full: $(OBJFLS) topo3d_subs.o conductionT2.o conductionQ2.o \
+	cratersQ_mars_full.o topo3d_common.o topo3d_subs_mars.o makefile
 
 	make -C $(SR) common
 	make -C $(SRM) common-mars
@@ -109,10 +108,9 @@ makegaussian: makegaussian.o ran1.o rlft3.o fourn.o nrutil.o makefile
 # topo3d_modules.f90 has to be compiled second for module allinterfaces
 # topo3d_subs.f90 contains module newhorizons and should be compiled third
 # conductionT2/Q2 contain modules conductionT/Q (therefore the symlink)
-# multigrid.f90 has module newmultigrid needed by shadows.f90 and test_shadows1pt.f90
+# multigrid.f90 has module multigrid needed by shadows.f90 and test_shadows1pt.f90
+# shadow_subs.f90 has module azRays needed by several programs
 # fieldofview_subs.f90 has module findvisibletopo needed by fieldofviews.f90 and test_shadows1pt.f90
-# shadow_subs.f90 has module azRays needed by a number of programs
-# fieldofview_subs.f90 has module findvisibletopo needed by fieldofviews.90 and test_shadows1pt.f90
 
 %.o:	%.for makefile
 	$(CC) $(CFLAGS) -c $<
@@ -127,6 +125,4 @@ makegaussian: makegaussian.o ran1.o rlft3.o fourn.o nrutil.o makefile
 clean:
 	rm -f  *.o  a.out  *.mod \
 	shadows fieldofviews cratersQ_equilbr cratersQ_moon cratersQ_mars
-
-
 
