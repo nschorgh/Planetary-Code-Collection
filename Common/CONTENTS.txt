@@ -13,12 +13,6 @@ flux_noatm.f90:
 	flux_noatm: Insolation on horizontal or sloped surface without atmosphere
 	flux_wshad: incoming flux for airless body with distant horizon
 
-psv.f: 
-	vapor pressure of H2O
-
-psvco2.f: 
-       	vapor pressure of CO2
-
 generalorbit.f: 
 	distance, longitude, and declination of the sun from orbital elements
 
@@ -30,20 +24,32 @@ conductionT.f90:
 	1D thermal conduction with heterogeneous thermal properties and 
 	upper temperature boundary condition, semi-implicit solver
 
-grids.f:
-	creates appropriate 1D grids
-
-derivs.f90: 
-	first and second derivatives on irregular grid
-
-psv3.f: 
-	vapor pressure of H2O; alternative version of psv.f
+conductionQ2.f90:
+	version of conductionQ that precomputes coefficients
 
 conductionT2.f90:
 	version of conductionT that precomputes coefficients
 
-conductionQ2.f90:
-	version of conductionQ that precomputes coefficients
+derivs.f90: 
+	first and second derivatives on irregular grid
+	
+grids.f:
+	creates appropriate 1D grids
+
+psv.f: 
+	vapor pressure of H2O
+
+psv2.f: 
+	vapor pressure of H2O; alternative version of psv.f
+
+psv3.f: 
+	vapor pressure of H2O; alternative version of psv.f
+
+psvco2.f: 
+       	vapor pressure of CO2
+
+subl_h2o.f90:
+	set of functions for sublimation rate of H2O ice
 
 makefile:
 	shows file dependencies

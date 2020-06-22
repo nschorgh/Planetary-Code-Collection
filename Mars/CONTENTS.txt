@@ -16,7 +16,7 @@ mars_thermal1d.f: (main program)
 	1D diffusion of temperature for Mars; 
 	prototype example of how to call conductionQ/T with seasonal CO2 frost cover
 
-soilthprop.f90:
+soilthprop_mars.f90:
 	thermal properties of icy soil on Mars
 
 input.par:
