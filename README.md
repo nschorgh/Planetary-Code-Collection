@@ -143,6 +143,15 @@ Common/tridag.for
 *Documentation: Schorghofer, N. (2016) Icarus 276, 88-95*  
 
 
+### Lunar Ice Pump
+
+Lunar/oscidea1.f90: (main program)  
+Lunar/oscidea_subs.f90  
+Lunar/subl_h2o.f90  
+*Documentation: User Guide Section 3.3  
+Documentation: Schorghofer, N. & Aharonson, O. (2014) ApJ 788, 169*  
+
+
 ### Irradiance Model for Terrestrial Analog
 
 EarthAnalogs/insol3d_earth.f90: (main program)  

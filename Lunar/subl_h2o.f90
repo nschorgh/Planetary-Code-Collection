@@ -36,15 +36,27 @@ end function inv_evap_vacuum_func
 
 
 real(8) function sublr_amorph(T)
-  ! sublimation rate according to Sack and Baragiola (1993)
+  ! sublimation rate of amorphous or crystalline H2O ice
+  ! in units of #molecules/m^2/s
   implicit none
-  real(8), intent(IN) :: T
-  real(8), parameter :: k=1.38065e-23, mu=18*1.66e-27
-  real(8) E 
-  ! sublr_amorph = psv(T)/sqrt(2*pi*m*k*T)*m 
-  E = 1.82e21*1e4*T**3.5*exp(-0.45*1.6022e-19/(k*T)) ! [#/m^2/s]
-  E = E*mu  ! [kg/m^2/s]
+  real(8), intent(IN) :: T  ! [Kelvin]
+  real(8), parameter :: kB=1.38065e-23, m=18.015*1.66e-27
+  real(8) E
+
+  ! sublimation rate of amorphous H2O ice
+  ! according to Sack and Baragiola, Phys. Rev. B 48, 9973 (1993)  
+  E = 1.82e21*1e4*T**3.5*exp(-0.45*1.6022e-19/(kB*T)) ! [#/m^2/s]
+
+  ! sublimation rate of crystalline H2O ice
+  ! eq. (7) in Murphy & Koop, Q. J. R. Meteor. Soc. 131, 1539 (2005)
+  ! psv = exp(9.550426 - 5723.265/T + 3.53068*log(T) - 0.00728332*T)
+  ! E = psv/sqrt(2*pi*kB*T*m)
+  ! first coefficient: subtract log(2*pi*kB*m)/2
+  ! third coefficient: subtract 0.5
+  !E = exp(64.3358 -5723.265/T +3.03068*log(T) -0.00728332*T)
+
   sublr_amorph = E
+  !sublr_amorph = E*m ! [kg/m^2/s]
 end function sublr_amorph
 
 

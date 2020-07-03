@@ -1,0 +1,36 @@
+Lunar/
+
+Lunar Ice Pump Model
+====================
+
+oscidea1.f90: (main program)
+	ice pump calculations for one location
+
+oscidea_subs.f90:
+	subroutines for ice pump calculations
+
+subl_h2o.f90:
+	set of functions for sublimation rate of H2O ice
+
+
+Miscellaneous Moon-specific Thermal Model Components
+====================================================
+
+flux_moon.f90: (orphan)
+	absorbed solar flux with incidence angle dependent albedo
+
+soilthprop_moon.f90: (orphan)
+	thermal properties of regolith according to Diviner standard thermal model
+
+
+
+
+makefile:
+	shows file dependencies
+
+
+
+NOTES
+
+* Lunar exosphere model is found in directory Exosphere/
+* Terrain irradiance model for airless bodies is found in Topo3D/

@@ -48,9 +48,6 @@ psv3.f:
 psvco2.f: 
        	vapor pressure of CO2
 
-subl_h2o.f90:
-	set of functions for sublimation rate of H2O ice
-
 makefile:
 	shows file dependencies
 

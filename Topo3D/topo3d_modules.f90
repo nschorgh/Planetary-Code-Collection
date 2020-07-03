@@ -38,7 +38,7 @@ MODULE allinterfaces
        implicit none
        integer, intent(IN) :: NSx,NSy
        real(8), intent(IN) :: h(NSx,NSy)
-       real(8), intent(OUT) :: hhalf(NSx/2,NSy/2) ! new dimensions
+       real(8), intent(OUT) :: hhalf(NSx/2,NSy/2)
      end subroutine downsample
   end interface
 
@@ -173,7 +173,7 @@ MODULE allinterfaces
        integer, intent(IN) :: NSx, NSy
        character(len=*), intent(IN) :: ffn
        integer, intent(IN) :: CCMAX
-       integer, intent(OUT) :: cc(NSx,NSy) ! number of cells in field of view
+       integer, intent(OUT) :: cc(NSx,NSy)
        integer(2), intent(OUT), dimension(NSx,NSy,CCMAX) :: ia, ja
        real(4), intent(OUT), dimension(NSx,NSy,CCMAX) :: dOh
        real(8), intent(OUT) :: landsize(NSx,NSy)
@@ -186,7 +186,7 @@ MODULE allinterfaces
        integer, intent(IN) :: NSx, NSy
        character(len=*), intent(IN) :: vfn
        integer, intent(IN) :: CCMAX
-       integer, intent(OUT) :: cc(NSx,NSy) ! number of cells in field of view
+       integer, intent(OUT) :: cc(NSx,NSy)
        integer(2), intent(OUT), dimension(NSx,NSy,CCMAX) :: ia, ja
        real(4), intent(OUT), dimension(NSx,NSy,CCMAX) :: VF
        real(8), intent(OUT) :: viewsize(NSx,NSy)
@@ -248,7 +248,8 @@ MODULE allinterfaces
   
   ! topod3d_subs_mars.f90
   interface
-     subroutine subsurfaceconduction_mars(T,Tsurf,dtsec,Qn,Qnp1,m,Fsurf,init,Tco2frost,thIn,emiss)
+     subroutine subsurfaceconduction_mars(T,Tsurf,dtsec,Qn,Qnp1,m,Fsurf,init, &
+          & Tco2frost,thIn,emiss)
        implicit none
        real(8), intent(INOUT) :: T(:), Tsurf, m, Fsurf
        real(8), intent(IN) :: dtsec,Qn,Qnp1
@@ -310,8 +311,9 @@ MODULE allinterfaces
      subroutine conductionQ(nz,z,dt,Qn,Qnp1,T,ti,rhoc,emiss,Tsurf,Fgeotherm,Fsurf)
        implicit none
        integer, intent(IN) :: nz
-       real*8, intent(IN) :: z(nz), dt, Qn, Qnp1, ti(nz),rhoc(nz), emiss, Fgeotherm
+       real*8, intent(IN) :: z(nz), dt, Qn, Qnp1
        real*8, intent(INOUT) :: T(nz), Tsurf
+       real*8, intent(IN) :: ti(nz), rhoc(nz), emiss, Fgeotherm
        real*8, intent(OUT) :: Fsurf
      end subroutine conductionQ
   end interface
