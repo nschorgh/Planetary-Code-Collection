@@ -3,8 +3,7 @@ program oscidea1
   ! written by Norbert Schorghofer, 2013
   use oscidea_params
   implicit none
-  !real(8), parameter :: secyear = 365.24*86400
-  !real(8), parameter :: unitconv = m*secyear ! #/m^2/s -> kg/m^2/year
+  !real(8), parameter :: unitconv = m*365.24*86400 ! #/m^2/s -> kg/m^2/year
   real(8) Tm, Ta, Tmean, Esurf, Ebase, supply, spaceweather0, mintheta, maxtheta
   real(8) avtheta, fract, avweather !, convergence
   real(8), external :: sublr_amorph
@@ -20,7 +19,8 @@ program oscidea1
        & Tmean,avtheta,fract,Esurf,avweather,mintheta,maxtheta)
   Ebase = sublr_amorph(Tmean)
 
-  write(*,'(a,e10.3,1x,a,e10.3)') 'Supply=',supply,'Spaceweather0=',spaceweather0
+  write(*,'(a,e10.3,1x,a,e10.3)') &
+       & 'Supply=',supply,'Spaceweather0=',spaceweather0
   write(*,'(2(a3,1x,f6.2,1x),a6,e10.3,a10,f10.3)') &
        & 'Tm=',Tm,'Ta=',Ta,'theta=',avtheta,'fractime=',fract
 

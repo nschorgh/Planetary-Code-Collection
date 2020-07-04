@@ -3,7 +3,7 @@ elemental function evap_vacuum_func(T)
   implicit none
   real(8) evap_vacuum_func  ! [kg/m^2/s]
   real(8), intent(IN) :: T  ! [Kelvin]
-  !real(8), parameter :: mu=18.015, R=8314.5, pi=3.141592653589793
+  !real(8), parameter :: mu=18.015, R=8314.46, pi=3.141592653589793
   !real(8) psv
   ! eq. (7) in Murphy & Koop, Q. J. R. Meteor. Soc. 131, 1539 (2005)
   !psv = exp(9.550426 - 5723.265/T + 3.53068*log(T) - 0.00728332*T)
@@ -11,7 +11,7 @@ elemental function evap_vacuum_func(T)
 
   ! first coefficient: add log(sqrt(mu/(2*pi*R))) 
   ! third coefficient: subtract 0.5
-  evap_vacuum_func = exp(5.564212 -5723.265/T +3.03068*log(T) -0.00728332*T)
+  evap_vacuum_func = exp(5.564214 -5723.265/T +3.03068*log(T) -0.00728332*T)
 end function evap_vacuum_func
 
 
@@ -22,7 +22,7 @@ elemental function inv_evap_vacuum_func(PET)
   real(8) inv_evap_vacuum_func  ! [Kelvin]
   real(8), intent(IN) :: PET  ! [kg/m^2/s]
   real(8) T, dEdT, E
-  real(8), parameter :: a1=5.564212, a2=-5723.265, a3=3.03068, a4=-0.00728332
+  real(8), parameter :: a1=5.564214, a2=-5723.265, a3=3.03068, a4=-0.00728332
   integer n
   T = (0.81004*log(PET) + 6049.7) / (21.762 - log(PET) ) ! approximate fit
   do n=1,4  ! refine with Newton iterations

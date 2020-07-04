@@ -86,7 +86,7 @@ pure function vapordiffusivity(diam,porosity,T)
   implicit none
   real(8) vapordiffusivity
   real(8), parameter :: pi = 3.1415926535897932
-  real(8), parameter :: Ru = 8314.5
+  real(8), parameter :: Ru = 8314.46
   real(8), intent(IN) :: diam, porosity, T
   real(8) vbar, r
   real(8), parameter :: tau = 2.  ! tortuosity

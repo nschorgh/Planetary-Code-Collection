@@ -67,8 +67,11 @@ subroutine icelayer_asteroid(bigstep,NP,z,porosity,Tinit,zdepthP,sigma, &
         endif
         Deff = deltaz/colint(1./Diff,z,nz,1,typeP-1) 
      endif
-     !call impactstirring(nz,z(:),bigstep,sigma(:,k))  ! turn impact stirring on and off here
-     call icechanges(nz,z(:),typeP,avrho(:),ypp(:),Deff,bigstep,Jp,zdepthP(k),sigma(:,k))
+     ! turn impact stirring on and off here
+     !call impactstirring(nz,z(:),bigstep,sigma(:,k))
+     
+     call icechanges(nz,z(:),typeP,avrho(:),ypp(:),Deff,bigstep,Jp, &
+          &          zdepthP(k),sigma(:,k))
      where(sigma<0.) sigma=0.
      do j=1,nz
         maxsigma = porosity(j)*icedensity
@@ -190,10 +193,10 @@ subroutine ajsub_asteroid(latitude, albedo, z, ti, rhocv, ecc, omega, eps, &
   
   Tmean1 = Tmean1/nm; Tmean3 = Tmean3/nm
   rhosatav0 = rhosatav0/nm; rhosatav(:)=rhosatav(:)/nm
-  rhosatav0 = rhosatav0*18./8314.; rhosatav(:)=rhosatav(:)*18./8314.
+  rhosatav0 = rhosatav0*18./8314.46; rhosatav(:)=rhosatav(:)*18./8314.46
 
   rlow=rhosatav(nz-1)
-  call avmeth(nz, z, rhosatav(:), rhosatav0, rlow, typeP, Diff(:), Diff0, ypp(:), Jp)
+  call avmeth(nz,z,rhosatav(:),rhosatav0,rlow,typeP,Diff(:),Diff0,ypp(:),Jp)
 
   if (typeP<=0) rhosatav = -9999.
 end subroutine ajsub_asteroid
@@ -217,7 +220,7 @@ end subroutine outputmoduleparameters
 
 
 
-subroutine avmeth(nz, z, rhosatav, rhosatav0, rlow, typeP, Diff, Diff0, ypp, Jpump1)
+subroutine avmeth(nz,z,rhosatav,rhosatav0,rlow,typeP,Diff,Diff0,ypp,Jpump1)
 !************************************************************************
 !  returns 2nd derivative ypp and pumping flux
 !************************************************************************
@@ -289,7 +292,8 @@ subroutine icechanges(nz,z,typeP,avrho,ypp,Deff,bigstep,Jp,zdepthP,sigma)
   zdepthPnew = sqrt(2*buf*(bigdtsec-dtcorr) + zdepthP**2)
   newtypeP = gettype(zdepthPnew,nz,z)
   if (newtypeP>typeP+1) then  ! take two half steps
-     print *,'# icechanges: half step',typeP,newtypeP,sigma(typeP),sigma(newtypeP),zdepthPnew
+     print *,'# icechanges: half step', &
+          & typeP,newtypeP,sigma(typeP),sigma(newtypeP),zdepthPnew
      !dtstep = bigdtsec/2.  ! half the time step
      dtstep = (bigdtsec-dtcorr)/2.  ! half the time step
 

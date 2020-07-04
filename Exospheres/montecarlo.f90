@@ -68,7 +68,7 @@ subroutine hop1(p_r, p_s, p_t, idum, Tsurf, Q)
   logical, parameter :: CORIOLIS = .false.
 
   ! Maxwell-Boltzmann launch velocities
-  sigma = sqrt(Tsurf*8314.5/mmass)  ! standard deviation
+  sigma = sqrt(Tsurf*8314.46/mmass)  ! standard deviation
   ! gasdev has unit variance
   v(1) = gasdev(idum)*sigma
   v(2) = gasdev(idum)*sigma
@@ -240,7 +240,8 @@ subroutine montecarlo(Np,idum,p_r,p_s,p_t,p_n,Tsurf,dtsec,ccc,Q)
            residencetime = residence_time(Tsurf(k))
            !print *,i,'restime=',k,Tsurf(k),residencetime
            ! reside on surface
-           if (VERBOSE) print *,'landed, adding residence time',residencetime,Tsurf(k)
+           if (VERBOSE) &
+                & print *,'landed, adding residence time',residencetime,Tsurf(k)
            p_t(i) = p_t(i) + residencetime
            p_s(i)=0
         end select
@@ -395,7 +396,7 @@ pure logical function incoldtrap(p_r)
   !if (abs(p_r(2))>85.-dlat/2 .and. abs(p_r(2))<85.+dlat/2.) incoldtrap = .TRUE.
 
   ! MERCURY
-  ! 28,000 km^2 PSR south of 85S, Chabot et al. (2012) = 0.075% of the hemisphere
+  ! 28,000 km^2 PSR south of 85S, Chabot et al. (2012) = 0.075% of hemisphere
   !if (abs(p_r(2))> 90-2.2) incoldtrap = .TRUE. 
 
   ! CERES

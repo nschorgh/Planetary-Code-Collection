@@ -34,8 +34,9 @@ subroutine icelayer_asteroid(bigstep,NP,z,porosity,icefrac,Tinit, &
      typeT = gettype(zdepthT(k),nz,z)
 
      ! assign/update property profiles
-     call assignthermalproperties1(nz,z,Tnominal,porosity,ti,rhocv,icefrac,zdepthT(k))
-     diam = 100e-6  ! assumed grain diameter in mantle, used to calculate mean-free path
+     call assignthermalproperties1(nz,z,Tnominal,porosity, &
+          &                        ti,rhocv,icefrac,zdepthT(k))
+     diam = 100e-6  ! grain diameter in mantle
      Diff0 = vapordiffusivity(diam,porosity,Tnominal) ! surface
      do j=1,nz
         !if (z(j)>0.5) diam=1e-3  ! coarser below 0.5m
@@ -170,7 +171,7 @@ subroutine ajsub_asteroid(latitude, albedo, z, ti, rhocv, ecc, omega, &
   
   Tmean1 = Tmean1/nm; Tmean3 = Tmean3/nm
   rhosatav = rhosatav/nm
-  rhosatav = rhosatav*18./8314.
+  rhosatav = rhosatav*18./8314.46
 
   if (typeT<=0 .or. typeT>nz) rhosatav = -9999.
 end subroutine ajsub_asteroid
