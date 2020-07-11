@@ -1,7 +1,7 @@
 pure function flux_moon(R,decl,latitude,HA,albedo0)
 !**********************************************************************
-!   flux_noatm: calculates absorbed solar flux without atmosphere;
-!               albedo depends on incidence angle  
+!   flux_moon: calculates absorbed solar flux without atmosphere;
+!              albedo depends on incidence angle  
 !     R: distance from sun (AU)
 !     decl: planetocentric solar declination (radians)
 !     latitude: (radians)
@@ -24,7 +24,7 @@ pure function flux_moon(R,decl,latitude,HA,albedo0)
   sinbeta = c1*cos(HA) + s1
   
   cosbeta = sqrt(1-sinbeta**2)
-  ! ha -> az (option 2)
+  ! ha -> az
   buf = (sin(decl)-sin(latitude)*sinbeta)/(cos(latitude)*cosbeta)
   ! buf can be NaN if cosbeta = 0
   if (buf>+1.) buf=1.0; if (buf<-1.) buf=-1.0; ! roundoff

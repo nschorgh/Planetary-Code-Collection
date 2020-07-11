@@ -20,8 +20,7 @@ flux_moon.f90: (orphan)
 	absorbed solar flux with incidence angle dependent albedo
 
 soilthprop_moon.f90: (orphan)
-	thermal properties of regolith according to Diviner standard thermal model
-
+	thermal properties of lunar regolith
 
 
 
