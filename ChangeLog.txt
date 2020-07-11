@@ -1,5 +1,7 @@
 ChangeLog
 
+10 Jul 2020: merged psv + psv2 + psv3, and changed default parameterization to psv2.
+
 2 Jul 2020: renamed Exosphere/ into Exospheres/
 
 29 Jun 2020: added basic lunar ice pump code to Lunar/. Lunar/ is a new directory that will contain miscellaneous model code for the Moon. The lunar exosphere model will stay in Exosphere/ and the 3D terrain irradiance model will stay in Topo3D/.

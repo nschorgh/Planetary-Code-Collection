@@ -39,12 +39,6 @@ grids.f:
 psv.f: 
 	vapor pressure of H2O
 
-psv2.f: 
-	vapor pressure of H2O; alternative version of psv.f
-
-psv3.f: 
-	vapor pressure of H2O; alternative version of psv.f
-
 psvco2.f: 
        	vapor pressure of CO2
 

@@ -9,7 +9,7 @@ This program collection contains:
 * semi-implicit one-dimensional thermal model for planetary surfaces
 * explicit subsurface vapor diffusion and ice deposition model
 * long-term ice evolution:  
-  * models for the equilibrium ice table on Mars
+  * equilibrium ice table on Mars
   * fast (asynchronously coupled) method for subsurface-atmosphere vapor exchange on Mars
   * fast (asynchronously coupled) method for ice retreat on asteroids
   * lunar ice pump  
