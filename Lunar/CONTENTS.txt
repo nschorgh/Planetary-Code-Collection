@@ -13,16 +13,6 @@ subl_h2o.f90:
 	set of functions for sublimation rate of H2O ice
 
 
-Miscellaneous Moon-specific Thermal Model Components
-====================================================
-
-flux_moon.f90: (orphan)
-	absorbed solar flux with incidence angle dependent albedo
-
-soilthprop_moon.f90: (orphan)
-	thermal properties of lunar regolith
-
-
 
 makefile:
 	shows file dependencies
