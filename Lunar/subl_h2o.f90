@@ -3,8 +3,9 @@ elemental function evap_vacuum_func(T)
   implicit none
   real(8) evap_vacuum_func  ! [kg/m^2/s]
   real(8), intent(IN) :: T  ! [Kelvin]
-  !real(8), parameter :: mu=18.015, R=8314.46, pi=3.141592653589793
-  !real(8) psv
+  real(8), parameter :: mu=18.015, Ru=8314.46, pi=3.141592653589793
+  real(8) psv
+  
   ! eq. (7) in Murphy & Koop, Q. J. R. Meteor. Soc. 131, 1539 (2005)
   !psv = exp(9.550426 - 5723.265/T + 3.53068*log(T) - 0.00728332*T)
   !evap_vacuum_func = psv*sqrt(mu/(2*pi*R*T))
@@ -12,12 +13,19 @@ elemental function evap_vacuum_func(T)
   ! first coefficient: add log(sqrt(mu/(2*pi*R))) 
   ! third coefficient: subtract 0.5
   evap_vacuum_func = exp(5.564214 -5723.265/T +3.03068*log(T) -0.00728332*T)
+
+  if (T>273.16) then ! liquid, Hyland & Wexler (1983), Murphy & Koop (2005)
+     psv = exp( -5800.2206/T +1.3914993 -0.48640239e-1*T +0.41764768e-4*T**2 &
+          & -0.14452093e-7*T**3 + 6.5459673*log(T) )
+     evap_vacuum_func = psv*sqrt(mu/(2*pi*Ru*T))
+ endif
+ 
 end function evap_vacuum_func
 
 
 
 elemental function inv_evap_vacuum_func(PET)
-  ! inverse of evap_vacuum_func
+  ! inverse of evap_vacuum_func for ice
   implicit none
   real(8) inv_evap_vacuum_func  ! [Kelvin]
   real(8), intent(IN) :: PET  ! [kg/m^2/s]

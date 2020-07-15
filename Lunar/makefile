@@ -8,7 +8,7 @@ oscidea1: oscidea_subs.o oscidea1.o subl_h2o.o makefile
 	$(CC) $(LFLAGS) oscidea1.o subl_h2o.o oscidea_subs.o
 
 
-common-lunar: subl_h2o.o soilthprop_moon.o makefile
+common-lunar: subl_h2o.o makefile
 
 
 %.o:	%.f90 makefile
