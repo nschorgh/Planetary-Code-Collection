@@ -1,5 +1,7 @@
 ChangeLog
 
+18 Jul 2020: Release v1.1.7 
+
 10 Jul 2020: merged psv + psv2 + psv3, and changed default parameterization to psv2.
 
 2 Jul 2020: renamed Exosphere/ into Exospheres/
