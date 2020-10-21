@@ -1,4 +1,4 @@
-      program mars_thermal1d
+      PROGRAM mars_thermal1d
 C***********************************************************************
 C   mars_thermal1d:  program to calculate the diffusion of temperature 
 C                    into the ground
@@ -20,15 +20,14 @@ C***********************************************************************
       parameter (NMAX=1000, sigSB=5.6704d-8)
       parameter (pi=3.1415926535897932, d2r=pi/180., zero=0.)
       parameter (earthDay=86400., marsDay=88775.244, solsy=668.60)
-      parameter (Tco2frost=145., Lco2frost=6.0e5)
+      parameter (Lco2frost=6.0e5)
 
       integer nz, nsteps, n, i, nm
-      real*8 T(NMAX),tmax, time, dt, zmax, zfac
+      real*8 T(NMAX), tmax, time, dt, zmax, dz, zfac
       real*8 latitude, thermalInertia, albedo, albedo0, emiss, emiss0
       real*8 fracIR, fracDust, rhoc, delta
       real*8 Qn, Qnp1, tdays, dtsec
       real*8 marsR, marsLs, marsDec, HA
-      real*8 surfaceSlope, azFac
       real*8 jd, temp1, dcor, dt0_j2000, flux_mars77
       real*8 ti(NMAX), Tsurf, rhocv(NMAX), z(NMAX), Told(NMAX)
       real*8 co2albedo, Fgeotherm, Tsurfold, Fsurf, Fsurfold, m, dE
@@ -45,25 +44,22 @@ C-----read input
       read(20,'(a)')dum1
       read(20,*)nz,zmax,zfac
       read(20,'(a)')dum1
-      read(20,*)fracIR,fracDust,thermalInertia,albedo0,latitude,rhoc
+      read(20,*)latitude,albedo0,emiss0
       read(20,'(a)')dum1
-C     if no co2emiss is available in input.par, set it to 1.
-      read(20,*)Fgeotherm,co2albedo,co2emiss
+      read(20,*)thermalInertia,rhoc
       read(20,'(a)')dum1
-      read(20,*)surfaceSlope,azFac
+      read(20,*)fracIR,fracDust,Fgeotherm
+      read(20,'(a)')dum1
+      read(20,*)Tco2frost,co2albedo,co2emiss
       read(20,'(a)')dum1
       read(20,*)iyr,imm,iday
-!      read(20,'(a)')dum1
-!      read(20,'(a)')fileout1
-!      read(20,'(a)')fileout2
       fileout1='Tsurface'; fileout2='Tprofile'
       close(20)
 
 C     set some constants
+      dz = zmax/nz              ! set the space step
       nsteps = int(tmax/dt)     ! calculate total number of timesteps
-      emiss0 = 1.     ! frost-free emissivity
-      emiss = emiss0
-      emiss = emiss*cos(surfaceSlope*d2r/2.)**2
+      emiss = emiss0     ! frost-free emissivity
       delta = thermalInertia/rhoc*sqrt(marsDay/pi)  ! skin depth
       albedo = albedo0
       dtsec = dt*marsDay
@@ -78,20 +74,19 @@ C     All time is referenced to dt0_j2000
 
       write(*,*) 'Model parameters'
       write(*,*) 'Time step=',dt,' Max number of steps=',nsteps
-      write(*,*) 'zmax=',zmax,' zfac=',zfac
+      write(*,*) 'z(1)=',z(1),' zmax=',zmax,' zfac=',zfac
       write(*,*) 'Thermal inertia=',thermalInertia,' rho*c=',rhoc
       print *,'Diurnal skin depth=',delta,' Geothermal flux=',Fgeotherm
       write(*,*) 'albedo=',albedo,' emiss=',emiss
       write(*,*) 'fracIR=',fracIR,' fracDust=',fracDust
+      write(*,*) 'CO2 frostpoint=',Tco2frost
+      write(*,*) 'CO2 albedo=',co2albedo,' CO2 emissivity=',co2emiss
       write(*,*) 'Reference time is noon UTC ',iyr,'/',imm,'/',iday
       write(*,*) 'Julian day ',jd
       write(*,*) 'Initial Mars orbit parameters: '
       write(*,*) 'Ls(deg)=',marsLs/d2r,' declination(deg)=',marsDec/d2r
       write(*,*) 'r (AU)=',marsR
       write(*,*) 'Calculations performed for latitude=',latitude
-      write(*,*) 'Surface slope=',surfaceSlope,' surface azimuth=',azFac
-      write(*,*) 'CO2 albedo=',co2albedo,' CO2 frostpoint=',Tco2frost,
-     &           ' CO2 emissivity=',co2emiss
 
 C-----initialize
       Tmean = 210.15     ! black-body temperature of planet
@@ -103,8 +98,6 @@ C-----initialize
       enddo
       Tsurf = Tmean
       latitude = latitude*d2r
-      surfaceSlope = surfaceSlope*d2r
-      azFac = azFac*d2r
       Tmean=0.; Tmean2=0.; nm=0     ! recycle variable Tmean
       ps=0.; pb=0.
 
@@ -122,17 +115,17 @@ C-----initialize
      &     1,zero)
 !      call smartgrid(nz,z,0.1d0,thermalInertia,rhoc,zero,ti,rhocv,
 !     &     3,zero)
-      open(unit=30,file='z',status='unknown');
+      open(unit=30,file='z',status='unknown')
       write(30,*) (z(i),i=1,nz)
       close(30)
-      do i=1,nz ! assign thermal properties
-         ti(i) = thermalInertia
-         rhocv(i) = rhoc
-         if (z(i)>0.1) then ! assign thermal properties below ice table
-            call soilthprop(0.4d0,1.d0,rhoc,thermalInertia,1,
-     &           rhocv(i),ti(i))
+      do i=1,nz ! assign thermal properties, if not already set by smartgrid
+!         ti(i) = thermalInertia
+!         rhocv(i) = rhoc
+!         if (z(i)>0.1) then
+!            call soilthprop(0.4d0,1.d0,rhoc,thermalInertia,1,
+!     &           rhocv(i),ti(i))
 !            call soilthprop(zero,zero,zero,zero,3,rhocv(i),ti(i),zero)
-         endif
+!         endif
       enddo
 
       time=0.
@@ -150,7 +143,7 @@ C-----loop over time steps
          time = (n+1)*dt   !   time at n+1 
 C        Solar insolation and IR at future time step
          tdays = time*(marsDay/earthDay)  ! parenthesis may improve roundoff
-         call marsorbit(dt0_j2000,tdays,marsLs,marsDec,marsR); 
+         call marsorbit(dt0_j2000,tdays,marsLs,marsDec,marsR) 
          HA = 2.*pi*mod(time,1.d0)    ! hour angle
 !         Qnp1 = flux(marsR,marsDec,latitude,HA,albedo,
 !     &        fracir,fracdust,surfaceSlope,azFac)
@@ -176,10 +169,10 @@ C        Solar insolation and IR at future time step
          endif
          if (Tsurf>Tco2frost .or. m<=0.) then
             albedo = albedo0
-            emiss = emiss0*cos(surfaceSlope/2.)**2
+            emiss = emiss0
          else
             albedo = co2albedo
-            emiss = co2emiss*cos(surfaceSlope/2.)**2
+            emiss = co2emiss
          endif
 
          Qn = Qnp1
@@ -206,6 +199,5 @@ c--------only output and diagnostics below this line
 
       print *,Tmean/nm,Tmean2/nm,ps/nm,pb/nm
 
-      end
+      END
  
-

@@ -1,4 +1,4 @@
-SUBROUTINE marsorbit(dt0,tj,Ls,dec,r)
+subroutine marsorbit(dt0,tj,Ls,dec,r)
 !=======================================================
 ! Subroutine to return various orbital parameters
 !
@@ -66,7 +66,7 @@ SUBROUTINE marsorbit(dt0,tj,Ls,dec,r)
   r = 1.5236d0*(1.00436d0 - 0.09309d0*cos(M) - 0.00436d0*cos(2*M) - &
        &    0.00031d0*cos(3*M))  !  distance in AU
 
-END SUBROUTINE marsorbit
+end subroutine marsorbit
 
 
 
@@ -105,7 +105,7 @@ subroutine marsclock24(JDUT,Deltat_J2000,Ls,dec,RM,Longitude_W,LTST)
   ! (AM2000, eq. 27)
   ! dcor = (64.184d0 + 95.*temp1 + 35.*temp1**2) ! correction in sec
   ! alternate from https://www.giss.nasa.gov/tools/mars24/help/algorithm.html
-  dcor = 64.184 + 59*temp1 - 51.2*temp1**2 - 67.1*temp1**3 - 16.4*temp1**4      ! (seconds)
+  dcor = 64.184 + 59*temp1 - 51.2*temp1**2 - 67.1*temp1**3 - 16.4*temp1**4  ! (seconds)
   ! this correction is small
 
   JDTT = JDUT + dcor/86400.
@@ -159,3 +159,18 @@ subroutine marsclock24(JDUT,Deltat_J2000,Ls,dec,RM,Longitude_W,LTST)
 end subroutine marsclock24
       
 
+
+function psurf_season(psurfav,Ls)
+  ! returns seasonally varying surface pressure on present-day Mars
+  implicit none
+  real*8 psurf_season ! [Pa]
+  real*8, intent(IN) :: Ls      ! [radians]
+  real*8, intent(IN) :: psurfav ! annual average surface pressure [Pa]
+  real*8, parameter :: pi=3.1415926535897932, d2r=pi/180.
+
+  ! equation from Smith et al., Chapter 4 of 
+  !'The Atmosphere and Climate of Mars', Cambridge Univ. Press 2017, p58
+  psurf_season = psurfav*( &
+       & 1. + 0.091*cos(Ls-309.*d2r) + 0.070*cos(2*(Ls-248.*d2r)) )
+  
+end function psurf_season
