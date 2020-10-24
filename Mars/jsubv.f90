@@ -17,8 +17,8 @@ subroutine jsubv(NS, zdepth, latitude, albedo0, thIn, pfrost, nz, &
 !                a particular time of year
 !           when positive, Tb is used for initialization
 !
-!  mode = 0  ends after fixed amount of time and writes all data
-!  mode = 1  ends when certain accuracy is reached and writes no data
+!  mode = 0  ends after fixed amount of time and then outputs all data
+!  mode = 1  ends when certain accuracy is reached and outputs no data
 !
 !  latitude, surfaceSlope, and azFac  must be in RADIANS
 !
@@ -29,7 +29,8 @@ subroutine jsubv(NS, zdepth, latitude, albedo0, thIn, pfrost, nz, &
   integer, parameter :: NMAX=1000
   real*8, parameter :: pi=3.1415926535897932, d2r=pi/180., zero=0.
   real*8, parameter :: earthDay=86400., marsDay=88775.244, solsperyear=668.60
-  real*8, parameter :: sigSB=5.6704d-8, Lco2frost=6.0e5, co2albedo=0.65, co2emiss=1.
+  real*8, parameter :: sigSB=5.6704d-8, Lco2frost=6.0e5
+  real*8, parameter :: co2albedo=0.65, co2emiss=1.
 
   integer, intent(IN) :: NS, nz, mode
   real*8, intent(IN) :: zdepth(NS), latitude, albedo0, thIn, pfrost, rhoc
@@ -39,7 +40,7 @@ subroutine jsubv(NS, zdepth, latitude, albedo0, thIn, pfrost, nz, &
   real*8, intent(INOUT) :: Tb(NS)
   real*8, intent(IN) :: patm
 
-  logical outf
+  logical, parameter :: outf = .false.  ! additional output
   integer nsteps, n, i, nm, k, i0(NS)
   integer julday, iyr, imm, iday
 
@@ -55,13 +56,11 @@ subroutine jsubv(NS, zdepth, latitude, albedo0, thIn, pfrost, nz, &
   real*8 Qdir, Qscat, Qlw, skyviewfactor(NS), Qdir1
   external julday, psv, tfrostco2
 
-  outf = .false.  ! additional output
-
   select case (mode)
   case (0) ! full mode
      tmax = 7020.
   case (1) ! equilibrate fast
-     tmax = 50.*solsperyear  ! use integer multiples of solsperyear
+     tmax = 50.*solsperyear  ! use integer multiple of solsperyear
   case default
      stop 'no valid mode'
   end select
@@ -82,7 +81,7 @@ subroutine jsubv(NS, zdepth, latitude, albedo0, thIn, pfrost, nz, &
   dtsec = dt*marsDay
 
   if (minval(Tb(:))<=0.) then
-     !Tmean1=210.15              ! black-body temperature of planet
+     !Tmean1=210.15           ! black-body temperature of planet
      Tmean1 = (589.*(1.-albedo0)*cos(latitude)/pi/5.67e-8)**0.25 ! better estimate
   else
      Tmean1(:) = Tb(:)
@@ -137,7 +136,8 @@ subroutine jsubv(NS, zdepth, latitude, albedo0, thIn, pfrost, nz, &
      call flux_mars2(marsR,marsDec,latitude,HA,fracir,fracdust, &
           &          surfaceSlope(k),azFac(k),zero,Qdir,Qscat,Qlw)
      skyviewfactor(k) = cos(surfaceSlope(k)/2.)**2
-     Qn(k) = (1-albedo(k))*(Qdir+Qscat*skyviewfactor(k)) + emiss(k)*Qlw*skyviewfactor(k)
+     Qn(k) = (1-albedo(k)) * (Qdir+Qscat*skyviewfactor(k)) + &
+          & emiss(k)*Qlw*skyviewfactor(k)
      ! neglect terrain irradiances at initialization
   enddo
 
@@ -154,10 +154,12 @@ subroutine jsubv(NS, zdepth, latitude, albedo0, thIn, pfrost, nz, &
      Qnp1(1) = (1-albedo(1))*(Qdir1+Qscat) + emiss(1)*Qlw
      do k=2,NS
         ! direct and sky irradiance
-        !Qnp1(k) = flux(marsR,marsDec,latitude,HA,albedo(k),fracir,fracdust,surfaceSlope(k),azFac(k))
+        !Qnp1(k) = flux(marsR,marsDec,latitude,HA,albedo(k),fracir,fracdust, &
+        !     & surfaceSlope(k),azFac(k))
         call flux_mars2(marsR,marsDec,latitude,HA,fracir,fracdust, &
              &          surfaceSlope(k),azFac(k),zero,Qdir,Qscat,Qlw)
-        Qnp1(k) = (1-albedo(k))*(Qdir+Qscat*skyviewfactor(k)) + emiss(k)*Qlw*skyviewfactor(k)
+        Qnp1(k) = (1-albedo(k))*(Qdir+Qscat*skyviewfactor(k)) + &
+             & emiss(k)*Qlw*skyviewfactor(k)
 
         ! terrain irradiance
         Qnp1(k) = Qnp1(k) + (1.-skyviewfactor(k))*sigSB*emiss(1)*Tsurf(1)**4
@@ -232,8 +234,8 @@ subroutine jsubv(NS, zdepth, latitude, albedo0, thIn, pfrost, nz, &
      if (outf) then
         do k=1,NS
            write(34,'(2(f6.2,1x),2(f6.2,1x),2(g10.4,1x),2(g10.4,1x))')  &
-                & surfaceSlope(k)/d2r,azFac(k)/d2r,Tmean1(k),Tmean2(k),rhoavb(k),rhoavs(k) &
-                & ,Qmean(k),Qland(k)
+                & surfaceSlope(k)/d2r,azFac(k)/d2r,Tmean1(k),Tmean2(k), &
+                & rhoavb(k),rhoavs(k),Qmean(k),Qland(k)
         enddo
      endif
   endif

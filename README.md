@@ -52,7 +52,7 @@ Mars/Misc/  an animation for illustration
 Mars/mars_mapi.f: (main program)  
 Mars/mars_mapt2.f: (main program)  
 Mars/mars_mapip2.f90: (main program)  
-Mars/jsub.f  
+Mars/jsub.f90    
 Mars/jsubv.f90  
 Mars/marsorbit.f90  
 Mars/flux_mars.f90  

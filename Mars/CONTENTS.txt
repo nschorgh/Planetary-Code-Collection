@@ -41,7 +41,7 @@ adsorption.f:
 
 
 
-jsub.f:
+jsub.f90:
 	net flux between ice table and surface, includes thermal model
 
 jsubv.f90:

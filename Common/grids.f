@@ -39,7 +39,7 @@ C     produces zfac with desired number of points within depth delta
       if (nz_max<nz_delta .or. nz_delta<=1) then
          stop 'inappropriate input to smartzfac'
       endif
-      f=1.05
+      f = 1.05
       do j=1,7  ! Newton iteration
          !print *,j,f
          g = (f-3+2*f**(nz_max-1))/(f-3+2*f**(nz_delta-1))-zmax/delta
@@ -48,7 +48,7 @@ C     produces zfac with desired number of points within depth delta
      &        (f-3+2*f**(nz_delta-1))**2
          f = f-g/gprime
       enddo
-      smartzfac=f
+      smartzfac = f
       if (smartzfac<1. .or. smartzfac>2.) then
          print *,'zfac=',smartzfac
          stop 'unwanted result in smartzfac'
@@ -57,10 +57,10 @@ C     produces zfac with desired number of points within depth delta
 
 
       
-c-----grid-dependent utility functions
+C-----grid-dependent utility functions
 
       function colint(y,z,nz,i1,i2)
-c     column integrates y
+C     column integrates y
       implicit none
       integer nz, i1, i2
       real(8) y(nz),z(nz)
@@ -68,36 +68,36 @@ c     column integrates y
       integer i
       real(8) dz(nz)
       
-      dz(1)=(z(2)-0.)/2
+      dz(1) = (z(2)-0.)/2
       do i=2,nz-1
          dz(i) = (z(i+1)-z(i-1))/2.
       enddo
       dz(nz) = z(nz)-z(nz-1)
-      colint= sum(y(i1:i2)*dz(i1:i2))
+      colint = sum(y(i1:i2)*dz(i1:i2))
       end function colint
 
 
  
       subroutine dzvector(nz,z,dz) 
-c     matches colint
+C     matches colint
       implicit none
       integer nz
       real(8) z(nz)
       real(8) dz(nz)   ! output
       integer i
       
-      dz(1)=(z(2)-0.)/2
+      dz(1) = (z(2)-0.)/2
       do i=2,nz-1
          dz(i) = (z(i+1)-z(i-1))/2.
       enddo
       dz(nz) = z(nz)-z(nz-1)
       end subroutine dzvector
 
-      
+
 
       subroutine heatflux_from_temperature(nz,z,T,k,H)
-c     calculates heat flux from temperature profile
-c     like k, the heat flux H is defined mid-point
+C     calculates heat flux from temperature profile
+C     like k, the heat flux H is defined mid-point
       implicit none
       integer nz
       real(8) z(nz), T(nz), k(nz)

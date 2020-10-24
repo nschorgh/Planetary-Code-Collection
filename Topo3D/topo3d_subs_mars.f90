@@ -1,4 +1,5 @@
-subroutine subsurfaceconduction_mars(T,Tsurf,dtsec,Qn,Qnp1,m,Fsurf,init,Tco2frost,thIn,emiss)
+subroutine subsurfaceconduction_mars(T,Tsurf,dtsec,Qn,Qnp1,m,Fsurf,init, &
+     & Tco2frost,thIn,emiss)
   use miscparams, only : pi, sigSB, solsy, Lco2frost, solarDay, nz
   use conductionQ
   use conductionT
@@ -11,7 +12,7 @@ subroutine subsurfaceconduction_mars(T,Tsurf,dtsec,Qn,Qnp1,m,Fsurf,init,Tco2fros
   real(8), parameter :: Fgeotherm = 0.0 ! [W/m^2]
   integer i
   !real(8), parameter :: zmax=3., zfac=1.05d0  ! adjust
-  real(8), parameter :: zmax=13., zfac=1.05d0  ! with rhoc=thIn*1000 (nz=70, 3x seasonal)
+  real(8), parameter :: zmax=13., zfac=1.05d0  ! rhoc=thIn*1000 (nz=70, 3x seas)
   real(8) Tinit, delta
   real(8) Fsurfold, dE, Tsurfold, Told(nz)
   real(8) z(nz), ti(nz), rhocv(nz)
@@ -44,7 +45,8 @@ subroutine subsurfaceconduction_mars(T,Tsurf,dtsec,Qn,Qnp1,m,Fsurf,init,Tco2fros
      write(*,*) 'Subsurface model parameters'
      write(*,*) '   nz=',nz,' zmax=',zmax,' zfac=',zfac
      write(*,*) '   Thermal inertia=',thIn,' rho*c=',rhocv(1)
-     write(*,*) '   (Scaled) diurnal and seasonal skin depths=',delta,delta*sqrt(solsy)
+     write(*,*) '   (Scaled) diurnal and seasonal skin depths=', &
+          & delta,delta*sqrt(solsy)
      write(*,*) '   Geothermal flux=',Fgeotherm
 
      call conductionT2_init(nz,z,dtsec,ti,rhocv,Fgeotherm)
@@ -54,7 +56,7 @@ subroutine subsurfaceconduction_mars(T,Tsurf,dtsec,Qn,Qnp1,m,Fsurf,init,Tco2fros
   endif
   
   if (Tsurf<=0.) then  ! initialize temperature profile
-     Tinit=200.
+     Tinit = 200.
      T(1:nz) = Tinit
      Tsurf = Tinit
   endif
@@ -63,22 +65,46 @@ subroutine subsurfaceconduction_mars(T,Tsurf,dtsec,Qn,Qnp1,m,Fsurf,init,Tco2fros
      error stop 'missing argument'
   end if
   
-  Tsurfold=Tsurf
-  Fsurfold=Fsurf
-  Told(1:nz)=T(1:nz)
+  Tsurfold = Tsurf
+  Fsurfold = Fsurf
+  Told(1:nz) = T(1:nz)
   if (Tsurf>Tco2frost .or. m<=0.) then
      call conductionQ2(nz,Qn,Qnp1,T,emiss,Tsurf,Fsurf)
   endif
-  if (Tsurf<Tco2frost .or. m>0.) then   ! CO2 condensation                                              
-     T(1:nz)=Told
+  if (Tsurf<Tco2frost .or. m>0.) then   ! CO2 condensation   
+     T(1:nz) = Told
      call conductionT2(nz,Tsurfold,Tco2frost,T,Fsurf)
-     Tsurf=Tco2frost
+     Tsurf = Tco2frost
      dE = (- Qn - Qnp1 + Fsurfold + Fsurf + &
           &           emiss*sigSB*(Tsurfold**4+Tsurf**4))/2.
      m = m + dtsec*dE/Lco2frost
   endif
 
 end subroutine subsurfaceconduction_mars
+
+
+
+elemental subroutine equilibrT_mars(Tsurf, dtsec, Qnm1, Qn, m, Tco2frost, emiss)
+  ! calculates equilibrium temperature and change in CO2 mass
+  ! this is the analog to subsurfaceconduction_mars for thIn=0
+  use miscparams, only : sigSB, Lco2frost
+  implicit none
+  real*8, intent(IN) :: Qn, Qnm1, Tco2frost, emiss, dtsec
+  real*8, intent(OUT) :: Tsurf
+  real*8, intent(INOUT) :: m
+  !real(8), parameter :: sigSB = 5.6704e-8
+  !real(8), parameter :: Lco2frost = 6.0e5 ! [J/kg]
+  real*8 Tsurfold, dE
+  
+  Tsurf = (Qn/emiss/sigSB)**0.25
+  Tsurfold = (Qnm1/emiss/sigSB)**0.25
+  if (Tsurf<Tco2frost .or. m>0.) then   ! CO2 condensation
+     Tsurf = Tco2frost
+     dE = - Qn + emiss*sigSB*(Tsurf**4 + Tsurfold**4)/2.
+     m = m + dtsec*dE/Lco2frost
+  endif
+
+end subroutine equilibrT_mars
 
 
 

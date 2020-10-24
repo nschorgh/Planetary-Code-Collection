@@ -74,7 +74,8 @@ MODULE allinterfaces
   end interface
   
   interface
-     elemental function cos_viewing_angle(x0,y0,h00,surfaceSlope,azFac,xB,yB,hB)
+     elemental function cos_viewing_angle(x0,y0,h00,surfaceSlope,azFac, &
+          & xB,yB,hB)
        implicit none
        real(8) cos_viewing_angle
        real(8), intent(IN) :: x0, y0, h00, surfaceSlope, azFac
@@ -162,7 +163,8 @@ MODULE allinterfaces
   end interface
   
   interface
-     elemental subroutine equatorial2horizontal(decl,latitude,HA,sinbeta,azimuth)
+     elemental subroutine equatorial2horizontal(decl,latitude,HA, &
+          & sinbeta,azimuth)
        real(8), intent(IN) :: decl,latitude,HA
        real(8), intent(OUT) :: sinbeta,azimuth
      end subroutine equatorial2horizontal
@@ -257,6 +259,15 @@ MODULE allinterfaces
        real(8), intent(IN), optional :: Tco2frost, thIn, emiss
      end subroutine subsurfaceconduction_mars
   end interface
+
+  interface
+     elemental subroutine equilibrT_mars(Tsurf,dtsec,Qnm1,Qn,m,Tco2frost,emiss)
+       implicit none
+       real*8, intent(IN) :: Qn, Qnm1, Tco2frost, emiss, dtsec
+       real*8, intent(OUT) :: Tsurf
+       real*8, intent(INOUT) :: m
+     end subroutine equilibrT_mars
+  end interface
   
   interface
      pure function evap_ingersoll(T,p0)
@@ -308,7 +319,8 @@ MODULE allinterfaces
   end interface
 
   interface
-     subroutine conductionQ(nz,z,dt,Qn,Qnp1,T,ti,rhoc,emiss,Tsurf,Fgeotherm,Fsurf)
+     subroutine conductionQ(nz,z,dt,Qn,Qnp1,T,ti,rhoc,emiss,Tsurf,Fgeotherm, &
+          & Fsurf)
        implicit none
        integer, intent(IN) :: nz
        real*8, intent(IN) :: z(nz), dt, Qn, Qnp1

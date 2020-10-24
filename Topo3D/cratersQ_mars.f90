@@ -17,7 +17,7 @@ module miscparams
 
   ! thermal model parameters
   real(8), parameter :: Tco2frost = 145. ! adjust according to elevation [K]
-  real(8), parameter :: Tfrost = 200.  ! H2O frost point temperature, for diagnostics only [K]
+  real(8), parameter :: Tfrost = 200.  ! H2O frost point temperature [K]
   real(8), parameter :: fracIR = 0.04, fracDust = 0.02
   real(8), parameter :: emiss = 0.98
   integer, parameter :: nz = 70      ! number of vertical grid points
@@ -48,7 +48,7 @@ PROGRAM cratersQ_mars
   real(8), allocatable, dimension(:,:) :: mmax, frosttime, maxfrosttime, Qnm1
   real(8), allocatable :: Fsurf(:,:), T(:,:,:), Tbottom(:,:), Tref(:)  ! subsurface
   real(8), allocatable, dimension(:,:) :: mmin, h2olast
-  real(8) dE, Tsurfold, QIR, Qrefl, Qscat, Qlw
+  real(8) QIR, Qrefl, Qscat, Qlw
   logical, parameter :: subsurface=.true.  ! control panel
   real(8) jd, LTST, jd_end
   
@@ -115,7 +115,8 @@ PROGRAM cratersQ_mars
      allocate(Tref(nz))
      allocate(Fsurf(NSx,NSy))
      call subsurfaceconduction_mars(Tref(:),buf,dtsec,zero,zero,buf,buf,.true.)
-     !call subsurfaceconduction_mars2(Tref(:),buf,dtsec,zero,zero,buf,buf,.true.,thIn=thIn)
+     !call subsurfaceconduction_mars2(Tref(:),buf,dtsec,zero,zero, &
+     !                              & buf,buf,.true.,thIn=thIn)
      allocate(Tbottom(NSx,NSy))
      Tbottom(:,:)=-9
      Tsurf(:,:)=-9  ! max 3 digits
@@ -127,7 +128,8 @@ PROGRAM cratersQ_mars
   open(unit=22,file='timeseries_flat.dat',status='unknown',action='write')
 
   ! image taken imm = 5; iday=15; iyr=2014 8:44 UTC  ESP_036561
-  jd_snap(1)=dble(julday(5,15,2014)) + (8.+44./60-12)/24.  !  JD for noon UTC on imm,iday,iyear
+  ! JD for noon UTC on imm,iday,iyear
+  jd_snap(1)=dble(julday(5,15,2014)) + (8.+44./60-12)/24.  
   !call marsclock24(jd_snap,buf,marsLs,marsDec,marsR,Longitude,LTST)
   fns(1)='qsnap_036561.dat' ! snapshot
   
@@ -135,7 +137,7 @@ PROGRAM cratersQ_mars
   jd_snap(3)=dble(julday(5,11,2012)) + (17.+31./60-12)/24.; fns(3)='qsnap_027146.dat'
 
   jd_themis(1)=dble(julday(10,30,2016)) + (1.+30./60-12)/24.; fnt(1)='qsnap_i65997002.dat'
-  jd_themis(2)=dble(julday(2,26,2017)) + (18.+03./60-12)/24.; fnt(2)='qsnap_i67450002.dat' 
+  jd_themis(2)=dble(julday(2,26,2017)) + (18.+03./60-12)/24.; fnt(2)='qsnap_i67450002.dat'
   
   print *,'...calculating...'
   ! loop over time steps 
@@ -180,35 +182,23 @@ PROGRAM cratersQ_mars
               if (h(i,j)<-32000) cycle
               call subsurfaceconduction_mars(T(:,i,j),Tsurf(i,j), &
                    & dtsec,Qnm1(i,j),Qn(i,j),m(i,j),Fsurf(i,j),.false.)
-              !call subsurfaceconduction_mars2(T(:,i,j),Tsurf(i,j), &
-              !     & dtsec,Qnm1(i,j),Qn(i,j),m(i,j),Fsurf(i,j),.false.,Tco2frost=Tco2frost,emiss=emiss)
+              !     & Tco2frost=Tco2frost,emiss=emiss)
            enddo
         enddo
         call subsurfaceconduction_mars(Tref(:),Tsurf(1,1), &
              & dtsec,Qnm1(1,1),Qn(1,1),m(1,1),Fsurf(1,1),.false.)
-        !call subsurfaceconduction_mars2(Tref(:),Tsurf(1,1), &
-        !     & dtsec,Qnm1(1,1),Qn(1,1),m(1,1),Fsurf(1,1),.false.,Tco2frost=Tco2frost,emiss=emiss)
+        !     & Tco2frost=Tco2frost,emiss=emiss)
 
      else  ! no subsurface conduction
         do i=Mx1,Mx2
            do j=My1,My2
               if (h(i,j)<-32000) cycle
-              Tsurf(i,j) = (Qn(i,j)/emiss/sigSB)**0.25
-              Tsurfold = (Qnm1(i,j)/emiss/sigSB)**0.25
-              if (Tsurf(i,j)<Tco2frost .or. m(i,j)>0.) then   ! CO2 condensation
-                 Tsurf(i,j) = Tco2frost
-                 dE = - Qn(i,j) + emiss*sigSB*(Tsurf(i,j)**4 + Tsurfold**4)/2.
-                 m(i,j) = m(i,j) + dtsec*dE/Lco2frost
-              endif
+              call equilibrT_mars(Tsurf(i,j), dtsec, Qnm1(i,j), Qn(i,j), &
+                   & m(i,j), Tco2frost, emiss)
            enddo
         enddo
-        Tsurf(1,1) = (Qn(1,1)/emiss/sigSB)**0.25
-        Tsurfold = (Qnm1(1,1)/emiss/sigSB)**0.25
-        if (Tsurf(1,1)<Tco2frost .or. m(1,1)>0.) then   ! CO2 condensation
-           Tsurf(1,1) = Tco2frost
-           dE = - Qn(1,1) + emiss*sigSB*(Tsurf(1,1)**4 + Tsurfold**4)/2.
-           m(1,1) = m(1,1) + dtsec*dE/Lco2frost
-        endif
+        call equilibrT_mars(Tsurf(i,j), dtsec, Qnm1(1,1), Qn(1,1), m(1,1), &
+             & Tco2frost, emiss)
      endif
      Qnm1(:,:) = Qn(:,:)
 

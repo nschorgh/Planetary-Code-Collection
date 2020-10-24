@@ -53,7 +53,6 @@ PROGRAM cratersQ_mars
   integer(2), dimension(:,:,:), allocatable :: ii,jj
   real(4), dimension(:,:,:), allocatable :: VF
   
-  real(8) dE, Tsurfold
   real(8) jd, longitude, LTST, jd_end
   
   logical, parameter :: subsurface=.true.  ! control panel
@@ -179,29 +178,19 @@ PROGRAM cratersQ_mars
      endif
      Qabs = (1.-albedo)*(Qdirect+Qrefl+Qscat*skyview)+emiss*(QIR+QIRre+Qlw*skyview)  ! Q absorbed
 
-     if (subsurface) then ! subsurface conduction
-        do i=2,NSx-1
-           do j=2,NSy-1
-              if (h(i,j)<-32000) cycle
+
+     do i=2,NSx-1
+        do j=2,NSy-1
+           if (h(i,j)<-32000) cycle
+           if (subsurface) then ! subsurface conduction              
               call subsurfaceconduction_mars(T(:,i,j),Tsurf(i,j), &
                    & dtsec,Qnm1(i,j),Qabs(i,j),m(i,j),Fsurf(i,j),.false., &
                    & Tco2frost=Tco2frost,emiss=emiss)
-           enddo
+           else  ! no subsurface conduction
+              call equilibrT_mars(Tsurf(i,j),dtsec,Qnm1(i,j),Qabs(i,j),m(i,j),Tco2frost,emiss)
+           endif
         enddo
-     else  ! no subsurface conduction
-        do i=2,NSx-1
-           do j=2,NSy-1
-              if (h(i,j)<-32000) cycle
-              Tsurf(i,j) = (Qabs(i,j)/emiss/sigSB)**0.25
-              Tsurfold = (Qnm1(i,j)/emiss/sigSB)**0.25
-              if (Tsurf(i,j)<Tco2frost.or.m(i,j)>0.) then   ! CO2 condensation
-                 Tsurf(i,j)=Tco2frost
-                 dE = - Qabs(i,j) + emiss*sigSB*(Tsurf(i,j)**4 + Tsurfold**4)/2.
-                 m(i,j) = m(i,j) + dtsec*dE/Lco2frost
-              endif
-           enddo
-        enddo
-     endif
+     enddo
 
      where (Tsurf>Tco2frost .or. m<=0.) 
         albedo = albedo0

@@ -143,9 +143,11 @@ contains
     do concurrent(k=1:naz)
        az(k) = real(2*pi*(k-1),8)/naz
        daz(k) = azFac-az(k)+pi  ! the +pi was two days of work
-       ! daz should be zero when line of sight coincides with direction of steepest descent
-       emin(k) = atan( -tan(alpha)*cos(daz(k)) ) 
-       if (emin(k)>ssub(k)) ssub(k)=emin(k) ! self-shadowing higher than distant horizon
+       ! daz should be zero when line of sight coincides with direction of
+       !                                                  steepest descent
+       emin(k) = atan( -tan(alpha)*cos(daz(k)) )
+       ! self-shadowing higher than distant horizon
+       if (emin(k)>ssub(k)) ssub(k)=emin(k)
     end do
     G1 = sum(sin(ssub)**2) - sum(sin(emin)**2)
     G2 = sum(cos(daz)*( ssub+sin(ssub)*cos(ssub) - emin-sin(emin)*cos(emin) ))
@@ -290,7 +292,7 @@ subroutine getviewfactors(NSx,NSy,vfn,cc,ia,ja,VF,viewsize,CCMAX)
   if (ierr>0) stop 'getviewfactors: input file not found'
   do i=2,NSx-1
      do j=2,NSy-1
-        read(21,'(2(i5,1x),i6,1x,2(f7.5,1x))',advance='no') & ! format must match
+        read(21,'(2(i5,1x),i6,1x,2(f7.5,1x))',advance='no') & !format must match
              & i0_2,j0_2,cc(i,j),landsize(i,j),viewsize(i,j)
         if (i/=i0_2 .or. j/=j0_2) stop 'getviewfactors: wrong data order'
         if (cc(i,j)>CCMAX) stop 'getviewfactors: not enough memory allocated'
@@ -342,7 +344,7 @@ integer function countcolumns()
   integer, parameter :: MAX_NUM_OF_COLS=999
   integer, parameter :: MAX_LINE_LENGTH=10000
   character(len=MAX_LINE_LENGTH) line
-  double precision, dimension(MAX_NUM_OF_COLS) :: test_array
+  real(8), dimension(MAX_NUM_OF_COLS) :: test_array
        
   open(unit=20,file=sfn,status='old',action='read',iostat=ierr)
   if (ierr>0) then
@@ -361,7 +363,7 @@ integer function countcolumns()
 
   do i=1,MAX_NUM_OF_COLS
     READ(line,*,iostat=io) test_array(1:i)
-    if(io==-1) exit
+    if (io==-1) exit
   enddo
 
   !write(*,*) 'number of columns = ', (i-1) 
