@@ -16,7 +16,7 @@ program insol3d_mars
   integer nsteps, n, i, j, nm
   real(8) tmax, dt, latitude, dtsec
   real(8) HA, sdays, azSun, emax, sinbeta
-  real(8), allocatable, dimension(:,:) :: h, surfaceSlope, azFac
+  real(8), allocatable, dimension(:,:) :: h, SlopeAngle, azFac
   real(8), allocatable, dimension(:,:) :: Qn, Qmean, Qmax
   real(8), allocatable, dimension(:,:) :: shadowtime, maxshadowtime
 
@@ -29,7 +29,7 @@ program insol3d_mars
   ! cropped domain
   !integer, parameter :: My1=3500*2, My2=3660*2, Mx1=980*2, Mx2=1080*2 ! 2m zoom
   
-  allocate(h(NSx,NSy), surfaceSlope(NSx,NSy), azFac(NSx,NSy))
+  allocate(h(NSx,NSy), SlopeAngle(NSx,NSy), azFac(NSx,NSy))
   allocate(Qn(Mx1:Mx2,My1:My2), source=0.d0)
   allocate(Qmean, Qmax, source=Qn)
   allocate(shadowtime, maxshadowtime, source=Qn)
@@ -50,11 +50,12 @@ program insol3d_mars
   ! Set start date
   imm = 1; iday=1; iyr=2014
   jd=dble(julday(imm,iday,iyr))  !  JD for noon UTC on iyear/imm/iday
-  !call marsclock24(jd,dt0_J2000,marsLs,marsDec,marsR,0d0,LTST) ! calculate dt0_J2000
+  ! calculate dt0_J2000
+  !call marsclock24(jd,dt0_J2000,marsLs,marsDec,marsR,0d0,LTST) 
   !call marsorbit(dt0_j2000,0.d0,marsLs,marsDec,marsR)
   
   call readdem(h)
-  call difftopo(NSx,NSy,h,dx,dy,surfaceSlope,azFac)
+  call difftopo(NSx,NSy,h,dx,dy,SlopeAngle,azFac)
 
   latitude=latitude*d2r
 
@@ -89,7 +90,8 @@ program insol3d_mars
         do j=My1,My2
            if (h(i,j)<-32000.) cycle
            emax = getonehorizon(i,j,azSun)
-           Qn(i,j)=flux_wshad(marsR,sinbeta,azSun,surfaceSlope(i,j),azFac(i,j),emax)
+           Qn(i,j) = flux_wshad(marsR,sinbeta,azSun, &
+                & SlopeAngle(i,j),azFac(i,j),emax)
         enddo
      enddo
 
@@ -109,7 +111,7 @@ program insol3d_mars
      endif
 
      if (jd+edays > jd_snap-dt/2 .and. jd+edays <= jd_snap+dt/2) then
-        open(unit=25,file='qsnap.dat',status='unknown',action='write') ! snapshot
+        open(unit=25,file='qsnap.dat',status='unknown',action='write')
         print *,'writing snapshot'
         print *,'current hour angle',HA
         print *,'current altitude of sun',asin(sinbeta)/d2r

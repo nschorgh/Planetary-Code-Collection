@@ -1,4 +1,5 @@
-! Subroutines and functions that are called from cratersQ_* and also from fieldofviews or shadows
+! Subroutines and functions that are called from cratersQ_* and
+!                             also from fieldofviews or shadows
 
 
 subroutine readdem(h)
@@ -106,7 +107,8 @@ subroutine slicer(NSx,ilower,iupper,extc)
   Mx2 = min(2+slicewidth*nr,NSx)-1
   print *,'Working on slice Mx1=',Mx1,'Mx2=',Mx2
   if (Mx1>Mx2) stop 'FYI: out of slices - nothing left to do'
-  if (Mx1<=1 .or. Mx1>=NSx .or. Mx2<=1 .or. Mx2>=NSx) stop 'argument is outside of domain'
+  if (Mx1<=1 .or. Mx1>=NSx .or. Mx2<=1 .or. Mx2>=NSx) stop &
+       & 'argument is outside of domain'
   ilower=Mx1; iupper=Mx2
 
   extc = trim(extc) ! strips trailing spaces

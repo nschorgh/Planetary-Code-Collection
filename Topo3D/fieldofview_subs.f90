@@ -6,7 +6,8 @@ MODULE findvisibletopo
 
   integer, parameter, public :: naz = 360
 
-  integer, parameter, private :: CCMAX = 6*(NSx+NSy) ! max # of elements in one azimuth ray
+  integer, parameter, private :: CCMAX = 6*(NSx+NSy) 
+  ! CCMAX is the max # of elements in one azimuth ray
   integer, private :: cc(CCMAX)
   real(8), dimension(naz,CCMAX), private :: rcut, slocal 
   integer, dimension(naz,CCMAX), private :: celli, cellj 
@@ -42,10 +43,10 @@ contains
     x0 = i0*dx; y0 = j0*dy; h00 = h(i0,j0)
     
     do i=2,NSx-1
-       if (horizontaldistance1(i*dx,1*dy,x0,1*dy)>RMAX) cycle  ! saves computations
+       if (horizontaldistance1(i*dx,1*dy,x0,1*dy)>RMAX) cycle 
        do j=2,NSy-1
           if (i==i0 .and. j==j0) cycle
-          if (horizontaldistance1(i*dx,j*dy,x0,y0)>RMAX) cycle  ! saves computations
+          if (horizontaldistance1(i*dx,j*dy,x0,y0)>RMAX) cycle
           
           call horizon_core_wsort(x0,y0,h00,smax,surfaceSlope,azFac,i,j,h)
           
@@ -59,7 +60,8 @@ contains
        smaxlocal=0.
        do i=1,cc(ak)
           j=arr(i)
-          if (rcut(ak,j) < sqrt(dx**2+dy**2)) cycle ! avoid obstruction by nearby interpolated points
+          ! avoid obstruction by nearby interpolated points
+          if (rcut(ak,j) < sqrt(dx**2+dy**2)) cycle 
           if (slocal(ak,j)>smaxlocal) then
              smaxlocal = slocal(ak,j)
              visibility(celli(ak,j),cellj(ak,j)) = .true.
@@ -80,8 +82,8 @@ contains
     real(8), intent(IN) :: x0, y0, h00, surfaceslope, azFac, h(NSx,NSy)
     real(8), intent(INOUT) :: smax(naz)
     
-    integer k,in,jn,ak,ak1,ak2,buf,akak
-    real(8) az,az_neighbor,t,r,r_neighbor,hcut,d1,d2,d3
+    integer k, in, jn, ak, ak1, ak2, buf, akak
+    real(8) az, az_neighbor, t, r, r_neighbor, hcut, d1, d2, d3
     real(8) s, slope_along_az
     integer, parameter :: ex(8) = (/ 1, 1, 0, -1, -1, -1, 0, 1 /)
     integer, parameter :: ey(8) = (/ 0, 1, 1, 1, 0, -1, -1, -1 /)
@@ -94,7 +96,8 @@ contains
        ak = nint(az*f)+1
        
        cc(ak) = cc(ak)+1
-       if (cc(ak)>CCMAX) error stop 'horizon_core_wsort: not enough memory allocated'
+       if (cc(ak)>CCMAX) error stop &
+            & 'horizon_core_wsort: not enough memory allocated'
        s = (h(i,j)-h00)/r
        if (s>smax(ak)) smax(ak)=s
        
@@ -129,7 +132,8 @@ contains
        if (ak2<ak1) then ! swap
           buf=ak1; ak1=ak2; ak2=buf;
        endif
-       if (ak1>naz .or. ak2>naz) error stop 'horizon_core_wsort: index out of bound'
+       if (ak1>naz .or. ak2>naz) error stop &
+            & 'horizon_core_wsort: index out of bound'
        
        d3=diffangle(az,az_neighbor)
        do akak=ak1,ak2
@@ -143,7 +147,8 @@ contains
              ! in findallhorizon 0.5 is 1.0 instead,
              ! but this leads to missing visibilities along zero azimth (ak=1)
              cc(ak) = cc(ak)+1
-             if (cc(ak)>CCMAX) error stop 'horizon_core_wsort: not enough memory allocated'
+             if (cc(ak)>CCMAX) error stop &
+                  & 'horizon_core_wsort: not enough memory allocated'
              
              r_neighbor = horizontaldistance1(in*dx,jn*dy,x0,y0)
              ! edge between h1,i0,j0 and h2,in,jn
@@ -247,7 +252,8 @@ subroutine find3dangle(h,i0,j0,unit,visibility)
         endif
 
         ! cos(v)
-        cosv = cos_viewing_angle(i0*dx,j0*dy,h(i0,j0),surfaceSlope,azFac,i*dx,j*dy,h(i,j))
+        cosv = cos_viewing_angle(i0*dx,j0*dy,h(i0,j0), &
+             & surfaceSlope,azFac,i*dx,j*dy,h(i,j))
         VF = dOh*cosv/pi  ! view factor
 
         !if (dOh<0.) stop 'Does this ever happen?'
@@ -267,11 +273,13 @@ subroutine find3dangle(h,i0,j0,unit,visibility)
 
   !write(unit-1,'(2(i5,1x),i6,1x,f7.5,1x)',advance='no') i0, j0, cc, landsize
   !do i=1,cc
-  !   write(unit-1,'(2(i5,1x),g10.4,1x)',advance='no') cellx(i),celly(i),dOstack(i)
+  !   write(unit-1,'(2(i5,1x),g10.4,1x)',advance='no') &
+  !                   &  cellx(i),celly(i),dOstack(i)
   !end do
   !write(unit-1,"('')")
   
-  write(unit,'(2(i5,1x),i6,1x,2(f7.5,1x))',advance='no') i0, j0, cc, landsize, viewsize
+  write(unit,'(2(i5,1x),i6,1x,2(f7.5,1x))',advance='no') &
+       & i0, j0, cc, landsize, viewsize
   do i=1,cc
      write(unit,'(2(i5,1x),g10.4,1x)',advance='no') cellx(i),celly(i),VFstack(i)
   end do

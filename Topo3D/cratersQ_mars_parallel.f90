@@ -49,7 +49,7 @@ PROGRAM cratersQ_mars
   real(8) tmax, dtsec, buf
   real(8) HA, sdays, azSun, emax, sinbeta
   real(8) edays, marsR, marsLs, marsDec
-  real(8), allocatable, dimension(:,:) :: h, surfaceSlope, azFac
+  real(8), allocatable, dimension(:,:) :: h, SlopeAngle, azFac
   real(8), allocatable, dimension(:,:) :: Qn   ! incoming
   real(8), allocatable, dimension(:,:) :: Tsurf, albedo, m
   real(8), allocatable, dimension(:,:) :: Qmean, Qmax, Tmean, Tmaxi, Qdirect
@@ -100,7 +100,7 @@ PROGRAM cratersQ_mars
   close(10)
   
   allocate(h(NSx,NSy))
-  allocate(surfaceSlope(Mx1:Mx2,My1:My2), azFac(Mx1:Mx2,My1:My2))
+  allocate(SlopeAngle(Mx1:Mx2,My1:My2), azFac(Mx1:Mx2,My1:My2))
   allocate(Qn(Mx1:Mx2,My1:My2), source=zero); Qn_flat=0.
   allocate(Qnm1, Qdirect, source=Qn); Qnm1_flat=0.; Qdirect_flat=0.
   allocate(Tsurf(Mx1:Mx2,My1:My2))
@@ -142,7 +142,7 @@ PROGRAM cratersQ_mars
 
   print *,'...reading topography...'
   call readdem(h)
-  call difftopo2(h,surfaceSlope,azFac,Mx1,Mx2,My1,My2)
+  call difftopo2(h,SlopeAngle,azFac,Mx1,Mx2,My1,My2)
 
   latitude = latitude*d2r
   Tsurf = 200.
@@ -152,7 +152,7 @@ PROGRAM cratersQ_mars
   call readhorizons(Mx1,Mx2,My1,My2)
   do concurrent(i=Mx1:Mx2, j=My1:My2)
      skyview(i,j) = getoneskysize_v2(i,j)/(2*pi)
-     gterm(i,j) = getoneGterm(i,j,surfaceSlope(i,j),azFac(i,j))
+     gterm(i,j) = getoneGterm(i,j,SlopeAngle(i,j),azFac(i,j))
   end do
   
   if (subsurface) then ! initialize subsurface component
@@ -204,7 +204,7 @@ PROGRAM cratersQ_mars
            if (h(i,j)<-32000) cycle
            emax = getonehorizon(i,j,azSun)
            call flux_mars2(marsR,marsDec,latitude,HA,fracIR,fracDust, &
-                & surfaceSlope(i,j),azFac(i,j),emax,Qdirect(i,j),Qscat,Qlw)
+                & SlopeAngle(i,j),azFac(i,j),emax,Qdirect(i,j),Qscat,Qlw)
            ! absorbed direct insolation and contributions from atmosphere
            Qn(i,j) = (1-albedo(i,j))*(Qdirect(i,j)+Qscat*skyview(i,j)) &
                 & + emiss*Qlw*skyview(i,j)
@@ -323,7 +323,7 @@ PROGRAM cratersQ_mars
   do i=Mx1,Mx2
      do j=My1,My2
         write(21,'(2(i5,1x),f9.2,2x,f6.3,2(1x,f6.1),2(1x,f5.1),3(1x,f7.1),3(1x,f6.2),1x,f5.1,1x,f6.2)') &
-             & i,j,h(i,j),surfaceSlope(i,j),Qmean(i,j),Qmax(i,j), &
+             & i,j,h(i,j),SlopeAngle(i,j),Qmean(i,j),Qmax(i,j), &
              & Tmean(i,j),Tmaxi(i,j),mmax(i,j),maxfrosttime(i,j), &
              & mmin(i,j),co2first(i,j),co2last(i,j),h2olast(i,j)
      enddo

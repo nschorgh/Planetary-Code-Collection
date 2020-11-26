@@ -16,7 +16,7 @@ program insol3d_earth
   real(8) tmax, edays, dtmin, latitude
   real(8) R, dZenithAngle, dAzimuth, longitude
   real(8) azSun, sinbeta, emax
-  real(8), dimension(:,:), allocatable :: h, surfaceSlope, azFac
+  real(8), dimension(:,:), allocatable :: h, SlopeAngle, azFac
   real(8), dimension(:,:), allocatable :: Qn, Qsw   ! incoming
   real(8), dimension(:,:), allocatable :: Qmeans, Qmax, daytime
   real(8), dimension(NSx,NSy) :: ditime=0., longday=-999., shortday=1e32
@@ -28,7 +28,7 @@ program insol3d_earth
   real(8), parameter :: zero=0.
   logical, parameter :: atmosphere=.true.
 
-  allocate(h(NSx,NSy), surfaceSlope(NSx,NSy), azFac(NSx,NSy))
+  allocate(h(NSx,NSy), SlopeAngle(NSx,NSy), azFac(NSx,NSy))
   allocate(Qn(NSx,NSy), Qsw(NSx,NSy))
   allocate(Qmeans(NSx,NSy), Qmax(NSx,NSy), daytime(NSx,NSy), source=0.d0)
 
@@ -53,7 +53,7 @@ program insol3d_earth
   write(*,*) 'Atmosphere',atmosphere
   
   call readdem(h)
-  call difftopo(NSx,NSy,h,dx,dy,surfaceSlope,azFac)
+  call difftopo(NSx,NSy,h,dx,dy,SlopeAngle,azFac)
 
   nm=0; Qflatm=0.; alltime=0.
   
@@ -76,7 +76,7 @@ program insol3d_earth
      do i=2,NSx-1
         do j=2,NSy-1
            emax = getonehorizon(i,j,azSun)
-           Qn(i,j)=flux_wshad(R,sinbeta,azSun,surfaceSlope(i,j),azFac(i,j),emax)
+           Qn(i,j)=flux_wshad(R,sinbeta,azSun,SlopeAngle(i,j),azFac(i,j),emax)
         end do
      end do
      Qflat = flux_wshad(R,sinbeta,azSun,zero,zero,zero)
@@ -124,9 +124,9 @@ program insol3d_earth
   do i=2,NSx-1
      do j=2,NSy-1
         write(21,'(2(i4,1x),f9.2,2x,f6.4,2(1x,f6.1),1x,f6.3)') &
-             & i,j,h(i,j),surfaceSlope(i,j),Qmeans(i,j),Qmax(i,j),daytime(i,j)
-        !write(21,'(2(i4,1x),f9.2,2x,f6.4,5(1x,f6.1),1x,f5.1)') &  ! instanteneous values
-        !     & i,j,h(i,j),surfaceSlope(i,j),Qn(i,j),Qmax(i,j)
+             & i,j,h(i,j),SlopeAngle(i,j),Qmeans(i,j),Qmax(i,j),daytime(i,j)
+        !write(21,'(2(i4,1x),f9.2,2x,f6.4,5(1x,f6.1),1x,f5.1)') & 
+        !     & i,j,h(i,j),SlopeAngle(i,j),Qn(i,j),Qmax(i,j)
         !write(22,'(2(i4,1x),f9.2,2(1x,f6.1),3(1x,f6.3))') i,j,h(i,j), &
         !     & -999.,-999.,daytime(i,j),shortday(i,j),longday(i,j)
      enddo

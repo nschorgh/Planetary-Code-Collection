@@ -1,11 +1,11 @@
-pure function flux_noatm(R,decl,latitude,HA,surfaceSlope,azFac)
+pure function flux_noatm(R,decl,latitude,HA,SlopeAngle,azFac)
 !**********************************************************************
 !   flux_noatm: calculates incoming solar flux without atmosphere
 !     R: distance from sun (AU)
 !     decl: planetocentric solar declination (radians)
 !     latitude: (radians)
 !     HA: hour angle (radians from noon, clockwise)
-!     surfaceSlope: >0, (radians) 
+!     SlopeAngle: >0, (radians) 
 !     azFac: azimuth of topographic gradient (radians east of north)
 !            azFac=0 is south-facing  
 !**********************************************************************
@@ -13,7 +13,7 @@ pure function flux_noatm(R,decl,latitude,HA,surfaceSlope,azFac)
   real(8) flux_noatm
   real(8), parameter :: So=1365.  ! solar constant [W/m^2]
   real(8), parameter :: pi=3.1415926535897932, d2r=pi/180.
-  real(8), intent(IN) :: R,decl,latitude,HA,surfaceSlope,azFac
+  real(8), intent(IN) :: R,decl,latitude,HA,SlopeAngle,azFac
   real(8) c1,s1,sinbeta,cosbeta,sintheta,azSun,buf
   
   c1=cos(latitude)*cos(decl)
@@ -37,9 +37,9 @@ pure function flux_noatm(R,decl,latitude,HA,surfaceSlope,azFac)
   !azSun=atan(sin(ha)*cos(decl)/azSun)
 
   ! theta = 90 minus incidence angle for sloped surface
-  sintheta = cos(surfaceSlope)*sinbeta - &
-       &     sin(surfaceSlope)*cosbeta*cos(azSun-azFac)
-  if (cosbeta==0.) sintheta = cos(surfaceSlope)*sinbeta
+  sintheta = cos(SlopeAngle)*sinbeta - &
+       &     sin(SlopeAngle)*cosbeta*cos(azSun-azFac)
+  if (cosbeta==0.) sintheta = cos(SlopeAngle)*sinbeta
   sintheta = max(sintheta,0.d0)  ! horizon
   if (sinbeta<0.) sintheta=0.  ! horizontal horizon at infinity
   
@@ -51,29 +51,29 @@ end function flux_noatm
 
 
 
-pure function flux_wshad(R,sinbeta,azSun,surfaceSlope,azFac,emax)
+pure function flux_wshad(R,sinbeta,azSun,SlopeAngle,azFac,emax)
 !**********************************************************************
 !   flux_wshad: calculates incoming solar flux without atmosphere
 !     R: distance from sun (AU)
 !     sinbeta: sin(altitude) 
 !     azSun: azimuth of Sun (radians east of north)
-!     surfaceSlope: >=0, (radians) 
+!     SlopeAngle: >=0, (radians) 
 !     azFac: azimuth of topographic gradient (radians east of north)
 !     emax: elevation of horizon in direction of azimuth (radians)
 !**********************************************************************
   implicit none
   real(8) flux_wshad
   real(8), parameter :: So=1365.  ! solar constant [W/m^2]
-  real(8), intent(IN) :: R,azSun,sinbeta,surfaceSlope,azFac,emax
+  real(8), intent(IN) :: R,azSun,sinbeta,SlopeAngle,azFac,emax
   real(8) cosbeta,sintheta
   
   cosbeta = sqrt(1.-sinbeta**2)
 
 !-incidence angle
   ! theta = 90 minus incidence angle for sloped surface
-  sintheta = cos(surfaceSlope)*sinbeta - &
-       &     sin(surfaceSlope)*cosbeta*cos(azSun-azFac)
-  if (cosbeta==0.) sintheta = cos(surfaceSlope)*sinbeta ! does not use azimuths
+  sintheta = cos(SlopeAngle)*sinbeta - &
+       &     sin(SlopeAngle)*cosbeta*cos(azSun-azFac)
+  if (cosbeta==0.) sintheta = cos(SlopeAngle)*sinbeta ! does not use azimuths
 
 !-shadowing
   if (sintheta<0.) sintheta=0.  ! self-shadowing

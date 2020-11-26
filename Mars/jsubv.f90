@@ -1,6 +1,6 @@
 subroutine jsubv(NS, zdepth, latitude, albedo0, thIn, pfrost, nz, &
      &     rhoc, fracIR, fracDust, Fgeotherm, dt, zfac, icefrac, & 
-     &     surfaceSlope, azFac, mode, avdrho, Tb, patm)
+     &     SlopeAngle, azFac, mode, avdrho, Tb, patm)
 !***********************************************************************
 !  jsubv: runs thermal model for Mars at several sites simultaneously
 !         allows for thermal emission of slopes to other slopes
@@ -20,7 +20,7 @@ subroutine jsubv(NS, zdepth, latitude, albedo0, thIn, pfrost, nz, &
 !  mode = 0  ends after fixed amount of time and then outputs all data
 !  mode = 1  ends when certain accuracy is reached and outputs no data
 !
-!  latitude, surfaceSlope, and azFac  must be in RADIANS
+!  latitude, SlopeAngle, and azFac  must be in RADIANS
 !
 !  Grid: surface is at z=0; T(i) is at z(i)
 !***********************************************************************
@@ -35,7 +35,7 @@ subroutine jsubv(NS, zdepth, latitude, albedo0, thIn, pfrost, nz, &
   integer, intent(IN) :: NS, nz, mode
   real*8, intent(IN) :: zdepth(NS), latitude, albedo0, thIn, pfrost, rhoc
   real*8, intent(IN) :: fracIR, fracDust, Fgeotherm, dt, zfac, icefrac
-  real*8, intent(IN) :: surfaceSlope(NS), azFac(NS)
+  real*8, intent(IN) :: SlopeAngle(NS), azFac(NS)
   real*8, intent(OUT) :: avdrho(NS)
   real*8, intent(INOUT) :: Tb(NS)
   real*8, intent(IN) :: patm
@@ -132,10 +132,10 @@ subroutine jsubv(NS, zdepth, latitude, albedo0, thIn, pfrost, nz, &
 
   do k=1,NS
      !Qn(k) = flux(marsR,marsDec,latitude,HA,albedo(k),fracir,fracdust, &
-     !     & surfaceSlope(k),azFac(k))
+     !     & SlopeAngle(k),azFac(k))
      call flux_mars2(marsR,marsDec,latitude,HA,fracir,fracdust, &
-          &          surfaceSlope(k),azFac(k),zero,Qdir,Qscat,Qlw)
-     skyviewfactor(k) = cos(surfaceSlope(k)/2.)**2
+          &          SlopeAngle(k),azFac(k),zero,Qdir,Qscat,Qlw)
+     skyviewfactor(k) = cos(SlopeAngle(k)/2.)**2
      Qn(k) = (1-albedo(k)) * (Qdir+Qscat*skyviewfactor(k)) + &
           & emiss(k)*Qlw*skyviewfactor(k)
      ! neglect terrain irradiances at initialization
@@ -150,14 +150,14 @@ subroutine jsubv(NS, zdepth, latitude, albedo0, thIn, pfrost, nz, &
 
      ! k=1 (horizontal unobstructed slope)
      call flux_mars2(marsR,marsDec,latitude,HA,fracir,fracdust, &
-          &          surfaceSlope(1),azFac(1),zero,Qdir1,Qscat,Qlw)
+          &          SlopeAngle(1),azFac(1),zero,Qdir1,Qscat,Qlw)
      Qnp1(1) = (1-albedo(1))*(Qdir1+Qscat) + emiss(1)*Qlw
      do k=2,NS
         ! direct and sky irradiance
         !Qnp1(k) = flux(marsR,marsDec,latitude,HA,albedo(k),fracir,fracdust, &
-        !     & surfaceSlope(k),azFac(k))
+        !     & SlopeAngle(k),azFac(k))
         call flux_mars2(marsR,marsDec,latitude,HA,fracir,fracdust, &
-             &          surfaceSlope(k),azFac(k),zero,Qdir,Qscat,Qlw)
+             &          SlopeAngle(k),azFac(k),zero,Qdir,Qscat,Qlw)
         Qnp1(k) = (1-albedo(k))*(Qdir+Qscat*skyviewfactor(k)) + &
              & emiss(k)*Qlw*skyviewfactor(k)
 
@@ -234,7 +234,7 @@ subroutine jsubv(NS, zdepth, latitude, albedo0, thIn, pfrost, nz, &
      if (outf) then
         do k=1,NS
            write(34,'(2(f6.2,1x),2(f6.2,1x),2(g10.4,1x),2(g10.4,1x))')  &
-                & surfaceSlope(k)/d2r,azFac(k)/d2r,Tmean1(k),Tmean2(k), &
+                & SlopeAngle(k)/d2r,azFac(k)/d2r,Tmean1(k),Tmean2(k), &
                 & rhoavb(k),rhoavs(k),Qmean(k),Qland(k)
         enddo
      endif

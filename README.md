@@ -12,7 +12,7 @@ This program collection contains:
   * equilibrium ice table on Mars
   * fast (asynchronously coupled) method for subsurface-atmosphere vapor exchange on Mars
   * fast (asynchronously coupled) method for ice retreat on asteroids
-  * lunar ice pump  
+  * lunar ice pump (boundary-value formulation)   
 * 3D model of shadowing, illumination, and scattering for airless bodies, Mars, and Mauna Kea
 * Monte-Carlo model for ballistic hops in the exospheres of the Moon and Ceres
 

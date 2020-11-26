@@ -49,7 +49,7 @@ end function flux_mars77
 
 
 pure subroutine flux_mars2(R,decl,latitude,HA,fracIR,fracScat, &
-     &   surfaceSlope,azFac,emax,Qdir,Qscat,Qlw)
+     &   SlopeAngle,azFac,emax,Qdir,Qscat,Qlw)
 !***********************************************************************
 ! flux_mars2: Insolation at Mars on tilted surface;
 !             returns several irradiances
@@ -60,7 +60,7 @@ pure subroutine flux_mars2(R,decl,latitude,HA,fracIR,fracScat, &
 !     HA: hour angle (radians from noon, clockwise)
 !     fracIR: fraction of absorption
 !     fracScat: fraction of scattering
-!     surfaceSlope: >0, [radians]
+!     SlopeAngle: >0, [radians]
 !     azFac: azimuth of gradient (radians east of north)
 !            azFac=0 is south-facing  
 !     emax: maximum horizon elevation in direction of azimuth [radians]
@@ -71,7 +71,7 @@ pure subroutine flux_mars2(R,decl,latitude,HA,fracIR,fracScat, &
   implicit none
   real(8), parameter :: pi=3.1415926535897932, So=1365.
   real(8), parameter :: sigSB=5.6704d-8
-  real(8), intent(IN) :: R,decl,latitude,HA,surfaceSlope,azFac,emax
+  real(8), intent(IN) :: R,decl,latitude,HA,SlopeAngle,azFac,emax
   real(8), intent(IN) :: fracIR,fracScat
   real(8), intent(OUT) :: Qdir,Qscat,Qlw
   real(8) c1,s1,solarAttenuation,Qo
@@ -93,9 +93,9 @@ pure subroutine flux_mars2(R,decl,latitude,HA,fracIR,fracScat, &
   if (sin(HA)>=0) azSun = 2*pi-azSun
   
 ! theta = 90 minus incidence angle for sloped surface
-  sintheta = cos(surfaceSlope)*sinbeta - &  
-       &     sin(surfaceSlope)*cosbeta*cos(azSun-azFac)
-  if (cosbeta==0) sintheta=cos(surfaceSlope)*sinbeta  ! zenith, where azSun=NaN
+  sintheta = cos(SlopeAngle)*sinbeta - &  
+       &     sin(SlopeAngle)*cosbeta*cos(azSun-azFac)
+  if (cosbeta==0) sintheta=cos(SlopeAngle)*sinbeta  ! zenith, where azSun=NaN
   
   if (sintheta<0.) sintheta=0.  ! local horizon (self-shadowing)
   if (sinbeta<0.) sintheta=0.  ! horizontal horizon at infinity
@@ -119,5 +119,5 @@ pure subroutine flux_mars2(R,decl,latitude,HA,fracIR,fracScat, &
 ! For a tilted surface
 !   absorbed flux = (1-albedo)*(Qdir+Qscat*viewfactor) + emiss*Qlw*viewfactor
 !   then add irradiance from land in field of view  
-!   in the case of a planar slope, viewfactor = cos(surfaceSlope/2.)**2
+!   in the case of a planar slope, viewfactor = cos(SlopeAngle/2.)**2
 end subroutine flux_mars2

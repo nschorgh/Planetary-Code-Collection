@@ -59,7 +59,8 @@ module allinterfaces
   
   ! fast_subs_asteroid1.f90
   interface
-     subroutine assignthermalproperties1(nz,z,Tnom,porosity,ti,rhocv,icefrac,zdepthT)
+     subroutine assignthermalproperties1(nz,z,Tnom,porosity, &
+          & ti,rhocv,icefrac,zdepthT)
        implicit none
        integer, intent(IN) :: nz
        real(8), intent(IN) :: z(nz), Tnom, porosity
@@ -81,10 +82,10 @@ module allinterfaces
 
   ! Common/*.f90
   interface
-     pure function flux_noatm(R,decl,latitude,HA,surfaceSlope,azFac)
+     pure function flux_noatm(R,decl,latitude,HA,SlopeAngle,azFac)
        implicit none
        real(8) flux_noatm
-       real(8), intent(IN) :: R,decl,latitude,HA,surfaceSlope,azFac
+       real(8), intent(IN) :: R,decl,latitude,HA,SlopeAngle,azFac
      end function flux_noatm
   end interface
 

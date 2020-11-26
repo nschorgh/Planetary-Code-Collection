@@ -10,8 +10,9 @@ PROGRAM fieldproperties
   implicit none
   integer i, j, CCMAX
   integer, dimension(NSx,NSy) :: cc
-  real(8), dimension(NSx,NSy) :: h, skysize1, landsize, skysize2 ! skysize+landsize=2*pi
-  real(8), dimension(NSx,NSy) :: gterm, surfaceSlope, azFac
+  real(8), dimension(NSx,NSy) :: h, skysize1, landsize, skysize2
+  ! skysize+landsize=2*pi
+  real(8), dimension(NSx,NSy) :: gterm, SlopeAngle, azFac
   integer(2), dimension(:,:,:), allocatable :: ii,jj
   real(4), dimension(:,:,:), allocatable :: dO12
   real(8), parameter :: pi=3.1415926535897932
@@ -19,7 +20,7 @@ PROGRAM fieldproperties
   character(len = *), parameter :: ffn='fieldofviews.'//fileext
   
   call readdem(h)
-  call difftopo(NSx,NSy,h,dx,dy,surfaceSlope,azFac)
+  call difftopo(NSx,NSy,h,dx,dy,SlopeAngle,azFac)
   
   print *,'...reading horizons file...'
   call readhorizons
@@ -27,7 +28,7 @@ PROGRAM fieldproperties
      do j=2,NSy-1
         skysize1(i,j) = getoneskysize(i,j)
         skysize2(i,j) = getoneskysize_v2(i,j)
-        gterm(i,j ) = getoneGterm(i,j,surfaceSlope(i,j),azFac(i,j))
+        gterm(i,j ) = getoneGterm(i,j,SlopeAngle(i,j),azFac(i,j))
      enddo
   enddo
   

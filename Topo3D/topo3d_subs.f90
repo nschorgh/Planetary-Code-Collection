@@ -162,7 +162,7 @@ END MODULE newhorizons
 
 
 
-pure subroutine difftopo(NSx,NSy,h,dx,dy,surfaceSlope,azFac)
+pure subroutine difftopo(NSx,NSy,h,dx,dy,SlopeAngle,azFac)
   ! calculate slopes and azimuths of surface elements
   ! azFac= 0 sloped toward south
   ! azFac=+/-pi sloped toward north
@@ -171,7 +171,7 @@ pure subroutine difftopo(NSx,NSy,h,dx,dy,surfaceSlope,azFac)
   implicit none
   integer, intent(IN) :: NSx, NSy
   real(8), intent(IN) :: h(NSx,NSy), dx, dy
-  real(8), intent(OUT), dimension(NSx,NSy) :: surfaceSlope, azFac
+  real(8), intent(OUT), dimension(NSx,NSy) :: SlopeAngle, azFac
   integer i,j
   real(8) sx,sy
 
@@ -179,7 +179,7 @@ pure subroutine difftopo(NSx,NSy,h,dx,dy,surfaceSlope,azFac)
      do j=2,NSy-1
         sx = (h(i+1,j)-h(i-1,j))/(2.*dx)
         sy = (h(i,j+1)-h(i,j-1))/(2.*dy)
-        surfaceSlope(i,j) = atan(sqrt(sx**2+sy**2))
+        SlopeAngle(i,j) = atan(sqrt(sx**2+sy**2))
         azFac(i,j) = atan2(sx,-sy)  ! north is up, clockwise
      enddo
   enddo
@@ -187,14 +187,14 @@ end subroutine difftopo
 
 
 
-pure subroutine difftopo2(h,surfaceSlope,azFac,Mx1,Mx2,My1,My2)
+pure subroutine difftopo2(h,SlopeAngle,azFac,Mx1,Mx2,My1,My2)
   ! calculate slopes and azimuths of surface elements
   ! like difftopo but with different input arguments (for cropped domains)
   use filemanager, only : NSx,NSy,dx,dy
   implicit none
   integer, intent(IN) :: Mx1, Mx2, My1, My2
   real(8), intent(IN) :: h(NSx,NSy)
-  real(8), intent(OUT), dimension(Mx1:Mx2,My1:My2) :: surfaceSlope, azFac
+  real(8), intent(OUT), dimension(Mx1:Mx2,My1:My2) :: SlopeAngle, azFac
   integer i, j
   real(8) sx, sy
 
@@ -202,7 +202,7 @@ pure subroutine difftopo2(h,surfaceSlope,azFac,Mx1,Mx2,My1,My2)
      do j=max(2,My1),min(NSy-1,My2)
         sx = (h(i+1,j)-h(i-1,j))/(2.*dx)
         sy = (h(i,j+1)-h(i,j-1))/(2.*dy)
-        surfaceSlope(i,j) = atan(sqrt(sx**2+sy**2))
+        SlopeAngle(i,j) = atan(sqrt(sx**2+sy**2))
         azFac(i,j) = atan2(sx,-sy)  ! north is up, clockwise
      enddo
   enddo

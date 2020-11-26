@@ -27,10 +27,12 @@ subroutine jsub(zdepth, latitude, albedo0, thIn, pfrost, nz, &
   real*8, parameter :: co2albedo=0.60, co2emiss=1.
   real*8, parameter :: NULL=0.
 
-  integer nz, mode
-  real*8 zdepth, latitude, albedo0, thIn, pfrost, rhoc
-  real*8 fracIR, fracDust, Fgeotherm, dt, zfac, icefrac
-  real*8 avdrho, Tb, patm
+  integer, intent(IN) :: nz, mode
+  real*8, intent(IN) :: zdepth, latitude, albedo0, thIn, pfrost, rhoc
+  real*8, intent(IN) :: fracIR, fracDust, Fgeotherm, dt, zfac, icefrac
+  real*8, intent(OUT) :: avdrho
+  real*8, intent(INOUT) :: Tb
+  real*8, intent(IN) :: patm
   
   integer nsteps, n, i, nm, din
   integer julday, iyr, imm, iday
@@ -39,10 +41,10 @@ subroutine jsub(zdepth, latitude, albedo0, thIn, pfrost, nz, &
   real*8 marsR, marsLs, marsDec, HA
   real*8 jd, temp1, dcor, dt0_j2000
   real*8 ti(NMAX), rhocv(NMAX), z(NMAX), Fsurf, m, dE
-  real*8 Told(NMAX), Fsurfold, Tsurfold, Tmean1, Tmean2
-  real*8 Tpeak(NMAX), Tlow(NMAX), Tco2frost
-  real*8 rhosatav(NMAX), rhoavs, Tbold, marsLsold, oldtime
-  real*8 dirho(NMAX), dirholowz, dirholowLs(NMAX)
+  real*8 Told(nz), Fsurfold, Tsurfold, Tmean1, Tmean2
+  real*8 Tpeak(nz), Tlow(nz), Tco2frost
+  real*8 rhosatav(nz), rhoavs, Tbold, marsLsold, oldtime
+  real*8 dirho(nz), dirholowz, dirholowLs(nz)
   external julday
   real*8, external :: flux_mars77, psv, tfrostco2
 
@@ -126,13 +128,13 @@ subroutine jsub(zdepth, latitude, albedo0, thIn, pfrost, nz, &
 
      Tsurfold = Tsurf
      Fsurfold = Fsurf
-     Told(1:nz) = T(1:nz)
+     Told(:) = T(1:nz)
      if (Tsurf>Tco2frost .or. m<=0.) then
         call conductionQ(nz,z,dt*marsDay,Qn,Qnp1,T,ti,rhocv,emiss, &
              &           Tsurf,Fgeotherm,Fsurf)
      endif
      if (Tsurf<Tco2frost .or. m>0.) then ! CO2 condensation
-        T(1:nz) = Told(1:nz)
+        T(1:nz) = Told(:)
         call conductionT(nz,z,dt*marsDay,T,Tsurfold,Tco2frost,ti, &
              &              rhocv,Fgeotherm,Fsurf) 
         Tsurf = Tco2frost
@@ -176,7 +178,7 @@ subroutine jsub(zdepth, latitude, albedo0, thIn, pfrost, nz, &
            din = 0
         endif
         do i=1,nz
-           dirho(i) = dirho(i)+psv(T(i))/T(i)
+           dirho(i) = dirho(i) + psv(T(i))/T(i)
         enddo
         din = din+1
      endif

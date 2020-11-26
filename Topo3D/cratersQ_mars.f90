@@ -40,7 +40,7 @@ PROGRAM cratersQ_mars
   real(8) tmax, dt, dtsec, buf
   real(8) HA, sdays, azSun, emax, sinbeta
   real(8) edays, marsR, marsLs, marsDec
-  real(8), allocatable, dimension(:,:) :: h, surfaceSlope, azFac
+  real(8), allocatable, dimension(:,:) :: h, SlopeAngle, azFac
   real(8), allocatable, dimension(:,:) :: Qn   ! incoming
   real(8), allocatable, dimension(:,:) :: Tsurf, albedo, m
   real(8), allocatable, dimension(:,:) :: Qmean, Qmax, Tmean, Tmaxi, Qdirect
@@ -58,7 +58,7 @@ PROGRAM cratersQ_mars
 
   integer, parameter :: Mx1=2, Mx2=NSx-1, My1=2, My2=NSy-1
   
-  allocate(h(NSx,NSy), surfaceSlope(NSx,NSy), azFac(NSx,NSy))
+  allocate(h(NSx,NSy), SlopeAngle(NSx,NSy), azFac(NSx,NSy))
   allocate(Qn(NSx,NSy), Qnm1(NSx,NSy), Qdirect(NSx,NSy))
   allocate(Tsurf(NSx,NSy), m(NSx,NSy))
   allocate(albedo(NSx,NSy)); albedo = albedo0
@@ -97,7 +97,7 @@ PROGRAM cratersQ_mars
   write(*,*) 'Julian start and end date',jd,jd_end
   
   call readdem(h)
-  call difftopo(NSx,NSy,h,dx,dy,surfaceSlope,azFac)
+  call difftopo(NSx,NSy,h,dx,dy,SlopeAngle,azFac)
 
   latitude=latitude*d2r
   nm=0
@@ -105,7 +105,7 @@ PROGRAM cratersQ_mars
   print *,'...reading horizons file...'
   call readhorizons
   do concurrent(i=2:NSx-1, j=2:Nsy-1)
-     gterm(i,j) = getoneGterm(i,j,surfaceSlope(i,j),azFac(i,j))
+     gterm(i,j) = getoneGterm(i,j,SlopeAngle(i,j),azFac(i,j))
      skyview(i,j) = getoneskysize_v2(i,j)/(2*pi)  ! =(sky size)/(2*pi)
      ! skyview(i,j) = 1.-gterm(i,j)  ! weighted by cosine
   end do
@@ -161,7 +161,7 @@ PROGRAM cratersQ_mars
            if (h(i,j)<-32000) cycle
            emax = getonehorizon(i,j,azSun)
            call flux_mars2(marsR,marsDec,latitude,HA,fracIR,fracDust, &
-                & surfaceSlope(i,j),azFac(i,j),emax,Qdirect(i,j),Qscat,Qlw)
+                & SlopeAngle(i,j),azFac(i,j),emax,Qdirect(i,j),Qscat,Qlw)
            ! absorbed direct insolation and contributions from atmosphere
            Qn(i,j) = (1-albedo(i,j))*(Qdirect(i,j)+Qscat*skyview(i,j)) &
                 & + emiss*Qlw*skyview(i,j)
@@ -261,7 +261,7 @@ PROGRAM cratersQ_mars
   do i=Mx1,Mx2
      do j=My1,My2
         write(21,'(2(i5,1x),f9.2,2x,f6.4,2(1x,f6.1),2(1x,f5.1),3(1x,f7.1),1x,f6.2)') &
-             & i,j,h(i,j),surfaceSlope(i,j),Qmean(i,j),Qmax(i,j), &
+             & i,j,h(i,j),SlopeAngle(i,j),Qmean(i,j),Qmax(i,j), &
              & Tmean(i,j),Tmaxi(i,j),mmax(i,j),maxfrosttime(i,j), &
              & mmin(i,j),h2olast(i,j)
      enddo

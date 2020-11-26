@@ -38,7 +38,7 @@ PROGRAM cratersQ_mars
   real(8) tmax, dt, latitude, dtsec, buf
   real(8) HA, sdays, azSun, emax, sinbeta
   real(8) edays, marsR, marsLs, marsDec
-  real(8), dimension(NSx,NSy) :: h, surfaceSlope, azFac
+  real(8), dimension(NSx,NSy) :: h, SlopeAngle, azFac
   real(8), dimension(NSx,NSy) :: Qabs, Tsurf, albedo, m
   real(8), dimension(NSx,NSy) :: Qmean, Qmax, Tmean, Tmaxi
   real(8), dimension(NSx,NSy) :: skyview
@@ -94,7 +94,7 @@ PROGRAM cratersQ_mars
   jd = jd_end - tmax*solarDay/earthDay
   
   call readdem(h)
-  call difftopo(NSx,NSy,h,dx,dy,surfaceSlope,azFac)
+  call difftopo(NSx,NSy,h,dx,dy,SlopeAngle,azFac)
 
   latitude=latitude*d2r
   Tsurf=200.
@@ -105,8 +105,8 @@ PROGRAM cratersQ_mars
   ! only use skyviews with IR contribution
   do concurrent(i=2:NSx-1, j=2:NSy-1)
      !skyview(i,j) = getoneskysize_v2(i,j)/(2*pi)
-     !gterm(i,j) = getoneGterm(i,j,surfaceSlope(i,j),azFac(i,j))
-     skyview(i,j) = 1.-getoneGterm(i,j,surfaceSlope(i,j),azFac(i,j))
+     !gterm(i,j) = getoneGterm(i,j,SlopeAngle(i,j),azFac(i,j))
+     skyview(i,j) = 1.-getoneGterm(i,j,SlopeAngle(i,j),azFac(i,j))
   end do
   print *,'max/min of skyview:',maxval(skyview(2:NSx-1,2:NSy-1)), &
        & minval(skyview(2:NSx-1,2:NSy-1))
@@ -154,7 +154,7 @@ PROGRAM cratersQ_mars
            if (h(i,j)<-32000) cycle
            emax = getonehorizon(i,j,azSun)
            call flux_mars2(marsR,marsDec,latitude,HA,fracIR,fracDust, &
-                & surfaceSlope(i,j),azFac(i,j),emax,Qdirect(i,j),Qscat(i,j),Qlw(i,j))
+                & SlopeAngle(i,j),azFac(i,j),emax,Qdirect(i,j),Qscat(i,j),Qlw(i,j))
         enddo
      enddo
 
@@ -257,7 +257,7 @@ PROGRAM cratersQ_mars
   do i=2,NSx-1
      do j=2,NSy-1
         write(21,'(2(i4,1x),f9.2,2x,f6.3,2(1x,f6.1),2(1x,f5.1),3(1x,f7.1),2(1x,f6.2),1x,f6.1)') &
-             & i,j,h(i,j),surfaceSlope(i,j),Qmean(i,j),Qmax(i,j), &
+             & i,j,h(i,j),SlopeAngle(i,j),Qmean(i,j),Qmax(i,j), &
              & Tmean(i,j),Tmaxi(i,j),mmax(i,j),maxfrosttime(i,j),mmin(i,j), &
              & h2olast(i,j),meltfirst(i,j),del(i,j)
      enddo

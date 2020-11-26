@@ -18,12 +18,13 @@ PROGRAM cratersQ_moon
   real(8) tmax, dt, latitude, dtsec
   real(8) R, Decl, HA, sdays
   real(8) azSun, sinbeta, smax, emiss
-  real(8), dimension(NSx,NSy) :: h, surfaceSlope, azFac
+  real(8), dimension(NSx,NSy) :: h, SlopeAngle, azFac
   real(8), dimension(NSx,NSy) :: Qn, QIR, Qrefl   ! incoming
   integer, dimension(NSx,NSy) :: cc
   integer(2), dimension(:,:,:), allocatable :: ii,jj
   real(4), dimension(:,:,:), allocatable :: VF  
-  real(8), dimension(NSx,NSy) :: Tsurf, Qvis, viewsize, Qabs, albedo, QIRin, QIRre
+  real(8), dimension(NSx,NSy) :: Tsurf, Qvis, viewsize, Qabs, albedo
+  real(8), dimension(NSx,NSy) :: QIRin, QIRre
   real(8) Qmeans(NSx,NSy,4)
   real(8), dimension(NSx,NSy) :: Qmax1, Qmax2, Tmean, Tmaxi, Tb, Tmaxi2, T0m
   real(8), allocatable :: T(:,:,:), Qnm1(:,:)  ! subsurface
@@ -51,7 +52,7 @@ PROGRAM cratersQ_moon
   write(*,*) 'Reflections:',reflection,'Subsurface:',subsurface
 
   call readdem(h)
-  call difftopo(NSx,NSy,h,dx,dy,surfaceSlope,azFac)
+  call difftopo(NSx,NSy,h,dx,dy,SlopeAngle,azFac)
 
   latitude = latitude*d2r
   Tsurf=0.; Qrefl=0.; QIRre=0.  
@@ -89,7 +90,7 @@ PROGRAM cratersQ_moon
      do i=2,NSx-1
         do j=2,NSy-1
            smax = getonehorizon(i,j,azSun)
-           Qn(i,j) = flux_wshad(R,sinbeta,azSun,surfaceSlope(i,j),azFac(i,j),smax)
+           Qn(i,j) = flux_wshad(R,sinbeta,azSun,SlopeAngle(i,j),azFac(i,j),smax)
         end do
      end do
 
@@ -132,7 +133,8 @@ PROGRAM cratersQ_moon
         ! main part
         do i=2,NSx-1
            do j=2,NSy-1
-              call subsurfaceconduction(T(:,i,j),Tsurf(i,j),dtsec,Qnm1(i,j),Qabs(i,j),emiss,solarDay)
+              call subsurfaceconduction(T(:,i,j),Tsurf(i,j),dtsec, &
+                   & Qnm1(i,j),Qabs(i,j),emiss,solarDay)
            end do
         end do
         Qnm1 = Qabs
@@ -169,11 +171,11 @@ PROGRAM cratersQ_moon
   open(unit=22,file='qmean.dat',status='unknown',action='write')
   do i=2,NSx-1
      do j=2,NSy-1
-        !write(21,'(2(i4,1x),f9.2,2x,f6.4,4(1x,f6.1),1x,f5.1)') &  ! instanteneous values
-        !     & i,j,h(i,j),surfaceSlope(i,j),Qn(i,j),Qabs(i,j),Qir(i,j),Qrefl(i,j), &
+        !write(21,'(2(i4,1x),f9.2,2x,f6.4,4(1x,f6.1),1x,f5.1)') & 
+        !     & i,j,h(i,j),SlopeAngle(i,j),Qn(i,j),Qabs(i,j),Qir(i,j),Qrefl(i,j), &
         !     & Tsurf(i,j)
         write(22,'(2(i4,1x),f9.2,2x,f6.4,4(1x,f6.1),1x,f5.1,2(1x,f6.1),1x,f5.1)') &
-             & i,j,h(i,j),surfaceSlope(i,j),Qmeans(i,j,1:4), &
+             & i,j,h(i,j),SlopeAngle(i,j),Qmeans(i,j,1:4), &
              & Tmean(i,j),Qmax1(i,j),Qmax2(i,j),Tmaxi(i,j)
      end do
   end do
@@ -245,7 +247,8 @@ subroutine subsurfaceconduction(T,Tsurf,dtsec,Qn,Qnp1,emiss,solarDay)
      do k=1,Ni
         Qartiold = ((Ni-k+1)*Qn + (k-1)*Qnp1)/real(Ni)
         Qarti = ((Ni-k)*Qn + k*Qnp1)/real(Ni)
-        call conductionQ(nz,z,dtsec/Ni,Qartiold,Qarti,T,ti,rhocv,emiss,Tsurf,Fgeotherm,Fsurf)
+        call conductionQ(nz,z,dtsec/Ni,Qartiold,Qarti,T,ti,rhocv,emiss,Tsurf, &
+             & Fgeotherm,Fsurf)
      end do
   endif
   

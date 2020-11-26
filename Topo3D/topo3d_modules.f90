@@ -144,21 +144,21 @@ MODULE allinterfaces
   
   ! begin topo3d_subs.f90
   interface
-     pure subroutine difftopo(NSx,NSy,h,dx,dy,surfaceSlope,azFac)
+     pure subroutine difftopo(NSx,NSy,h,dx,dy,SlopeAngle,azFac)
        implicit none
        integer, intent(IN) :: NSx,NSy
        real(8), intent(IN) :: h(NSx,NSy),dx,dy
-       real(8), intent(OUT), dimension(NSx,NSy) :: surfaceSlope,azFac
+       real(8), intent(OUT), dimension(NSx,NSy) :: SlopeAngle,azFac
      end subroutine difftopo
   end interface
 
   interface
-     pure subroutine difftopo2(h,surfaceSlope,azFac,Mx1,Mx2,My1,My2)
+     pure subroutine difftopo2(h,SlopeAngle,azFac,Mx1,Mx2,My1,My2)
        use filemanager, only : NSx,NSy,dx,dy
        implicit none
        integer, intent(IN) :: Mx1,Mx2,My1,My2
        real(8), intent(IN) :: h(NSx,NSy)
-       real(8), intent(OUT), dimension(Mx1:Mx2,My1:My2) :: surfaceSlope,azFac
+       real(8), intent(OUT), dimension(Mx1:Mx2,My1:My2) :: SlopeAngle,azFac
      end subroutine difftopo2
   end interface
   
@@ -220,19 +220,19 @@ MODULE allinterfaces
   ! routines in Mars/
   interface
      pure subroutine flux_mars2(R,decl,latitude,HA,fracIR,fracDust, &
-          &   surfaceSlope,azFac,emax,Qdir,Qscat,Qlw)
+          &   SlopeAngle,azFac,emax,Qdir,Qscat,Qlw)
        implicit none
-       real(8), intent(IN) :: R,decl,latitude,HA,surfaceSlope,azFac,emax
-       real(8), intent(IN) :: fracIR,fracDust
-       real(8), intent(OUT) :: Qdir,Qscat,Qlw
+       real(8), intent(IN) :: R, decl, latitude, HA, SlopeAngle, azFac, emax
+       real(8), intent(IN) :: fracIR, fracDust
+       real(8), intent(OUT) :: Qdir, Qscat, Qlw
      end subroutine flux_mars2
   end interface
 
   interface
      subroutine marsorbit(dt0,tj,Ls,dec,r)
        implicit none
-       real*8, intent(IN) :: dt0,tj
-       real*8, intent(OUT) :: Ls,dec,r
+       real*8, intent(IN) :: dt0, tj
+       real*8, intent(OUT) :: Ls, dec, r
      end subroutine marsorbit
   end interface
      
@@ -254,7 +254,7 @@ MODULE allinterfaces
           & Tco2frost,thIn,emiss)
        implicit none
        real(8), intent(INOUT) :: T(:), Tsurf, m, Fsurf
-       real(8), intent(IN) :: dtsec,Qn,Qnp1
+       real(8), intent(IN) :: dtsec, Qn, Qnp1
        logical, intent(IN) :: init
        real(8), intent(IN), optional :: Tco2frost, thIn, emiss
      end subroutine subsurfaceconduction_mars
@@ -312,9 +312,9 @@ MODULE allinterfaces
   
   ! f90 routines in Common/
   interface
-     pure function flux_wshad(R,sinbeta,azSun,surfaceSlope,azFac,emax)
+     pure function flux_wshad(R,sinbeta,azSun,SlopeAngle,azFac,emax)
        real(8) flux_wshad
-       real(8), intent(IN) :: R,azSun,sinbeta,surfaceSlope,azFac,emax
+       real(8), intent(IN) :: R,azSun,sinbeta,SlopeAngle,azFac,emax
      end function flux_wshad
   end interface
 

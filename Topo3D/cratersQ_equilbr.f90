@@ -13,7 +13,7 @@ program cratersQ_equilbr
   real(8), parameter :: sigSB = 5.6704e-8  
 
   integer n, i, j, k, CCMAX, iii, jjj
-  real(8), dimension(NSx,NSy) :: h, surfaceSlope, azFac
+  real(8), dimension(NSx,NSy) :: h, SlopeAngle, azFac
   real(8), dimension(NSx,NSy) :: Qn, QIR, Qrefl, QIRre   ! incoming
   real(8) R, azSun, smax, emiss, betaSun, Qshadow1, Qshadow2
   integer, dimension(NSx,NSy) :: cc
@@ -30,7 +30,7 @@ program cratersQ_equilbr
   betaSun = 10.*d2r
 
   call readdem(h)
-  call difftopo(NSx,NSy,h,dx,dy,surfaceSlope,azFac)
+  call difftopo(NSx,NSy,h,dx,dy,SlopeAngle,azFac)
 
   print *,'...reading horizons file...'
   call readhorizons
@@ -49,7 +49,7 @@ program cratersQ_equilbr
      do j=2,NSy-1
         smax = getonehorizon(i,j,azSun)
         !smax = 0.
-        Qn(i,j)=flux_wshad(R,sin(betaSun),azSun,surfaceSlope(i,j),azFac(i,j),smax)
+        Qn(i,j)=flux_wshad(R,sin(betaSun),azSun,SlopeAngle(i,j),azFac(i,j),smax)
      enddo
   enddo
 
@@ -79,7 +79,8 @@ program cratersQ_equilbr
            endif
         enddo
      enddo
-     Qabs(:,:)=(1.-albedo(:,:))*(Qn(:,:)+Qrefl(:,:))+emiss*(QIR+QIRre)  ! Q absorbed
+     ! Qabs is Q absorbed
+     Qabs(:,:)=(1.-albedo(:,:))*(Qn(:,:)+Qrefl(:,:))+emiss*(QIR+QIRre) 
      
      Tsurf = (Qabs/sigSB/emiss)**0.25
 
@@ -92,7 +93,7 @@ program cratersQ_equilbr
   do i=2,NSx-1
      do j=2,NSy-1
         write(21,'(2(i4,1x),f9.2,2x,f6.4,5(1x,f6.1),1x,f5.1)') &
-             & i,j,h(i,j),surfaceSlope(i,j),Qn(i,j),Qirre(i,j), &
+             & i,j,h(i,j),SlopeAngle(i,j),Qn(i,j),Qirre(i,j), &
              & Qabs(i,j),Qir(i,j),Qrefl(i,j),Tsurf(i,j)
      enddo
   enddo
