@@ -49,6 +49,7 @@ PROGRAM cratersQ_mars
   real(8), allocatable :: Fsurf(:,:), T(:,:,:), Tbottom(:,:), Tref(:)  ! subsurface
   real(8), allocatable, dimension(:,:) :: mmin, h2olast
   real(8) QIR, Qrefl, Qscat, Qlw
+  integer, external :: julday
   logical, parameter :: subsurface=.true.  ! control panel
   real(8) jd, LTST, jd_end
   

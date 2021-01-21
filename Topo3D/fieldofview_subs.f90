@@ -23,7 +23,7 @@ contains
   subroutine findallhorizon_wsort_v3(h,i0,j0,smax,visibility)
     ! finds horizon and determines visibility for all azimuth rays
     use filemanager, only : NSx, NSy, RMAX, dx, dy
-    use allinterfaces, only : horizontaldistance1, hpsort
+    use allinterfaces, only : horizontaldistance1
     implicit none
     real(8), intent(IN) :: h(NSx,NSy)
     integer, intent(IN) :: i0, j0

@@ -343,27 +343,11 @@ MODULE allinterfaces
   
   ! Fortran 77 programs
   interface
-     pure subroutine hpsort(n,ra,ind)
-       implicit none
-       INTEGER, intent(IN) :: n
-       REAL(8), intent(INOUT) :: ra(n)
-       INTEGER, intent(OUT) :: ind(n)
-     end subroutine hpsort
-  end interface
-
-  interface
      pure function psv(T)
        implicit none
        real*8, intent(IN) :: T
        real*8 psv
      end function psv
-  end interface
-
-  interface
-     FUNCTION julday(mm,id,iyyy)
-       INTEGER julday
-       INTEGER, intent(IN) ::id,iyyy,mm
-     end FUNCTION julday
   end interface
 
 END MODULE allinterfaces

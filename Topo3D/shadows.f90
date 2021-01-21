@@ -62,8 +62,7 @@ PROGRAM toposhadows
   do i=ilower,iupper
      print *,i
      do j=2,NSy-1
-        if (.not.MULTIGRIDON .or. LMAX==1) then
-           !call findallhorizon(h,i,j,naz,smax)
+        if (.not.MULTIGRIDON .or. LMAX<=1) then
            call findallhorizon1(h,i,j,naz,smax)
         else
            call findallhorizon_MGR(h,i,j,naz,smax,RMG,LMAX)

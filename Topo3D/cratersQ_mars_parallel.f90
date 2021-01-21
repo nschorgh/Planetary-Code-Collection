@@ -40,6 +40,7 @@ PROGRAM cratersQ_mars
   real(8) :: albedo0, co2albedo
   real(8) :: dt        ! Time step [sols]
   real(8) :: tmaxyrs   ! integration time [Mars years]
+  integer, external :: julday
   integer imm,idd,iyr
   namelist /site/ latitude,longitude,Tco2frost,Tfrost,fracIR,fracDust,emiss, &
        & thIn,albedo0,co2albedo,imm,idd,iyr,dt,tmaxyrs
@@ -320,9 +321,10 @@ PROGRAM cratersQ_mars
   where (h2olast/=-9.) h2olast=h2olast/d2r
 
   open(unit=21,file='qmean'//ext,status='unknown',action='write')
+70 format(2(i5,1x),f9.2,2x,f6.3,2(1x,f6.1),2(1x,f5.1),3(1x,f7.1),3(1x,f6.2),1x,f5.1,1x,f6.2)
   do i=Mx1,Mx2
      do j=My1,My2
-        write(21,'(2(i5,1x),f9.2,2x,f6.3,2(1x,f6.1),2(1x,f5.1),3(1x,f7.1),3(1x,f6.2),1x,f5.1,1x,f6.2)') &
+        write(21,70) &
              & i,j,h(i,j),SlopeAngle(i,j),Qmean(i,j),Qmax(i,j), &
              & Tmean(i,j),Tmaxi(i,j),mmax(i,j),maxfrosttime(i,j), &
              & mmin(i,j),co2first(i,j),co2last(i,j),h2olast(i,j)

@@ -3,8 +3,9 @@
 
 MODULE multigrid
   use filemanager, only : NSx, NSy, dx, dy
-  real(8), allocatable, private, target :: h2(:,:), h3(:,:), h4(:,:), h5(:,:), h6(:,:)
-  real(8), allocatable, private, target :: h7(:,:), h8(:,:), h9(:,:), h10(:,:)
+  real(8), allocatable, private, target :: h2(:,:), h3(:,:), h4(:,:), h5(:,:)
+  real(8), allocatable, private, target :: h6(:,:), h7(:,:), h8(:,:), h9(:,:)
+  real(8), allocatable, private, target :: h10(:,:)
 
   interface
      pure subroutine horizon_core(x0,y0,h00,smax,i,j,h,P)
@@ -160,7 +161,8 @@ contains
     ! if distance is too close, switch to finer grid
     
     P = 2**(L-1)
-    if (L>=10) error stop 'findallhorizon_recursive: exceeds maximum number of levels'
+    if (L>=10) error stop &
+         & 'findallhorizon_recursive: exceeds maximum number of levels'
     if (L<1) error stop 'findallhorizon_recursive: level is zero or negative'
     do ii=2*i-1,2*i; do jj=2*j-1,2*j ! 4 cells
        r = horizontaldistance1(P*ii*dx,P*jj*dy,x0,y0)

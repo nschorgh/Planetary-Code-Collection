@@ -33,7 +33,7 @@ conductionT2.f90:
 derivs.f90: 
 	first and second derivatives on irregular grid
 	
-grids.f:
+grids.f90:
 	creates appropriate 1D grids
 
 psv.f: 

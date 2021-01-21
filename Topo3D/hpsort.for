@@ -1,13 +1,14 @@
       SUBROUTINE hpsort(n,ra,ind)
       implicit none
       INTEGER, intent(IN) :: n
-      REAL(8), intent(INOUT) :: ra(n)
+      REAL*8, intent(INOUT) :: ra(n)
       INTEGER, intent(OUT) :: ind(n)
       INTEGER rind
       INTEGER i,ir,j,l
-      REAL(8) rra
+      REAL*8 rra
+      
       if (n==1) ind(1)=1
-      if (n.lt.2) return
+      if (n<2) return
       l=n/2+1
       ir=n
       do i=1,n

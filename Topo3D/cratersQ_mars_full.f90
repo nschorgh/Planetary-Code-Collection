@@ -52,7 +52,8 @@ PROGRAM cratersQ_mars
   integer, dimension(NSx,NSy) :: cc
   integer(2), dimension(:,:,:), allocatable :: ii,jj
   real(4), dimension(:,:,:), allocatable :: VF
-  
+
+  integer, external :: julday
   real(8) jd, longitude, LTST, jd_end
   
   logical, parameter :: subsurface=.true.  ! control panel
@@ -172,11 +173,12 @@ PROGRAM cratersQ_mars
         enddo
      enddo
      if (n==0) then
-        Qnm1 = (1.-albedo)*(Qdirect+Qscat*skyview)+emiss*(QIR+Qlw*skyview)
+        Qnm1 = (1.-albedo)*(Qdirect+Qscat*skyview) + emiss*(QIR+Qlw*skyview)
      else
         Qnm1 = Qabs
      endif
-     Qabs = (1.-albedo)*(Qdirect+Qrefl+Qscat*skyview)+emiss*(QIR+QIRre+Qlw*skyview)  ! Q absorbed
+     ! Q absorbed
+     Qabs = (1.-albedo)*(Qdirect+Qrefl+Qscat*skyview) + emiss*(QIR+QIRre+Qlw*skyview) 
 
 
      do i=2,NSx-1
@@ -254,9 +256,10 @@ PROGRAM cratersQ_mars
   where (maxfrosttime<1) del=-9.
 
   open(unit=21,file='qmean.dat',status='unknown',action='write')
+70 format(2(i4,1x),f9.2,2x,f6.3,2(1x,f6.1),2(1x,f5.1),3(1x,f7.1),2(1x,f6.2),1x,f6.1)
   do i=2,NSx-1
      do j=2,NSy-1
-        write(21,'(2(i4,1x),f9.2,2x,f6.3,2(1x,f6.1),2(1x,f5.1),3(1x,f7.1),2(1x,f6.2),1x,f6.1)') &
+        write(21,70) &
              & i,j,h(i,j),SlopeAngle(i,j),Qmean(i,j),Qmax(i,j), &
              & Tmean(i,j),Tmaxi(i,j),mmax(i,j),maxfrosttime(i,j),mmin(i,j), &
              & h2olast(i,j),meltfirst(i,j),del(i,j)

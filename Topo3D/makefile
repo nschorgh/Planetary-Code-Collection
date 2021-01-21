@@ -124,5 +124,6 @@ makegaussian: makegaussian.o ran1.o rlft3.o fourn.o nrutil.o makefile
 
 clean:
 	rm -f  *.o  a.out  *.mod \
-	shadows fieldofviews cratersQ_equilbr cratersQ_moon cratersQ_mars
+	shadows fieldofviews cratersQ_equilbr cratersQ_moon cratersQ_mars \
+	horizons.dat viewfactors.dat 
 

@@ -29,7 +29,7 @@ Mars/marsorbit.f90
 Mars/soilthprop_mars.f90  
 Common/conductionQ.f90  
 Common/conductionT.f90  
-Common/grids.f  
+Common/grids.f90  
 Common/julday.for  
 Common/psvco2.f  
 Common/tridag.for  
@@ -59,11 +59,11 @@ Mars/flux_mars.f90
 Mars/soilthprop_mars.f90  
 Common/conductionQ.f90  
 Common/conductionT.f90  
-Common/tridag.for  
-Common/grids.f  
+Common/grids.f90  
 Common/julday.for  
 Common/psv.f  
 Common/psvco2.f  
+Common/tridag.for  
 *Documentation: User Guide Section 3.1  
 Documentation: Schorghofer, N. & Aharonson, O. (2005) J. Geophys. Res. 110, E05003*  
 Mars/Test/   
@@ -78,7 +78,7 @@ Mars/generalorbit.f90
 Mars/soilthprop_mars.f90  
 Common/conductionQ.f90  
 Common/conductionT.f90  
-Common/grids.f  
+Common/grids.f90  
 Common/psvco2.f  
 Common/tridag.for  
 Mars/MilankOutput/  
@@ -97,12 +97,12 @@ Mars/fast_subs_mars.f90
 Mars/soilthprop_mars.f90  
 Common/conductionQ.f90  
 Common/conductionT.f90  
-Common/tridag.for  
-Common/grids.f  
+Common/derivs.f90  
 Common/generalorbit.f  
+Common/grids.f90  
 Common/psv.f  
 Common/psvco2.f  
-Common/derivs.f90  
+Common/tridag.for  
 *Documentation: Schorghofer, N. (2010) Icarus 208, 598-607*  
 Mars/Test/  
 
@@ -115,11 +115,11 @@ Other Models for Planetary Surfaces
 Asteroids/asteroid_thermal.f90: (main program)  
 Asteroids/oneasteroid_thermal1d.f90  
 Asteroids/insolonly.f90   
-Common/flux_noatm.f90  
 Common/conductionQ.f90  
+Common/flux_noatm.f90  
+Common/generalorbit.f
+Common/grids.f90
 Common/tridag.for  
-Common/grids.f  
-Common/generalorbit.f  
 *Documentation: User Guide Part 1*  
 Common/Test/  
 
@@ -138,7 +138,7 @@ Common/conductionQ.f90
 Common/derivs.f90  
 Common/flux_noatm.f90  
 Common/generalorbit.f  
-Common/grids.f  
+Common/grids.f90  
 Common/psv.f  
 Common/ran2.for  
 Common/tridag.for  
@@ -194,7 +194,7 @@ Common/conductionQ.f90
 Common/conductionQ2.f90  
 Common/conductionT2.f90  
 Common/flux_noatm.f90  
-Common/grids.f  
+Common/grids.f90  
 Common/julday.for    
 Common/tridag.for  
 Mars/flux_mars.f90  
