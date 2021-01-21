@@ -4,7 +4,7 @@ Lunar Ice Pump Model
 ====================
 
 oscidea1.f90: (main program)
-	ice pump calculations for one location
+	ice pump calculations for one location; uses boundary-value formulation
 
 oscidea_subs.f90:
 	subroutines for ice pump calculations
