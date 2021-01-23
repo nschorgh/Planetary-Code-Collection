@@ -3,10 +3,9 @@ subroutine setgrid(nz,z,zmax,zfac)
   ! z(n)-z(1) = 2*z(1)*(zfac**(n-1)-1)/(zfac-1)
   ! choice of z(1) and z(2) is compatible with conductionQ
   implicit none
-  integer, parameter :: NMAX=1000
   integer, intent(IN) :: nz
   real(8), intent(IN) :: zfac, zmax
-  real(8), intent(OUT) :: z(NMAX)
+  real(8), intent(OUT) :: z(nz)
   integer i
   real(8) dz
   

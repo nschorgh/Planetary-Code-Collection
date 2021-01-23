@@ -182,7 +182,7 @@ function rtbis(x1,x2,xacc,fmid, &
      fmid = f
      return
   endif
-  if(f*fmid >= 0.) stop 'root must be bracketed in rtbis'
+  if (f*fmid>=0.) stop 'root must be bracketed in rtbis'
   rtbis = x2
   dx = x1-x2
   xupper=x1; fupper=f
@@ -206,12 +206,12 @@ function rtbis(x1,x2,xacc,fmid, &
      endif
      if(abs(dx/xmid)<xacc .or. fmid==0.) then
         
-!-------do linear interpolation at last
+        ! do linear interpolation at last
         rtbis = (fupper*xlower - flower*xupper)/(fupper-flower)
 
-!-------report last stable ice table instead
-!        rtbis = xlower
-!        fmid = flower
+        ! report last stable ice table instead
+        ! rtbis = xlower
+        ! fmid = flower
         return
      endif
   enddo
@@ -304,7 +304,7 @@ subroutine rtbisv(NS,x1,x2,xacc,fmid, &
      endif
   enddo
   if (maxval(f)<0.) return  ! ice stable at the uppermost location everywhere
-  if(minval(f*fmid) >= 0.) stop 'root must be bracketed in rtbis'
+  if (minval(f*fmid)>=0.) stop 'root must be bracketed in rtbis'
   xupper=x1; fupper=f
   xlower=x2; flower=fmid
   do k=2,NS
@@ -339,7 +339,7 @@ subroutine rtbisv(NS,x1,x2,xacc,fmid, &
            endif
         end if
      enddo
-     if(maxval(abs(dx/xmid))<xacc) then ! .or. fmid.eq.0.) then
+     if(maxval(abs(dx/xmid))<xacc) then ! .or. fmid==0.) then
         do k=2,NS
            if (fupper(k)*flower(k)<0.) then
               ! do linear interpolation at last

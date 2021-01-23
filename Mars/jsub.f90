@@ -16,16 +16,15 @@ subroutine jsub(zdepth, latitude, albedo0, thIn, pfrost, nz, &
 !  mode = 1  ends when certain accuracy is reached and outputs no data
 !
 !  latitude must be in RADIANS
+!  Grid: surface is at z=0; T(i) is at z(i)
 !  variable icefrac can also have meaning of porosity
 !***********************************************************************
 
   implicit none
-  integer, parameter :: NMAX=1000
-  real*8, parameter :: pi=3.1415926535897932
+  real*8, parameter :: pi=3.1415926535897932, NULL=0.
   real*8, parameter :: earthDay=86400., marsDay=88775.244, solsperyear=668.60
   real*8, parameter :: sigSB=5.6704d-8, Lco2frost=6.0e5
   real*8, parameter :: co2albedo=0.60, co2emiss=1.
-  real*8, parameter :: NULL=0.
 
   integer, intent(IN) :: nz, mode
   real*8, intent(IN) :: zdepth, latitude, albedo0, thIn, pfrost, rhoc
@@ -35,17 +34,17 @@ subroutine jsub(zdepth, latitude, albedo0, thIn, pfrost, nz, &
   real*8, intent(IN) :: patm
   
   integer nsteps, n, i, nm, din
-  integer julday, iyr, imm, iday
-  real*8 T(NMAX),tmax, time, zmax, Tsurf
+  integer iyr, imm, iday
+  real*8 T(nz),tmax, time, zmax, Tsurf
   real*8 albedo, emiss0, emiss, Qn, Qnp1, tdays
   real*8 marsR, marsLs, marsDec, HA
   real*8 jd, temp1, dcor, dt0_j2000
-  real*8 ti(NMAX), rhocv(NMAX), z(NMAX), Fsurf, m, dE
+  real*8 ti(nz), rhocv(nz), z(nz), Fsurf, m, dE
   real*8 Told(nz), Fsurfold, Tsurfold, Tmean1, Tmean2
   real*8 Tpeak(nz), Tlow(nz), Tco2frost
   real*8 rhosatav(nz), rhoavs, Tbold, marsLsold, oldtime
   real*8 dirho(nz), dirholowz, dirholowLs(nz)
-  external julday
+  integer, external :: julday
   real*8, external :: flux_mars77, psv, tfrostco2
 
   select case (mode)
@@ -59,7 +58,7 @@ subroutine jsub(zdepth, latitude, albedo0, thIn, pfrost, nz, &
   
   iyr=1996; imm=10; iday=5   ! starting year and date
   nsteps = int(tmax/dt)      ! calculate total number of timesteps
-  emiss0 = 1.   ! emissivity
+  emiss0 = 1.   ! frost-free emissivity
   zmax = 5.*26.*thIn/rhoc*sqrt(marsDay/pi)
   !print *,'skindepth,diurnal=',thIn/rhoc*sqrt(marsDay/pi)
   !print *,'skindepth,annual=',thIn/rhoc*sqrt(solsperyear*marsDay/pi)
@@ -87,16 +86,17 @@ subroutine jsub(zdepth, latitude, albedo0, thIn, pfrost, nz, &
 
   albedo = albedo0
   emiss = emiss0
+  T(1:nz) = Tmean2
   do i=1,nz
-     T(i) = Tmean2
      if (T(i)<Tco2frost) T(i)=Tco2frost
-     ti(i) = thIn
-     rhocv(i) = rhoc
-     Tpeak(i) = -1.e32
-     Tlow(i) = +1.e32
-     rhosatav(i) = 0.
-     dirholowLs(i) = 1.e32
   enddo
+  ti(1:nz) = thIn
+  rhocv(1:nz) = rhoc
+  Tpeak(:) = -1.e32
+  Tlow(:) = +1.e32
+  rhosatav(:) = 0.
+  dirholowLs(:) = 1.e32
+
   Tsurf = T(1)
   m=0.; Fsurf=0.
   nm=0; Tmean1=0.

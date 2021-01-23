@@ -126,8 +126,8 @@ C     finds root with bisection method a la Numerical Recipes (C)
      &     latitude,albedo0,thIn,pfrost,nz,rhoc,fracIR,fracDust,
      &     Fgeotherm,dt,zfac,icefrac,0,f,Tb,patm)
       print *,x1,f
-      if(f*fmid.ge.0.) stop 'root must be bracketed in rtbis'
-      if(f.lt.0.)then
+      if (f*fmid>=0.) stop 'root must be bracketed in rtbis'
+      if (f<0.) then
         rtbis=x1
         dx=x2-x1
       else
@@ -147,13 +147,13 @@ C     finds root with bisection method a la Numerical Recipes (C)
      &       latitude,albedo0,thIn,pfrost,nz,rhoc,fracIR,fracDust,
      &       Fgeotherm,dt,zfac,icefrac,0,fmid,Tb,patm)
         print *,xmid,fmid
-        if(fmid.le.0.) then
+        if(fmid<=0.) then
            rtbis=xmid
            xlower=xmid; flower=fmid
         else
            xupper=xmid; fupper=fmid
         endif
-        if(abs(dx/xmid).lt.xacc .or. fmid.eq.0.) then
+        if(abs(dx/xmid)<xacc .or. fmid==0.) then
 c----------do linear interpolation at last
            rtbis = (fupper*xlower - flower*xupper)/(fupper-flower)
            return

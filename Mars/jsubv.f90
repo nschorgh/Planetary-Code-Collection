@@ -5,10 +5,6 @@ subroutine jsubv(NS, zdepth, latitude, albedo0, thIn, pfrost, nz, &
 !  jsubv: runs thermal model for Mars at several sites simultaneously
 !         allows for thermal emission of slopes to other slopes
 !
-!   Eqn: T_t = (D*T_z)_z   where D=k/(rho*c)
-!   BC (z=0): Q(t) + k*T_z = em*sig*T^4 + L*dm/dt
-!   BC (z=L): fixed flux, Fgeotherm
-!
 !  OUTPUT: 
 !           avdrho = difference in annual mean vapor density
 !
@@ -26,7 +22,6 @@ subroutine jsubv(NS, zdepth, latitude, albedo0, thIn, pfrost, nz, &
 !***********************************************************************
 
   implicit none
-  integer, parameter :: NMAX=1000
   real*8, parameter :: pi=3.1415926535897932, d2r=pi/180., zero=0.
   real*8, parameter :: earthDay=86400., marsDay=88775.244, solsperyear=668.60
   real*8, parameter :: sigSB=5.6704d-8, Lco2frost=6.0e5
@@ -42,25 +37,26 @@ subroutine jsubv(NS, zdepth, latitude, albedo0, thIn, pfrost, nz, &
 
   logical, parameter :: outf = .false.  ! additional output
   integer nsteps, n, i, nm, k, i0(NS)
-  integer julday, iyr, imm, iday
+  integer iyr, imm, iday
 
-  real*8 T(NMAX,NS),tmax, time, zmax, emiss(NS), albedo(NS)
+  real*8 T(nz,NS),tmax, time, zmax, emiss(NS), albedo(NS)
   real*8 Qn(NS), Qnp1(NS), tdays, dtsec
   real*8 marsR, marsLs, marsDec, HA
   real*8 jd, temp1, dcor, dt0_j2000
-  real*8 Tsurf(NS), z(NMAX,NS), ti(NMAX,NS), rhocv(NMAX,NS), Told(NMAX)
-  real*8 Tsurfold, Fsurf(NS), Fsurfold, m(NS), dE, Tco2frost
+  real*8 Tsurf(NS), z(nz,NS), ti(nz,NS), rhocv(nz,NS)
+  real*8 Told(nz), Tsurfold, Fsurf(NS), Fsurfold, m(NS), dE, Tco2frost
   real*8 Tmean1(NS), Tmean2(NS), rhoavs(NS), rhoavb(NS), Tbold(NS)
   real*8 Qmean(NS), Qland(NS)
-  real*8 marsLsold, psv, tfrostco2, emiss0
+  real*8 marsLsold, emiss0
   real*8 Qdir, Qscat, Qlw, skyviewfactor(NS), Qdir1
-  external julday, psv, tfrostco2
+  integer, external :: julday
+  real*8, external :: psv, tfrostco2
 
   select case (mode)
   case (0) ! full mode
      tmax = 7020.
   case (1) ! equilibrate fast
-     tmax = 50.*solsperyear  ! use integer multiple of solsperyear
+     tmax = 40.*solsperyear  ! use integer multiple of solsperyear
   case default
      stop 'no valid mode'
   end select
@@ -68,7 +64,6 @@ subroutine jsubv(NS, zdepth, latitude, albedo0, thIn, pfrost, nz, &
   iyr=1996; imm=10; iday=5  ! starting year and date
   nsteps = int(tmax/dt)     ! calculate total number of timesteps
   emiss0 = 1.  ! frost-free emissivity
-  emiss(:) = emiss0
 
   zmax = 5.*26.*thIn/rhoc*sqrt(marsDay/pi)
   ! print *,25.86*thIn/rhoc*sqrt(marsDay/pi)
@@ -90,20 +85,23 @@ subroutine jsubv(NS, zdepth, latitude, albedo0, thIn, pfrost, nz, &
   jd = dble(julday(imm,iday,iyr)) ! JD for noon UTC on iyear/imm/iday
   temp1 = (jd-2451545.d0)/36525.d0
   dcor = (64.184d0 + 95.*temp1 + 35.*temp1**2) ! correction in sec
-! All time is referenced to dt0_j2000
+  ! All time is referenced to dt0_j2000
   dt0_j2000 = jd + dcor/earthDay - 2451545.d0 
 
   albedo(:) = albedo0
-  ti(1:nz,:) = thIn
-  rhocv(1:nz,:) = rhoc
+  emiss(:) = emiss0
   do k=1,NS
      T(1:nz,k) = Tmean1(k)
+     do i=1,nz
+        if (T(i,k)<Tco2frost) T(i,k)=Tco2frost
+     enddo
   enddo
-  where (T(1:nz,:) < Tco2frost) T=Tco2frost
   Tsurf(:) = Tmean1(:)
+  ti(1:nz,:) = thIn
+  rhocv(1:nz,:) = rhoc
   m(:)=0.; Fsurf(:)=0.
-  marsLsold=-1.e32
-  Tbold(:)=-1.e32
+  marsLsold = -1.e32
+  Tbold(:) = -1.e32
 
   Tmean1(:)=0.; Tmean2(:)=0.; nm=0   
   rhoavs(:)=0.; rhoavb(:)=0.
