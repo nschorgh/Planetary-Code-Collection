@@ -67,15 +67,16 @@ PROGRAM asteroid_thermal
   ! Insolation - optional
   call insolonly(latitude,semia,omega,ecc,eps,Trot,Q0mean,Qmean,Q4mean)
   Qmean = (1-albedo)*Qmean;  Q4mean = (1-albedo)*Q4mean
-  write(*,'(a,4(1x,f5.1))') 'Fluxes (W/m^2):',So/semia**2,Q0mean,(1-albedo)*Q0mean/pi,Qmean
+  write(*,'(a,4(1x,f5.1))') 'Fluxes (W/m^2):', &
+       & So/semia**2,Q0mean,(1-albedo)*Q0mean/pi,Qmean
   write(*,'(a,2(1x,f6.2))') 'End-member temperatures (K):', &
        & flux2T(Qmean,zero,emiss),flux2T(Q4mean,zero,emiss)
 
   ! Surface temperature with rotation and conduction
-  !ti = (/ 10000., 2100., 2000., 1000., 500., 200., 100., 50., 25., 15., 10., 5., 3. /)
+  !ti = (/ 2100., 2000., 1000., 500., 200., 100., 50., 25., 15., 10., 5., 3. /)
   !do n= 1,size(ti)
   !   thIn = ti(n)
-  thIn = 15.
+  thIn = 20.
   call oneasteroid(latitude,omega,eps,thIn,Qmean,Tmean,Tmin,Tmax)
   print *, 'Mean insolation=',Qmean,'W/m^2'
   print *, 'Mean temperature=',Tmean,'K'

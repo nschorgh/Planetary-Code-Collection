@@ -1,5 +1,5 @@
 CC = gfortran
-CFLAGS = -O2 -Wall
+CFLAGS = -O2 -Wall 
 LFLAGS = -O2 -Wall
 
 #CC = ifort
@@ -17,7 +17,7 @@ SR =  ../Common/
 asteroid_thermal: asteroid_thermal.f90 asteroid_thermal.o \
 	oneasteroid_thermal1d.o insolonly.o common_subs.o makefile
 
-	make CC='$(CC)' CFLAGS='$(CFLAGS)' -C $(SR) common
+	make -C $(SR) common
 
 	$(CC) $(LFLAGS) asteroid_thermal.f90 oneasteroid_thermal1d.o \
 	$(SR)flux_noatm.o $(SR)conductionQ.o $(SR)tridag.o $(SR)grids.o \
@@ -28,7 +28,7 @@ asteroid_fast2: fast_modules_asteroid.f90 fast_modules_asteroid.o \
 	fast_subs_asteroid2.o asteroid_fast2.o impactstirring.o \
 	common_subs.o makefile 
 
-	make CC='$(CC)' CFLAGS='$(CFLAGS)' -C $(SR) common
+	make -C $(SR) common
 
 	$(CC) $(LFLAGS) asteroid_fast2.f90 fast_subs_asteroid2.f90 \
 	$(SR)flux_noatm.o $(SR)conductionQ.o $(SR)tridag.o \
@@ -39,7 +39,7 @@ asteroid_fast2: fast_modules_asteroid.f90 fast_modules_asteroid.o \
 asteroid_fast1: fast_modules_asteroid.f90 fast_modules_asteroid.o \
 	asteroid_fast1.o fast_subs_asteroid1.o common_subs.o makefile
 
-	make CC='$(CC)' CFLAGS='$(CFLAGS)' -C $(SR) common
+	make -C $(SR) common
 
 	$(CC) $(LFLAGS) asteroid_fast1.o fast_subs_asteroid1.o \
 	$(SR)flux_noatm.o $(SR)conductionQ.o $(SR)tridag.o \
@@ -49,7 +49,7 @@ asteroid_fast1: fast_modules_asteroid.f90 fast_modules_asteroid.o \
 
 test_gardening1: test_gardening1.o impactstirring.o makefile
 
-	make CC='$(CC)' CFLAGS='$(CFLAGS)' -C $(SR) common
+	make -C $(SR) common
 
 	$(CC) $(LFLAGS) impactstirring.o test_gardening1.o \
 	$(SR)ran2.o $(SR)grids.o 
@@ -57,7 +57,7 @@ test_gardening1: test_gardening1.o impactstirring.o makefile
 
 sphere1d sphere1d_implicit: sphere1d_implicit.o common_subs.o makefile
 
-	make CC='$(CC)' CFLAGS='$(CFLAGS)' -C $(SR) common
+	make -C $(SR) common
 
 	$(CC) $(LFLAGS) sphere1d_implicit.o $(SR)flux_noatm.o \
 	$(SR)tridag.o $(SR)generalorbit.o common_subs.o $(SR)psv.o

@@ -11,20 +11,20 @@ subroutine icelayer_asteroid(bigstep,NP,z,porosity,icefrac,Tinit, &
 ! eps = axis tilt [radians]  
 ! S0 = solar constant relative to present
 !************************************************************************
-  use constants, only : d2r, NMAX
+  use constants, only : d2r
   use body, only : Tnominal, nz
   use allinterfaces
   implicit none
   integer, intent(IN) :: NP
   real(8), intent(IN) :: bigstep
-  real(8), intent(IN) :: z(NMAX), porosity, icefrac
+  real(8), intent(IN) :: z(nz), porosity, icefrac
   logical, intent(IN) :: Tinit
   real(8), intent(INOUT) :: zdepthT(NP), Tmean1(NP), Tmean3(NP)
   real(8), intent(OUT) :: Tmin(NP), Tmax(NP)
   real(8), intent(IN) :: latitude(NP), albedo(NP), ecc, omega, eps, S0
 
   integer k, typeT, j, jump
-  real(8) ti(NMAX), rhocv(NMAX), diam
+  real(8) ti(nz), rhocv(nz), diam
   real(8) Deff, deltaz, Diff0, avrho
   real(8), dimension(nz) :: Diff
   real(8), SAVE :: zdepth_old(100)  ! NP<=100
@@ -93,8 +93,8 @@ subroutine ajsub_asteroid(latitude, albedo, z, ti, rhocv, ecc, omega, &
   use allinterfaces
   implicit none
   real(8), intent(IN) :: latitude  ! [radians]
-  real(8), intent(IN) :: albedo, z(NMAX)
-  real(8), intent(IN) :: ti(NMAX), rhocv(NMAX)
+  real(8), intent(IN) :: albedo, z(nz)
+  real(8), intent(IN) :: ti(nz), rhocv(nz)
   real(8), intent(IN) :: ecc, omega, eps, S0
   integer, intent(IN) :: typeT
   real(8), intent(OUT) :: rhosatav   ! annual mean vapor density
@@ -105,7 +105,7 @@ subroutine ajsub_asteroid(latitude, albedo, z, ti, rhocv, ecc, omega, &
   real(8), parameter :: zero = 0.
   real(8) tmax, time, Qn, Qnp1, tdays
   real(8) orbitR, orbitLs, orbitDec, HA
-  real(8) Tsurf, Fsurf, T(NMAX)
+  real(8) Tsurf, Fsurf, T(nz)
   real(8) Tmean0, S1, coslat, solsperyear
   real(8), external :: psv
   

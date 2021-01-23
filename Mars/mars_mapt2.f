@@ -6,10 +6,8 @@ C              entire globe)
 C***********************************************************************
 
       implicit none
-      integer NMAX
-      real*8 pi, d2r, marsDay
-      parameter (NMAX=1000)
-      parameter (pi=3.1415926535897932, d2r=pi/180., marsDay=88775.244)
+      real*8 pi, d2r
+      parameter (pi=3.1415926535897932, d2r=pi/180.)
 
       integer nz
       real*8 dt, zfac, zdepth, icefrac, latitude, thIn, albedo

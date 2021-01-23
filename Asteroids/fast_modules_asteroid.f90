@@ -6,7 +6,6 @@
 module constants
   ! miscellaneous parameters that are very constant
   real(8), parameter :: pi=3.1415926535897932, d2r=pi/180.
-  integer, parameter :: NMAX=1000
   real(8), parameter :: sigSB=5.6704e-8
   real(8), parameter :: kB=1.38065e-23
 end module constants
@@ -90,7 +89,7 @@ module allinterfaces
   end interface
 
   interface
-     pure function colint(y,z,nz,i1,i2)
+     function colint(y,z,nz,i1,i2)
        implicit none
        integer, intent(IN) :: nz, i1, i2
        real(8), intent(IN) :: y(nz), z(nz)
@@ -99,7 +98,7 @@ module allinterfaces
   end interface
 
   interface
-     pure subroutine dzvector(nz,z,dz) 
+     subroutine dzvector(nz,z,dz) 
        implicit none
        integer, intent(IN) :: nz
        real(8), intent(IN) :: z(nz)

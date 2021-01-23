@@ -20,7 +20,7 @@ subroutine oneasteroid(latitude, omega, eps, thIn, Qmean, Tmean, Tmin, Tmax)
 
   print *,'Latitude=',latitude/d2r
   Torb = a2Torb(semia)
-  nr = 100*nint(Torb/Trot)   ! usually 50, more for low thermal inertia <<10
+  nr = 50*nint(Torb/Trot)   ! usually 50, more for low thermal inertia <10
   dt = Torb/nr*86400
   print *,'dt=',dt/3600.,'hours','  Trot=',Trot*24.,'hours'
   
@@ -76,7 +76,7 @@ subroutine oneasteroid(latitude, omega, eps, thIn, Qmean, Tmean, Tmin, Tmax)
      call conductionQ(nz,z,dt,Q,Qp1,Temp,ti,rhoc,emiss,Tsurf,0.d0,Fsurf)
      Q = Qp1
      if (n>(EQUILTIME-1)*nr) then  ! annual average
-        !if (n>=EQUILTIME*nr-100) write(71,*) edays,HA,Tsurf,Temp(nz),flux2T(Q,albedo,emiss)
+        !if (n>=EQUILTIME*nr-100) write(71,*) edays,HA,Tsurf,Temp(nz)
         Qmean = Qmean+Q
         Tmean = Tmean+Tsurf
         if (Tsurf>Tmax) Tmax=Tsurf

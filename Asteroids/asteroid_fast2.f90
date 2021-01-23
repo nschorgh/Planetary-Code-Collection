@@ -11,7 +11,7 @@ PROGRAM asteroid_fast
 ! 
 ! written by Norbert Schorghofer 2012-2015
 !************************************************************************
-  use constants, only : pi, d2r, NMAX
+  use constants, only : pi, d2r
   use body, only : nz, zfac, zmax, ecc, icedensity, eps
   use allinterfaces
   implicit none
@@ -22,7 +22,7 @@ PROGRAM asteroid_fast
   parameter(SPINUPN=20, spinupfac=2.)
   integer i, k, earliest, iargc, ierr
   real(8) tstart  ! (earth) years
-  real(8) z(NMAX), icetime, timestep, sigma(nz,NP)
+  real(8) z(nz), icetime, timestep, sigma(nz,NP)
   real(8) bigstep, bssum, omega, porosity(nz)
   real(8), dimension(NP) :: latitude, albedo, zdepthP
   real(8), dimension(NP) :: Tmean1, Tmean3, Tmin, Tmax
@@ -158,12 +158,12 @@ END PROGRAM asteroid_fast
 
 subroutine outputskindepths(nz,z,zmax,porosity)
   ! diagnostics only
-  use constants, only : pi, NMAX 
+  use constants, only : pi 
   use body, only : solarDay, semia, Tnominal
   use allinterfaces
   implicit none
   integer, intent(IN) :: nz
-  real(8), intent(IN) :: z(NMAX), zmax, porosity(nz)
+  real(8), intent(IN) :: z(nz), zmax, porosity(nz)
   integer i
   real(8) delta, stretch, newrhoc, newti, rhoc
   real(8) rhocv(nz), ti(nz), thIn, porefill(nz), solsperyear
