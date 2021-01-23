@@ -1,0 +1,19 @@
+ a=   2.7675058841705322      ecc=   7.5819998979568481E-002 omega=   301.00000000000000     
+ Latitude=   0.0000000000000000      obliquity=   4.0000000000000000     
+ Albedo= 0.090
+ Torb=   1681.4235284037618      days
+ Tss=   233.62967467377806     
+ Tss=   233.62967467377806     
+ # steps=      444600
+Fluxes (W/m^2): 178.2 178.5  51.7  51.7
+End-member temperatures (K): 175.56 100.33
+ Latitude=   0.0000000000000000     
+ dt=  0.18153020549568280      hours  Trot=   9.0760002136230469      hours
+ skin depth, orbital =  0.22667270863006422      diurnal=   3.3994002498141966E-003
+ nz =         110
+          10 points in diurnal skin depth
+ initialization temperature=   175.48521537167869     
+ Mean insolation=   51.712197580301385      W/m^2
+ Mean temperature=   156.41689953349587      K
+ #   20.000000000000000        156.41689953349587        103.71606615021079        237.57677510325703     
+
