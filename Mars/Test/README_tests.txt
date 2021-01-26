@@ -7,7 +7,7 @@ make mars_thermal
 
 ./a.out
 
-reads input.par and produces outputs Tprofile, Tsurface, and z
+reads input.par and produces outputs 'Tprofile', 'Tsurface', and 'z'
 
 
 
@@ -17,7 +17,15 @@ make mars_mapi
 
 ./a.out
 
-reads inputs from mapgrid.dat and outputs mapgrid2.dat
+reads inputs from 'mapgrid.dat' and outputs 'mapgrid2.dat', which contains the
+depths of the equilibrium ice table.
+
+make mars_mapt2
+
+./a.out
+
+reads 'mapgrid2.dat' and outputs 'mapgrid3.dat', which should be idential to
+'mapgrid2.dat', as well as 'means'.
 
 
 
@@ -27,7 +35,8 @@ make mars_fast
 
 ./mars_fast ph
 
-This will read input file lats.ph and produce output files depths.ph and depthF.ph
+This will read input file 'lats.ph' and produce output files 'depths.ph' and
+'depthF.ph'.
 
 
 
@@ -37,6 +46,6 @@ make mars_mapi2p
 
 mars_mapi2p_go.cmd
 
-reads inputs from mapgrid.slp and outputs mapgrid2.1 and mapgrid2.2
-the merged output is provided under the filename mapgrid2.slp
+reads inputs from mapgrid.slp and outputs 'mapgrid2.1' and 'mapgrid2.2'
+the merged output is provided under the filename 'mapgrid2.slp'
 

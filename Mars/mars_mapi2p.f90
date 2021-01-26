@@ -103,11 +103,11 @@ program mars_mapi2p
 
   print *,'ice depth on flat slope ...'
   call jsubv(1, zmax, latitude*d2r, albedo0, thIn, pfrost, &
-       &     nz/2, rhoc, fracIR, fracDust, Fgeotherm, 2.*dt, zfac, &
-       &     icefrac, zero, zero, 1, avdrho(1), Tb(1), patm)
+       &     nz/2, rhoc, fracIR, fracDust, patm, Fgeotherm, 2.*dt, zfac, &
+       &     icefrac, zero, zero, 1, Tb(1), avdrho(1))
   call jsubv(1, zmax, latitude*d2r, albedo0, thIn, pfrost, &
-       &     nz,   rhoc, fracIR, fracDust, Fgeotherm,    dt, zfac, &
-       &     icefrac, zero, zero, 0, avdrho(1), Tb(1), patm)
+       &     nz,   rhoc, fracIR, fracDust, patm, Fgeotherm,    dt, zfac, &
+       &     icefrac, zero, zero, 0, Tb(1), avdrho(1))
   print *, 'ice depth: ','  rho_ice-rho_surf'
   print *, zmax,'#',avdrho(1)
   if (avdrho(1)>=0.) then   ! no ice
@@ -115,7 +115,7 @@ program mars_mapi2p
   else  
      zdepth0 = rtbis(delta/4.,zmax, zacc,avdrho(1), &
           &     latitude*d2r,albedo0,thIn,pfrost,nz,rhoc,fracIR, &
-          &     fracDust,Fgeotherm,dt,zfac,icefrac,zero,zero,patm)
+          &     fracDust,patm,Fgeotherm,dt,zfac,icefrac,zero,zero)
   endif
   print *,'Equilibrium ice table depth on flat slope = ',zdepth0
 
@@ -124,11 +124,11 @@ program mars_mapi2p
   zz = spread(zmax,1,NS)
   if (zdepth0>0.) zz(1)=zdepth0  ! otherwise zz(1)=zmax
   call jsubv(NS, zz, latitude*d2r, albedo0, thIn, pfrost, &
-       &     nz/2, rhoc, fracIR, fracDust, Fgeotherm, 2.*dt, zfac, &
-       &     icefrac, slp, azFac, 1, avdrho, Tb, patm)
+       &     nz/2, rhoc, fracIR, fracDust, patm, Fgeotherm, 2.*dt, zfac, &
+       &     icefrac, slp, azFac, 1, Tb, avdrho)
   call jsubv(NS, zz, latitude*d2r, albedo0, thIn, pfrost, &
-       &     nz,   rhoc, fracIR, fracDust, Fgeotherm,    dt, zfac, &
-       &     icefrac, slp, azFac, 0, avdrho, Tb, patm)
+       &     nz,   rhoc, fracIR, fracDust, patm, Fgeotherm,    dt, zfac, &
+       &     icefrac, slp, azFac, 0, Tb, avdrho)
   print *, 'ice depth: ','  rho_ice-rho_surf'
   print *, zz,'#',avdrho
   where (avdrho>=0.) zdepth= -9999.  ! no ice
@@ -137,7 +137,7 @@ program mars_mapi2p
      call rtbisv(NS,zz,(/ zdepth0, spread(zmax,1,NS-1) /), &
           &     zacc,avdrho(:), &
           &     latitude*d2r,albedo0,thIn,pfrost,nz,rhoc,fracIR, &
-          &     fracDust,Fgeotherm,dt,zfac,icefrac,slp(:),azFac(:),zdepth(:),patm)
+          &     fracDust,patm,Fgeotherm,dt,zfac,icefrac,slp(:),azFac(:),zdepth(:))
   endif
   zdepth(1) = zdepth0
   print *,'Equilibrium ice table depths= ',zdepth
@@ -146,7 +146,8 @@ program mars_mapi2p
   open(unit=33,file=outfile,status='unknown',action='write')
   do k=1,NS
      write(33,'(i5,1x,f7.2,1x,f7.3,2x,f0.3,1x,2(f7.1,2x),f5.2,2x,f6.1,2x,f10.4)') &
-          &     line_nr,lon,latitude,albedo0,thIn,Tfrost,slp(k)/d2r,azFac(k)/d2r,zdepth(k)
+          &     line_nr,lon,latitude,albedo0,thIn,Tfrost,slp(k)/d2r,azFac(k)/d2r, &
+          &     zdepth(k)
   enddo
   close(33)
   
@@ -157,8 +158,8 @@ end program mars_mapi2p
 
 
 function rtbis(x1,x2,xacc,fmid, &
-     &     latitude,albedo0,thIn,pfrost,nz,rhoc,fracIR,fracDust, &
-     &     Fgeotherm,dt,zfac,icefrac,SlopeAngle,azFac,patm)
+     &     latitude,albedo0,thIn,pfrost,nz,rhoc,fracIR,fracDust,patm, &
+     &     Fgeotherm,dt,zfac,icefrac,SlopeAngle,azFac)
   ! finds root with bisection method a la Numerical Recipes (C)
   implicit none
   REAL*8 rtbis,x1,x2,xacc
@@ -171,11 +172,11 @@ function rtbis(x1,x2,xacc,fmid, &
   
   Tb = -1.e32
   call jsubv(1,x1, &
-       &     latitude,albedo0,thIn,pfrost,nz/2,rhoc,fracIR,fracDust, &
-       &     Fgeotherm,2.*dt,zfac,icefrac,SlopeAngle,azFac,1,f,Tb,patm)
+       &     latitude,albedo0,thIn,pfrost,nz/2,rhoc,fracIR,fracDust,patm, &
+       &     Fgeotherm,2.*dt,zfac,icefrac,SlopeAngle,azFac,1,Tb,f)
   call jsubv(1,x1, &
-       &     latitude,albedo0,thIn,pfrost,nz,rhoc,fracIR,fracDust, &
-       &     Fgeotherm,dt,zfac,icefrac,SlopeAngle,azFac,0,f,Tb,patm)
+       &     latitude,albedo0,thIn,pfrost,nz,rhoc,fracIR,fracDust,patm, &
+       &     Fgeotherm,dt,zfac,icefrac,SlopeAngle,azFac,0,Tb,f)
   print *,x1,f
   if (f<0.) then  ! ice stable at the uppermost location
      rtbis = x1   ! equilibrium ice table is less than x1
@@ -192,11 +193,11 @@ function rtbis(x1,x2,xacc,fmid, &
      xmid = rtbis+dx
      Tb = -1.e32
      call jsubv(1,xmid, &
-          &     latitude,albedo0,thIn,pfrost,nz/2,rhoc,fracIR,fracDust, &
-          &     Fgeotherm,2.*dt,zfac,icefrac,SlopeAngle,azFac,1,fmid,Tb,patm)
+          &     latitude,albedo0,thIn,pfrost,nz/2,rhoc,fracIR,fracDust,patm, &
+          &     Fgeotherm,2.*dt,zfac,icefrac,SlopeAngle,azFac,1,Tb,fmid)
      call jsubv(1,xmid, &
-          &     latitude,albedo0,thIn,pfrost,nz  ,rhoc,fracIR,fracDust, &
-          &     Fgeotherm,   dt,zfac,icefrac,SlopeAngle,azFac,0,fmid,Tb,patm)
+          &     latitude,albedo0,thIn,pfrost,nz  ,rhoc,fracIR,fracDust,patm, &
+          &     Fgeotherm,   dt,zfac,icefrac,SlopeAngle,azFac,0,Tb,fmid)
      print *,xmid,fmid
      if(fmid <= 0.) then
         rtbis = xmid
@@ -222,8 +223,8 @@ end function rtbis
 
       
 subroutine rtbisv(NS,x1,x2,xacc,fmid, &
-     &     latitude,albedo0,thIn,pfrost,nz,rhoc,fracIR,fracDust, &
-     &     Fgeotherm,dt,zfac,icefrac,SlopeAngle,azFac,zdepth,patm)
+     &     latitude,albedo0,thIn,pfrost,nz,rhoc,fracIR,fracDust,patm, &
+     &     Fgeotherm,dt,zfac,icefrac,SlopeAngle,azFac,zdepth)
 !***********************************************************************
 ! finds roots with bisection method where a root exists
 !
@@ -289,11 +290,11 @@ subroutine rtbisv(NS,x1,x2,xacc,fmid, &
   if (minval(fmid)>0.) return  ! nothing left to do
   Tb(:) = -1.e32
   call jsubv(NS,x1, &
-       &     latitude,albedo0,thIn,pfrost,nz/2,rhoc,fracIR,fracDust, &
-       &     Fgeotherm,2.*dt,zfac,icefrac,SlopeAngle,azFac,1,f,Tb,patm)
+       &     latitude,albedo0,thIn,pfrost,nz/2,rhoc,fracIR,fracDust,patm, &
+       &     Fgeotherm,2.*dt,zfac,icefrac,SlopeAngle,azFac,1,Tb,f)
   call jsubv(NS,x1, &
-       &     latitude,albedo0,thIn,pfrost,nz  ,rhoc,fracIR,fracDust, &
-       &     Fgeotherm,   dt,zfac,icefrac,SlopeAngle,azFac,0,f,Tb,patm)
+       &     latitude,albedo0,thIn,pfrost,nz  ,rhoc,fracIR,fracDust,patm, &
+       &     Fgeotherm,   dt,zfac,icefrac,SlopeAngle,azFac,0,Tb,f)
   print *,x1,'#',f
   do k=2,NS
      if(f(k)<0.) then  ! case III: ice stable at the uppermost location
@@ -323,11 +324,11 @@ subroutine rtbisv(NS,x1,x2,xacc,fmid, &
      end do
      Tb(:) = -1.e32
      call jsubv(NS,xmid, &
-          &     latitude,albedo0,thIn,pfrost,nz/2,rhoc,fracIR,fracDust, &
-          &     Fgeotherm,2.*dt,zfac,icefrac,SlopeAngle,azFac,1,fmid,Tb,patm)
+          &     latitude,albedo0,thIn,pfrost,nz/2,rhoc,fracIR,fracDust,patm, &
+          &     Fgeotherm,2.*dt,zfac,icefrac,SlopeAngle,azFac,1,Tb,fmid)
      call jsubv(NS,xmid, &
-          &     latitude,albedo0,thIn,pfrost,nz  ,rhoc,fracIR,fracDust, &
-          &     Fgeotherm,   dt,zfac,icefrac,SlopeAngle,azFac,0,fmid,Tb,patm)
+          &     latitude,albedo0,thIn,pfrost,nz  ,rhoc,fracIR,fracDust,patm, &
+          &     Fgeotherm,   dt,zfac,icefrac,SlopeAngle,azFac,0,Tb,fmid)
      print *,xmid,'#',fmid
      do k=2,NS
         if (fupper(k)*flower(k)<0.) then 

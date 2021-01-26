@@ -4,7 +4,6 @@ C   mars_mapt: program to calculate the vertical subsurface temperature
 C              profile for a list of input parameters (can be the 
 C              entire globe)
 C***********************************************************************
-
       implicit none
       real*8 pi, d2r
       parameter (pi=3.1415926535897932, d2r=pi/180.)
@@ -54,11 +53,11 @@ c        read output of mars_mapi
 c        negative or very large zdepth indicates the absence of ice
          Tb = -9999.
          call jsub(zdepth, latitude*d2r, albedo, thIn, pfrost,
-     &        nz/2, rhoc, fracIR, fracDust, Fgeotherm, 2.*dt, zfac, 
-     &        icefrac, 1, junk, Tb, patm)
+     &        nz/2, rhoc, fracIR, fracDust, patm, Fgeotherm, 2.*dt,
+     &        zfac, icefrac, 1, Tb, junk)
          call jsub(zdepth, latitude*d2r, albedo, thIn, pfrost,
-     &        nz, rhoc, fracIR, fracDust, Fgeotherm, dt, zfac, icefrac, 
-     &        0, junk, Tb, patm)
+     &        nz, rhoc, fracIR, fracDust, patm, Fgeotherm, dt, 
+     &        zfac, icefrac, 0, Tb, junk)
          write(33,'(f7.2,1x,f7.3,2x,f5.3,2x,f5.1,1x,f7.1,2x,f10.4)') 
      &        lon,latitude,albedo,thIn,Tfrost,zdepth
       enddo

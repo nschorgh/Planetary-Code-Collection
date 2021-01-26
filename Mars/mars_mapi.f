@@ -7,12 +7,11 @@ C              output can be used as input for mars_mapt
 C   
 C   written by Norbert Schorghofer, 2003-2004
 C***********************************************************************
-
       implicit none
       real*8 pi, d2r, marsDay
       parameter (pi=3.1415926535897932, d2r=pi/180., marsDay=88775.244)
 
-      integer nz, j
+      integer nz
       real*8 dt, zmax, zfac, zdepth, icefrac, zacc
       real*8 latitude, thIn, albedo0, fracIR, fracDust, delta
       real*8 Fgeotherm, rhoc, lon, Tfrost, pfrost
@@ -51,7 +50,7 @@ c      open(unit=32,file='Tlow',status='unknown')
       open(unit=34,file='means',status='unknown')
 c      open(unit=35,file='rhosatav',status='unknown')
 
-      do j=1,10000  ! maximum list length
+      do
          read(20,*,end=80) lon,latitude,albedo0,thIn,Tfrost,zdepth
          !read(20,*,end=80) lon,latitude,albedo0,thIn,pfrost,patm
 
@@ -71,18 +70,18 @@ C        Empirical relation from Mellon & Jakosky:
          Tb = -1.e32
 
          call jsub(zmax, latitude*d2r, albedo0, thIn, pfrost,
-     &        nz/2, rhoc, fracIR, fracDust, Fgeotherm, 4.*dt, zfac, 
-     &        icefrac, 1, junk, Tb, patm)
+     &        nz/2, rhoc, fracIR, fracDust, patm, Fgeotherm, 4.*dt, 
+     &        zfac, icefrac, 1, Tb, junk)
          call jsub(zmax, latitude*d2r, albedo0, thIn, pfrost,
-     &        nz,   rhoc, fracIR, fracDust, Fgeotherm,    dt, zfac,
-     &        icefrac, 0, avdrho, Tb, patm)
+     &        nz,   rhoc, fracIR, fracDust, patm, Fgeotherm,    dt, 
+     &        zfac, icefrac, 0, Tb, avdrho)
          print *, zmax,avdrho
          if (avdrho>=0.) then 
             zdepth=-9999.
          else  
             zdepth = rtbis(delta/2.,zmax,zacc,avdrho,
-     &           latitude*d2r,albedo0,thIn,pfrost,nz,rhoc,fracIR,
-     &           fracDust,Fgeotherm,dt,zfac,icefrac,patm)
+     &           latitude*d2r,albedo0,thIn,pfrost,nz,rhoc,
+     &           fracIR,fracDust,patm,Fgeotherm,dt,zfac,icefrac)
             print *,'Equilibrium ice table depth= ',zdepth
          endif
          write(33,'(f7.2,1x,f7.3,2x,f5.3,2x,f5.1,1x,f7.1,2x,f10.4)') 
@@ -100,8 +99,8 @@ C        Empirical relation from Mellon & Jakosky:
 
 
       FUNCTION rtbis(x1,x2,xacc,fmid,
-     &     latitude,albedo0,thIn,pfrost,nz,rhoc,fracIR,fracDust,
-     &     Fgeotherm,dt,zfac,icefrac,patm)
+     &     latitude,albedo0,thIn,pfrost,nz,rhoc,fracIR,fracDust,patm,
+     &     Fgeotherm,dt,zfac,icefrac)
 C     finds root with bisection method a la Numerical Recipes (C)
       implicit none
       INTEGER JMAX
@@ -115,16 +114,16 @@ C     finds root with bisection method a la Numerical Recipes (C)
 
 !      call jsub(x2,
 !     &     latitude,albedo0,thIn,pfrost,nz,fracIR,fracDust,
-!     &     Fgeotherm,dt,zfac,icefrac,0,fmid,Tb,patm)
+!     &     patm,Fgeotherm,dt,zfac,icefrac,0,Tb,fmid)
 !      print *,x2,fmid
 
       Tb = -1.e32
       call jsub(x1,
      &     latitude,albedo0,thIn,pfrost,nz/2,rhoc,fracIR,fracDust,
-     &     Fgeotherm,4.*dt,zfac,icefrac,1,f,Tb,patm)
+     &     patm,Fgeotherm,4.*dt,zfac,icefrac,1,Tb,f)
       call jsub(x1,
      &     latitude,albedo0,thIn,pfrost,nz,rhoc,fracIR,fracDust,
-     &     Fgeotherm,dt,zfac,icefrac,0,f,Tb,patm)
+     &     patm,Fgeotherm,dt,zfac,icefrac,0,Tb,f)
       print *,x1,f
       if (f*fmid>=0.) stop 'root must be bracketed in rtbis'
       if (f<0.) then
@@ -142,10 +141,10 @@ C     finds root with bisection method a la Numerical Recipes (C)
         Tb = -1.e32
         call jsub(xmid,
      &       latitude,albedo0,thIn,pfrost,nz/2,rhoc,fracIR,fracDust,
-     &       Fgeotherm,4.*dt,zfac,icefrac,1,fmid,Tb,patm)
+     &       patm,Fgeotherm,4.*dt,zfac,icefrac,1,Tb,fmid)
         call jsub(xmid,
      &       latitude,albedo0,thIn,pfrost,nz,rhoc,fracIR,fracDust,
-     &       Fgeotherm,dt,zfac,icefrac,0,fmid,Tb,patm)
+     &       patm,Fgeotherm,dt,zfac,icefrac,0,Tb,fmid)
         print *,xmid,fmid
         if(fmid<=0.) then
            rtbis=xmid

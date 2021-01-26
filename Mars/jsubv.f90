@@ -1,6 +1,6 @@
 subroutine jsubv(NS, zdepth, latitude, albedo0, thIn, pfrost, nz, &
-     &     rhoc, fracIR, fracDust, Fgeotherm, dt, zfac, icefrac, & 
-     &     SlopeAngle, azFac, mode, avdrho, Tb, patm)
+     &     rhoc, fracIR, fracDust, patm, Fgeotherm, dt, zfac, icefrac, & 
+     &     SlopeAngle, azFac, mode, Tb, avdrho)
 !***********************************************************************
 !  jsubv: runs thermal model for Mars at several sites simultaneously
 !         allows for thermal emission of slopes to other slopes
@@ -20,7 +20,6 @@ subroutine jsubv(NS, zdepth, latitude, albedo0, thIn, pfrost, nz, &
 !
 !  Grid: surface is at z=0; T(i) is at z(i)
 !***********************************************************************
-
   implicit none
   real*8, parameter :: pi=3.1415926535897932, d2r=pi/180., zero=0.
   real*8, parameter :: earthDay=86400., marsDay=88775.244, solsperyear=668.60
@@ -29,11 +28,10 @@ subroutine jsubv(NS, zdepth, latitude, albedo0, thIn, pfrost, nz, &
 
   integer, intent(IN) :: NS, nz, mode
   real*8, intent(IN) :: zdepth(NS), latitude, albedo0, thIn, pfrost, rhoc
-  real*8, intent(IN) :: fracIR, fracDust, Fgeotherm, dt, zfac, icefrac
+  real*8, intent(IN) :: fracIR, fracDust, patm, Fgeotherm, dt, zfac, icefrac
   real*8, intent(IN) :: SlopeAngle(NS), azFac(NS)
-  real*8, intent(OUT) :: avdrho(NS)
   real*8, intent(INOUT) :: Tb(NS)
-  real*8, intent(IN) :: patm
+  real*8, intent(OUT) :: avdrho(NS)
 
   logical, parameter :: outf = .false.  ! additional output
   integer nsteps, n, i, nm, k, i0(NS)
@@ -123,7 +121,7 @@ subroutine jsubv(NS, zdepth, latitude, albedo0, thIn, pfrost, nz, &
      endif
   enddo
 
-  time=0.
+  time = 0.
   tdays = time*(marsDay/earthDay) ! parenthesis may improve roundoff
   call marsorbit(dt0_j2000,tdays,marsLs,marsDec,marsR); 
   HA = 2.*pi*time           ! hour angle

@@ -1,16 +1,17 @@
 subroutine jsub(zdepth, latitude, albedo0, thIn, pfrost, nz, &
-     &     rhoc, fracIR, fracDust, Fgeotherm, dt, zfac, icefrac, & 
-     &     mode, avdrho, Tb, patm)
+     &     rhoc, fracIR, fracDust, patm, Fgeotherm, dt, zfac, icefrac, & 
+     &     mode, Tb, avdrho)
 !***********************************************************************
 !  jsub: runs thermal model for Mars and returns difference in mean 
 !        annual vapor density between surface and ice at depth zdepth
 !
 !  OUTPUTS: 
-!           avdrho = difference in annual mean vapor density
+!           avdrho = difference in annual mean vapor density between
+!                    ice table (or bottom) and atmosphere
 !
 !  IN- or OUTPUT: 
-!                 Tb = temperature at the bottom of the domain at
-!                      a particular time of year
+!                 Tb = temperature at the bottom of the domain,
+!                      negative value initializes
 !
 !  mode = 0  ends after fixed amount of time and then outputs all data
 !  mode = 1  ends when certain accuracy is reached and outputs no data
@@ -19,7 +20,6 @@ subroutine jsub(zdepth, latitude, albedo0, thIn, pfrost, nz, &
 !  Grid: surface is at z=0; T(i) is at z(i)
 !  variable icefrac can also have meaning of porosity
 !***********************************************************************
-
   implicit none
   real*8, parameter :: pi=3.1415926535897932, NULL=0.
   real*8, parameter :: earthDay=86400., marsDay=88775.244, solsperyear=668.60
@@ -28,10 +28,9 @@ subroutine jsub(zdepth, latitude, albedo0, thIn, pfrost, nz, &
 
   integer, intent(IN) :: nz, mode
   real*8, intent(IN) :: zdepth, latitude, albedo0, thIn, pfrost, rhoc
-  real*8, intent(IN) :: fracIR, fracDust, Fgeotherm, dt, zfac, icefrac
-  real*8, intent(OUT) :: avdrho
+  real*8, intent(IN) :: fracIR, fracDust, patm, Fgeotherm, dt, zfac, icefrac
   real*8, intent(INOUT) :: Tb
-  real*8, intent(IN) :: patm
+  real*8, intent(OUT) :: avdrho
   
   integer nsteps, n, i, nm, din
   integer iyr, imm, iday
@@ -43,7 +42,6 @@ subroutine jsub(zdepth, latitude, albedo0, thIn, pfrost, nz, &
   real*8 Told(nz), Fsurfold, Tsurfold, Tmean1, Tmean2
   real*8 Tpeak(nz), Tlow(nz), Tco2frost
   real*8 rhosatav(nz), rhoavs, Tbold, marsLsold, oldtime
-  real*8 dirho(nz), dirholowz, dirholowLs(nz)
   integer, external :: julday
   real*8, external :: flux_mars77, psv, tfrostco2
 
@@ -57,7 +55,7 @@ subroutine jsub(zdepth, latitude, albedo0, thIn, pfrost, nz, &
   end select
   
   iyr=1996; imm=10; iday=5   ! starting year and date
-  nsteps = int(tmax/dt)      ! calculate total number of timesteps
+  nsteps = nint(tmax/dt)      ! calculate total number of timesteps
   emiss0 = 1.   ! frost-free emissivity
   zmax = 5.*26.*thIn/rhoc*sqrt(marsDay/pi)
   !print *,'skindepth,diurnal=',thIn/rhoc*sqrt(marsDay/pi)
@@ -71,7 +69,7 @@ subroutine jsub(zdepth, latitude, albedo0, thIn, pfrost, nz, &
   Tco2frost = tfrostco2(patm)
   
   if (Tb<=0.) then
-     !Tmean2=210.15              ! black-body temperature of planet
+     !Tmean2=210.15          ! black-body temperature of planet
      Tmean2=(589.*(1.-albedo0)*cos(latitude)/pi/5.67e-8)**0.25 ! better estimate
   else
      Tmean2=Tb
@@ -95,7 +93,6 @@ subroutine jsub(zdepth, latitude, albedo0, thIn, pfrost, nz, &
   Tpeak(:) = -1.e32
   Tlow(:) = +1.e32
   rhosatav(:) = 0.
-  dirholowLs(:) = 1.e32
 
   Tsurf = T(1)
   m=0.; Fsurf=0.
@@ -112,7 +109,7 @@ subroutine jsub(zdepth, latitude, albedo0, thIn, pfrost, nz, &
   !call smartgrid(nz,z,zdepth,thIn,rhoc,NULL,ti,rhocv,3,NULL)
   if (mode==0) write(30,'(999(f8.5,1x))') (z(i),i=1,nz)
   
-  time=0.
+  time = 0.
   tdays = time*(marsDay/earthDay) ! parenthesis may improve roundoff
   call marsorbit(dt0_j2000,tdays,marsLs,marsDec,marsR)
   HA = 2.*pi*time           ! hour angle
@@ -162,27 +159,6 @@ subroutine jsub(zdepth, latitude, albedo0, thIn, pfrost, nz, &
         nm = nm+1
      endif
      
-     if (time>=tmax-solsperyear-2 .and. mode==0) then
-        if (mod(time,1.d0)-oldtime<0.) then
-           if (din==100) then  ! 100 steps in a day
-              dirholowz = 1.e32
-              do i=1,nz
-                 dirho(i) = dirho(i)/100.
-                 if (dirho(i)<dirholowz) dirholowz=dirho(i)
-                 if (dirho(i)<dirholowLs(i)) dirholowLs(i)=dirho(i)
-              enddo
-              !write(38,'(f7.3,1x,g9.3)') marsLs*180./pi,dirholowz
-           endif
-           oldtime = mod(time,1.d0)
-           dirho(1:nz) = 0.
-           din = 0
-        endif
-        do i=1,nz
-           dirho(i) = dirho(i) + psv(T(i))/T(i)
-        enddo
-        din = din+1
-     endif
-     
      if (mode==1) then
         if (marsLs<marsLsold) then
            Tmean2 = Tmean2/nm
@@ -201,7 +177,7 @@ subroutine jsub(zdepth, latitude, albedo0, thIn, pfrost, nz, &
   if (mode==0) then
      rhoavs = rhoavs/nm
      rhosatav(1:nz) = rhosatav(1:nz)/nm
-     !if (avrho1pre>=0.) rhoavs=avrho1pre    ! new 2011-09-19
+     !if (avrho1pre>=0.) rhoavs=avrho1pre
      Tmean1 = Tmean1/nm
      !write(31,'(999(f6.2,1x))') (Tpeak(i),i=1,nz)
      !write(32,'(999(f6.2,1x))') (Tlow(i),i=1,nz)
@@ -218,7 +194,6 @@ subroutine jsub(zdepth, latitude, albedo0, thIn, pfrost, nz, &
      endif
      write(34,'(f7.3,1x,2(f6.2,1x),2(g10.4,1x))') &
           &        Tmean1,Tlow(nz),Tpeak(nz),avdrho+rhoavs,rhoavs
-     !write(39,'(999(1x,g9.3))') (dirholowLs(i)-rhoavs,i=1,nz)
   endif
   Tb = T(nz)
 end subroutine jsub

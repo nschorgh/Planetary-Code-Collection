@@ -1,4 +1,4 @@
-      PROGRAM mars_thermal1d
+      program mars_thermal1d
 C***********************************************************************
 C   mars_thermal1d:  program to calculate the diffusion of temperature 
 C                    into the ground
@@ -58,7 +58,7 @@ C-----read input
 
 C     set some constants
       dz = zmax/nz              ! set the space step
-      nsteps = int(tmax/dt)     ! calculate total number of timesteps
+      nsteps = nint(tmax/dt)     ! calculate total number of timesteps
       emiss = emiss0     ! frost-free emissivity
       delta = thermalInertia/rhoc*sqrt(marsDay/pi)  ! skin depth
       albedo = albedo0
@@ -199,5 +199,5 @@ c--------only output and diagnostics below this line
 
       print *,Tmean/nm,Tmean2/nm,ps/nm,pb/nm
 
-      END
+      end
  

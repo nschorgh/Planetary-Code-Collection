@@ -14,7 +14,6 @@ pure subroutine soilthprop(porosity,fill,rhocobs,tiobs,layertype, &
 !     output are newti and newrhoc
 !***********************************************************************
   implicit none
-
   integer, intent(IN) :: layertype
   real*8, intent(IN) :: porosity, fill, rhocobs, tiobs
   real*8, intent(OUT) :: newti, newrhoc
@@ -92,20 +91,22 @@ subroutine smartgrid(nz,z,zdepth,thIn,rhoc,porosity,ti,rhocv,layertype,icefrac)
 !             nz = number of grid points
 !             z = grid spacing for dry regolith 
 !                 (will be partially overwritten)
-!             zdepth = depth (in meters) where ice table starts
+!             zdepth = depth where ice table starts
 !                      negative values indicate no ice
 !             rhoc = heat capacity per volume of dry regolith [J/m^3]
 !             thIn = thermal inertia of dry regolith [SI-units]
 !             porosity = void space / total volume
+!             layertypes are explained below  
+!             icefrac = fraction of ice in icelayer
 !
 !     OUTPUTS: z = grid coordinates
 !              vectors ti and rhocv
 !***********************************************************************
-
   implicit none
   integer, intent(IN) :: nz, layertype
   real*8, intent(IN) :: zdepth, thIn, rhoc, porosity, icefrac
-  real*8, intent(OUT) :: z(nz), ti(nz), rhocv(nz)
+  real*8, intent(INOUT) :: z(nz)
+  real*8, intent(OUT) :: ti(nz), rhocv(nz)
   integer j, b
   real*8 stretch, newrhoc, newti
   real*8, parameter :: NULL=0.
@@ -115,11 +116,11 @@ subroutine smartgrid(nz,z,zdepth,thIn,rhoc,porosity,ti,rhocv,layertype,icefrac)
      select case (layertype)
      case (1)  ! interstitial ice
         call soilthprop(porosity,1.d0,rhoc,thIn,1,newrhoc,newti,NULL)
-     case (2)  ! mostly ice
+     case (2)  ! mostly ice (massive ice)
         call soilthprop(porosity,NULL,rhoc,thIn,2,newrhoc,newti,icefrac)
-     case (3)  ! all ice
+     case (3)  ! all ice (pure ice)
         call soilthprop(NULL,NULL,NULL,NULL,3,newrhoc,newti,NULL)
-     case (4)  ! ice + rock + nothing else
+     case (4)  ! ice + rock + nothing else (ice-cemented soil)
         call soilthprop(porosity,NULL,rhoc,NULL,4,newrhoc,newti,NULL)
      case default
         error stop 'invalid layer type'
