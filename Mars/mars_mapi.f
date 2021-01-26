@@ -24,7 +24,6 @@ C-----set input parameters
       dt=0.02
       nz=80; zfac=1.05;
       fracIR=0.04; fracDust=0.01
-      !Fgeotherm=0.028
       Fgeotherm=0.0
       icefrac = 0.4  ! porosity for layertype 1
       !icefrac = 0.97  ! layertype 2

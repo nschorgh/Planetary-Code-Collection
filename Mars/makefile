@@ -30,10 +30,10 @@ mars_thermal mars_thermal1d: mars_thermal1d.o marsorbit.o flux_mars.o \
 	flux_mars.o $(SR)conductionQ.o $(SR)tridag.o $(SR)conductionT.o \
 	$(SR)grids.o soilthprop_mars.o $(SR)psv.o 
 
-mars_mapt2: mars_mapt2.o jsub.o marsorbit.o flux_mars.o soilthprop_mars.o \
+mars_mapt: mars_mapt.o jsub.o marsorbit.o flux_mars.o soilthprop_mars.o \
 	makefile
 	make -C $(SR) common
-	$(CC) $(LFLAGS) mars_mapt2.o jsub.o $(SR)julday.o marsorbit.o \
+	$(CC) $(LFLAGS) mars_mapt.o jsub.o $(SR)julday.o marsorbit.o \
 	flux_mars.o $(SR)conductionQ.o $(SR)tridag.o $(SR)conductionT.o \
 	$(SR)grids.o soilthprop_mars.o $(SR)psv.o $(SR)psvco2.o
 

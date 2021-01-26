@@ -23,3 +23,5 @@ NOTES
 
 * Lunar exosphere model is found in directory Exospheres/
 * Terrain irradiance model for airless bodies is found in Topo3D/
+* Microphysical vapor migration calculations are not part of this collection
+

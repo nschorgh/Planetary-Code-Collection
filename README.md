@@ -50,7 +50,7 @@ Mars/Misc/  an animation for illustration
 ### Equilibrium Ice Table
 
 Mars/mars_mapi.f: (main program)  
-Mars/mars_mapt2.f: (main program)  
+Mars/mars_mapt.f: (main program)  
 Mars/mars_mapip2.f90: (main program)  
 Mars/jsub.f90    
 Mars/jsubv.f90  

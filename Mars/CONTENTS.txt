@@ -52,9 +52,10 @@ mars_mapi.f: (main program)
 	globe); contains leftover Numerical Recipes code (C)
 
 mapgrid.dat:
-	Example input file for mars_mapi.f
+	Example input file for mars_mapi.f and mars_mapt.f
 
-mars_mapt2.f: (main program)
+mars_mapt.f: (main program)
+	calculates temperatures and other variables for a list of locations
 	calls jsub for a list of locations (such as the entire globe)
 
 mars_mapi2p.f90: (main program)

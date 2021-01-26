@@ -20,7 +20,7 @@ make mars_mapi
 reads inputs from 'mapgrid.dat' and outputs 'mapgrid2.dat', which contains the
 depths of the equilibrium ice table.
 
-make mars_mapt2
+make mars_mapt
 
 ./a.out
 
