@@ -75,8 +75,8 @@ program mars_mapii
            stretch = stretchfactor(thIn,rhoc,icefrac,1,0.d0) ! match jsub
            zdepth = zdepth_old + (zdepth-zdepth_old)/stretch
         end if
-        print *,k,'zdepth=',zdepth
-        if (abs(zdepth-zdepth_old) < zacc/2.*(zdepth+zdepth_old)/2.) exit
+        !print *,k,'zdepth=',zdepth
+        if (abs(zdepth-zdepth_old) < zacc/2.*zdepth) exit
         zdepth_old = zdepth
      end do
 
@@ -130,7 +130,7 @@ function stretchfactor(thIn,rhoc,porosity,layertype,icefrac)
   ! thermal diffusivity kappa = k/(rho*c) = I^2/(rho*c)**2
   stretchfactor = (newti/thIn)*(rhoc/newrhoc) ! sqrt(icy)/sqrt(ice-free)
   
-  print *,'stretch=',stretchfactor
+  !print *,'stretch=',stretchfactor
 end function stretchfactor
 
 

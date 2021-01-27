@@ -102,6 +102,7 @@ subroutine jsub(zdepth, latitude, albedo0, thIn, pfrost, nz, &
   marsLsold=-1.e32; Tmean2=0.
   Tbold=-1.e32
   oldtime=1.e32
+  zequil = -9999.
       
   call setgrid(nz,z,zmax,zfac)
   call smartgrid(nz,z,zdepth,thIn,rhoc,icefrac,ti,rhocv,1,NULL)
