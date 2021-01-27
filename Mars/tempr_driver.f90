@@ -20,7 +20,7 @@ program tempr_driver
   integer, parameter :: nz=80     ! number of subsurface grid points
   real(8), parameter :: zfac=1.05 ! progressive spacing of grid points
   integer i, k, iargc, ierr
-  real(8) zmax, delta, z(nz), icetime, p0
+  real(8) zmax, delta, z(nz), icetime, patm
   real(8), dimension(NP) :: latitude, albedo, thIn, rhoc
   real(8) ecc, omega, eps
   real(8), dimension(NP) :: Tb, Tmean1, Tmean3, Qmean
@@ -57,7 +57,7 @@ program tempr_driver
   ! ecc = 0.0934;  eps = 25.19*d2r;  omega = 250.87*d2r  ! today
   ! Laskar orbital solution http://vo.imcce.fr/insola/earth/online/mars/mars.html
   open(20,file='INSOLN.LA2004.MARS.ASC',action='read',status='old')
-  p0 = 600.
+  patm = 600.
   do i = 1,earliest
      read(20,*) lasktime(i),laskecc(i),laskeps(i),laskomega(i)
   enddo
@@ -67,7 +67,7 @@ program tempr_driver
   print *,'Global model parameters'
   print *,'nz=',nz,' zfac=',zfac,'zmax=',zmax
   print *,'Starting at time',lasktime(earliest)*1000.,'years'
-  print *,'Total pressure=',p0
+  print *,'Total pressure=',patm
   print *,'Number of sites=',NP
   do k=1,NP
      print *,'  Latitude (deg)',latitude(k),'   albedo',albedo(k)
@@ -94,7 +94,7 @@ program tempr_driver
 
   ! equilibrate Tb 
   call icesheet(nz,NP,latitude,albedo,thIn,rhoc,z, &
-       &   ecc,omega,eps,p0,Tb,Tmean1,Tmean3,Qmean)
+       &   ecc,omega,eps,patm,Tb,Tmean1,Tmean3,Qmean)
 
   ! History begins here
   do i = earliest,1,-1
@@ -102,7 +102,7 @@ program tempr_driver
      omega = mod(laskomega(i) + pi,2*pi)
      eps = laskeps(i)
      call icesheet(nz,NP,latitude,albedo,thIn,rhoc,z, &
-          &        ecc,omega,eps,p0,Tb,Tmean1,Tmean3,Qmean)
+          &        ecc,omega,eps,patm,Tb,Tmean1,Tmean3,Qmean)
      icetime = lasktime(i)*1000.
      write(35,'(f11.0,2x,f6.2,2x,f7.5,2x,f5.1)') icetime,eps/d2r,ecc,omega/d2r
      do k=1,NP
@@ -119,24 +119,24 @@ end program tempr_driver
 
 
 subroutine icesheet(nz,NP,latitude,albedo,thIn,rhoc,z,ecc,omega,eps, &
-     & p0,Tb,Tmean1,Tmean3,Qmean)
+     & patm,Tb,Tmean1,Tmean3,Qmean)
   ! pass-through subroutine for similarity to big iceage code
   use miscparameters
   implicit none
   integer, intent(IN) :: nz, NP
   real(8), intent(IN) :: latitude(NP), albedo(NP), thIn(NP), rhoc(NP), z(nz)
-  real(8), intent(IN) :: ecc, omega, eps, p0
+  real(8), intent(IN) :: ecc, omega, eps, patm
   real(8), intent(INOUT) :: Tb(NP)
   real(8), intent(OUT), dimension(NP) :: Tmean1, Tmean3, Qmean
   integer k
   real(8) fracIR, fracDust, ti(nz), rhocv(nz)
 
-  fracIR=0.04*p0/600.; fracDust=0.02*p0/600.
+  fracIR=0.04*patm/600.; fracDust=0.02*patm/600.
   do k=1,NP 
      ti(1:nz) = thIn(k)
      rhocv(1:nz) = rhoc(k)
      call ajsub(latitude(k)*d2r, albedo(k), nz, z, ti, rhocv, &
-          &     fracIR, fracDust, p0, ecc, omega, eps, Tb(k), &
+          &     fracIR, fracDust, patm, ecc, omega, eps, Tb(k), &
           &     Tmean1(k), Tmean3(k), Qmean(k))
   enddo 
 end subroutine icesheet
@@ -145,7 +145,7 @@ end subroutine icesheet
 
 
 subroutine ajsub(latitude, albedo0, nz, z, ti, rhocv, &
-     &     fracIR, fracDust, p0, ecc, omega, eps, Tb, &
+     &     fracIR, fracDust, patm, ecc, omega, eps, Tb, &
      &     Tmean1, Tmean3, Qmean)
 !***********************************************************************
 !  ajsub: A 1D thermal model
@@ -155,7 +155,7 @@ subroutine ajsub(latitude, albedo0, nz, z, ti, rhocv, &
   integer, intent(IN) :: nz
   real(8), intent(IN) :: latitude  ! in radians
   real(8), intent(IN) :: albedo0, z(nz)
-  real(8), intent(IN) :: ti(nz), rhocv(nz), fracIR, fracDust, p0
+  real(8), intent(IN) :: ti(nz), rhocv(nz), fracIR, fracDust, patm
   real(8), intent(IN) :: ecc, omega, eps
   real(8), intent(INOUT) :: Tb
   real(8), intent(OUT) :: Tmean1, Tmean3, Qmean
@@ -176,7 +176,7 @@ subroutine ajsub(latitude, albedo0, nz, z, ti, rhocv, &
   nsteps = int(tmax/dt)     ! calculate total number of timesteps
 
   ! Tco2frost = 150.
-  Tco2frost = tfrostco2(p0)
+  Tco2frost = tfrostco2(patm)
 
   if (Tb<=0.) then
      !Tmean0 = 210.         ! black-body temperature of planet
