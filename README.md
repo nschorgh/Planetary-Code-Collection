@@ -34,7 +34,6 @@ Common/julday.for
 Common/psvco2.f  
 Common/tridag.for  
 *Documentation: User Guide Part 1*  
-Mars/Test/  
 
 
 ### Vapor Diffusion Model
@@ -67,7 +66,6 @@ Common/psvco2.f
 Common/tridag.for  
 *Documentation: User Guide Section 3.1  
 Documentation: Schorghofer, N. & Aharonson, O. (2005) J. Geophys. Res. 110, E05003*  
-Mars/Test/   
 
 
 ### Mars Long-Term Thermal Model
@@ -82,8 +80,7 @@ Common/conductionT.f90
 Common/grids.f90  
 Common/psvco2.f  
 Common/tridag.for  
-Mars/MilankOutput/  
-Mars/Test/   
+Mars/MilankOutput/  surface temperatures from last 21Myr  
 
 
 ### Fast (asynchronously-coupled) Method for Subsurface Ice Dynamics
@@ -105,7 +102,6 @@ Common/psv.f
 Common/psvco2.f  
 Common/tridag.for  
 *Documentation: Schorghofer, N. (2010) Icarus 208, 598-607*  
-Mars/Test/  
 
 
 Other Models for Planetary Surfaces
@@ -122,7 +118,6 @@ Common/generalorbit.f
 Common/grids.f90
 Common/tridag.for  
 *Documentation: User Guide Part 1*  
-Common/Test/  
 
 
 ### Asynchronous Models for Temperature, Impact Stirring, and Ice Loss on Asteroids
@@ -201,7 +196,6 @@ Common/tridag.for
 Mars/flux_mars.f90  
 Mars/marsorbit.f90  
 *Documentation: User Guide Part 5*  
-Topo3D/Test/  
 
 
 ### Monte-Carlo Model for Surface-bounded Exospheres

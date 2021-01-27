@@ -33,11 +33,11 @@ program mars_mapii
   write(*,*) 'Minimum ice depth accuracy dz/z=',zacc
   write(*,*) 'Atmospheric pressure=',patm
   
-  open(unit=20,file='mapgrid.dat',status='old') ! the only input
+  open(unit=20,file='mapgrid.dat',status='old',action='read') ! the only input
   
-  open(unit=30,file='z',status='unknown');
-  open(unit=33,file='mapgrid2.dat',status='unknown')
-  open(unit=34,file='means',status='unknown')
+  open(unit=30,file='z',action='write');
+  open(unit=33,file='mapgrid2.dat',action='write')
+  open(unit=34,file='means',action='write')
   
   do ! loop through sites
      read(20,*,end=80) lon,latitude,albedo0,thIn,Tfrost,zdepth
