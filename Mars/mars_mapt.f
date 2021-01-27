@@ -11,7 +11,7 @@ C***********************************************************************
       integer nz
       real*8 dt, zfac, zdepth, icefrac, latitude, thIn, albedo
       real*8 fracIR, fracDust, Fgeotherm, lon, Tfrost
-      real*8 junk, Tb, pfrost, rhoc, psv, patm
+      real*8 junk, Tb, pfrost, rhoc, psv, patm, junk2
       external psv
 
 C-----set input parameters
@@ -42,7 +42,7 @@ C-----set input parameters
       !open(unit=39,file='seasonrho3',status='unknown')
 
       do
-c        read output of mars_mapi
+c        read output of mars_mapi or another file that includes ice table depths
          read(20,*,end=80) lon,latitude,albedo,thIn,Tfrost,zdepth
          print *,lon,latitude,albedo,thIn,Tfrost,zdepth
          if (albedo==-9999. .or. thIn==-9999.) cycle
@@ -54,12 +54,13 @@ c        negative or very large zdepth indicates the absence of ice
          Tb = -9999.
          call jsub(zdepth, latitude*d2r, albedo, thIn, pfrost,
      &        nz/2, rhoc, fracIR, fracDust, patm, Fgeotherm, 2.*dt,
-     &        zfac, icefrac, 1, Tb, junk)
+     &        zfac, icefrac, 1, Tb, junk, junk2)
          call jsub(zdepth, latitude*d2r, albedo, thIn, pfrost,
      &        nz, rhoc, fracIR, fracDust, patm, Fgeotherm, dt, 
-     &        zfac, icefrac, 0, Tb, junk)
+     &        zfac, icefrac, 0, Tb, junk, junk2)
          write(33,'(f7.2,1x,f7.3,2x,f5.3,2x,f5.1,1x,f7.1,2x,f10.4)') 
-     &        lon,latitude,albedo,thIn,Tfrost,zdepth
+     &        lon,latitude,albedo,thIn,Tfrost,zdepth ! merely mirrors input
+         ! additional output from subroutines
       enddo
 
  80   continue

@@ -15,7 +15,7 @@ C***********************************************************************
       real*8 dt, zmax, zfac, zdepth, icefrac, zacc
       real*8 latitude, thIn, albedo0, fracIR, fracDust, delta
       real*8 Fgeotherm, rhoc, lon, Tfrost, pfrost
-      real*8 avdrho, junk, Tb, patm !, htopo
+      real*8 avdrho, junk, junk2, Tb, patm !, htopo
       real*8 psv, rtbis, frostpoint
       external psv, rtbis, frostpoint
 
@@ -70,10 +70,10 @@ C        Empirical relation from Mellon & Jakosky:
 
          call jsub(zmax, latitude*d2r, albedo0, thIn, pfrost,
      &        nz/2, rhoc, fracIR, fracDust, patm, Fgeotherm, 4.*dt, 
-     &        zfac, icefrac, 1, Tb, junk)
+     &        zfac, icefrac, 1, Tb, junk, junk2)
          call jsub(zmax, latitude*d2r, albedo0, thIn, pfrost,
      &        nz,   rhoc, fracIR, fracDust, patm, Fgeotherm,    dt, 
-     &        zfac, icefrac, 0, Tb, avdrho)
+     &        zfac, icefrac, 0, Tb, avdrho, junk2)
          print *, zmax,avdrho
          if (avdrho>=0.) then 
             zdepth=-9999.
@@ -108,21 +108,21 @@ C     finds root with bisection method a la Numerical Recipes (C)
       INTEGER j,nz
       REAL*8 dx,f,fmid,xmid,Tb,rhoc
       real*8 latitude,albedo0,thIn,pfrost,fracIR,fracDust,Fgeotherm,dt
-      real*8 zfac,icefrac,patm
+      real*8 zfac,icefrac,patm,junk2
       real*8 xlower,xupper,fupper,flower
 
 !      call jsub(x2,
 !     &     latitude,albedo0,thIn,pfrost,nz,fracIR,fracDust,
-!     &     patm,Fgeotherm,dt,zfac,icefrac,0,Tb,fmid)
+!     &     patm,Fgeotherm,dt,zfac,icefrac,0,Tb,fmid,junk2)
 !      print *,x2,fmid
 
       Tb = -1.e32
       call jsub(x1,
      &     latitude,albedo0,thIn,pfrost,nz/2,rhoc,fracIR,fracDust,
-     &     patm,Fgeotherm,4.*dt,zfac,icefrac,1,Tb,f)
+     &     patm,Fgeotherm,4.*dt,zfac,icefrac,1,Tb,f,junk2)
       call jsub(x1,
      &     latitude,albedo0,thIn,pfrost,nz,rhoc,fracIR,fracDust,
-     &     patm,Fgeotherm,dt,zfac,icefrac,0,Tb,f)
+     &     patm,Fgeotherm,dt,zfac,icefrac,0,Tb,f,junk2)
       print *,x1,f
       if (f*fmid>=0.) stop 'root must be bracketed in rtbis'
       if (f<0.) then
@@ -140,10 +140,10 @@ C     finds root with bisection method a la Numerical Recipes (C)
         Tb = -1.e32
         call jsub(xmid,
      &       latitude,albedo0,thIn,pfrost,nz/2,rhoc,fracIR,fracDust,
-     &       patm,Fgeotherm,4.*dt,zfac,icefrac,1,Tb,fmid)
+     &       patm,Fgeotherm,4.*dt,zfac,icefrac,1,Tb,fmid,junk2)
         call jsub(xmid,
      &       latitude,albedo0,thIn,pfrost,nz,rhoc,fracIR,fracDust,
-     &       patm,Fgeotherm,dt,zfac,icefrac,0,Tb,fmid)
+     &       patm,Fgeotherm,dt,zfac,icefrac,0,Tb,fmid,junk2)
         print *,xmid,fmid
         if(fmid<=0.) then
            rtbis=xmid

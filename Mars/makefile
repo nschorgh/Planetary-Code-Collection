@@ -41,6 +41,13 @@ mars_mapi: mars_mapi.o marsorbit.o jsub.o flux_mars.o soilthprop_mars.o makefile
 	make -C $(SR) common
 	$(CC) $(LFLAGS) mars_mapi.o $(SR)julday.o marsorbit.o \
 	flux_mars.o $(SR)conductionQ.o $(SR)tridag.o $(SR)conductionT.o \
+	$(SR)grids.o jsub.o soilthprop_mars.o $(SR)psv.o $(SR)psvco2.o
+
+mars_mapii: mars_mapii.o marsorbit.o jsub.o flux_mars.o soilthprop_mars.o \
+	makefile
+	make -C $(SR) common
+	$(CC) $(LFLAGS) mars_mapii.o $(SR)julday.o marsorbit.o \
+	flux_mars.o $(SR)conductionQ.o $(SR)tridag.o $(SR)conductionT.o \
 	$(SR)grids.o jsub.o soilthprop_mars.o $(SR)psv.o $(SR)psvco2.o 
 
 mars_mapi2p: mars_mapi2p.o jsubv.o marsorbit.o flux_mars.o soilthprop_mars.o \

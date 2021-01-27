@@ -1,6 +1,6 @@
 subroutine jsub(zdepth, latitude, albedo0, thIn, pfrost, nz, &
      &     rhoc, fracIR, fracDust, patm, Fgeotherm, dt, zfac, icefrac, & 
-     &     mode, Tb, avdrho)
+     &     mode, Tb, avdrho, zequil)
 !***********************************************************************
 !  jsub: runs thermal model for Mars and returns difference in mean 
 !        annual vapor density between surface and ice at depth zdepth
@@ -8,6 +8,7 @@ subroutine jsub(zdepth, latitude, albedo0, thIn, pfrost, nz, &
 !  OUTPUTS: 
 !           avdrho = difference in annual mean vapor density between
 !                    ice table (or bottom) and atmosphere
+!           zequil = instantaneous depth of equilibrium ice table
 !
 !  IN- or OUTPUT: 
 !                 Tb = temperature at the bottom of the domain,
@@ -30,9 +31,9 @@ subroutine jsub(zdepth, latitude, albedo0, thIn, pfrost, nz, &
   real*8, intent(IN) :: zdepth, latitude, albedo0, thIn, pfrost, rhoc
   real*8, intent(IN) :: fracIR, fracDust, patm, Fgeotherm, dt, zfac, icefrac
   real*8, intent(INOUT) :: Tb
-  real*8, intent(OUT) :: avdrho
+  real*8, intent(OUT) :: avdrho, zequil
   
-  integer nsteps, n, i, nm, din
+  integer nsteps, n, i, nm
   integer iyr, imm, iday
   real*8 T(nz),tmax, time, zmax, Tsurf
   real*8 albedo, emiss0, emiss, Qn, Qnp1, tdays
@@ -41,9 +42,9 @@ subroutine jsub(zdepth, latitude, albedo0, thIn, pfrost, nz, &
   real*8 ti(nz), rhocv(nz), z(nz), Fsurf, m, dE
   real*8 Told(nz), Fsurfold, Tsurfold, Tmean1, Tmean2
   real*8 Tpeak(nz), Tlow(nz), Tco2frost
-  real*8 rhosatav(nz), rhoavs, Tbold, marsLsold, oldtime
+  real*8 rhosatav(nz), rhosatav0, rhoavs, Tbold, marsLsold, oldtime
   integer, external :: julday
-  real*8, external :: flux_mars77, psv, tfrostco2
+  real*8, external :: flux_mars77, psv, tfrostco2, equildepth
 
   select case (mode)
   case (0) ! full mode
@@ -92,7 +93,7 @@ subroutine jsub(zdepth, latitude, albedo0, thIn, pfrost, nz, &
   rhocv(1:nz) = rhoc
   Tpeak(:) = -1.e32
   Tlow(:) = +1.e32
-  rhosatav(:) = 0.
+  rhosatav(:) = 0.; rhosatav0 = 0.
 
   Tsurf = T(1)
   m=0.; Fsurf=0.
@@ -101,7 +102,6 @@ subroutine jsub(zdepth, latitude, albedo0, thIn, pfrost, nz, &
   marsLsold=-1.e32; Tmean2=0.
   Tbold=-1.e32
   oldtime=1.e32
-  din=-1
       
   call setgrid(nz,z,zmax,zfac)
   call smartgrid(nz,z,zdepth,thIn,rhoc,icefrac,ti,rhocv,1,NULL)
@@ -139,7 +139,7 @@ subroutine jsub(zdepth, latitude, albedo0, thIn, pfrost, nz, &
              &           emiss*sigSB*(Tsurfold**4+Tsurf**4))/2.
         m = m + dt*marsDay*dE/Lco2frost
      endif
-     if (Tsurf>Tco2frost.or.m<=0.) then
+     if (Tsurf>Tco2frost .or. m<=0.) then
         albedo = albedo0
         emiss = emiss0
      else
@@ -155,6 +155,7 @@ subroutine jsub(zdepth, latitude, albedo0, thIn, pfrost, nz, &
            rhosatav(i) = rhosatav(i) + psv(T(i))/T(i)
         enddo
         Tmean1 = Tmean1 + Tsurf
+        rhosatav0 = rhosatav0 + psv(Tsurf)/Tsurf
         rhoavs = rhoavs + min(psv(Tsurf),pfrost)/Tsurf
         nm = nm+1
      endif
@@ -177,6 +178,7 @@ subroutine jsub(zdepth, latitude, albedo0, thIn, pfrost, nz, &
   if (mode==0) then
      rhoavs = rhoavs/nm
      rhosatav(1:nz) = rhosatav(1:nz)/nm
+     rhosatav0 = rhosatav0/nm
      !if (avrho1pre>=0.) rhoavs=avrho1pre
      Tmean1 = Tmean1/nm
      !write(31,'(999(f6.2,1x))') (Tpeak(i),i=1,nz)
@@ -188,13 +190,67 @@ subroutine jsub(zdepth, latitude, albedo0, thIn, pfrost, nz, &
         do i=1,nz
            if (z(i)>zdepth) then ! ice
               avdrho = rhosatav(i)-rhoavs
+              !if (i==1) avdrho = zint(0.d0,z(1),rhosatav0,rhosatav(1)) - rhoavs
+              !if (i>1) then
+              !   avdrho = zint(z(i-1),z(i),rhosatav(i-1),rhosatav(i)) - rhoavs
+              !endif
               exit
            endif
         enddo
      endif
+
+     zequil = equildepth(nz, z, rhosatav, rhosatav0, rhoavs)
+     
      write(34,'(f7.3,1x,2(f6.2,1x),2(g10.4,1x))') &
           &        Tmean1,Tlow(nz),Tpeak(nz),avdrho+rhoavs,rhoavs
   endif
   Tb = T(nz)
 end subroutine jsub
 
+
+
+function zint(y1,y2,z1,z2)
+  ! linearly interpolate between two values
+  implicit none
+  real*8 zint
+  real*8, intent(IN) :: y1,y2,z1,z2
+  zint = (y1*z2 - y2*z1)/(y1-y2)  ! yint = 0
+end function zint
+
+
+
+function equildepth(nz, z, rhosatav, rhosatav0, avrhoatm)
+!***********************************************************************
+! returns equilibrium depth for given thermal properties
+! find depth where rhosatav = avrhoatm	     
+! this is not the true (final) equilibrium depth because of tifeedback
+!***********************************************************************
+  implicit none
+  real*8 equildepth
+  integer, intent(IN) :: nz
+  real*8, intent(IN) :: z(nz), rhosatav(nz), rhosatav0, avrhoatm
+  integer i, kE
+  real*8 zdepthE
+  real*8, external :: zint
+  
+  zdepthE = -9999.  ! unstable at all depths
+  kE = -9
+
+  ! find shallowest point where ice is stable
+  do i=1,nz
+     if (rhosatav(i) < avrhoatm) then
+        kE = i
+        exit
+     endif
+  enddo
+
+  !if (kE>=1) zdepthE = z(kE)
+  if (kE>1) then  ! interpolate
+     zdepthE = zint( avrhoatm-rhosatav(kE-1), avrhoatm-rhosatav(kE), &
+          & z(kE-1), z(kE) )
+  endif
+  if (kE==1) zdepthE = zint(avrhoatm-rhosatav0,avrhoatm-rhosatav(1),0.d0,z(1))
+  if (zdepthE>z(nz)) zdepthE = -9999. ! just in case
+
+  equildepth = zdepthE
+end function equildepth

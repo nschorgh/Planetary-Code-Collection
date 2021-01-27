@@ -51,6 +51,10 @@ mars_mapi.f: (main program)
 	determines equilibrium ice table depth for a list of locations (such as the entire 
 	globe); contains leftover Numerical Recipes code (C)
 
+mars_mapii.f90: (main program)
+	determines equilibrium ice table depth for a list of locations,
+	same functionality as mars_mapi.f, but uses a different method
+
 mapgrid.dat:
 	Example input file for mars_mapi.f and mars_mapt.f
 

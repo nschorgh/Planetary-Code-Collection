@@ -49,7 +49,8 @@ Mars/Misc/  an animation for illustration
 
 ### Equilibrium Ice Table
 
-Mars/mars_mapi.f: (main program)  
+Mars/mars_mapi.f: (main program)
+Mars/mars_mapii.f90: (main program)  
 Mars/mars_mapt.f: (main program)  
 Mars/mars_mapip2.f90: (main program)  
 Mars/jsub.f90    
