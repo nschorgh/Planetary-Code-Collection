@@ -217,7 +217,7 @@ subroutine subsurfaceconduction(T,Tsurf,dtsec,Qn,Qnp1,emiss,solarDay)
         exit
      end do
      if (z(1)<1.e-5) print *,'WARNING: first grid point is too shallow'
-     open(unit=30,file='z',status='unknown');
+     open(unit=30,file='z',action='write');
      write(30,*) (z(i),i=1,nz)
      close(30)
 

@@ -96,7 +96,7 @@ PROGRAM cratersQ_mars
   print *,'Output file extension ',ext
 
   ! read input parameters from file
-  open(10,file='site.par')
+  open(10,file='site.par',action='read')
   read(10,NML=site)
   close(10)
   

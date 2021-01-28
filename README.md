@@ -6,14 +6,14 @@ Planetary Code Collection
 
 This program collection contains:
 
-* semi-implicit one-dimensional thermal model for planetary surfaces
-* explicit subsurface vapor diffusion and ice deposition model
-* long-term ice evolution:  
+* Semi-implicit one-dimensional thermal model for planetary surfaces (Crank-Nicolson with nonlinear b.c.)  
+* Explicit subsurface vapor diffusion and ice deposition model (1D diffusion, sublimation, adsorption)  
+* Long-term ice evolution (temperature and ice content):  
   * equilibrium ice table on Mars
-  * fast (asynchronously coupled) method for subsurface-atmosphere vapor exchange on Mars
-  * fast (asynchronously coupled) method for ice retreat on asteroids
+  * asynchronously coupled method for subsurface-atmosphere vapor exchange on Mars
+  * asynchronously coupled method for ice retreat on asteroids
   * lunar ice pump (boundary-value formulation)   
-* 3D model of shadowing, illumination, and scattering for airless bodies, Mars, and Mauna Kea
+* 3D model of direct insolation, terrain shadowing, and terrain irradiance for airless bodies, Mars, and Mauna Kea
 * Monte-Carlo model for ballistic hops in the exospheres of the Moon and Ceres
 
 
@@ -48,10 +48,10 @@ Mars/Misc/  an animation for illustration
 
 ### Equilibrium Ice Table
 
-Mars/mars_mapi.f: (main program)  
-Mars/mars_mapii.f90: (main program)  
-Mars/mars_mapt.f: (main program)  
-Mars/mars_mapip2.f90: (main program)  
+Mars/mars_mapi.f (main program)  
+Mars/mars_mapii.f90 (main program)  
+Mars/mars_mapt.f (main program)  
+Mars/mars_mapi2p.f90 (main program)  
 Mars/jsub.f90    
 Mars/jsubv.f90  
 Mars/marsorbit.f90  
@@ -73,7 +73,7 @@ Documentation: Schorghofer, N. & Aharonson, O. (2005) J. Geophys. Res. 110, E050
 Mars/insol_driver.f90 (main program)  
 Mars/tempr_driver.f90 (main program)  
 Mars/flux_mars.f90  
-Mars/generalorbit.f90  
+Mars/generalorbit.f  
 Mars/soilthprop_mars.f90  
 Common/conductionQ.f90  
 Common/conductionT.f90  
@@ -85,9 +85,9 @@ Mars/MilankOutput/  surface temperatures from last 21Myr
 
 ### Fast (asynchronously-coupled) Method for Subsurface Ice Dynamics
 
-Mars/stabgrow_fast.f90: (main program)  
-Mars/exper_fast.f90: (main program)  
-Mars/mars_fast.f90: (main program)  
+Mars/stabgrow_fast.f90 (main program)  
+Mars/exper_fast.f90 (main program)  
+Mars/mars_fast.f90 (main program)  
 Mars/fast_modules.f90  
 Mars/fast_subs_univ.f90  
 Mars/fast_subs_exper.f90  
@@ -109,27 +109,27 @@ Other Models for Planetary Surfaces
 
 ### Basic Thermal Model for Airless Bodies
 
-Asteroids/asteroid_thermal.f90: (main program)  
+Asteroids/asteroid_thermal.f90 (main program)  
 Asteroids/oneasteroid_thermal1d.f90  
 Asteroids/insolonly.f90   
 Common/conductionQ.f90  
 Common/flux_noatm.f90  
-Common/generalorbit.f
-Common/grids.f90
+Common/generalorbit.f  
+Common/grids.f90  
 Common/tridag.for  
 *Documentation: User Guide Part 1*  
 
 
 ### Asynchronous Models for Temperature, Impact Stirring, and Ice Loss on Asteroids
 
-Asteroids/asteroid_fast1.f90: (main program)  
-Asteroids/asteroid_fast2.f90: (main program)  
+Asteroids/asteroid_fast1.f90 (main program)  
+Asteroids/asteroid_fast2.f90 (main program)  
 Asteroids/fast_modules_asteroid.f90  
 Asteroids/fast_subs_asteroid1.f90  
 Asteroids/fast_subs_asteroid2.f90  
 Asteroids/impactstirring.f90  
 Asteroids/common_subs.f90  
-Asteroids/sphere1d_implicit.f90: (main program)  
+Asteroids/sphere1d_implicit.f90 (main program)  
 Common/conductionQ.f90  
 Common/derivs.f90  
 Common/flux_noatm.f90  
@@ -143,7 +143,7 @@ Common/tridag.for
 
 ### Lunar Ice Pump
 
-Lunar/oscidea1.f90: (main program)  
+Lunar/oscidea1.f90 (main program)  
 Lunar/oscidea_subs.f90  
 Lunar/subl_h2o.f90  
 *Documentation: User Guide Section 3.3  
@@ -152,8 +152,8 @@ Documentation: Schorghofer, N. & Aharonson, O. (2014) ApJ 788, 169*
 
 ### Irradiance Model for Terrestrial Analog
 
-EarthAnalogs/insol3d_earth.f90: (main program)  
-EarthAnalogs/insol_flat.f90: (simple main program)  
+EarthAnalogs/insol3d_earth.f90 (main program)  
+EarthAnalogs/insol_flat.f90 (simple main program)  
 EarthAnalogs/mk_atmosphere.f90  
 EarthAnalogs/sunpos.f90  
 EarthAnalogs/filemanager.f90  
@@ -166,14 +166,14 @@ Topo3D/topo3d_subs.f90
 
 ### Terrain Shadowing and Illumination
 
-Topo3D/shadows.f90: (main program)  
-Topo3D/fieldofviews.f90: (main program)  
-Topo3D/cratersQ_equilbr.f90: (main program)  
-Topo3D/cratersQ_moon.f90: (main program)  
-Topo3D/cratersQ_mars.f90: (main program)  
-Topo3D/cratersQ_mars_parallel.f90: (main program)  
-Topo3D/cratersQ_mars_full.f90: (main program)  
-Topo3D/insol3d_mars.f90: (main program)  
+Topo3D/shadows.f90 (main program)  
+Topo3D/fieldofviews.f90 (main program)  
+Topo3D/cratersQ_equilbr.f90 (main program)  
+Topo3D/cratersQ_moon.f90 (main program)  
+Topo3D/cratersQ_mars.f90 (main program)  
+Topo3D/cratersQ_mars_parallel.f90 (main program)  
+Topo3D/cratersQ_mars_full.f90 (main program)  
+Topo3D/insol3d_mars.f90 (main program)  
 Topo3D/filemanager.f90  
 Topo3D/topo3d_modules.f90   
 Topo3D/topo3d_common.f90  
@@ -183,7 +183,7 @@ Topo3D/fieldofview_subs.f90
 Topo3D/topo3d_subs.f90  
 Topo3D/topo3d_subs_mars.f90  
 Topo3D/multigrid.f90  
-Topo3D/fieldproperties.f90: (main program)  
+Topo3D/fieldproperties.f90 (main program)  
 Topo3D/hpsort.for  
 Topo3D/makegaussian.c   
 Common/conductionQ.f90    
@@ -200,8 +200,8 @@ Mars/marsorbit.f90
 
 ### Monte-Carlo Model for Surface-bounded Exospheres
 
-Exosphere/moon_exo.f90: (main program)  
-Exosphere/ceres_exo.f90: (main program)  
+Exosphere/moon_exo.f90 (main program)  
+Exosphere/ceres_exo.f90 (main program)  
 Exosphere/body.f90  
 Exosphere/montecarlo.f90  
 Exosphere/geogrid.f90  
