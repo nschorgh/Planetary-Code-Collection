@@ -6,7 +6,7 @@ subroutine subsurfaceconduction_mars(T,Tsurf,dtsec,Qn,Qnp1,m,Fsurf,init, &
   implicit none
   real(8), intent(INOUT) :: T(:)  ! in interface declared as T(:), not T(nz)
   real(8), intent(INOUT) :: Tsurf, m, Fsurf
-  real(8), intent(IN) :: dtsec,Qn,Qnp1
+  real(8), intent(IN) :: dtsec, Qn, Qnp1
   logical, intent(IN) :: init
   real(8), intent(IN), optional :: Tco2frost, thIn, emiss
   real(8), parameter :: Fgeotherm = 0.0 ! [W/m^2]
@@ -18,9 +18,7 @@ subroutine subsurfaceconduction_mars(T,Tsurf,dtsec,Qn,Qnp1,m,Fsurf,init, &
   real(8) z(nz), ti(nz), rhocv(nz)
 
   if (init) then ! initialize grid
-     if (.not.present(thIn)) then
-        error stop 'missing argument'
-     end if
+     if (.not.present(thIn)) error stop 'missing argument'
      
      ti(:) = thIn  ! adjust
      !rhocv(:) = 1200.*800.
@@ -89,12 +87,10 @@ elemental subroutine equilibrT_mars(Tsurf, dtsec, Qnm1, Qn, m, Tco2frost, emiss)
   ! this is the analog to subsurfaceconduction_mars for thIn=0
   use miscparams, only : sigSB, Lco2frost
   implicit none
-  real*8, intent(IN) :: Qn, Qnm1, Tco2frost, emiss, dtsec
-  real*8, intent(OUT) :: Tsurf
-  real*8, intent(INOUT) :: m
-  !real(8), parameter :: sigSB = 5.6704e-8
-  !real(8), parameter :: Lco2frost = 6.0e5 ! [J/kg]
-  real*8 Tsurfold, dE
+  real(8), intent(IN) :: Qn, Qnm1, Tco2frost, emiss, dtsec
+  real(8), intent(OUT) :: Tsurf
+  real(8), intent(INOUT) :: m
+  real(8) Tsurfold, dE
   
   Tsurf = (Qn/emiss/sigSB)**0.25
   Tsurfold = (Qnm1/emiss/sigSB)**0.25

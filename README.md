@@ -23,7 +23,7 @@ Mars Subsurface Ice Model (M-SIM)
 
 ### Mars Thermal Model
 
-Mars/mars_thermal1d.f: (main program)  
+Mars/mars_thermal1d.f (main program)  
 Mars/flux_mars.f90  
 Mars/marsorbit.f90  
 Mars/soilthprop_mars.f90  
@@ -38,12 +38,12 @@ Common/tridag.for
 
 ### Vapor Diffusion Model
 
-Mars/exper_thermal1d.f: (main program)  
+Mars/exper_thermal1d.f (main program)  
 Mars/vapordiffusioni.f  
 Mars/adsorption.f  
 *Documentation: User Guide Part 2  
 Documentation: Schorghofer, N. & Aharonson, O. (2005) J. Geophys. Res. 110, E05003, Appendices*  
-Mars/Misc/  an animation for illustration  
+Mars/Misc/  (an animation for illustration)  
 
 
 ### Equilibrium Ice Table
@@ -80,7 +80,7 @@ Common/conductionT.f90
 Common/grids.f90  
 Common/psvco2.f  
 Common/tridag.for  
-Mars/MilankOutput/  surface temperatures from last 21Myr  
+Mars/MilankOutput/  (surface temperatures from last 21Myr)  
 
 
 ### Fast (asynchronously-coupled) Method for Subsurface Ice Dynamics

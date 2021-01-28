@@ -269,7 +269,7 @@ PROGRAM cratersQ_mars
   enddo
   close(21)
   if (subsurface) then
-     Tbottom=Tbottom/nm
+     Tbottom = Tbottom/nm
      do i=Mx1,Mx2
         do j=My1,My2
            write(23,'(2(i5,1x),2(1x,f7.1))') i,j,Tmean(i,j),Tbottom(i,j)

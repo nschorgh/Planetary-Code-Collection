@@ -263,9 +263,9 @@ MODULE allinterfaces
   interface
      elemental subroutine equilibrT_mars(Tsurf,dtsec,Qnm1,Qn,m,Tco2frost,emiss)
        implicit none
-       real*8, intent(IN) :: Qn, Qnm1, Tco2frost, emiss, dtsec
-       real*8, intent(OUT) :: Tsurf
-       real*8, intent(INOUT) :: m
+       real(8), intent(IN) :: Qn, Qnm1, Tco2frost, emiss, dtsec
+       real(8), intent(OUT) :: Tsurf
+       real(8), intent(INOUT) :: m
      end subroutine equilibrT_mars
   end interface
   

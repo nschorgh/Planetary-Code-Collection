@@ -51,7 +51,6 @@ program mars_mapii
      
      print *,lon,latitude,albedo0,thIn,Tfrost
      if (albedo0==-9999..or.thIn==-9999..or.Tfrost==-9999.) cycle
-     ! zdepth input is ignored
      ! Empirical relation from Mellon & Jakosky:
      rhoc = 800.*(150.+100.*sqrt(34.2+0.714*thIn))
      delta = thIn/rhoc*sqrt(marsDay/pi) ! diurnal skin depth
@@ -59,7 +58,7 @@ program mars_mapii
      Tb = -1.e32
 
      ! iterations of equilibrium ice table due to tifeedback
-     zdepth = zmax
+     if (zdepth<0.) zdepth = zmax
      zdepth_old = zdepth
      call jsub(zdepth, latitude*d2r, albedo0, thIn, pfrost, &
           &        nz/2, rhoc, fracIR, fracDust, patm, Fgeotherm, 4.*dt, zfac, &
