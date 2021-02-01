@@ -31,7 +31,7 @@ C-----set input parameters
       zacc = 0.1  ! desired min. relative accuracy of ice table depth
       patm = 600.
 
-      print *,'RUNNING MARS_MAPI - EQUILIBRIUM ICE TABLE VIA BISECTION'
+      print *,'RUNNING MARS_MAP - EQUILIBRIUM ICE TABLE VIA BISECTION'
       write(*,*) 'Global model parameters'
       write(*,*) 'nz=',nz,' zfac=',zfac,' dt=',dt
       write(*,*) 'fracIR=',fracIR,' fracDust=',fracDust
@@ -69,10 +69,10 @@ C        Empirical relation from Mellon & Jakosky:
          Tb = -1.e32
 
          call jsub(zmax, latitude*d2r, albedo0, thIn, pfrost,
-     &        nz/2, rhoc, fracIR, fracDust, patm, Fgeotherm, 4.*dt, 
+     &        nz/2, rhoc, fracIR, fracDust, patm, Fgeotherm, 2*dt, 
      &        zfac, icefrac, 1, Tb, junk, junk2)
          call jsub(zmax, latitude*d2r, albedo0, thIn, pfrost,
-     &        nz,   rhoc, fracIR, fracDust, patm, Fgeotherm,    dt, 
+     &        nz,   rhoc, fracIR, fracDust, patm, Fgeotherm,   dt, 
      &        zfac, icefrac, 0, Tb, avdrho, junk2)
          print *, zmax,avdrho
          if (avdrho>=0.) then 
@@ -119,7 +119,7 @@ C     finds root with bisection method a la Numerical Recipes (C)
       Tb = -1.e32
       call jsub(x1,
      &     latitude,albedo0,thIn,pfrost,nz/2,rhoc,fracIR,fracDust,
-     &     patm,Fgeotherm,4.*dt,zfac,icefrac,1,Tb,f,junk2)
+     &     patm,Fgeotherm,2*dt,zfac,icefrac,1,Tb,f,junk2)
       call jsub(x1,
      &     latitude,albedo0,thIn,pfrost,nz,rhoc,fracIR,fracDust,
      &     patm,Fgeotherm,dt,zfac,icefrac,0,Tb,f,junk2)
@@ -140,7 +140,7 @@ C     finds root with bisection method a la Numerical Recipes (C)
         Tb = -1.e32
         call jsub(xmid,
      &       latitude,albedo0,thIn,pfrost,nz/2,rhoc,fracIR,fracDust,
-     &       patm,Fgeotherm,4.*dt,zfac,icefrac,1,Tb,fmid,junk2)
+     &       patm,Fgeotherm,2*dt,zfac,icefrac,1,Tb,fmid,junk2)
         call jsub(xmid,
      &       latitude,albedo0,thIn,pfrost,nz,rhoc,fracIR,fracDust,
      &       patm,Fgeotherm,dt,zfac,icefrac,0,Tb,fmid,junk2)

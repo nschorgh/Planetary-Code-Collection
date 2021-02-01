@@ -122,6 +122,7 @@ subroutine smartgrid(nz,z,zdepth,thIn,rhoc,porosity,ti,rhocv,layertype,icefrac)
         error stop 'invalid layer type'
      end select
 
+     ! Thermal skin depth is proportional to sqrt(kappa)
      ! thermal diffusivity kappa = k/(rho*c) = I^2/(rho*c)**2
      stretch = (newti/thIn)*(rhoc/newrhoc) ! ratio of sqrt(thermal diffusivity)
      
@@ -138,7 +139,7 @@ subroutine smartgrid(nz,z,zdepth,thIn,rhoc,porosity,ti,rhocv,layertype,icefrac)
         ! print *,j,z(j),ti(j),rhocv(j)
      enddo
      do j=b+1,nz
-        z(j) = z(b)+stretch*(z(j)-z(b))
+        z(j) = z(b) + stretch*(z(j)-z(b))
      enddo
      
      ! print *,'zmax=',z(nz),' b=',b,' stretch=',stretch

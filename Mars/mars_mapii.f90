@@ -24,7 +24,7 @@ program mars_mapii
   zacc = 0.1  ! desired min. relative accuracy of ice table depth
   patm = 600.
   
-  print *,'RUNNING MARS_MAPII - EQUILIBRIUM ICE TABLE VIA ITERATION'
+  print *,'RUNNING MARS_MAP - EQUILIBRIUM ICE TABLE VIA ITERATION'
   write(*,*) 'Global model parameters'
   write(*,*) 'nz=',nz,' zfac=',zfac,' dt=',dt
   write(*,*) 'fracIR=',fracIR,' fracDust=',fracDust
@@ -61,20 +61,22 @@ program mars_mapii
      if (zdepth<0.) zdepth = zmax
      zdepth_old = zdepth
      call jsub(zdepth, latitude*d2r, albedo0, thIn, pfrost, &
-          &        nz/2, rhoc, fracIR, fracDust, patm, Fgeotherm, 4.*dt, zfac, &
+          &        nz/2, rhoc, fracIR, fracDust, patm, Fgeotherm, 2*dt, zfac, &
           &        icefrac, 1, Tb, junk, zequil)
      do k=1,12
         call jsub(zdepth, latitude*d2r, albedo0, thIn, pfrost, &
-             &     nz,   rhoc, fracIR, fracDust, patm, Fgeotherm,    dt, zfac, &
+             &     nz,   rhoc, fracIR, fracDust, patm, Fgeotherm,   dt, zfac, &
              &     icefrac, 0, Tb, avdrho, zequil)
 
         zdepth = zequil
         if (zequil<0.) exit
         if (zdepth > zdepth_old) then ! if advancing downward
+           ! move downward at reduced rate
            stretch = stretchfactor(thIn,rhoc,icefrac,1,0.d0) ! match jsub
            zdepth = zdepth_old + (zdepth-zdepth_old)/stretch
         end if
         !print *,k,'zdepth=',zdepth
+        !if (zdepth > zdepth_old) exit ! appropriate if starting at zdepth=zmax
         if (abs(zdepth-zdepth_old) < zacc/2.*zdepth) exit
         zdepth_old = zdepth
      end do
@@ -124,10 +126,11 @@ function stretchfactor(thIn,rhoc,porosity,layertype,icefrac)
      error stop 'invalid layer type'
   end select
 
-  ! The length-scale of the temperature gradient is proportional to
-  ! sqrt(thermal diffusivity).
+  ! thermal conductivity k = I^2/(rho*c)
+  ! Thermal skin depth is proportional to sqrt(thermal diffusivity).
   ! thermal diffusivity kappa = k/(rho*c) = I^2/(rho*c)**2
-  stretchfactor = (newti/thIn)*(rhoc/newrhoc) ! sqrt(icy)/sqrt(ice-free)
+  !stretchfactor = (newti/thIn)*(rhoc/newrhoc) ! sqrt(icy)/sqrt(ice-free)
+  stretchfactor = (newti/thIn)**2 / (newrhoc/rhoc)  ! k(icy)/k(ice-free)
   
   !print *,'stretch=',stretchfactor
 end function stretchfactor

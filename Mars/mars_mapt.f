@@ -53,7 +53,7 @@ c        read output of mars_mapi or another file that includes ice table depths
 c        negative or very large zdepth indicates the absence of ice
          Tb = -9999.
          call jsub(zdepth, latitude*d2r, albedo, thIn, pfrost,
-     &        nz/2, rhoc, fracIR, fracDust, patm, Fgeotherm, 2.*dt,
+     &        nz/2, rhoc, fracIR, fracDust, patm, Fgeotherm, 2*dt,
      &        zfac, icefrac, 1, Tb, junk, junk2)
          call jsub(zdepth, latitude*d2r, albedo, thIn, pfrost,
      &        nz, rhoc, fracIR, fracDust, patm, Fgeotherm, dt, 
