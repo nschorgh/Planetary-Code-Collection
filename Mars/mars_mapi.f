@@ -31,7 +31,7 @@ C-----set input parameters
       zacc = 0.1  ! desired min. relative accuracy of ice table depth
       patm = 600.
 
-      print *,'RUNNING MARS_MAP-ICE TABLE'
+      print *,'RUNNING MARS_MAPI - EQUILIBRIUM ICE TABLE VIA BISECTION'
       write(*,*) 'Global model parameters'
       write(*,*) 'nz=',nz,' zfac=',zfac,' dt=',dt
       write(*,*) 'fracIR=',fracIR,' fracDust=',fracDust

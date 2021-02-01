@@ -102,7 +102,7 @@ subroutine jsub(zdepth, latitude, albedo0, thIn, pfrost, nz, &
   marsLsold=-1.e32; Tmean2=0.
   Tbold=-1.e32
   oldtime=1.e32
-  zequil = -9999.
+  zequil=-9999.
       
   call setgrid(nz,z,zmax,zfac)
   call smartgrid(nz,z,zdepth,thIn,rhoc,icefrac,ti,rhocv,1,NULL)
@@ -214,7 +214,7 @@ function zint(y1,y2,z1,z2)
   ! linearly interpolate between two values
   implicit none
   real*8 zint
-  real*8, intent(IN) :: y1,y2,z1,z2
+  real*8, intent(IN) :: y1, y2, z1, z2
   zint = (y1*z2 - y2*z1)/(y1-y2)  ! yint = 0
 end function zint
 
@@ -239,7 +239,7 @@ function equildepth(nz, z, rhosatav, rhosatav0, avrhoatm)
 
   ! find shallowest point where ice is stable
   do i=1,nz
-     if (rhosatav(i) < avrhoatm) then
+     if (rhosatav(i) <= avrhoatm) then
         kE = i
         exit
      endif

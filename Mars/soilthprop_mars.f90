@@ -33,10 +33,6 @@ pure subroutine soilthprop(porosity,fill,rhocobs,tiobs,layertype, &
 
   select case (layertype)
   case (1) ! interstitial ice
-     !fill(1) = rhof(1)/icedensity
-     !do j=2,nz
-     !   fill(j) = (rhof(j)+rhof(j-1))/2./icedensity ! check indices
-     !enddo
      newrhoc = rhocobs + porosity*fill*icedensity*cice
      if (fill>0.) then
         !--linear addition (option A)
@@ -125,8 +121,9 @@ subroutine smartgrid(nz,z,zdepth,thIn,rhoc,porosity,ti,rhocv,layertype,icefrac)
      case default
         error stop 'invalid layer type'
      end select
-     
-     stretch = (newti/thIn)*(rhoc/newrhoc)
+
+     ! thermal diffusivity kappa = k/(rho*c) = I^2/(rho*c)**2
+     stretch = (newti/thIn)*(rhoc/newrhoc) ! ratio of sqrt(thermal diffusivity)
      
      b = 1
      do j=1,nz

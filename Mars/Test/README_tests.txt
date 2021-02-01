@@ -11,7 +11,7 @@ reads input.par and produces outputs 'Tprofile', 'Tsurface', and 'z'
 
 
 
-2. Equilibrium ice table for a list of sites:
+2a. Equilibrium ice table for a list of sites:
 
 make mars_mapi
 
@@ -26,6 +26,17 @@ make mars_mapt
 
 reads 'mapgrid2.dat' and outputs 'mapgrid3.dat', which should be idential to
 'mapgrid2.dat', as well as 'means'.
+
+
+
+2a. Equilibrium ice table for a list of sites using mars_mapii:
+
+make mars_mapi
+
+./a.out
+
+reads inputs from 'mapgrid.dat' and outputs 'mapgrid2.dat';
+compare with 'mapgrid2.ii'
 
 
 

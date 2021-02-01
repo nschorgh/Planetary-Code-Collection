@@ -96,7 +96,8 @@ PROGRAM asteroid_fast1
   icetime = - earliest*timestep
   print *,icetime
   print *,'Spin-up begins here'
-  bssum=spinupfac*(spinupfac**SPINUPN-1)/(spinupfac-1.) ! sum_{j=1,n} a^j = a (a^n-1)/(a-1)
+  ! sum_{j=1,n} a^j = a (a^n-1)/(a-1)
+  bssum = spinupfac*(spinupfac**SPINUPN-1)/(spinupfac-1.)
   print *,'Spin-up', SPINUPN,'steps over',timestep,'years'
   do i=1,SPINUPN
      bigstep = spinupfac**i/bssum*timestep
@@ -172,8 +173,10 @@ subroutine outputskindepths(nz,z,zmax,porosity,icefrac)
      print *,'  ',i-1,' grid points within ice-free diurnal skin depth'
      exit
   end do
-  print *,'  zmax=',zmax/(sqrt(solsperyear)*delta),'times seasonal ice-free skin depth'
-  print *,'  zmax=',zmax/(sqrt(solsperyear)*delta*stretch),'times seasonal filled skin depth'
+  print *,'  zmax=',zmax/(sqrt(solsperyear)*delta), &
+       & 'times seasonal ice-free skin depth'
+  print *,'  zmax=',zmax/(sqrt(solsperyear)*delta*stretch), &
+       & 'times seasonal filled skin depth'
   write(*,'(3x,a,3(1x,f6.1))') 'Nominal thermal inertia extremes',thIn,newti
   if (i<=5) stop 'Not enough grid points'
 end subroutine outputskindepths
