@@ -11,6 +11,7 @@ program insol3d_earth
   use newhorizons
   implicit none
   real(8), parameter :: pi=3.1415926535897932, d2r=pi/180.
+  real(8), parameter :: zero=0.
 
   integer nsteps, n, i, j, nm
   real(8) tmax, edays, dtmin, latitude
@@ -23,10 +24,8 @@ program insol3d_earth
   real(8) Qflat, Qflatm, alltime
   real(8) I0, D0, S0, unsd  ! atmosphere
   real(8) :: oldHours = -999.
-
   type(cTime) udtTime
-  real(8), parameter :: zero=0.
-  logical, parameter :: atmosphere=.true.
+  logical, parameter :: atmosphere = .true.
 
   allocate(h(NSx,NSy), SlopeAngle(NSx,NSy), azFac(NSx,NSy))
   allocate(Qn(NSx,NSy), Qsw(NSx,NSy))
@@ -76,14 +75,14 @@ program insol3d_earth
      do i=2,NSx-1
         do j=2,NSy-1
            emax = getonehorizon(i,j,azSun)
-           Qn(i,j)=flux_wshad(R,sinbeta,azSun,SlopeAngle(i,j),azFac(i,j),emax)
+           Qn(i,j) = flux_wshad(R,sinbeta,azSun,SlopeAngle(i,j),azFac(i,j),emax)
         end do
      end do
      Qflat = flux_wshad(R,sinbeta,azSun,zero,zero,zero)
      
      if (atmosphere) then
         unsd = mk_atmosphere(dZenithAngle*d2r,I0,D0)
-        S0=1365./R**2  ! must be the same as in flux_wshad
+        S0 = 1365./R**2  ! must be the same as in flux_wshad
         Qsw(:,:) = Qn(:,:)*I0 + S0*D0  ! do not use skysize
         Qflat = Qflat*I0 + S0*D0
      else
@@ -96,7 +95,7 @@ program insol3d_earth
         Qmeans = Qmeans + Qsw
         where (Qsw>Qmax) Qmax=Qsw
         Qflatm = Qflatm + Qflat
-        nm=nm+1
+        nm = nm+1
         
         where (Qn>0.) daytime = daytime + dtmin
         alltime = alltime + dtmin
@@ -125,7 +124,7 @@ program insol3d_earth
      do j=2,NSy-1
         write(21,'(2(i4,1x),f9.2,2x,f6.4,2(1x,f6.1),1x,f6.3)') &
              & i,j,h(i,j),SlopeAngle(i,j),Qmeans(i,j),Qmax(i,j),daytime(i,j)
-        !write(21,'(2(i4,1x),f9.2,2x,f6.4,5(1x,f6.1),1x,f5.1)') & 
+        !write(21,'(2(i4,1x),f9.2,2x,f6.4,5(1x,f6.1),1x,f5.1)') &
         !     & i,j,h(i,j),SlopeAngle(i,j),Qn(i,j),Qmax(i,j)
         !write(22,'(2(i4,1x),f9.2,2(1x,f6.1),3(1x,f6.3))') i,j,h(i,j), &
         !     & -999.,-999.,daytime(i,j),shortday(i,j),longday(i,j)

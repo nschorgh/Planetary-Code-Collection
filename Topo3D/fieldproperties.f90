@@ -48,9 +48,9 @@ PROGRAM fieldproperties
   do i=2,NSx-1
      do j=2,NSy-1
         write(21,'(2(i4,1x),f9.2,2x,1x,f5.3,2x,f6.3)') &
-             & i,j,h(i,j),2*pi-skysize1(i,j),landsize(i,j)
+             & i,j,h(i,j),2*pi-skysize2(i,j),gterm(i,j)
         !write(21,'(2(i4,1x),f9.2,3(2x,f6.3))') &
-        !     & i,j,h(i,j),viewfactor(i,j),gterm(i,j)
+        !     & i,j,h(i,j),2*pi-skysize1(i,j),landsize(i,j)
      enddo
   enddo
   close(21)

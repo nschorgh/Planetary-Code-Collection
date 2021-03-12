@@ -11,7 +11,6 @@ C   where I=thermal inertia [J m^-2 K^-1 s^-1/2], rho=density [kg m^-3],
 C   c=specific heat [J K^-1 kg^-1], P=period [s]
 C   Grid: surface is at z=0; T(i) is at z(i)
 C***********************************************************************
-
       implicit none
       integer NMAX
       real*8 pi, d2r, zero, earthDay, marsDay
@@ -23,6 +22,7 @@ C***********************************************************************
       parameter (Lco2frost=6.0e5)
 
       integer nz, nsteps, n, i, nm
+      integer julday, iyr, imm, iday
       real*8 T(NMAX), tmax, time, dt, zmax, dz, zfac
       real*8 latitude, thermalInertia, albedo, albedo0, emiss, emiss0
       real*8 fracIR, fracDust, rhoc, delta
@@ -32,7 +32,7 @@ C***********************************************************************
       real*8 ti(NMAX), Tsurf, rhocv(NMAX), z(NMAX), Told(NMAX)
       real*8 co2albedo, Fgeotherm, Tsurfold, Fsurf, Fsurfold, m, dE
       real*8 co2emiss, Tmean, Tmean2, geof, ps, pb, psv
-      integer julday, iyr, imm, iday
+!     real*8 psurf, psurf_season, tfrostco2
       character*100 dum1
       character*40 fileout1, fileout2  ! character arrays for output filenames
       external julday, flux_mars77, psv
@@ -134,8 +134,6 @@ C-----initialize
       open(unit=22,file=fileout2,status='unknown') ! temperature profile
       HA = 2.*pi*time   ! hour angle
 C     net flux: solar insolation + IR
-!      Qn = flux(marsR,marsDec,latitude,HA,albedo,
-!     &     fracir,fracdust,surfaceSlope,azFac)
       Qn = flux_mars77(marsR,marsDec,latitude,HA,albedo,fracir,fracdust)
 
 C-----loop over time steps 
@@ -145,8 +143,8 @@ C        Solar insolation and IR at future time step
          tdays = time*(marsDay/earthDay)  ! parenthesis may improve roundoff
          call marsorbit(dt0_j2000,tdays,marsLs,marsDec,marsR) 
          HA = 2.*pi*mod(time,1.d0)    ! hour angle
-!         Qnp1 = flux(marsR,marsDec,latitude,HA,albedo,
-!     &        fracir,fracdust,surfaceSlope,azFac)
+!        psurf = psurf_season(520d0,marsLs) ! seasonally varying surf. pressure
+!        Tco2frost = tfrostco2(psurf)
          Qnp1 = flux_mars77(marsR,marsDec,latitude,HA,albedo,
      &        fracir,fracdust)
          Tsurfold = Tsurf
