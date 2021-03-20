@@ -13,17 +13,17 @@ def conductionQ(nz,z,dt,Qn,Qnp1,T,ti,rhoc,emiss,Fgeotherm,Fsurf):
 #   BC (z=0): Q(t) + kT_z = em*sig*T^4
 #   BC (z=L): heat flux = Fgeotherm
 #
-#   nz = number of grid points
+#   nz = number of grid points (not counting the surface)
 #   dt = time step
 #   Qn,Qnp1 = net solar insolation at time steps n and n+1 [W/m^2]
-#   T = vertical temperature profile [K]  (in- and output)  
+#   T = vertical temperature profile [K]  (in- and output)
+#   T[0] = surface temperature [K]  (in- and output)
 #   ti = thermal inertia [J m^-2 K^-1 s^-1/2]  VECTOR
 #   rhoc = rho*c  VECTOR where rho=density [kg/m^3] and 
 #                              c=specific heat [J K^-1 kg^-1]
 #   ti and rhoc are not allowed to vary in the layers immediately 
 #               adjacent to the surface or the bottom
 #   emiss = emissivity
-#   T[0] = surface temperature [K]  (in- and output)
 #   Fgeotherm = geothermal heat flux at bottom boundary [W/m^2]
 #   Fsurf = heat flux at surface [W/m^2]  (output)
 #

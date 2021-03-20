@@ -8,26 +8,24 @@ if __name__ == '__main__':
 #***********************************************************************
 # test Crank-Nicolson subroutine
 #***********************************************************************
-      Period = 88775.244*670
+      Period = 88775.244*670  # [seconds]
       NSTEPS = 50000
-      Fgeo = 0.
+      Fgeo = 0.  # [W/m^2]
       Ta=30.; Tm=190.
 
       STEPSPERSOL = 120
       dt = Period/STEPSPERSOL
-      nz = 70
-      zmax = 2.5; zfac=1.02
-      thIn = 120.
+      nz = 70; zmax = 2.5; zfac=1.02
+      thIn = 120.  # thermal inertia
 
       rhocv = np.zeros(nz+1)
-      rhocv[:] = 1200.*800.
+      rhocv[:] = 1200.*800.  # (density) * (heat capacity)
       delta = thIn/rhocv[1]*sqrt(Period/pi)
       print('Skin depth= ',delta)
       print('zmax=',zmax)
       print('Time step=',dt)
       print('Thermal inertia=',thIn,' Period=',Period)
 
-      #  Initialize
       fout = open('Tprofile','w') # temperature profile
 
       T = np.zeros(nz+1)

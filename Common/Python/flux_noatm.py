@@ -1,4 +1,3 @@
-import numpy as np
 from math import sin, cos, sqrt, acos, pi
 
 
@@ -22,8 +21,8 @@ def flux_noatm(R,decl,latitude,HA,SlopeAngle,azFac):
     sinbeta = c1*cos(HA) + s1
   
     cosbeta = sqrt(1-sinbeta**2)
-    # ha -> az (option 2)
-    buf = (sin(decl)-sin(latitude)*sinbeta)/(cos(latitude)*cosbeta)
+    # hour angle -> azimuth
+    buf = ( sin(decl)-sin(latitude)*sinbeta ) / (cos(latitude)*cosbeta)
     # buf can be NaN if cosbeta = 0
     if buf>+1.:
         buf=+1.0  # roundoff
@@ -31,17 +30,17 @@ def flux_noatm(R,decl,latitude,HA,SlopeAngle,azFac):
         buf=-1.0  # roundoff
     azSun = acos(buf)
     if sin(HA)>=0:
-        azSun=2*pi-azSun
+        azSun = 2*pi-azSun
 
     # theta = 90 minus incidence angle for sloped surface
     sintheta = cos(SlopeAngle)*sinbeta - \
         sin(SlopeAngle)*cosbeta*cos(azSun-azFac)
-    if cosbeta==0.:
+    if cosbeta==0.:   # sun in zenith
         sintheta = cos(SlopeAngle)*sinbeta
     if sintheta<0.:
         sintheta = 0. # horizon
     if sinbeta<0.:
-        sintheta=0.  # horizontal horizon at infinity
+        sintheta=0.   # horizontal horizon at infinity
   
     flux_noatm = sintheta*So/(R**2)
   

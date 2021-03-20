@@ -8,23 +8,23 @@ if __name__ == '__main__':
 #***********************************************************************
 # test Crank-Nicolson subroutine
 #***********************************************************************
-    nz = 60
     sigSB = 5.6704e-8
-    Period = 88775.244*670
+    Period = 88775.244*670 # [seconds]
     NSTEPS = 50000
     emiss = 1.
-    Fgeo = 0.2
+    Fgeo = 0.2  # [W/m^2]
 
     STEPSPERSOL = 120
     dt = Period / STEPSPERSOL
-    thIn = 120.
+    thIn = 120.  # thermal inertia
     albedo = 0.2
     latitude = 5.  # [degree]
-    zmax = 2.5; zfac = 1.05
+
+    nz = 60; zmax = 2.5; zfac = 1.05
 
     # rhoc = thIn * np.sqrt(Period/pi)  # skin depth = 1
     rhocv = np.zeros(nz+1)
-    rhocv[:] = 1200.*800.
+    rhocv[:] = 1200.*800.  # (density) * (heat capacity)
     delta = thIn/rhocv[1] * np.sqrt(Period/np.pi)
     print('Skin depth= ',delta)
     ti = np.zeros(nz+1)
