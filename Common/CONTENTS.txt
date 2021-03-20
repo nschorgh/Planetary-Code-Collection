@@ -59,8 +59,10 @@ ran2.for:
 
 
 Cversion/
-	C version of conductionQ
+	C version of conductionQ and conductionT
 
+Python/
+	Python version of conductionT
 
 Test/
 	Validation and example runs

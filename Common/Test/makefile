@@ -10,7 +10,7 @@ SR = ../
 
 
 
-testcrankQ: testcrankQ.o makefile conductionQ.o 
+testcrankQ: testcrankQ.o makefile
 	make CC='$(CC)' CFLAGS='$(CFLAGS)' -C $(SR) common
 	$(CC) -O1 testcrankQ.o $(SR)flux_noatm.o $(SR)conductionQ.o \
 	$(SR)tridag.o $(SR)grids.o

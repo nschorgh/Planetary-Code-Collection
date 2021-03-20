@@ -18,12 +18,10 @@ testcrankQ: testcrankQ.o tridag.o conductionQ.o flux_noatm.o grids.o \
 	$(CC) $(CFLAGS) -c $<
 
 
-.PHONY: clean cleanrun 
+.PHONY: clean 
 
 clean:
 	rm -f  *.o  a.out 
-
-cleanrun:
 	rm -f Tprofile z Tsurface
 
 
