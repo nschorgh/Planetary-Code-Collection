@@ -32,8 +32,6 @@ testcrankT: testcrankT.o makefile
 
 clean:
 	rm -f  *.o  a.out  *.mod
-
-cleanrun:
 	rm -f Tprofile z Tsurface
 
 

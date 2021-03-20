@@ -1,4 +1,4 @@
-% read output of testcrankT.f
+% read output of testcrankT.f90
 wpth='./';
 
 a=load([wpth,'Tprofile']);
@@ -11,7 +11,7 @@ z=fscanf(fid,'%f');
 fclose(fid);
 %z=[0;z];
 
-% plot profile
+% plot profiles
 clf;
 h1=plot(T(:,:),z,'k-');
 axis ij
