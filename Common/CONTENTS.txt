@@ -62,7 +62,7 @@ Cversion/
 	C version of conductionQ and conductionT
 
 Python/
-	Python version of conductionT
+	Python version of conductionQ and conductionT
 
 Test/
 	Validation and example runs
