@@ -32,13 +32,11 @@ def conductionT(nz,z,dt,T,Tsurf,Tsurfp1,ti,rhoc,Fgeotherm,Fsurf):
 #   converted to Python 3/2021
 #***********************************************************************
 
-    alpha = np.zeros(nz+1)
-    beta = np.zeros(nz+1)
-    gamma = np.zeros(nz+1)
-  
     # set some constants
     k = np.zeros(nz+1)
     k = ti[:]**2/rhoc[:] # thermal conductivity
+    alpha = np.zeros(nz+1)
+    gamma = np.zeros(nz+1)
     alpha[1] = k[2]*dt/rhoc[1]/(z[2]-z[1])/z[2] 
     gamma[1] = k[1]*dt/rhoc[1]/z[1]/z[2]
     for i in range(2,nz):

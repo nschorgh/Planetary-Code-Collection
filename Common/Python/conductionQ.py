@@ -34,19 +34,17 @@ def conductionQ(nz,z,dt,Qn,Qnp1,T,ti,rhoc,emiss,Fgeotherm,Fsurf):
 #     
 #   originally written by Samar Khatiwala, 2001
 #   extended to variable thermal properties
-#         and irregular grid by Norbert Schorghofer
+#         and irregular grid by Norbert Schorghofer, 2004
 #   added predictor-corrector 9/2019
 #   converted to Python 3/2021
 #***********************************************************************
     sigSB = 5.6704e-8
   
-    alpha = np.zeros(nz+1)
-    beta = np.zeros(nz+1)
-    gamma = np.zeros(nz+1)
-    
     # set some constants
     k = np.zeros(nz+1)
     k = ti[:]**2/rhoc[:] # thermal conductivity
+    alpha = np.zeros(nz+1)
+    gamma = np.zeros(nz+1)
     dz = 2*z[1]
     beta = dt/rhoc[1]/(2.*dz**2)   # assumes rhoc[0]=rhoc[1]
     alpha[1] = beta*k[2]
@@ -105,8 +103,11 @@ def conductionQ(nz,z,dt,Qn,Qnp1,T,ti,rhoc,emiss,Fgeotherm,Fsurf):
             # redo until Tr is within 20% of new surface temperature
             # (under most circumstances, the 20% threshold is never exceeded)
             iter += 1
-            Tr = np.sqrt(Tr*T[0])  # linearize around an intermediate temperature
-            T[1:] = Told[1:]
+            if iter>=10:
+                break # don't overwrite T
+            else:
+                Tr = np.sqrt(Tr*T[0])  # linearize around an intermediate temperature
+                T[1:] = Told[1:]
         else:
             break
 

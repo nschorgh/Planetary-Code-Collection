@@ -22,3 +22,16 @@ def setgrid(nz, zmax, zfac):
 
     return z
 
+
+
+def heatflux_from_temperature(nz, z, T, k):
+    # calculates heat flux from temperature profile
+    # like k, the heat flux H is defined mid-point
+
+    H = np.zeros(nz+1)
+    # H[1] = -k[1] * (T[1]-Tsurf) / z[1]
+    H[1] = 0. # to avoid ill-defined value
+    for j in range(2,nz+1):
+        H[j] = -k[j] * (T[j]-T[j-1]) / (z[j]-z[j-1])
+
+    return H
