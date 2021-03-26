@@ -18,8 +18,7 @@ if __name__ == '__main__':
       nz = 70; zmax = 2.5; zfac=1.02
       thIn = 120.  # thermal inertia
 
-      rhocv = np.zeros(nz+1)
-      rhocv[:] = 1200.*800.  # (density) * (heat capacity)
+      rhocv = np.full(nz+1, 1200.*800.)   # (density) * (heat capacity)
       delta = thIn/rhocv[1]*sqrt(Period/pi)
       print('Skin depth= ',delta)
       print('zmax=',zmax)
@@ -29,8 +28,7 @@ if __name__ == '__main__':
       fout = open('Tprofile','w') # temperature profile
 
       T = np.zeros(nz+1)
-      ti = np.zeros(nz+1)
-      ti[:] = thIn
+      ti = np.full(nz+1, thIn)
 
       z = grids.setgrid(nz,zmax,zfac)
       np.savetxt('z', z[1:], fmt='%g', newline=" ")

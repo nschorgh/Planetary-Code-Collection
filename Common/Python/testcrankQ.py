@@ -23,15 +23,13 @@ if __name__ == '__main__':
     nz = 60; zmax = 2.5; zfac = 1.05
 
     # rhoc = thIn * np.sqrt(Period/pi)  # skin depth = 1
-    rhocv = np.zeros(nz+1)
-    rhocv[:] = 1200.*800.  # (density) * (heat capacity)
+    rhocv = np.full(nz+1, 1200.*800. )  # (density) * (heat capacity)
     delta = thIn/rhocv[1] * np.sqrt(Period/np.pi)
     print('Skin depth= ',delta)
-    ti = np.zeros(nz+1)
-    ti[:]= thIn
+    ti = np.full(nz+1, thIn)
 
-    T = np.zeros(nz+1)
-    Tmean = np.zeros(nz+1)
+    #T = np.zeros(nz+1)
+    #Tmean = np.zeros(nz+1)
     
     Rau = 1.52
     Decl = 0.
@@ -44,11 +42,12 @@ if __name__ == '__main__':
     # Initialize
     fout1 = open('Tsurface',"w")  # surface temperature
     fout2 = open('Tprofile',"w")  # temperature profile
-    
-    T[:] = 210.
+
+    T = np.full( nz+1, 210. )
+    Tmean = np.zeros_like( T )
     z = grids.setgrid(nz,zmax,zfac)
     np.savetxt('z', z[1:], fmt='%g', newline=" ")
-  
+    
     latitude = np.deg2rad(latitude)
 
     time = 0.
@@ -72,13 +71,13 @@ if __name__ == '__main__':
             fout1.write('%12.6f %9.3f %9.3f\n' % (time/Period,T[0],T[nz]) )
 
         if (n > NSTEPS-STEPSPERSOL):
+            Fmean += Fmean
+            Tmean = Tmean[:] + T[:]            
             if n%10 == 0:
                 np.savetxt(fout2,np.column_stack(T[:]),fmt="%7.2f"*(nz+1))
-
-        Fmean += Fmean
-        Tmean = Tmean[:] + T[:]
-     
-  
+                
+    # end of time loop
+    
     Fmean = Fmean / STEPSPERSOL
     Tmean[:] = Tmean[:] / STEPSPERSOL
 

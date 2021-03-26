@@ -28,9 +28,9 @@ def conductionQ(nz,z,dt,Qn,Qnp1,T,ti,rhoc,emiss,Fgeotherm,Fsurf):
 #   Fsurf = heat flux at surface [W/m^2]  (output)
 #
 #   Grid: surface is at z=0
-#         z(0)=0, z(2)=3*z(1), i.e., the top layer has half the width
-#         T(1) is at z(1); ...; T(i) is at z(i)
-#         k(i), rhoc(i), ti(i) are midway between z(i-1) and z(i)
+#         z[0]=0, z[2]=3*z[1], i.e., the top layer has half the width
+#         T[1] is at z[1]; ...; T[i] is at z[i]
+#         k[i], rhoc[i], ti[i] are midway between z[i-1] and z[i]
 #     
 #   originally written by Samar Khatiwala, 2001
 #   extended to variable thermal properties
@@ -41,32 +41,35 @@ def conductionQ(nz,z,dt,Qn,Qnp1,T,ti,rhoc,emiss,Fgeotherm,Fsurf):
     sigSB = 5.6704e-8
   
     # set some constants
-    k = np.zeros(nz+1)
+    k = np.empty(nz+1)
     k = ti[:]**2/rhoc[:] # thermal conductivity
-    alpha = np.zeros(nz+1)
-    gamma = np.zeros(nz+1)
+    alpha = np.empty(nz+1)
+    gamma = np.empty(nz+1)
     dz = 2*z[1]
-    beta = dt/rhoc[1]/(2.*dz**2)   # assumes rhoc[0]=rhoc[1]
+    beta = dt/(rhoc[1]+rhoc[2])/dz**2 
     alpha[1] = beta*k[2]
     gamma[1] = beta*k[1]
     for i in range(2,nz):  # 2 ... nz-1
         buf = dt / (z[i+1]-z[i-1])
         alpha[i] = 2*k[i+1]*buf/(rhoc[i]+rhoc[i+1])/(z[i+1]-z[i])
         gamma[i] = 2*k[i]*buf/(rhoc[i]+rhoc[i+1])/(z[i]-z[i-1])
+    alpha[nz] = 0.  # ensures b[nz] = 1 + gamma[nz]
     buf = dt/(z[nz]-z[nz-1])**2
     gamma[nz] = k[nz]*buf/(2*rhoc[nz]) # assumes rhoc[nz+1]=rhoc[nz]
   
     k1 = k[1]/dz
   
     # elements of tridiagonal matrix
-    a = -gamma[:]   #  a[1] is not used
-    b = 1. + alpha[:] + gamma[:] #  b[1] has to be reset at every timestep
-    c = -alpha[:]   #  c[nz] is not used
-    b[nz] = 1. + gamma[nz]
-
-    Tr = T[0]       # 'reference' temperature
+    # special matrix for solve_banded
+    D = np.zeros((3,nz))
+    D[0,1:] = -alpha[1:-1]                # coefficient 'c'
+    D[1,:] = 1. + alpha[1:] + gamma[1:]   # coefficient 'b'
+    D[2,:-1] = -gamma[2:]                 # coefficient 'a'
+    # b[1] has to be reset at every timestep
+    
+    Tr = T[0]    # 'reference' temperature
     iter = 0
-    Told = np.zeros(nz+1)
+    Told = np.empty(nz+1)
     Told[:] = T[:]
 
     while iter<10:
@@ -77,10 +80,10 @@ def conductionQ(nz,z,dt,Qn,Qnp1,T,ti,rhoc,emiss,Fgeotherm,Fsurf):
         ann = (Qn-arad)/(k1+brad)
         annp1 = (Qnp1-arad)/(k1+brad)
         bn = (k1-brad)/(k1+brad)
-        b[1] = 1. + alpha[1] + gamma[1] - gamma[1]*bn
+        b1 = 1. + alpha[1] + gamma[1] - gamma[1]*bn  # b[1]
   
         # Set RHS
-        r = np.zeros(nz+1)
+        r = np.empty(nz+1)
         r[1] = gamma[1] * (annp1+ann) + \
             (1.-alpha[1]-gamma[1]+gamma[1]*bn) * T[1] + alpha[1] * T[2]
         for i in range(2,nz): # 2...nz-1
@@ -88,11 +91,7 @@ def conductionQ(nz,z,dt,Qn,Qnp1,T,ti,rhoc,emiss,Fgeotherm,Fsurf):
         r[nz] = gamma[nz]*T[nz-1] + (1.-gamma[nz])*T[nz] \
             + dt/rhoc[nz]*Fgeotherm/(z[nz]-z[nz-1]) # assumes rhoc[nz+1]=rhoc[nz]
 
-        # special matrix for solve_banded
-        D = np.zeros((3,nz))
-        D[0,1:] = c[1:-1]
-        D[1,:] = b[1:]
-        D[2,:-1] = a[2:]
+        D[1,0] = b1  # coefficient b[1]
 
         # Solve for T at n+1
         T[1:] = scipy.linalg.solve_banded((1,1), D, r[1:])
