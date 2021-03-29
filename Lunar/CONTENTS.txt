@@ -9,8 +9,14 @@ oscidea1.f90: (main program)
 oscidea_subs.f90:
 	subroutines for ice pump calculations
 
+soilthprop_moon.f90:
+	thermal properties of lunar surface layer
+
 subl_h2o.f90:
 	set of functions for sublimation rate of H2O ice
+
+subl_species.f90:
+	sublimation rate of CO2 ice
 
 
 
@@ -23,5 +29,5 @@ NOTES
 
 * Lunar exosphere model is found in directory Exospheres/
 * Terrain irradiance model for airless bodies is found in Topo3D/
-* Microphysical vapor migration calculations are not part of this collection
+
 

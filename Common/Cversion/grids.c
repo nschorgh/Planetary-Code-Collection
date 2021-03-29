@@ -10,6 +10,7 @@ void setgrid(int nz, double z[], double zmax, double zfac)
    int i;
    double dz;
 
+   z[0] = 0.;
    dz = zmax / nz;
    for (i=1; i<=nz; i++)  z[i] = (i - 0.5) * dz;
 
