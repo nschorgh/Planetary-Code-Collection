@@ -1,5 +1,7 @@
 ChangeLog
 
+4 Apr 2021: added Matlab versions of the Crank-Nicolson solvers conductionT/Q
+
 Mar 2021: added Python versions of the Crank-Nicolson solvers conductionT/Q
 
 Jan 2021: added mars_mapii, which has the same functionality as mars_mapi, but uses simple iterations to calculate the equilibrium ice table depth instead of the bisection method. Both use the thermal model in jsub.

@@ -61,9 +61,12 @@ ran2.for:
 Cversion/
 	C version of conductionQ and conductionT
 
+Matlab/
+	Matlab/Octave version of conductionQ and conductionT
+
 Python/
 	Python version of conductionQ and conductionT
 
 Test/
-	Validation and example runs
+	Fortran validation and example runs
 
