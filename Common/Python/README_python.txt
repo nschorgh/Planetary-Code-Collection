@@ -5,3 +5,5 @@ Crank-Nicolson solver, conductionT.
 
 The output stored in the subdirectory Test/ was produced with the Fortran
 version, but also applies to the Python version.
+The output of testcrankT.py can be verified with test_Tprofile.py.
+The output of testcrankQ.py is Tprofile_testcrankQ.

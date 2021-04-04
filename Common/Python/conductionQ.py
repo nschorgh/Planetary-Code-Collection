@@ -73,7 +73,11 @@ def conductionQ(nz,z,dt,Qn,Qnp1,T,ti,rhoc,emiss,Fgeotherm,Fsurf):
     Told[:] = T[:]
 
     while iter<10:
-    
+
+        if iter>0:
+            Tr = np.sqrt(Tr*T[0])  # linearize around an intermediate temperature
+            T[1:] = Told[1:]
+        
         # Emission
         arad = -3.*emiss*sigSB*Tr**4
         brad = 2.*emiss*sigSB*Tr**3
@@ -98,17 +102,13 @@ def conductionQ(nz,z,dt,Qn,Qnp1,T,ti,rhoc,emiss,Fgeotherm,Fsurf):
         T[0] = 0.5 * (annp1 + bn*T[1] + T[1]) # (T0+T1)/2
 
         # iterative predictor-corrector
-        if T[0] > 1.2*Tr or T[0] < 0.8*Tr:  # linearization error expected
-            # redo until Tr is within 20% of new surface temperature
-            # (under most circumstances, the 20% threshold is never exceeded)
-            iter += 1
-            if iter>=10:
-                break # don't overwrite T
-            else:
-                Tr = np.sqrt(Tr*T[0])  # linearize around an intermediate temperature
-                T[1:] = Told[1:]
-        else:
+        if T[0] < 1.2*Tr and T[0] > 0.8*Tr:  
             break
+
+        iter += 1
+        # redo until Tr is within 20% of new surface temperature
+        # (under most circumstances, the 20% threshold is never exceeded)
+
 
         
     Fsurf = - k[1] * (T[1]-T[0]) / z[1] # heat flux into surface

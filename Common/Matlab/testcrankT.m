@@ -2,7 +2,7 @@
 % test Crank Nicolson subroutine 
 %***********************************************************************
 
-Period = 88775.244*670
+Period = 88775.244*670   % [seconds]
 Fgeo = 0.; Ta=30.; Tm=190.;
 nz = 70;
   
@@ -13,7 +13,7 @@ z = zeros(nz,1);
 
 NSTEPS = 50000;
 STEPSPERSOL = 120;
-dt = Period/STEPSPERSOL; % Time step
+dt = Period/STEPSPERSOL; % Time step [seconds]
 zmax = 2.5
 zfac=1.02;
 thIn = 120. % thermal inertia
