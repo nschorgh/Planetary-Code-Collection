@@ -14,8 +14,7 @@ insol3d_earth: filemanager.o topo3d_modules.o sunpos.o topo3d_subs.o \
 	topo3d_common.o topo3d_subs.o flux_noatm.o 
 
 insol_flat: sunpos.o insol_flat.o mk_atmosphere.o flux_noatm.o makefile
-	$(CC) $(LFLAGS) sunpos.o insol_flat.o mk_atmosphere.o \
-	flux_noatm.o
+	$(CC) $(LFLAGS) sunpos.o insol_flat.o mk_atmosphere.o flux_noatm.o
 
 
 %.o:	%.f makefile

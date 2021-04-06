@@ -5,10 +5,6 @@ Common Subroutines and Functions
 
 No main programs in this directory
 
-
-
-FILES
-
 flux_noatm.f90: 
 	flux_noatm: Insolation on horizontal or sloped surface without atmosphere
 	flux_wshad: incoming flux for airless body with distant horizon
@@ -34,16 +30,19 @@ derivs.f90:
 	first and second derivatives on irregular grid
 	
 grids.f90:
-	creates appropriate 1D grids
+	creates appropriate 1D grids, and contains other grid-related functions
 
 psv.f: 
-	vapor pressure of H2O
+	psv: vapor pressure of H2O
+	frostpoint: inverse of psv
 
 psvco2.f: 
-       	vapor pressure of CO2
+       	psvco2: vapor pressure of CO2
+	tfrostpointco2: inverse of psvco2
 
 makefile:
 	shows file dependencies
+
 
 
 3RD PARTY FUNCTIONS AND SUBROUTINES FROM NUMERICAL RECIPES(C)
@@ -56,6 +55,7 @@ julday.for:
 
 ran2.for: 
 	uniform random number generator from Numerical Recipes (C); changed real to real*8
+
 
 
 Cversion/

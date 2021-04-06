@@ -88,9 +88,8 @@ cratersQ_mars_full: $(OBJFLS) topo3d_subs.o conductionT2.o conductionQ2.o \
 	$(SR)psv.o topo3d_subs_mars.o 
 
 
-fieldproperties: $(OBJFLS) topo3d_common.o topo3d_subs.o \
-	fieldproperties.o makefile
-
+fieldproperties: $(OBJFLS) topo3d_common.o topo3d_subs.o fieldproperties.o \
+	makefile
 	$(CC) $(LFLAGS) fieldproperties.o topo3d_common.o topo3d_subs.o 
 
 

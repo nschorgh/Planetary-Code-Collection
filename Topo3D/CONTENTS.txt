@@ -1,31 +1,34 @@
 Topo3D/
 
-Shadowing, illumination, and scattering on 3D topography
-========================================================
+3D Surface Energy Balance:
+Terrain shadowing, direct insolation, and terrain irradiance
+============================================================
 
 shadows.f90: (main program)
 	calculates horizons
 
 fieldofviews.f90: (main program)
-	calculates horizons and viewfactors
+	calculates viewfactors
 
 cratersQ_equilbr.f90: (main program)
-	equilibrium surface temperature with 3D shadowing and reflections
+	equilibrium surface temperature with 3D terrain shadowing and terrain irradiance
 
 cratersQ_moon.f90: (main program)
-	surface temperature with 3D shadowing and reflections for airless body
+	surface temperature with 3D terrain shadowing and terrain irradiance for 
+	airless body
 
 cratersQ_mars.f90: (main program)
-	surface temperature with 3D shadowing for Mars, using G-approximation
+	surface temperature with 3D terrain shadowing for Mars and approximate 
+	terrain irradiance
 
 cratersQ_mars_parallel.f90: (main program)
 	parallel version of cratersQ_mars.f90
 
 cratersQ_mars.f90_full: (main program)
-	surface temperature with 3D shadowing and reflections for Mars
+	surface temperature with 3D terrain shadowing and terrain irradiance for Mars
 
 insol3d_mars.f90: (main program)
-	3D shadowing for Mars
+	3D terrain shadowing for Mars
 
 filemanager.f90:
 	input, topography information
@@ -58,7 +61,7 @@ fieldproperties.f90: (main program)
 	processes geometric information, mostly diagnostics
 
 test_shadows1pt.f90: (main program)
-        calculate horizons for one point (for testing purposes)
+	calculate horizons for one point (for testing purposes)
 
 makegaussian.c: (main program)
 	creates Gaussian surface

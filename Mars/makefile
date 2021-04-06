@@ -19,16 +19,15 @@ SR = ../Common/
 
 exper_thermal: exper_thermal1d.o vapordiffusioni.o soilthprop_mars.o makefile
 	make -C $(SR) common
-	$(CC) $(LFLAGS) exper_thermal1d.o $(SR)conductionT.o \
-	$(SR)tridag.o vapordiffusioni.o $(SR)psv.o $(SR)grids.o \
-	soilthprop_mars.o
+	$(CC) $(LFLAGS) exper_thermal1d.o $(SR)conductionT.o $(SR)tridag.o \
+	vapordiffusioni.o $(SR)psv.o $(SR)grids.o soilthprop_mars.o
 
 mars_thermal mars_thermal1d: mars_thermal1d.o marsorbit.o flux_mars.o \
 	soilthprop_mars.o makefile
 	make -C $(SR) common
-	$(CC) $(LFLAGS) mars_thermal1d.o $(SR)julday.o marsorbit.o \
-	flux_mars.o $(SR)conductionQ.o $(SR)tridag.o $(SR)conductionT.o \
-	$(SR)grids.o soilthprop_mars.o $(SR)psv.o 
+	$(CC) $(LFLAGS) mars_thermal1d.o $(SR)julday.o marsorbit.o flux_mars.o \
+	$(SR)conductionQ.o $(SR)tridag.o $(SR)conductionT.o $(SR)grids.o \
+	soilthprop_mars.o $(SR)psv.o 
 
 mars_mapt: mars_mapt.o jsub.o marsorbit.o flux_mars.o soilthprop_mars.o \
 	makefile
@@ -39,23 +38,23 @@ mars_mapt: mars_mapt.o jsub.o marsorbit.o flux_mars.o soilthprop_mars.o \
 
 mars_mapi: mars_mapi.o marsorbit.o jsub.o flux_mars.o soilthprop_mars.o makefile
 	make -C $(SR) common
-	$(CC) $(LFLAGS) mars_mapi.o $(SR)julday.o marsorbit.o \
-	flux_mars.o $(SR)conductionQ.o $(SR)tridag.o $(SR)conductionT.o \
-	$(SR)grids.o jsub.o soilthprop_mars.o $(SR)psv.o $(SR)psvco2.o
+	$(CC) $(LFLAGS) mars_mapi.o $(SR)julday.o marsorbit.o flux_mars.o \
+	$(SR)conductionQ.o $(SR)tridag.o $(SR)conductionT.o $(SR)grids.o \
+	jsub.o soilthprop_mars.o $(SR)psv.o $(SR)psvco2.o
 
 mars_mapii: mars_mapii.o marsorbit.o jsub.o flux_mars.o soilthprop_mars.o \
 	makefile
 	make -C $(SR) common
-	$(CC) $(LFLAGS) mars_mapii.o $(SR)julday.o marsorbit.o \
-	flux_mars.o $(SR)conductionQ.o $(SR)tridag.o $(SR)conductionT.o \
-	$(SR)grids.o jsub.o soilthprop_mars.o $(SR)psv.o $(SR)psvco2.o 
+	$(CC) $(LFLAGS) mars_mapii.o $(SR)julday.o marsorbit.o flux_mars.o \
+	$(SR)conductionQ.o $(SR)tridag.o $(SR)conductionT.o $(SR)grids.o \
+	jsub.o soilthprop_mars.o $(SR)psv.o $(SR)psvco2.o 
 
 mars_mapi2p: mars_mapi2p.o jsubv.o marsorbit.o flux_mars.o soilthprop_mars.o \
 	makefile
 	make -C $(SR) common
-	$(CC) $(LFLAGS) mars_mapi2p.o $(SR)julday.o marsorbit.o \
-	flux_mars.o $(SR)conductionQ.o $(SR)tridag.o $(SR)conductionT.o \
-	$(SR)grids.o jsubv.o soilthprop_mars.o $(SR)psv.o $(SR)psvco2.o 
+	$(CC) $(LFLAGS) mars_mapi2p.o $(SR)julday.o marsorbit.o flux_mars.o \
+	$(SR)conductionQ.o $(SR)tridag.o $(SR)conductionT.o $(SR)grids.o \
+	jsubv.o soilthprop_mars.o $(SR)psv.o $(SR)psvco2.o 
 
 stabgrow_fast: fast_modules.o fast_subs_exper.o stabgrow_fast.o \
 	fast_subs_univ.o soilthprop_mars.o makefile        
@@ -64,8 +63,8 @@ stabgrow_fast: fast_modules.o fast_subs_exper.o stabgrow_fast.o \
 	$(SR)tridag.o $(SR)conductionT.o $(SR)grids.o soilthprop_mars.o \
 	$(SR)psv.o $(SR)derivs.o -o $@
 
-exper_fast: fast_modules.o exper_fast.o fast_subs_univ.o \
-	fast_subs_exper.o soilthprop_mars.o makefile
+exper_fast: fast_modules.o exper_fast.o fast_subs_univ.o fast_subs_exper.o \
+	soilthprop_mars.o makefile
 	make -C $(SR) common
 	$(CC) $(LFLAGS) exper_fast.o $(SR)tridag.o $(SR)conductionT.o \
 	$(SR)grids.o soilthprop_mars.o $(SR)psv.o $(SR)derivs.o \
