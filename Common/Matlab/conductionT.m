@@ -26,21 +26,16 @@ function [T, Fsurf] = conductionT(nz, z, dt, T, Tsurf, Tsurfp1, ti, rhoc, Fgeoth
 %         rhoc(i) is midway between z(i-1) and z(i)
 %***********************************************************************
 
-  % initialize arrays
-  alpha = zeros(nz,1);
-  gamma = zeros(nz,1);
-
   % set some constants
-  k = ti.^2 ./ rhoc; % thermal conductivity
+  k = ti.^2 ./ rhoc;  % thermal conductivity
+  rho2 = ( rhoc + shift(rhoc,-1) )/2;
+  alpha = shift(k,-1) *dt ./ (shift(z,-1)-shift(z,+1)) ./ rho2(:) ./ (shift(z,-1)-z(:));
+  gamma = k(:) *dt ./ (shift(z,-1)-shift(z,+1)) ./ rho2(:) ./ (z(:)-shift(z,+1));
+  
   alpha(1) = k(2)*dt/rhoc(1)/(z(2)-z(1))/z(2);
   gamma(1) = k(1)*dt/rhoc(1)/z(1)/z(2);
-  for i=2:nz-1
-    buf = dt/(z(i+1)-z(i-1));
-    alpha(i) = k(i+1)*buf*2./(rhoc(i)+rhoc(i+1))/(z(i+1)-z(i));
-    gamma(i) = k(i)*buf*2./(rhoc(i)+rhoc(i+1))/(z(i)-z(i-1));
-  end
-  buf = dt/(z(nz)-z(nz-1))**2;
-  gamma(nz) = k(nz)*buf/(rhoc(nz)+rhoc(nz)); % assumes rhoc(nz+1)=rhoc(nz)
+  alpha(nz) = 0.;
+  gamma(nz) = k(nz)*dt/(rhoc(nz)+rhoc(nz))/(z(nz)-z(nz-1))**2; % assumes rhoc(nz+1)=rhoc(nz)
   
   % elements of tridiagonal matrix
   a = -gamma(:);   %  a(1) is not used

@@ -35,23 +35,19 @@ function [T, Tsurf, Fsurf] = conductionQ(nz,z,dt,Qn,Qnp1,T,ti,rhoc,emiss,Tsurf,F
 %   converted to Matlab/Octave 4/2021
 %***********************************************************************
 
-  % initialize arrays
-  alpha = zeros(nz,1);
-  gamma = zeros(nz,1);
-  
   % set some constants
   k = ti.**2 ./ rhoc;  % thermal conductivity
+  rho2 = ( rhoc + shift(rhoc,-1) )/2;
+  alpha = shift(k,-1) *dt ./ (shift(z,-1)-shift(z,+1)) ./ rho2(:) ./ (shift(z,-1)-z(:));
+  gamma = k(:) *dt ./ (shift(z,-1)-shift(z,+1)) ./ rho2(:) ./ (z(:)-shift(z,+1));
+
   dz = 2.*z(1);
-  beta = dt/rhoc(1)/(2.*dz**2);   % assumes rhoc(0)=rhoc(1)
+  beta = dt/rhoc(1)/(2.*dz**2);
   alpha(1) = beta*k(2);
   gamma(1) = beta*k(1);
-  for i=2:nz-1
-    buf = dt/(z(i+1)-z(i-1));
-    alpha(i) = 2.*k(i+1)*buf/(rhoc(i)+rhoc(i+1))/(z(i+1)-z(i));
-    gamma(i) = 2.*k(i)*buf/(rhoc(i)+rhoc(i+1))/(z(i)-z(i-1));
-  end
+
   buf = dt/(z(nz)-z(nz-1))**2;
-  % alpha(nz) = 0.
+  alpha(nz) = 0.;
   gamma(nz) = k(nz)*buf/(2*rhoc(nz)); % assumes rhoc(nz+1)=rhoc(nz)
   
   k1 = k(1)/dz;
