@@ -1,5 +1,5 @@
-! Subroutines and functions that are called from shadow* and also from fieldofview*
-
+! Subroutines and functions of geometric character usually called from 
+! shadow* and also from fieldofview*
 
 
 elemental function diffangle(a1,a2)
@@ -42,7 +42,7 @@ elemental function horizontaldistance1(x1,y1,x2,y2)
   real(8) horizontaldistance1
   real(8), intent(IN) :: x1,y1,x2,y2
   
-  horizontaldistance1 = sqrt((x1-x2)**2+(y1-y2)**2)
+  horizontaldistance1 = sqrt((x1-x2)**2+(y1-y2)**2)  ! Eucledian
 end function horizontaldistance1
 
 
@@ -54,6 +54,16 @@ elemental function azimuth1(x1,y1,x2,y2)
   
   azimuth1 = atan2(x2-x1, -(y2-y1))  ! this is correct
 end function azimuth1
+
+
+
+elemental function horizontaldistance_square(x1,y1,x2,y2)
+  implicit none
+  real(8) horizontaldistance_square
+  real(8), intent(IN) :: x1,y1,x2,y2
+  
+  horizontaldistance_square = max( abs(x1-x2), abs(y1-y2) ) 
+end function horizontaldistance_square
 
 
 
@@ -113,3 +123,68 @@ subroutine downsample(NSx,NSy,h,hhalf)
   !   write(*,'(9999(f3.1,1x))') wsum(:,j2)
   !enddo
 end subroutine downsample
+
+
+
+elemental function cos_viewing_angle(x0,y0,h00,surfaceSlope,azFac,xB,yB,hB)
+!***********************************************************************
+!  function that calculates angle between surface normal at (x0,y0,h00)
+!     and vector pointing to (xB,yB,h(xB,yB)) as in horizon_core_wsort
+!***********************************************************************
+  use allinterfaces, only : horizontaldistance1, azimuth1
+  implicit none
+  real(8) cos_viewing_angle
+  real(8), intent(IN) :: x0, y0, h00, surfaceSlope, azFac
+  real(8), intent(IN) :: xB, yB, hB
+  real(8) az, s, r, slope_along_az
+
+  r = horizontaldistance1(xB,yB,x0,y0)
+  az = azimuth1(x0,y0,xB,yB)
+  s = (hB-h00)/r
+
+  slope_along_az = surfaceSlope*cos(azFac-az)
+
+  !viewing_angle = pi/2 - atan(s) + atan(slope_along_az)
+  cos_viewing_angle = (s-slope_along_az)/sqrt(1+s**2)/sqrt(1+slope_along_az**2)
+end function cos_viewing_angle
+
+
+
+elemental subroutine xyz2thetaphi(x,y,z,theta,phi)
+  ! cartesian -> polar coordinates
+  implicit none
+  real(8), intent(IN) :: x,y,z
+  real(8), intent(OUT) :: theta,phi
+  theta = acos(z/sqrt(x**2+y**2+z**2))
+  phi = atan2(y,x)
+end subroutine xyz2thetaphi
+
+
+
+pure subroutine difftopo1(NSx,NSy,i,j,h,dx,dy,surfaceSlope,az)
+  ! calculate slope and azimuth of surface element
+  implicit none
+  integer, intent(IN) :: NSx, NSy, i, j
+  real(8), intent(IN) :: h(NSx,NSy), dx, dy
+  real(8), intent(OUT) :: surfaceSlope, az
+  real(8) sx, sy
+  
+  sx = -1e32; sy = -1e32  ! avoids compiler warning
+
+  if (i>1 .and. i<NSx) then
+     sx = (h(i+1,j)-h(i-1,j))/(2.*dx)
+  else
+    if (i==1)   sx = (h(i+1,j)-h(i,j))/dx
+    if (i==NSx) sx = (h(i,j)-h(i-1,j))/dx
+  endif
+
+  if (j>1 .and. j<NSy) then
+     sy = (h(i,j+1)-h(i,j-1))/(2.*dy)
+  else
+     if (j==1)   sy = (h(i,j+1)-h(i,j))/dy
+     if (j==NSy) sy = (h(i,j)-h(i,j-1))/dy
+  endif
+
+  surfaceSlope = sqrt(sx**2+sy**2)  
+  az = atan2(sx,-sy)  ! north is up, clockwise
+end subroutine difftopo1

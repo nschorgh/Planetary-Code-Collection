@@ -31,7 +31,8 @@ subl_subs.f90:
 	parametrizations of sublimation rates
 
 gasdev.for: 
-	generates Gaussian distribution, from Numerical Recipes (C), changed real to real*8
+	generates Gaussian distribution, from Numerical Recipes (C), changed
+	real to real*8
 
 makefile:
 	shows file dependencies

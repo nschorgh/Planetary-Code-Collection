@@ -59,7 +59,7 @@ PROGRAM fieldofviews
         !write(21,'(2(i0,1x))',advance='no') i,j
         !call compactoutput(21,smax,naz)
         call refinevisibility(i,j,h,visibility)
-        call find3dangle(h,i,j,23,visibility)
+        call findviewfactors(h,i,j,23,visibility)
      end do
   end do
 

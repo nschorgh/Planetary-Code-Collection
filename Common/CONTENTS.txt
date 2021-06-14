@@ -54,7 +54,8 @@ julday.for:
 	Julian date, from Numerical Recipes (C), but without the pause statement
 
 ran2.for: 
-	uniform random number generator from Numerical Recipes (C); changed real to real*8
+	uniform random number generator from Numerical Recipes (C); changed
+	real to real*8
 
 
 

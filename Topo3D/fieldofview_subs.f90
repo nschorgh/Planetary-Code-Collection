@@ -8,7 +8,7 @@ MODULE findvisibletopo
 
   integer, parameter, private :: CCMAX = 6*(NSx+NSy) 
   ! CCMAX is the max # of elements in one azimuth ray
-  integer, private :: cc(CCMAX)
+  integer, private :: cc(naz)
   real(8), dimension(naz,CCMAX), private :: rcut, slocal 
   integer, dimension(naz,CCMAX), private :: celli, cellj 
 
@@ -19,9 +19,8 @@ MODULE findvisibletopo
   
 contains
 
-
   subroutine findallhorizon_wsort_v3(h,i0,j0,smax,visibility)
-    ! finds horizon and determines visibility for all azimuth rays
+    ! finds horizons and determines visibility along all azimuth rays
     use filemanager, only : NSx, NSy, RMAX, dx, dy
     use allinterfaces, only : horizontaldistance1
     implicit none
@@ -30,17 +29,21 @@ contains
     real(8), intent(OUT) :: smax(naz)
     logical, intent(OUT) :: visibility(NSx,NSy)
     integer i, j, ak
-    real(8) surfaceSlope, azFac
+    real(8) surfaceSlope, azFac, resolved
     real(8) smaxlocal, x0, y0, h00
     integer, dimension(CCMAX) :: arr
+
+    x0 = i0*dx; y0 = j0*dy; h00 = h(i0,j0)
+    resolved = naz*min(dx,dy)/(2*pi)
+    if ( resolved**2 < (NSx*dx)**2 + (NSy*dy)**2 ) then
+       print *,'findvisibletopo: visibility may be underresolved. increase naz.'
+    endif
     
     cc(:)=0
     smax(:)=0.
 
     call difftopo1(NSx,NSy,i0,j0,h,dx,dy,surfaceSlope,azFac)
     visibility(:,:) = .false.
-    
-    x0 = i0*dx; y0 = j0*dy; h00 = h(i0,j0)
     
     do i=2,NSx-1
        if (horizontaldistance1(i*dx,1*dy,x0,1*dy)>RMAX) cycle 
@@ -49,7 +52,6 @@ contains
           if (horizontaldistance1(i*dx,j*dy,x0,y0)>RMAX) cycle
           
           call horizon_core_wsort(x0,y0,h00,smax,surfaceSlope,azFac,i,j,h)
-          
        end do  ! end of j loop
     end do  ! end of i loop
     
@@ -115,7 +117,7 @@ contains
     do k=1,8
        in = i+ex(k)
        jn = j+ey(k)
-       !if (in<1 .or. in>nx .or. jn<1 .or. jn>ny) cycle
+       !if (in<1 .or. in>NSx .or. jn<1 .or. jn>NSy) cycle
        if (horizontaldistance1(x0,y0,in*dx,jn*dy) == 0.) cycle
        !if ((in-i0)**2+(jn-j0)**2 <= 1) cycle  ! stricter than in findallhorizon
        az_neighbor = azimuth1(x0,y0,in*dx,jn*dy)
@@ -135,14 +137,14 @@ contains
        if (ak1>naz .or. ak2>naz) error stop &
             & 'horizon_core_wsort: index out of bound'
        
-       d3=diffangle(az,az_neighbor)
+       d3 = diffangle(az,az_neighbor)
        do akak=ak1,ak2
           ak = akak; if (ak<=0) ak = ak+naz
           
-          d1=diffangle(az,azRay(ak))
-          d2=diffangle(az_neighbor,azRay(ak))
+          d1 = diffangle(az,azRay(ak))
+          d2 = diffangle(az_neighbor,azRay(ak))
         
-          if (d1+d2<=d3+1.d-5) then
+          if (d1+d2 <= d3+1.d-5) then
              if (d1>0.5*d3 .and. d3>1.d-6) cycle
              ! in findallhorizon 0.5 is 1.0 instead,
              ! but this leads to missing visibilities along zero azimth (ak=1)
@@ -179,12 +181,12 @@ END MODULE findvisibletopo
 
 
 
-subroutine find3dangle(h,i0,j0,unit,visibility)
+subroutine findviewfactors(h,i0,j0,unit,visibility)
   ! calculate subtended spherical angles and view factors of
   !     all quadrangles visible from (i0*dx,j0*dy,h(i0,j0))
   ! write view factors to file
   use filemanager
-  use allinterfaces, except_this_one => find3dangle
+  use allinterfaces, except_this_one => findviewfactors
   implicit none
   integer, intent(IN) :: i0, j0, unit
   real(8), intent(IN) :: h(NSx,NSy)
@@ -271,13 +273,6 @@ subroutine find3dangle(h,i0,j0,unit,visibility)
   landsize = sum(dOstack(1:cc))   ! 2*pi - (size of sky)
   viewsize = sum(VFstack(1:cc)) 
 
-  !write(unit-1,'(2(i5,1x),i6,1x,f7.5,1x)',advance='no') i0, j0, cc, landsize
-  !do i=1,cc
-  !   write(unit-1,'(2(i5,1x),g10.4,1x)',advance='no') &
-  !                   &  cellx(i),celly(i),dOstack(i)
-  !end do
-  !write(unit-1,"('')")
-  
   write(unit,'(2(i5,1x),i6,1x,2(f7.5,1x))',advance='no') &
        & i0, j0, cc, landsize, viewsize
   do i=1,cc
@@ -285,72 +280,7 @@ subroutine find3dangle(h,i0,j0,unit,visibility)
   end do
   write(unit,"('')")
   
-end subroutine find3dangle
-
-
-
-pure subroutine difftopo1(NSx,NSy,i,j,h,dx,dy,surfaceSlope,az)
-! calculate slope and azimuth of surface element
-  implicit none
-  integer, intent(IN) :: NSx, NSy, i, j
-  real(8), intent(IN) :: h(NSx,NSy), dx, dy
-  real(8), intent(OUT) :: surfaceSlope, az
-  real(8) sx, sy
-  
-  sx = -1e32; sy = -1e32  ! avoids compiler warning
-
-  if (i>1 .and. i<NSx) then
-     sx = (h(i+1,j)-h(i-1,j))/(2.*dx)
-  else
-    if (i==1)   sx = (h(i+1,j)-h(i,j))/dx
-    if (i==NSx) sx = (h(i,j)-h(i-1,j))/dx
-  endif
-
-  if (j>1 .and. j<NSy) then
-     sy = (h(i,j+1)-h(i,j-1))/(2.*dy)
-  else
-     if (j==1)   sy = (h(i,j+1)-h(i,j))/dy
-     if (j==NSy) sy = (h(i,j)-h(i,j-1))/dy
-  endif
-
-  surfaceSlope = sqrt(sx**2+sy**2)  
-  az = atan2(sx,-sy)  ! north is up, clockwise
-end subroutine difftopo1
-
-
-
-elemental function cos_viewing_angle(x0,y0,h00,surfaceSlope,azFac,xB,yB,hB)
-!***********************************************************************
-!  function that calculates angle between surface normal at (x0,y0,h00)
-!     and vector pointing to (xB,yB,h(xB,yB)) as in horizon_core_wsort
-!***********************************************************************
-  use allinterfaces, only : horizontaldistance1, azimuth1
-  implicit none
-  real(8) cos_viewing_angle
-  real(8), intent(IN) :: x0, y0, h00, surfaceSlope, azFac
-  real(8), intent(IN) :: xB, yB, hB
-  real(8) az, s, r, slope_along_az
-
-  r = horizontaldistance1(xB,yB,x0,y0)
-  az = azimuth1(x0,y0,xB,yB)
-  s = (hB-h00)/r
-
-  slope_along_az = surfaceSlope*cos(azFac-az)
-
-  !viewing_angle = pi/2 - atan(s) + atan(slope_along_az)
-  cos_viewing_angle = (s-slope_along_az)/sqrt(1+s**2)/sqrt(1+slope_along_az**2)
-end function cos_viewing_angle
-
-
-
-elemental subroutine xyz2thetaphi(x,y,z,theta,phi)
-  ! cartesian -> polar coordinates
-  implicit none
-  real(8), intent(IN) :: x,y,z
-  real(8), intent(OUT) :: theta,phi
-  theta = acos(z/sqrt(x**2+y**2+z**2))
-  phi = atan2(y,x)
-end subroutine xyz2thetaphi
+end subroutine findviewfactors
 
 
 

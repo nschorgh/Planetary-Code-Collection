@@ -11,10 +11,11 @@ fieldofviews.f90: (main program)
 	calculates viewfactors
 
 cratersQ_equilbr.f90: (main program)
-	equilibrium surface temperature with 3D terrain shadowing and terrain irradiance
+	equilibrium surface temperature with 3D terrain shadowing and
+	terrain irradiance
 
 cratersQ_moon.f90: (main program)
-	surface temperature with 3D terrain shadowing and terrain irradiance for 
+	surface temperature with 3D terrain shadowing and terrain irradiance for
 	airless body
 
 cratersQ_mars.f90: (main program)
@@ -25,7 +26,8 @@ cratersQ_mars_parallel.f90: (main program)
 	parallel version of cratersQ_mars.f90
 
 cratersQ_mars.f90_full: (main program)
-	surface temperature with 3D terrain shadowing and terrain irradiance for Mars
+	surface temperature with 3D terrain shadowing and terrain irradiance
+	for Mars
 
 insol3d_mars.f90: (main program)
 	3D terrain shadowing for Mars
@@ -85,5 +87,6 @@ makefile:
 3RD PARTY FUNCTIONS AND SUBROUTINES FROM NUMERICAL RECIPES(C)
 
 hpsort.for:
-	Heapsort from Numerical Recipes (C), modified to also return array of indices
+	Heapsort from Numerical Recipes (C),
+	modified to also return array of indices
 

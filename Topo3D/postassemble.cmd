@@ -1,6 +1,7 @@
 #!/bin/bash
 
-# merges and sorts output files from parallel runs of programs shadows and fieldofviews
+# merges and sorts output files from parallel runs of programs
+# shadows and fieldofviews
 
 /bin/rm -f horizons.dat 
 touch horizons.dat

@@ -34,43 +34,20 @@ MODULE allinterfaces
   end interface
 
   interface
+     elemental function horizontaldistance_square(x1,y1,x2,y2)
+       implicit none
+       real(8) horizontaldistance_square
+       real(8), intent(IN) :: x1,y1,x2,y2
+     end function horizontaldistance_square
+  end interface
+  
+  interface
      subroutine downsample(NSx,NSy,h,hhalf)
        implicit none
        integer, intent(IN) :: NSx,NSy
        real(8), intent(IN) :: h(NSx,NSy)
        real(8), intent(OUT) :: hhalf(NSx/2,NSy/2)
      end subroutine downsample
-  end interface
-
-  ! begin shadows_subs.f90
-  interface
-     pure subroutine findallhorizon1(h,i0,j0,naz,smax)
-       use filemanager, only : NSx,NSy,dx,dy
-       implicit none
-       integer, intent(IN) :: i0,j0,naz
-       real(8), intent(IN) :: h(NSx,NSy)
-       real(8), intent(OUT) :: smax(naz)
-     end subroutine findallhorizon1
-  end interface
-
-  ! begin fieldofview_subs.f90
-  interface
-     pure subroutine difftopo1(NSx,NSy,i,j,h,dx,dy,surfaceSlope,az)
-       implicit none
-       integer, intent(IN) :: NSx, NSy, i, j
-       real(8), intent(IN) :: h(NSx,NSy), dx, dy
-       real(8), intent(OUT) :: surfaceSlope, az
-     end subroutine difftopo1
-  end interface
-  
-  interface
-     subroutine find3dangle(h,i0,j0,unit,visibility)
-       use filemanager
-       implicit none
-       integer, intent(IN) :: i0,j0,unit
-       real(8), intent(IN) :: h(NSx,NSy)
-       logical, intent(IN) :: visibility(NSx,NSy)
-     end subroutine find3dangle
   end interface
   
   interface
@@ -89,6 +66,47 @@ MODULE allinterfaces
        real(8), intent(IN) :: x,y,z
        real(8), intent(OUT) :: theta,phi
      end subroutine xyz2thetaphi
+  end interface
+
+  interface
+     pure subroutine difftopo1(NSx,NSy,i,j,h,dx,dy,surfaceSlope,az)
+       implicit none
+       integer, intent(IN) :: NSx, NSy, i, j
+       real(8), intent(IN) :: h(NSx,NSy), dx, dy
+       real(8), intent(OUT) :: surfaceSlope, az
+     end subroutine difftopo1
+  end interface
+  
+  ! begin shadows_subs.f90
+  interface
+     pure subroutine findallhorizon1(h,i0,j0,naz,smax)
+       use filemanager, only : NSx,NSy,dx,dy
+       implicit none
+       integer, intent(IN) :: i0,j0,naz
+       real(8), intent(IN) :: h(NSx,NSy)
+       real(8), intent(OUT) :: smax(naz)
+     end subroutine findallhorizon1
+  end interface
+
+  ! begin fieldofview_subs.f90
+  interface
+     subroutine findviewfactors(h,i0,j0,unit,visibility)
+       use filemanager
+       implicit none
+       integer, intent(IN) :: i0,j0,unit
+       real(8), intent(IN) :: h(NSx,NSy)
+       logical, intent(IN) :: visibility(NSx,NSy)
+     end subroutine findviewfactors
+  end interface
+
+  interface
+     pure function find3dangle(x0,y0,h00,i,j,h,dxl,dyl)
+       implicit none
+       real(8) find3dangle
+       real(8), intent(IN) :: x0, y0, h00, dxl, dyl
+       integer, intent(IN) :: i, j
+       real(8), intent(IN) :: h(:,:)  ! = hcoarse
+     end function find3dangle
   end interface
 
   interface
@@ -278,14 +296,6 @@ MODULE allinterfaces
   end interface
 
   ! megagrid_make.f90 
-  interface
-     elemental function horizontaldistance_square(x1,y1,x2,y2)
-       implicit none
-       real(8) horizontaldistance_square
-       real(8), intent(IN) :: x1,y1,x2,y2
-     end function horizontaldistance_square
-  end interface
-
   interface
      integer function findmaxlevel(LMAX)
        implicit none

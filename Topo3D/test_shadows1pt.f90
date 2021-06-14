@@ -26,7 +26,6 @@ program test_shadows1pt
     do k=1,naz_h
        write(31,'(f5.1,2x,f7.3)') azRay(k)*r2d,atan(smax(k))*r2d
     end do
-
   end block
 
 
@@ -36,7 +35,7 @@ program test_shadows1pt
     real(8) RMG, smax2(naz_h)
     
     print *,'multigrid parameters'
-    RMG = naz_h*max(dx,dy)/(2*pi)
+    RMG = naz_h*min(dx,dy)/(2*pi)
     LMAX = floor( log(sqrt( (NSx*dx)**2+(NSy*dy)**2 ) /RMG) / log(2.) )
     print *,'# log2(domain size/RMG) =',LMAX
     LMAX = min(10,LMAX)
