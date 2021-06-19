@@ -32,17 +32,17 @@ PROGRAM fieldofviews
   select case(narg)
   case (0)  ! serial implementation
      print *,'...creating file viewfactors.dat'
-     !open(unit=21,file='horizons.dat',status='unknown',action='write')
-     !open(unit=22,file='fieldofviews.dat',status='unknown',action='write')
-     open(unit=23,file='viewfactors.dat',status='unknown',action='write')
+     !open(unit=21,file='horizons.dat',action='write')
+     !open(unit=22,file='fieldofviews.dat',action='write')
+     open(unit=23,file='viewfactors.dat',action='write')
      ilower = 2; iupper = NSx-1
 
   case (2)  ! parallel implementation
      call slicer(NSx,ilower,iupper,extc)
      print *,'...creating file viewfactor...',extc
-     !open(unit=21,file='horizon.'//extc,status='unknown',action='write')
-     !open(unit=22,file='fieldofview.'//extc,status='unknown',action='write')
-     open(unit=23,file='viewfactor.'//extc,status='unknown',action='write')
+     !open(unit=21,file='horizon.'//extc,action='write')
+     !open(unit=22,file='fieldofview.'//extc,action='write')
+     open(unit=23,file='viewfactor.'//extc,action='write')
      ! merge and sort output files with script
      
   case default

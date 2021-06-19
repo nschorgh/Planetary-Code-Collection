@@ -168,8 +168,8 @@ PROGRAM cratersQ_mars
      Fsurf(:,:)=0.; Fsurf_flat = 0.
   end if
 
-  open(unit=22,file='timeseries_flat'//ext,status='unknown',action='write')
-  open(unit=25,file='timeseries_pnt'//ext,status='unknown',action='write')
+  open(unit=22,file='timeseries_flat'//ext,action='write')
+  open(unit=25,file='timeseries_pnt'//ext,action='write')
 
   ! image taken imm = 5; iday=15; iyr=2014 8:44 UTC  ESP_036561
   
@@ -320,7 +320,7 @@ PROGRAM cratersQ_mars
   where (co2last/=-9.) co2last=co2last/d2r
   where (h2olast/=-9.) h2olast=h2olast/d2r
 
-  open(unit=21,file='qmean'//ext,status='unknown',action='write')
+  open(unit=21,file='qmean'//ext,action='write')
 70 format(2(i5,1x),f9.2,2x,f6.3,2(1x,f6.1),2(1x,f5.1),3(1x,f7.1),3(1x,f6.2),1x,f5.1,1x,f6.2)
   do i=Mx1,Mx2
      do j=My1,My2
@@ -333,7 +333,7 @@ PROGRAM cratersQ_mars
 
   close(21)
   if (subsurface) then
-     open(unit=23,file='tsurfbot'//ext,status='unknown',action='write')
+     open(unit=23,file='tsurfbot'//ext,action='write')
      Tbottom=Tbottom/nm
      do i=Mx1,Mx2
         do j=My1,My2
@@ -358,7 +358,7 @@ subroutine writeTsnapshot(fn,h,Tsurf,Mx1,Mx2,My1,My2)
   integer i,j
 
   print *,'entered writeTsnapshot'
-  open(unit=27,file=fn,status='unknown',action='write')
+  open(unit=27,file=fn,action='write')
   do i=max(2,Mx1),min(NSx-1,Mx2)
      do j=max(2,My1),min(NSy-1,My2)
         write(27,'(2(i5,1x),f9.2,1x,f5.1)') i,j,h(i,j),Tsurf(i,j)
@@ -380,7 +380,7 @@ subroutine writeQsnapshot(fn,h,Qdirect,m,Qn,Mx1,Mx2,My1,My2)
   integer i,j
 
   print *,'entered writeQsnapshot'
-  open(unit=27,file=fn,status='unknown',action='write')
+  open(unit=27,file=fn,action='write')
   do i=max(2,Mx1),min(NSx-1,Mx2)
      do j=max(2,My1),min(NSy-1,My2)
         write(27,'(2(i5,1x),f9.2,1x,f6.1,1x,f7.1,1x,f6.1)') &

@@ -35,9 +35,9 @@ contains
 
     x0 = i0*dx; y0 = j0*dy; h00 = h(i0,j0)
     resolved = naz*min(dx,dy)/(2*pi)
-    if ( resolved**2 < (NSx*dx)**2 + (NSy*dy)**2 ) then
-       print *,'findvisibletopo: visibility may be underresolved. increase naz.'
-    endif
+    !if ( resolved**2 < (NSx*dx)**2 + (NSy*dy)**2 ) then
+    !   print *,'findvisibletopo: visibility may be underresolved. increase naz.'
+    !endif
     
     cc(:)=0
     smax(:)=0.
@@ -176,7 +176,6 @@ contains
     
   end subroutine horizon_core_wsort
 
-
 END MODULE findvisibletopo
 
 
@@ -261,7 +260,7 @@ subroutine findviewfactors(h,i0,j0,unit,visibility)
         !if (dOh<0.) stop 'Does this ever happen?'
         if (dOh>0.) then
            cc = cc+1   
-           if (cc>CCMAX) stop 'find3dangle: not enough memory allocated'
+           if (cc>CCMAX) stop 'findviewfactors: not enough memory allocated'
            cellx(cc)=i; celly(cc)=j
            dOstack(cc) = dOh
            VFstack(cc) = VF

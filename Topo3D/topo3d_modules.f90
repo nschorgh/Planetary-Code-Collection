@@ -100,16 +100,6 @@ MODULE allinterfaces
   end interface
 
   interface
-     pure function find3dangle(x0,y0,h00,i,j,h,dxl,dyl)
-       implicit none
-       real(8) find3dangle
-       real(8), intent(IN) :: x0, y0, h00, dxl, dyl
-       integer, intent(IN) :: i, j
-       real(8), intent(IN) :: h(:,:)  ! = hcoarse
-     end function find3dangle
-  end interface
-
-  interface
      subroutine refinevisibility(i0,j0,h,visibility)
        use filemanager, only : NSx,NSy
        implicit none
@@ -297,13 +287,6 @@ MODULE allinterfaces
 
   ! megagrid_make.f90 
   interface
-     integer function findmaxlevel(LMAX)
-       implicit none
-       integer, intent(IN) :: LMAX
-     end function findmaxlevel
-  end interface
-  
-  interface
      subroutine findallgridpoints_MGR(i0,j0,RMG,L)
        implicit none
        integer, intent(IN) :: i0, j0, L
@@ -312,12 +295,14 @@ MODULE allinterfaces
   end interface
 
   interface
-     recursive subroutine findallgridpoints_recursive(i,j,x0,y0,RMG,L)
+     subroutine readonemegagrid(MGL,ifn,cc,i0,j0,ii,jj,L,w)
        implicit none
-       integer, intent(IN) :: L, i, j
-       real(8), intent(IN) :: x0, y0
-       real(8), intent(IN) :: RMG
-     end subroutine findallgridpoints_recursive
+       integer, intent(IN) :: MGL
+       character(len=*), intent(IN) :: ifn
+       integer, intent(OUT) :: cc, i0, j0
+       integer, dimension(MGL), intent(OUT) :: ii, jj, L
+       real(8), intent(OUT), optional :: w(4,MGL)
+     end subroutine readonemegagrid
   end interface
   
   ! f90 routines in Common/

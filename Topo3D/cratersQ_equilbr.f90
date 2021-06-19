@@ -61,7 +61,7 @@ program cratersQ_equilbr
 
      Qvis(:,:) = Qn + Qrefl
      QIRin(:,:) = QIR + QIRre
-     Qshadow1 = 0.; Qshadow2=0.
+     Qshadow1 = 0.; Qshadow2 = 0.
      do i=2,NSx-1
         do j=2,NSy-1
            QIR(i,j)=0.; Qrefl(i,j)=0.; QIRre(i,j)=0.
@@ -80,7 +80,7 @@ program cratersQ_equilbr
         enddo
      enddo
      ! Qabs is Q absorbed
-     Qabs(:,:)=(1.-albedo(:,:))*(Qn(:,:)+Qrefl(:,:))+emiss*(QIR+QIRre) 
+     Qabs(:,:) = (1.-albedo(:,:))*(Qn(:,:)+Qrefl(:,:)) + emiss*(QIR+QIRre) 
      
      Tsurf = (Qabs/sigSB/emiss)**0.25
 
@@ -89,7 +89,7 @@ program cratersQ_equilbr
 
   deallocate(ii, jj, VF)
 
-  open(unit=21,file='qinst.dat',status='unknown',action='write')
+  open(unit=21,file='qinst.dat',action='write')
   do i=2,NSx-1
      do j=2,NSy-1
         write(21,'(2(i4,1x),f9.2,2x,f6.4,5(1x,f6.1),1x,f5.1)') &
@@ -100,5 +100,3 @@ program cratersQ_equilbr
   close(21)
 
 end program cratersQ_equilbr
- 
-

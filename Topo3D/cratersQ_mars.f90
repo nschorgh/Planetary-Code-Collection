@@ -126,7 +126,7 @@ PROGRAM cratersQ_mars
      Tsurf = 200.
   end if
 
-  open(unit=22,file='timeseries_flat.dat',status='unknown',action='write')
+  open(unit=22,file='timeseries_flat.dat',action='write')
 
   ! image taken imm = 5; iday=15; iyr=2014 8:44 UTC  ESP_036561
   ! JD for noon UTC on imm,iday,iyear
@@ -258,7 +258,7 @@ PROGRAM cratersQ_mars
   Tmean = Tmean/nm
   where (h2olast/=-9.) h2olast=h2olast/d2r
 
-  open(unit=21,file='qmean.dat',status='unknown',action='write')
+  open(unit=21,file='qmean.dat',action='write')
   do i=Mx1,Mx2
      do j=My1,My2
         write(21,'(2(i5,1x),f9.2,2x,f6.4,2(1x,f6.1),2(1x,f5.1),3(1x,f7.1),1x,f6.2)') &
@@ -290,7 +290,7 @@ subroutine writethemissnapshot(fn,h,Tsurf)
   integer i,j
 
   print *,'entered writethemissnapshot'
-  open(unit=27,file=fn,status='unknown',action='write')
+  open(unit=27,file=fn,action='write')
   do i=2,NSx-1
      do j=2,NSy-1
         write(27,'(2(i5,1x),f9.2,1x,f5.1)') i,j,h(i,j),Tsurf(i,j)
@@ -310,7 +310,7 @@ subroutine writesnapshot(fn,h,Qdirect,m,Qn)
   integer i,j
 
   print *,'entered writesnapshot'
-  open(unit=27,file=fn,status='unknown',action='write')
+  open(unit=27,file=fn,action='write')
   do i=2,NSx-1
      do j=2,NSy-1
         write(27,'(2(i5,1x),f9.2,1x,f6.1,1x,f7.1,1x,f6.1)') &
