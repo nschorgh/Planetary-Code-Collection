@@ -308,6 +308,28 @@ end subroutine getviewfactors
 
 
 
+subroutine getviewfactors_full(NSx,NSy,vfn,landsize,viewsize,VF)
+  ! reads full viewfactor matrix from file
+  implicit none
+  integer, intent(IN) :: NSx, NSy
+  character(len=*), intent(IN) :: vfn
+  real(8), intent(OUT) :: landsize(NSx,NSy), viewsize(NSx,NSy)
+  real(4), intent(OUT) :: VF(NSx,NSy,(NSx-2)*(NSy-2))
+  integer cc, i, j, i0_2, j0_2, ierr
+  
+  open(unit=21,file=vfn,status='old',action='read',iostat=ierr)
+  if (ierr>0) stop 'getviewfactors_full: input file not found'
+  do i=2,NSx-1
+     do j=2,NSy-1
+        read(21,*) i0_2,j0_2,cc,landsize(i,j),viewsize(i,j),VF(i,j,:)
+        if (i/=i0_2 .or. j/=j0_2) stop 'getviewfactors_full: wrong data order'
+     enddo
+  enddo
+  close(21)
+end subroutine getviewfactors_full
+
+
+
 integer function getmaxfieldsize(NSx,NSy,ffn)
   ! compatible with fieldofviews.dat and viewfactors.dat
   implicit none
@@ -332,6 +354,7 @@ integer function getmaxfieldsize(NSx,NSy,ffn)
 
   getmaxfieldsize = maxsize
 end function getmaxfieldsize
+
 
 
 integer function countcolumns()

@@ -10,7 +10,7 @@ PROGRAM fieldproperties
   implicit none
   integer i, j, CCMAX
   integer, dimension(NSx,NSy) :: cc
-  real(8), dimension(NSx,NSy) :: h, skysize1, landsize, skysize2
+  real(8), dimension(NSx,NSy) :: h, skysize1, viewsize, skysize2
   ! skysize+landsize=2*pi
   real(8), dimension(NSx,NSy) :: gterm, SlopeAngle, azFac
   integer(2), dimension(:,:,:), allocatable :: ii,jj
@@ -37,10 +37,8 @@ PROGRAM fieldproperties
      CCMAX = getmaxfieldsize(NSx,NSy,ffn)
      print *,'... max field of view size=',CCMAX
      allocate(ii(NSx,NSy,CCMAX), jj(NSx,NSy,CCMAX), dO12(NSx,NSy,CCMAX))
-     call getfieldofview(NSx,NSy,ffn,cc,ii,jj,dO12,landsize,CCMAX)
-     !call getviewfactors(NSx,NSy,vfn,cc,ii,jj,dO12,viewsize,CCMAX)
-  else
-     landsize = -9.
+     !call getfieldofview(NSx,NSy,ffn,cc,ii,jj,dO12,landsize,CCMAX)
+     call getviewfactors(NSx,NSy,vfn,cc,ii,jj,dO12,viewsize,CCMAX)
   end if
 
   print *,'...writing view factors...'
@@ -49,8 +47,6 @@ PROGRAM fieldproperties
      do j=2,NSy-1
         write(21,'(2(i4,1x),f9.2,2x,1x,f5.3,2x,f6.3)') &
              & i,j,h(i,j),2*pi-skysize2(i,j),gterm(i,j)
-        !write(21,'(2(i4,1x),f9.2,3(2x,f6.3))') &
-        !     & i,j,h(i,j),2*pi-skysize1(i,j),landsize(i,j)
      enddo
   enddo
   close(21)

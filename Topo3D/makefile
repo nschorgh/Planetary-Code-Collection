@@ -92,13 +92,17 @@ fieldproperties: $(OBJFLS) topo3d_common.o topo3d_subs.o fieldproperties.o \
 	makefile
 	$(CC) $(LFLAGS) fieldproperties.o topo3d_common.o topo3d_subs.o 
 
-
 test test_shadows1pt: $(OBJFLS) shadow_subs.o multigrid.o \
 	fieldofview_subs.o topo3d_common.o topo3d_geometry.o hpsort.o \
 	test_shadows1pt.o makefile
 
 	$(CC) $(LFLAGS) test_shadows1pt.o shadow_subs.o topo3d_common.o \
 	multigrid.o topo3d_geometry.o hpsort.o fieldofview_subs.o
+
+test_fov1pt: $(OBJFLS) fieldofview_subs.o test_fov1pt.o topo3d_common.o \
+	topo3d_geometry.o hpsort.o makefile
+	$(CC) $(LFLAGS) test_fov1pt.o topo3d_common.o topo3d_geometry.o \
+	fieldofview_subs.o hpsort.o 
 
 makegaussian: makegaussian.o ran1.o rlft3.o fourn.o nrutil.o makefile
 	gcc -O2 makegaussian.o ran1.o rlft3.o fourn.o nrutil.o -lm	

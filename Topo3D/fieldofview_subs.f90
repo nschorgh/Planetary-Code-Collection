@@ -198,23 +198,25 @@ subroutine findviewfactors(h,i0,j0,unit,visibility)
   integer, dimension(CCMAX) :: cellx, celly
   real(8), dimension(CCMAX) :: dOstack, VFstack
   real(8), dimension(4) :: hq, xq, yq, theta, phi  ! quadrangle corners
-  logical, parameter :: verbose = .false.
+  logical, parameter :: full = .false.  ! output visible and invisible cells
 
   cc=0
 
   call difftopo1(NSx,NSy,i0,j0,h,dx,dy,surfaceSlope,azFac)
   
   do i=2,NSx-1
-     !r = dx*abs(i-i0)
-     r = horizontaldistance1(i*dx,1*dy,i0*dx,1*dy)
-     if (r>RMAX) cycle  ! to save computational cost
+     if (.not.full) then
+        !r = dx*abs(i-i0)
+        r = horizontaldistance1(i*dx,1*dy,i0*dx,1*dy)
+        if (r>RMAX) cycle  ! to save computational cost
+     end if
      do j=2,NSy-1
         dOh = 0.
         VF = 0.
-        if (i==i0 .and. j==j0 .and. .not.verbose) cycle
-        if (.not.visibility(i,j) .and. .not.verbose) cycle
+        if (i==i0 .and. j==j0 .and. .not.full) cycle
+        if (.not.visibility(i,j) .and. .not.full) cycle
         r = horizontaldistance1(i*dx,j*dy,i0*dx,j0*dy)
-        if (r>RMAX .and. .not.verbose) cycle  ! to save computational cost
+        if (r>RMAX .and. .not.full) cycle  ! to save computational cost
 
         !call xyz2thetaphi(dx*(i-i0),dy*(j-j0),h(i,j)-h(i0,j0),thetac,phic)
 
@@ -245,37 +247,48 @@ subroutine findviewfactors(h,i0,j0,unit,visibility)
         call xyz2thetaphi(xq,yq,hq,theta,phi) ! elemental
 
         dOh = area_spherical_quadrangle(phi,theta)
-        if (i==i0 .and. j==j0 .and. verbose) dOh = 0.
+        if (i==i0 .and. j==j0 .and. full) dOh = 0.
         
-        if (verbose) then
-           write(23,'(4(i5,1x),f7.2,1x,g10.4,1x,l)') &
-                & i0,j0,i,j,h(i,j),dOh,visibility(i,j)
-        endif
-
         ! cos(v)
         cosv = cos_viewing_angle(i0*dx,j0*dy,h(i0,j0), &
              & surfaceSlope,azFac,i*dx,j*dy,h(i,j))
         VF = dOh*cosv/pi  ! view factor
 
-        !if (dOh<0.) stop 'Does this ever happen?'
-        if (dOh>0.) then
-           cc = cc+1   
-           if (cc>CCMAX) stop 'findviewfactors: not enough memory allocated'
+        !write(33,'(4(i5,1x),f7.2,1x,2(g10.4,1x),l)') &
+        !     & i0,j0,i,j,h(i,j),dOh,VF,visibility(i,j)
+
+        if (VF>0. .and. visibility(i,j)) then
+           cc = cc+1
            cellx(cc)=i; celly(cc)=j
            dOstack(cc) = dOh
            VFstack(cc) = VF
+        elseif (full) then
+           cc = cc+1
+           dOstack(cc) = 0.
+           VFstack(cc) = 0.
         endif
         
      end do
   end do
-
+  if (full .and. cc /= (NSx-2)*(NSy-2) ) error stop 'entries missing'
+  
   landsize = sum(dOstack(1:cc))   ! 2*pi - (size of sky)
   viewsize = sum(VFstack(1:cc)) 
 
   write(unit,'(2(i5,1x),i6,1x,2(f7.5,1x))',advance='no') &
        & i0, j0, cc, landsize, viewsize
+  if (cc/=1521) print *,'cc=',cc
   do i=1,cc
-     write(unit,'(2(i5,1x),g10.4,1x)',advance='no') cellx(i),celly(i),VFstack(i)
+     if (full) then
+        if (VFstack(i)/=0.) then
+           write(unit,'(g10.4,1x)',advance='no') VFstack(i)
+        else ! compact zeros
+           write(unit,'(f2.0,1x)',advance='no') 0.
+        end if
+     else
+        write(unit,'(2(i5,1x),g10.4,1x)',advance='no') &
+             & cellx(i),celly(i),VFstack(i)
+     end if
   end do
   write(unit,"('')")
   

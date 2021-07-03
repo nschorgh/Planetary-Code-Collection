@@ -8,7 +8,6 @@ MODULE allinterfaces
        real(8), intent(IN) :: a1,a2
      end function diffangle
   end interface
-
   interface
      subroutine compactoutput(unit,value,nr)
        implicit none
@@ -16,7 +15,6 @@ MODULE allinterfaces
        real(8), intent(IN) :: value(nr)
      end subroutine compactoutput
   end interface
-  
   interface
      elemental function horizontaldistance1(x1,y1,x2,y2)
        implicit none
@@ -24,7 +22,6 @@ MODULE allinterfaces
        real(8), intent(IN) :: x1,y1,x2,y2
      end function horizontaldistance1
   end interface
-  
   interface
      elemental function azimuth1(x1,y1,x2,y2)
        implicit none
@@ -32,7 +29,6 @@ MODULE allinterfaces
        real(8), intent(IN) :: x1,y1,x2,y2
      end function azimuth1
   end interface
-
   interface
      elemental function horizontaldistance_square(x1,y1,x2,y2)
        implicit none
@@ -40,7 +36,6 @@ MODULE allinterfaces
        real(8), intent(IN) :: x1,y1,x2,y2
      end function horizontaldistance_square
   end interface
-  
   interface
      subroutine downsample(NSx,NSy,h,hhalf)
        implicit none
@@ -49,7 +44,6 @@ MODULE allinterfaces
        real(8), intent(OUT) :: hhalf(NSx/2,NSy/2)
      end subroutine downsample
   end interface
-  
   interface
      elemental function cos_viewing_angle(x0,y0,h00,surfaceSlope,azFac, &
           & xB,yB,hB)
@@ -59,7 +53,6 @@ MODULE allinterfaces
        real(8), intent(IN) :: xB, yB, hB
      end function cos_viewing_angle
   end interface
-
   interface
      elemental subroutine xyz2thetaphi(x,y,z,theta,phi)
        implicit none
@@ -67,7 +60,6 @@ MODULE allinterfaces
        real(8), intent(OUT) :: theta,phi
      end subroutine xyz2thetaphi
   end interface
-
   interface
      pure subroutine difftopo1(NSx,NSy,i,j,h,dx,dy,surfaceSlope,az)
        implicit none
@@ -117,7 +109,6 @@ MODULE allinterfaces
        real(8), intent(OUT) :: h(NSx,NSy)
      end subroutine readdem
   end interface
-
   interface
      pure function area_spherical_quadrangle(phi,theta)
        implicit none
@@ -125,14 +116,12 @@ MODULE allinterfaces
        real(8) area_spherical_quadrangle
      end function area_spherical_quadrangle
   end interface
-
   interface
      pure function area_spherical_triangle(phi,theta)
        real(8), intent(IN) :: phi(3), theta(3)
        real(8) area_spherical_triangle
      end function area_spherical_triangle
   end interface
-
   interface
      elemental function distanceonsphere(phi1,theta1,phi2,theta2)
        implicit none
@@ -140,7 +129,6 @@ MODULE allinterfaces
        real(8) distanceonsphere
      end function distanceonsphere
   end interface
-
   interface
      subroutine slicer(NSx,ilower,iupper,extc)
        implicit none
@@ -159,7 +147,6 @@ MODULE allinterfaces
        real(8), intent(OUT), dimension(NSx,NSy) :: SlopeAngle,azFac
      end subroutine difftopo
   end interface
-
   interface
      pure subroutine difftopo2(h,SlopeAngle,azFac,Mx1,Mx2,My1,My2)
        use filemanager, only : NSx,NSy,dx,dy
@@ -169,7 +156,6 @@ MODULE allinterfaces
        real(8), intent(OUT), dimension(Mx1:Mx2,My1:My2) :: SlopeAngle,azFac
      end subroutine difftopo2
   end interface
-  
   interface
      elemental subroutine equatorial2horizontal(decl,latitude,HA, &
           & sinbeta,azimuth)
@@ -177,7 +163,6 @@ MODULE allinterfaces
        real(8), intent(OUT) :: sinbeta,azimuth
      end subroutine equatorial2horizontal
   end interface
-
   interface
      subroutine getfieldofview(NSx,NSy,ffn,cc,ia,ja,dOh,landsize,CCMAX)
        integer, intent(IN) :: NSx, NSy
@@ -189,7 +174,6 @@ MODULE allinterfaces
        real(8), intent(OUT) :: landsize(NSx,NSy)
      end subroutine getfieldofview
   end interface
-
   interface
      subroutine getviewfactors(NSx,NSy,vfn,cc,ia,ja,VF,viewsize,CCMAX)
        implicit none
@@ -202,15 +186,22 @@ MODULE allinterfaces
        real(8), intent(OUT) :: viewsize(NSx,NSy)
      end subroutine getviewfactors
   end interface
-  
   interface
+     subroutine getviewfactors_full(NSx,NSy,vfn,landsize,viewsize,VF)
+       implicit none
+       integer, intent(IN) :: NSx, NSy
+       character(len=*), intent(IN) :: vfn
+       real(8), intent(OUT) :: landsize(NSx,NSy), viewsize(NSx,NSy)
+       real(4), intent(OUT) :: VF(NSx,NSy,(NSx-2)*(NSy-2))
+     end subroutine getviewfactors_full
+  end interface
+    interface
      integer function getmaxfieldsize(NSx,NSy,ffn)
        implicit none
        integer, intent(IN) :: NSx,NSy
        character(len=*), intent(IN) :: ffn
      end function getmaxfieldsize
   end interface
-
   interface
      integer function countcolumns()
      end function countcolumns
@@ -235,7 +226,6 @@ MODULE allinterfaces
        real(8), intent(OUT) :: Qdir, Qscat, Qlw
      end subroutine flux_mars2
   end interface
-
   interface
      subroutine marsorbit(dt0,tj,Ls,dec,r)
        implicit none
@@ -243,7 +233,6 @@ MODULE allinterfaces
        real*8, intent(OUT) :: Ls, dec, r
      end subroutine marsorbit
   end interface
-     
   interface
      subroutine marsclock24(JDUT,Deltat_J2000,Ls,dec,RM,Longitude_W,LTST)
        implicit none
@@ -267,7 +256,6 @@ MODULE allinterfaces
        real(8), intent(IN), optional :: Tco2frost, thIn, emiss
      end subroutine subsurfaceconduction_mars
   end interface
-
   interface
      elemental subroutine equilibrT_mars(Tsurf,dtsec,Qnm1,Qn,m,Tco2frost,emiss)
        implicit none
@@ -276,7 +264,6 @@ MODULE allinterfaces
        real(8), intent(INOUT) :: m
      end subroutine equilibrT_mars
   end interface
-  
   interface
      pure function evap_ingersoll(T,p0)
        implicit none
@@ -293,7 +280,6 @@ MODULE allinterfaces
        real(8), intent(IN) :: RMG
      end subroutine findallgridpoints_MGR
   end interface
-
   interface
      subroutine readonemegagrid(MGL,ifn,cc,i0,j0,ii,jj,L,w)
        implicit none
@@ -312,7 +298,6 @@ MODULE allinterfaces
        real(8), intent(IN) :: R,azSun,sinbeta,SlopeAngle,azFac,emax
      end function flux_wshad
   end interface
-
   interface
      subroutine conductionQ(nz,z,dt,Qn,Qnp1,T,ti,rhoc,emiss,Tsurf,Fgeotherm, &
           & Fsurf)
@@ -324,7 +309,6 @@ MODULE allinterfaces
        real*8, intent(OUT) :: Fsurf
      end subroutine conductionQ
   end interface
-  
   interface
      subroutine conductionT(nz,z,dt,T,Tsurf,Tsurfp1,ti,rhoc,Fgeotherm,Fsurf)
        implicit none

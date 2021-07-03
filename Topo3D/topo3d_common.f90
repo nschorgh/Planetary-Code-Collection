@@ -113,4 +113,20 @@ subroutine slicer(NSx,ilower,iupper,extc)
 
   extc = trim(extc) ! strips trailing spaces
 end subroutine slicer
-     
+
+
+
+integer function ij2k(i,j,NSy)
+  ! (i,j) -> k
+  implicit none
+  integer, intent(IN) :: i, j, NSy
+  ij2k = (i-2)*(NSy-2) + j - 1 
+end function ij2k
+subroutine k2ij(k,NSy,i,j)
+  ! k -> (i,j)
+  implicit none
+  integer, intent(IN) :: k, NSy
+  integer, intent(OUT) :: i, j
+  i = (k-1)/(NSy-2) + 2
+  j = mod(k-1,NSy-2) + 2
+end subroutine k2ij
