@@ -1,22 +1,24 @@
 % read output of testcrankT.f90
 wpth='./';
 
-a=load([wpth,'Tprofile']);
+a=load([wpth,'Tprofile_testcrankT']);
 nz=size(a,2)-1;
 t=a(:,1);  % time
 T=a(:,2:end);
 
-fid=fopen([wpth,'z'],'r');
+fid=fopen([wpth,'z_testcrankT'],'r');
 z=fscanf(fid,'%f');
 fclose(fid);
 %z=[0;z];
 
 % plot profiles
 clf;
+set(gcf,'defaultaxesfontsize',16)
+
 h1=plot(T(:,:),z,'k-');
 axis ij
 xlabel('Temperature (K)')
-ylabel('z (m)')
+ylabel('Depth, z (m)')
 
 
 % compare with analytical solution for sinusoidal surface temperature
@@ -33,6 +35,8 @@ for t=0:dt:P
 end
 hold off
 
-legend([h1(1), h2],'Numerical','Analytical','location','southwest')
+hl = legend([h1(1), h2],'Numerical','Analytical','location','southwest');
+set(hl,'fontsize',16)
 
 % print -dpng test_Tprofile.png
+% print -depsc test_Tprofile.eps
