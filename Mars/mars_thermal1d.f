@@ -2,13 +2,10 @@
 C***********************************************************************
 C   mars_thermal1d:  program to calculate the diffusion of temperature 
 C                    into the ground
-C   Eqn: T_t = (D*T_z)_z   where D=k/(rho*c)
-C   BC (z=0): Q(t) + k*T_z = em*sig*T^4 + L*dm/dt
-C   BC (z=L): geothermal flux
+C   Eqn: rho*c*T_t = (k*T_z)_z   where k is the thermal conductivity
+C   BC (z=0): Q(t) + k*T_z = emiss*sig*T^4 + L*dm/dt
+C   BC (zmax): geothermal flux
 C
-C   Skin depth delta =(I/(rho*c))*sqrt(P/pi)
-C   where I=thermal inertia [J m^-2 K^-1 s^-1/2], rho=density [kg m^-3],
-C   c=specific heat [J K^-1 kg^-1], P=period [s]
 C   Grid: surface is at z=0; T(i) is at z(i)
 C***********************************************************************
       implicit none
@@ -31,7 +28,7 @@ C***********************************************************************
       real*8 jd, temp1, dcor, dt0_j2000, flux_mars77
       real*8 ti(NMAX), Tsurf, rhocv(NMAX), z(NMAX), Told(NMAX)
       real*8 co2albedo, Fgeotherm, Tsurfold, Fsurf, Fsurfold, m, dE
-      real*8 co2emiss, Tmean, Tmean2, geof, ps, pb, psv
+      real*8 co2emiss, Tinit, Tmean0, Tmean2, geof, ps, pb, psv
 !     real*8 psurf, psurf_season, tfrostco2
       character*100 dum1
       character*40 fileout1, fileout2  ! character arrays for output filenames
@@ -74,7 +71,7 @@ C     All time is referenced to dt0_j2000
 
       write(*,*) 'Model parameters'
       write(*,*) 'Time step=',dt,' Max number of steps=',nsteps
-      write(*,*) 'z(1)=',z(1),' zmax=',zmax,' zfac=',zfac
+      write(*,*) 'zmax=',zmax,' zfac=',zfac
       write(*,*) 'Thermal inertia=',thermalInertia,' rho*c=',rhoc
       print *,'Diurnal skin depth=',delta,' Geothermal flux=',Fgeotherm
       write(*,*) 'albedo=',albedo,' emiss=',emiss
@@ -89,16 +86,16 @@ C     All time is referenced to dt0_j2000
       write(*,*) 'Calculations performed for latitude=',latitude
 
 C-----initialize
-      Tmean = 210.15     ! black-body temperature of planet
+      Tinit = 210.15     ! black-body temperature of planet
       geof = cos(latitude*d2r)/pi
-      Tmean = (589.*(1.-albedo0)*geof/sigSB)**0.25  ! better estimate
+      Tinit = (589.*(1.-albedo0)*geof/sigSB)**0.25  ! better estimate
       do i=1,nz
-         T(i) = Tmean
+         T(i) = Tinit
          ! z(i) = (i-0.5)*dz
       enddo
-      Tsurf = Tmean
+      Tsurf = Tinit
       latitude = latitude*d2r
-      Tmean=0.; Tmean2=0.; nm=0     ! recycle variable Tmean
+      Tmean0=0.; Tmean2=0.; nm=0
       ps=0.; pb=0.
 
       call setgrid(nz,z,zmax,zfac)
@@ -177,8 +174,8 @@ C        Solar insolation and IR at future time step
 
 c--------only output and diagnostics below this line
          if (time>=tmax-solsy) then
-            Tmean = Tmean+Tsurf
-            Tmean2 = Tmean2+T(nz)
+            Tmean0 = Tmean0 + Tsurf
+            Tmean2 = Tmean2 + T(nz)
             ps = ps + min(psv(Tsurf),0.12d0)/Tsurf
             pb = pb + psv(T(nz))/T(nz)
             nm = nm+1
@@ -195,7 +192,7 @@ c--------only output and diagnostics below this line
       close(21)
       close(22)
 
-      print *,Tmean/nm,Tmean2/nm,ps/nm,pb/nm
+      print *,Tmean0/nm,Tmean2/nm,ps/nm,pb/nm
 
       end
  

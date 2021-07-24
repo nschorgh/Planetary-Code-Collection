@@ -164,7 +164,7 @@ Topo3D/topo3d_subs.f90
 *Documentation: User Guide Sections 4.1, 5.1, 5.3-5.7*  
 
 
-### Terrain Shadowing and Illumination
+### Terrain Shadowing and 3D Surface Energy Balance 
 
 Topo3D/shadows.f90 (main program)  
 Topo3D/fieldofviews.f90 (main program)  
@@ -176,7 +176,7 @@ Topo3D/cratersQ_mars_full.f90 (main program)
 Topo3D/insol3d_mars.f90 (main program)  
 Topo3D/filemanager.f90  
 Topo3D/topo3d_common.f90  
-Topo3D/topo3d_geometry.f90
+Topo3D/topo3d_geometry.f90  
 Topo3D/topo3d_modules.f90   
 Topo3D/shadow_subs.f90  
 Topo3D/fieldofview_subs.f90  
