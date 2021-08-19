@@ -1,0 +1,10 @@
+cff-version: 1.1.0
+message: "Metadata for citation of this software according to the CFF format"
+authors:
+  - family-names: Schorghofer
+    given-names: Norbert
+    orcid: https://orcid.org/0000-0002-5821-4066
+title: "Planetary-Code-Collection: Thermal and Ice Evolution Models for Planetary Surfaces"
+version: 1.1.7
+doi: 10.5281/zenodo.594268
+date-released: 2020-07-18
