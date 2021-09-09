@@ -1,5 +1,7 @@
 ChangeLog
 
+8 Sep 2021: added truncated SVD as method to calculate approximate terrain irradiance
+
 4 Apr 2021: added Matlab versions of the Crank-Nicolson solvers conductionT/Q
 
 Mar 2021: added Python versions of the Crank-Nicolson solvers conductionT/Q

@@ -462,7 +462,7 @@ end subroutine update_terrain_irradiance_full
 
 
 subroutine update_terrain_irradiance_SVD(T,U,w,V,Qn,albedo,emiss,Qrefl,QIRin,Tsurf)
-  ! multiply SW and LW irradiances using truncated
+  ! multiply SW and LW irradiances using truncated SVD
   use filemanager, only : NSx, NSy
   implicit none
   integer, parameter :: Nflat = (NSx-2)*(NSy-2)
@@ -497,7 +497,7 @@ subroutine update_terrain_irradiance_SVD(T,U,w,V,Qn,albedo,emiss,Qrefl,QIRin,Tsu
      tmpv2(k) = w(k)*tmpv2(k)
   enddo
   Qrefl(:,:)=0.; QIRin(:,:)=0.
-  do k=1,Nflat ! u*RHS
+  do k=1,Nflat ! u*w*(V^Transpose)*RHS
      call k2ij(k,NSy,i,j)
      Qrefl(i,j) = Qrefl(i,j) + sum( u(k,1:T) * tmpv1(1:T) )
      QIRin(i,j) = QIRin(i,j) + sum( u(k,1:T) * tmpv2(1:T) )

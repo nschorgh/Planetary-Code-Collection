@@ -72,6 +72,9 @@ makegaussian.c: (main program)
 	creates Gaussian surface
 	(3rd party subroutines from Numerical Recipes are not included)
 
+xsvdcmp.py: (main program)  
+	computes truncated SVD of view factor matrix
+
 topo40.xyz: 
 	example input topography
 

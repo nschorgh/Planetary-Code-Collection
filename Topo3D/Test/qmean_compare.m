@@ -1,8 +1,8 @@
 # Octave script
 
 clear all
-a=load('../ThermalLibF/Topo3D/Test/qmean.topo81');
-b=load('../ThermalLibF/Topo3D/Test/qmean.topo81_wsurfcond');
+a=load('qmean.topo81');
+b=load('qmean.topo81_wsurfcond');
 
 Nx=81-2; Ny=81-2; 
 
@@ -19,7 +19,8 @@ T=[100:5:450];
 ah1=hist(T1(:),T);
 ah2=hist(T2(:),T);
 hold on
-plot(T,ah1,'r-',T,ah2,'g--');
+%plot(T,ah1,'r-',T,ah2,'g--');
+plot(T,ah1,'-',T,ah2,'-','color',[0.466 0.674 0.188]);
 hold off
 xlabel('Peak Temperature (K)')
 ylabel('# Pixels')

@@ -14,17 +14,16 @@ PROGRAM cratersQ_moon
   real(8), parameter :: solarDay = 29.53*86400.
 
   integer nsteps, n, i, j, nm, nm2, STEPSPERSOL
-  integer k, CCMAX, iii, jjj
+  integer CCMAX
   real(8) tmax, dt, latitude, dtsec
   real(8) R, Decl, HA, sdays
   real(8) azSun, sinbeta, smax, emiss
   real(8), dimension(NSx,NSy) :: h, SlopeAngle, azFac
-  real(8), dimension(NSx,NSy) :: Qn, QIR, Qrefl   ! incoming
+  real(8), dimension(NSx,NSy) :: Qn, QIRin, Qrefl   ! incoming
   integer, dimension(NSx,NSy) :: cc
   integer(2), dimension(:,:,:), allocatable :: ii,jj
   real(4), dimension(:,:,:), allocatable :: VF  
-  real(8), dimension(NSx,NSy) :: Tsurf, Qvis, viewsize, Qabs, albedo
-  real(8), dimension(NSx,NSy) :: QIRin, QIRre
+  real(8), dimension(NSx,NSy) :: Tsurf, viewsize, Qabs, albedo
   real(8) Qmeans(NSx,NSy,4)
   real(8), dimension(NSx,NSy) :: Qmax1, Qmax2, Tmean, Tmaxi, Tb, Tmaxi2, T0m
   real(8), allocatable :: T(:,:,:), Qnm1(:,:)  ! subsurface
@@ -55,7 +54,7 @@ PROGRAM cratersQ_moon
   call difftopo(NSx,NSy,h,dx,dy,SlopeAngle,azFac)
 
   latitude = latitude*d2r
-  Tsurf=0.; Qrefl=0.; QIRre=0.  
+  Tsurf=0.; Qrefl=0.; QIRin=0.
   Qmeans(:,:,:)=0.; Tmean=0.; nm=0
   Qmax1=0.; Qmax2=0.
   Tmaxi=0.; Tmaxi2=0.
@@ -95,20 +94,8 @@ PROGRAM cratersQ_moon
      end do
 
      if (reflection) then
-        Qvis(:,:) = Qn + Qrefl
-        QIRin(:,:) = QIR + QIRre
-        do i=2,NSx-1
-           do j=2,NSy-1
-              QIR(i,j)=0.; Qrefl(i,j)=0.; QIRre(i,j)=0.
-              do k=1,cc(i,j)
-                 iii = ii(i,j,k); jjj = jj(i,j,k)
-                 Qrefl(i,j) = Qrefl(i,j) + VF(i,j,k)*albedo(iii,jjj)*Qvis(iii,jjj)
-                 QIR(i,j) = QIR(i,j) + VF(i,j,k)*emiss*sigSB*Tsurf(iii,jjj)**4
-                 QIRre(i,j) = QIRre(i,j) + VF(i,j,k)*(1-emiss)*QIRin(iii,jjj)
-              end do
-           end do
-        end do
-        Qabs(:,:) = (1.-albedo(:,:))*(Qn+Qrefl)+emiss*(QIR+QIRre)  ! Q absorbed
+        call update_terrain_irradiance(VF,cc,ii,jj,Qn,albedo,emiss,Qrefl,QIRin,Tsurf)
+        Qabs(:,:) = (1.-albedo(:,:))*(Qn+Qrefl) + emiss*QIRin  ! Q absorbed
      else
         Qabs(:,:) = (1.-albedo(:,:))*Qn
      endif
@@ -147,7 +134,7 @@ PROGRAM cratersQ_moon
         where (Qn>Qmax1) Qmax1=Qn  ! maximum direct
         Qmeans(:,:,2) = Qmeans(:,:,2) + Qabs
         where (Qabs>Qmax2) Qmax2=Qabs  ! maximum total
-        Qmeans(:,:,3) = Qmeans(:,:,3) + QIR
+        Qmeans(:,:,3) = Qmeans(:,:,3) + QIRin
         Qmeans(:,:,4) = Qmeans(:,:,4) + Qrefl
         Tmean = Tmean + Tsurf
         where (Tsurf>Tmaxi)
@@ -172,7 +159,7 @@ PROGRAM cratersQ_moon
   do i=2,NSx-1
      do j=2,NSy-1
         !write(21,'(2(i4,1x),f9.2,2x,f6.4,4(1x,f6.1),1x,f5.1)') & 
-        !     & i,j,h(i,j),SlopeAngle(i,j),Qn(i,j),Qabs(i,j),Qir(i,j),Qrefl(i,j), &
+        !     & i,j,h(i,j),SlopeAngle(i,j),Qn(i,j),Qabs(i,j),QIRin(i,j),Qrefl(i,j), &
         !     & Tsurf(i,j)
         write(22,'(2(i4,1x),f9.2,2x,f6.4,4(1x,f6.1),1x,f5.1,2(1x,f6.1),1x,f5.1)') &
              & i,j,h(i,j),SlopeAngle(i,j),Qmeans(i,j,1:4), &

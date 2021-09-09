@@ -186,6 +186,7 @@ Topo3D/multigrid.f90
 Topo3D/fieldproperties.f90 (main program)  
 Topo3D/hpsort.for  
 Topo3D/makegaussian.c   
+Topo3D/xsvdcmp.py   
 Common/conductionQ.f90    
 Common/conductionQ2.f90  
 Common/conductionT2.f90  
