@@ -14,11 +14,16 @@ program cratersQ_equilbr
   real(8), dimension(NSx,NSy) :: h, SlopeAngle, azFac
   real(8), dimension(NSx,NSy) :: Qn, QIRin, Qrefl   ! incoming
   real(8) R, azSun, smax, emiss, betaSun, Qshadow1, Qshadow2
-  integer, dimension(NSx,NSy) :: cc
-  integer(2), dimension(:,:,:), allocatable :: ii,jj
   real(8), dimension(NSx,NSy) :: Tsurf, viewsize, Qabs, albedo
-  real(4), dimension(:,:,:), allocatable :: VF
-
+  integer, dimension(NSx,NSy) :: cc ! for method 1
+  integer(2), dimension(:,:,:), allocatable :: ii,jj ! for method 1
+  real(4), dimension(:,:,:), allocatable :: VF  ! for methods 1 & 2
+  integer, parameter :: Nflat = (NSx-2) * (NSy-2), T=200  ! for method 3
+  real(8) w(Nflat)
+  real(8), allocatable :: u(:,:), v(:,:)
+  
+  integer, parameter :: method = 1  ! choose input format 1...3
+  
   ! azimuth in degrees east of north, 0=north facing
   albedo(:,:) = 0.12
   emiss = 0.95
@@ -34,12 +39,26 @@ program cratersQ_equilbr
   call readhorizons
 
   print *,'...reading huge viewfactors file...'
-  CCMAX = getmaxfieldsize(NSx,NSy,vfn)
-  print *,'... max field of view size=',CCMAX
-  allocate(ii(NSx,NSy,CCMAX), jj(NSx,NSy,CCMAX), VF(NSx,NSy,CCMAX))
-  !call getfieldofview(NSx,NSy,ffn,cc,ii,jj,dO12,landsize,CCMAX)
-  call getviewfactors(NSx,NSy,vfn,cc,ii,jj,VF,viewsize,CCMAX)
 
+  select case (method)
+  case(1) ! fild with non-zero view factors
+     CCMAX = getmaxfieldsize(NSx,NSy,vfn)
+     print *,'... max field of view size=',CCMAX
+     allocate(ii(NSx,NSy,CCMAX), jj(NSx,NSy,CCMAX), VF(NSx,NSy,CCMAX))
+     !call getfieldofview(NSx,NSy,ffn,cc,ii,jj,dO12,landsize,CCMAX)
+     call getviewfactors(NSx,NSy,vfn,cc,ii,jj,VF,viewsize,CCMAX)
+  case(2) ! full square view factor matrix
+     CCMAX = (NSx-2) * (NSy-2)
+     allocate(VF(NSx,NSy,CCMAX))
+     call getviewfactors_full(NSx,NSy,vfn,viewsize,VF)
+  case(3) ! truncated or full SVD (outputs of xsvdcmp)
+     print *,'...reading SVD files...'
+     allocate(u(Nflat,T), v(Nflat,T))
+     call readtruncSVD(U,w,V,Nflat,T,'./','.dat')
+  case default
+     stop 'no valid method'
+  end select
+     
   print *,'...calculating...'  
   print *,'beta=',betaSun/d2r,'azSun=',azSun/d2r
 
@@ -57,8 +76,14 @@ program cratersQ_equilbr
   do n=1,7
      !print *,'Iteration',n
 
-     call update_terrain_irradiance(VF,cc,ii,jj,Qn,albedo,emiss,Qrefl,QIRin,Tsurf)
-     !call update_terrain_irradiance_full(VF,Qn,albedo,emiss,Qrefl,QIRin,Tsurf)
+     select case(method)
+     case(1)
+        call update_terrain_irradiance(VF,cc,ii,jj,Qn,albedo,emiss,Qrefl,QIRin,Tsurf)
+     case(2)
+        call update_terrain_irradiance_full(VF,Qn,albedo,emiss,Qrefl,QIRin,Tsurf)
+     case(3)
+        call update_terrain_irradiance_SVD(T,U,w(1:T),V,Qn,albedo,emiss,Qrefl,QIRin,Tsurf)
+     end select
      
      Qshadow1 = 0.; Qshadow2 = 0.
      do i=2,NSx-1
@@ -73,8 +98,6 @@ program cratersQ_equilbr
 
      print *,'Iteration',n,Qshadow1,Qshadow2
   enddo
-
-  deallocate(ii, jj, VF)
 
   open(unit=21,file='qinst.dat',action='write')
   do i=2,NSx-1

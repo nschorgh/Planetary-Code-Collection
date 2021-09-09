@@ -308,14 +308,15 @@ end subroutine getviewfactors
 
 
 
-subroutine getviewfactors_full(NSx,NSy,vfn,landsize,viewsize,VF)
+subroutine getviewfactors_full(NSx,NSy,vfn,viewsize,VF)
   ! reads full viewfactor matrix from file
   implicit none
   integer, intent(IN) :: NSx, NSy
   character(len=*), intent(IN) :: vfn
-  real(8), intent(OUT) :: landsize(NSx,NSy), viewsize(NSx,NSy)
+  real(8), intent(OUT) :: viewsize(NSx,NSy)
   real(4), intent(OUT) :: VF(NSx,NSy,(NSx-2)*(NSy-2))
   integer cc, i, j, i0_2, j0_2, ierr
+  real(8) landsize(NSx,NSy)
   
   open(unit=21,file=vfn,status='old',action='read',iostat=ierr)
   if (ierr>0) stop 'getviewfactors_full: input file not found'
@@ -468,14 +469,13 @@ subroutine update_terrain_irradiance_full(VF,Qn,albedo,emiss,Qrefl,QIRin,Tsurf)
   use filemanager, only : NSx, NSy
   implicit none
   integer, parameter :: Nflat = (NSx-2)*(NSy-2)
-  real(4), intent(IN) :: VF(:,:)
+  real(4), intent(IN) :: VF(NSx,NSy,Nflat)
   real(8), intent(IN), dimension(NSx,NSy) :: Qn, albedo, Tsurf
   real(8), intent(IN) :: emiss
   real(8), intent(INOUT), dimension(NSx,NSy) :: Qrefl, QIRin
   real(8), parameter :: sigSB = 5.6704e-8  
-  integer i, j, ii, jj, k, l
+  integer i, j, ii, jj, k
   real(8), dimension(NSx,NSy) :: Qvis, QIRout
-  integer, external :: ij2k
 
   Qvis(:,:) = albedo * (Qn + Qrefl)
   QIRout(:,:) = emiss*sigSB*Tsurf**4 + (1-emiss)*QIRin
@@ -484,11 +484,10 @@ subroutine update_terrain_irradiance_full(VF,Qn,albedo,emiss,Qrefl,QIRin,Tsurf)
      do j=2,NSy-1
         Qrefl(i,j)=0.
         QIRin(i,j)=0.
-        l = ij2k(i,j,NSy)
         do k=1,Nflat
            call k2ij(k,NSy,ii,jj)
-           Qrefl(i,j) = Qrefl(i,j) + VF(l,k)*Qvis(ii,jj)
-           QIRin(i,j) = QIRin(i,j) + VF(l,k)*QIRout(ii,jj)
+           Qrefl(i,j) = Qrefl(i,j) + VF(i,j,k)*Qvis(ii,jj)
+           QIRin(i,j) = QIRin(i,j) + VF(i,j,k)*QIRout(ii,jj)
         end do
      end do
   end do

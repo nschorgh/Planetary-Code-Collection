@@ -33,12 +33,6 @@ cratersQ_equilbr equilbr: $(OBJFLS) topo3d_subs.o topo3d_common.o \
 	$(CC) $(LFLAGS) cratersQ_equilbr.o topo3d_subs.o topo3d_common.o \
 	$(SR)flux_noatm.o 
 
-cratersQ_equilbr_SVD equilbrSVD: $(OBJFLS) topo3d_subs.o topo3d_common.o \
-	cratersQ_equilbr_SVD.o makefile
-	make -C $(SR) common
-
-	$(CC) $(LFLAGS) cratersQ_equilbr_SVD.o topo3d_subs.o topo3d_common.o \
-	$(SR)flux_noatm.o 
 
 cratersQ_moon: $(OBJFLS) topo3d_subs.o cratersQ_moon.o topo3d_common.o \
 	makefile

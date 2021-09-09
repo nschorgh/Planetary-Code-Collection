@@ -187,11 +187,11 @@ MODULE allinterfaces
      end subroutine getviewfactors
   end interface
   interface
-     subroutine getviewfactors_full(NSx,NSy,vfn,landsize,viewsize,VF)
+     subroutine getviewfactors_full(NSx,NSy,vfn,viewsize,VF)
        implicit none
        integer, intent(IN) :: NSx, NSy
        character(len=*), intent(IN) :: vfn
-       real(8), intent(OUT) :: landsize(NSx,NSy), viewsize(NSx,NSy)
+       real(8), intent(OUT) :: viewsize(NSx,NSy)
        real(4), intent(OUT) :: VF(NSx,NSy,(NSx-2)*(NSy-2))
      end subroutine getviewfactors_full
   end interface
@@ -231,7 +231,7 @@ MODULE allinterfaces
        use filemanager, only : NSx, NSy
        implicit none
        integer, parameter :: Nflat = (NSx-2)*(NSy-2)
-       real(4), intent(IN) :: VF(:,:)
+       real(4), intent(IN) :: VF(NSx,NSy,Nflat)
        real(8), intent(IN), dimension(NSx,NSy) :: Qn, albedo, Tsurf
        real(8), intent(IN) :: emiss
        real(8), intent(INOUT), dimension(NSx,NSy) :: Qrefl, QIRin
