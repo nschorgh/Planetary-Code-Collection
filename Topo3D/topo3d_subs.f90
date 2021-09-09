@@ -357,6 +357,41 @@ end function getmaxfieldsize
 
 
 
+subroutine readtruncSVD(U,w,V,Nflat,T,pth,ext)
+  ! read truncated SVD from file
+  implicit none
+  integer, intent(IN) :: Nflat, T
+  real(8), intent(OUT) :: U(Nflat,T), w(Nflat), V(Nflat,T)
+  character(len=*), intent(IN) :: pth, ext
+  integer k, ierr
+
+  if (T<1 .or. T>Nflat) stop 'impossible value for T'
+
+  open(20,file=pth//'svd_U'//ext,action='read',iostat=ierr)
+  if (ierr>0) then
+     print *, 'readtruncSVD: input file for U not found','svd_U'//ext
+     stop
+  endif
+  do k=1,Nflat
+     read(20,*) U(k,1:T) ! matrix U
+  end do
+  close(20)
+  
+  open(21,file=pth//'svd_sigma'//ext,action='read',iostat=ierr)
+  if (ierr>0) stop 'readtruncSVD: input file for w not found'
+  read(21,*) w(1:T)  ! diagonal of matrix W
+  close(21)
+  
+  open(22,file=pth//'svd_V'//ext,action='read',iostat=ierr)
+  if (ierr>0) stop 'readtruncSVD: input file for V not found'
+  do k=1,T
+     read(22,*) V(1:Nflat,k)  ! matrix V-transpose
+  end do
+  close(22)
+end subroutine readtruncSVD
+
+
+
 integer function countcolumns()
   ! counts the number of azimuth rays in horizons file
   ! incorporates code from Léo https://stackoverflow.com/users/10478255/leo
@@ -472,9 +507,9 @@ subroutine update_terrain_irradiance_SVD(T,U,w,V,Qn,albedo,emiss,Qrefl,QIRin,Tsu
   real(8), intent(IN) :: emiss
   real(8), intent(INOUT), dimension(NSx,NSy) :: Qrefl, QIRin
   real(8), parameter :: sigSB = 5.6704e-8  
-  integer ii, jj, k, l, i, j
+  integer iii, jjj, k, l, i, j
   real(8), dimension(NSx,NSy) :: Qvis, QIRout
-  real(8) tmpv1(T), tmpv2(T), tmpv3(T)
+  real(8) tmpv1(T), tmpv2(T)
   integer, external :: ij2k
 
   Qvis(:,:) = albedo * (Qn + Qrefl)
@@ -483,12 +518,11 @@ subroutine update_terrain_irradiance_SVD(T,U,w,V,Qn,albedo,emiss,Qrefl,QIRin,Tsu
   do k=1,T ! (V^Transpose)*RHS
      tmpv1(k) = 0.
      tmpv2(k) = 0.
-     tmpv3(k) = 0.
-     do ii=2,NSx-1
-        do jj=2,NSy-1
-           l = ij2k(ii,jj,NSy)
-           tmpv1(k) = tmpv1(k) + v(l,k)*Qvis(ii,jj)
-           tmpv2(k) = tmpv2(k) + v(l,k)*QIRout(ii,jj)
+     do iii=2,NSx-1
+        do jjj=2,NSy-1
+           l = ij2k(iii,jjj,NSy)
+           tmpv1(k) = tmpv1(k) + v(l,k)*Qvis(iii,jjj)
+           tmpv2(k) = tmpv2(k) + v(l,k)*QIRout(iii,jjj)
         enddo
      enddo
   enddo

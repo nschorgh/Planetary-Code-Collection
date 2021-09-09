@@ -11,7 +11,7 @@ program cratersQ_equilbr_SVD
   real(8), parameter :: pi=3.1415926535897932, d2r=pi/180.
   real(8), parameter :: sigSB = 5.6704e-8  
 
-  integer n, i, j, k
+  integer n, i, j
   integer, parameter :: Nflat = (NSx-2)*(NSy-2)
   integer, parameter :: T=200  ! truncate after T terms
   real(8), dimension(NSx,NSy) :: h, SlopeAngle, azFac
@@ -21,8 +21,6 @@ program cratersQ_equilbr_SVD
   real(8) w(Nflat)
   real(8), allocatable :: u(:,:), v(:,:)
   integer, external :: ij2k
-  !integer ierr, nelem
-  !real(8) buf, VF(Nflat,Nflat)
 
   ! azimuth in degrees east of north, 0=north facing
   albedo(:,:) = 0.12
@@ -39,22 +37,13 @@ program cratersQ_equilbr_SVD
   call readhorizons
 
   ! read outputs of xsvdcmp
+  print *,'...reading SVD files...'
   allocate(u(Nflat,T), v(Nflat,T))
-  open(20,file='svd_U.dat',action='read')
-  do k=1,Nflat
-     read(20,*) u(k,1:T) ! matrix U
-  end do
-  close(20)
-  open(21,file='svd_sigma.dat',action='read')
-  read(21,*) w(1:T)  ! diagonal of matrix W
-  close(21)
-  open(22,file='svd_V.dat',action='read')
-  do k=1,T
-     read(22,*) v(1:Nflat,k)  ! matrix V-transpose
-  end do
-  close(22)
+  call readtruncSVD(U,w,V,Nflat,T,'./','.dat')
 
-!!$  test: block 
+!!$  test: block
+!!$    integer ierr, nelem
+!!$    real(8) buf, VF(Nflat,Nflat)
 !!$    print *,'...testing SVD decomposition...'
 !!$    open(7,file='viewfactors.dat',status='old',action='read',iostat=ierr)
 !!$    if (ierr>0) stop 'input file not found'
@@ -118,5 +107,4 @@ program cratersQ_equilbr_SVD
   close(21)
 
 end program cratersQ_equilbr_SVD
-
 

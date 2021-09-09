@@ -203,6 +203,14 @@ MODULE allinterfaces
      end function getmaxfieldsize
   end interface
   interface
+     subroutine readtruncSVD(U,w,V,Nflat,T,pth,ext)
+       implicit none
+       integer, intent(IN) :: Nflat, T
+       real(8), intent(OUT) :: U(Nflat,T), w(Nflat), V(Nflat,T)
+       character(len=*), intent(IN) :: pth, ext
+     end subroutine readtruncSVD
+  end interface
+  interface
      integer function countcolumns()
      end function countcolumns
   end interface
