@@ -7,11 +7,10 @@ x=reshape(a(:,1),Ny,Nx);  x=x(1:Nx:end);
 y=reshape(a(:,2),Ny,Nx);  y=y(1:Ny);
 h=reshape(a(:,3),Ny,Nx);
 Qdirect=reshape(a(:,5),Ny,Nx);
-Qirre=reshape(a(:,6),Ny,Nx);
-Qabs=reshape(a(:,7),Ny,Nx);
-Qir=reshape(a(:,8),Ny,Nx);
-Qrefl=reshape(a(:,9),Ny,Nx);
-Tsurf=reshape(a(:,10),Ny,Nx);
+Qir=reshape(a(:,6),Ny,Nx);
+Qrefl=reshape(a(:,7),Ny,Nx);
+Qabs=reshape(a(:,8),Ny,Nx);
+Tsurf=reshape(a(:,9),Ny,Nx);
 
 set(0,'defaultaxesfontsize',12,'defaulttextfontsize',12,'defaultlinelinewidth',2)
 
@@ -29,9 +28,8 @@ figure(1); clf
 hold on
 plot(Qdirect(:,y)*(1-A),'k-')
 plot(Qir(:,y),'ro-')
-plot(Qirre(:,y),'r--')
 plot(Qrefl(:,y),'b-^')
-Qtotal=(1-A)*(Qdirect+Qrefl)+emiss*(Qir+Qirre);
+Qtotal=(1-A)*(Qdirect+Qrefl)+emiss*Qir;
 plot(Qtotal(:,y),'go-','markersize',3)
 %plot(sinbeta(:,y)*S0*(1-A),'--','color',[.4 .4 .4])
 hold off
@@ -39,7 +37,7 @@ xlabel('Distance (Pixel)')
 ylabel('Flux (W/m^2)')
 box on
 %set(gca,'yscale','log')
-legend('direct absorbed','IR','scattered IR','scattered vis','total absorbed')
+legend('direct absorbed','IR','scattered vis','total absorbed')
 
 
 

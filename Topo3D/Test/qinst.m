@@ -5,10 +5,10 @@ Nx=81-2; Ny=81-2;
 
 h=reshape(a(:,3),Ny,Nx);
 Q=reshape(a(:,5),Ny,Nx);
-Qabs=reshape(a(:,7),Ny,Nx);
-Qir=reshape(a(:,8),Ny,Nx);
-Qre=reshape(a(:,9),Ny,Nx);
-T=reshape(a(:,10),Ny,Nx);
+Qir=reshape(a(:,6),Ny,Nx);
+Qre=reshape(a(:,7),Ny,Nx);
+Qabs=reshape(a(:,8),Ny,Nx);
+T=reshape(a(:,9),Ny,Nx);
 
 hlevs=[-50:10:0];
 hmin=min(h(:));

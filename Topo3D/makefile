@@ -26,12 +26,12 @@ fieldofviews: $(OBJFLS) fieldofview_subs.o topo3d_common.o \
 	fieldofview_subs.o topo3d_geometry.o -o $@
 
 
-cratersQ_equilbr: $(OBJFLS) topo3d_subs.o topo3d_common.o \
+cratersQ_equilbr  equilbr: $(OBJFLS) topo3d_subs.o topo3d_common.o \
 	cratersQ_equilbr.o makefile
 	make -C $(SR) common
 
 	$(CC) $(LFLAGS) cratersQ_equilbr.o topo3d_subs.o topo3d_common.o \
-	$(SR)flux_noatm.o -o $@
+	$(SR)flux_noatm.o 
 
 
 cratersQ_moon: $(OBJFLS) topo3d_subs.o cratersQ_moon.o topo3d_common.o \

@@ -1,4 +1,4 @@
-cff-version: 1.1.0
+cff-version: 1.2.0
 message: "Metadata for citation of this software according to the CFF format"
 authors:
   - family-names: Schorghofer
@@ -7,4 +7,5 @@ authors:
 title: "Planetary-Code-Collection: Thermal and Ice Evolution Models for Planetary Surfaces"
 version: 1.1.7
 doi: 10.5281/zenodo.594268
+url: "https://github.com/nschorgh/Planetary-Code-Collection/"
 date-released: 2020-07-18

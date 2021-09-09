@@ -27,7 +27,7 @@ makefile:
 
 NOTES
 
-* Lunar exosphere model is found in directory Exospheres/
-* Terrain irradiance model for airless bodies is found in Topo3D/
+* Lunar exosphere model is in directory Exospheres/
+* Terrain irradiance model for airless bodies is in directory Topo3D/
 
 

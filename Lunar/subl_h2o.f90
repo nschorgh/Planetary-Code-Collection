@@ -69,6 +69,18 @@ end function sublr_amorph
 
 
 
+real(8) function alpha(T)
+  ! condensation coefficient from Haynes et al. (1992)
+  implicit none
+  real(8), intent(IN) :: T
+  !alpha = 1.06/(1.+ 1.*exp(-0.23/(0.00198588*T)))
+  alpha = ( 1.06*(185-T) + 0.65*(T-20) ) / (185-20)
+  if (alpha>1.) alpha=1.
+  if (alpha<0.) alpha=0.
+end function alpha
+
+
+
 real(8) function padsr(x)
   ! relative vapor pressure of adsorbed H2O
   ! based on adsorption isotherms by Cadenhead & Stetter (1974)

@@ -57,7 +57,7 @@ mars_mapi2p: mars_mapi2p.o jsubv.o marsorbit.o flux_mars.o soilthprop_mars.o \
 	jsubv.o soilthprop_mars.o $(SR)psv.o $(SR)psvco2.o 
 
 stabgrow_fast: fast_modules.o fast_subs_exper.o stabgrow_fast.o \
-	fast_subs_univ.o soilthprop_mars.o makefile        
+	fast_subs_univ.o soilthprop_mars.o makefile
 	make -C $(SR) common
 	$(CC) $(LFLAGS) stabgrow_fast.o fast_subs_univ.o fast_subs_exper.o \
 	$(SR)tridag.o $(SR)conductionT.o $(SR)grids.o soilthprop_mars.o \

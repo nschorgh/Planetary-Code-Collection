@@ -146,7 +146,7 @@ Common/tridag.for
 Lunar/oscidea1.f90 (main program)  
 Lunar/oscidea_subs.f90  
 Lunar/subl_h2o.f90  
-*Documentation: User Guide Section 3.3  
+*Documentation: User Guide Section 3.4  
 Documentation: Schorghofer, N. & Aharonson, O. (2014) ApJ 788, 169*  
 
 
