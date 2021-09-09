@@ -393,3 +393,114 @@ integer function countcolumns()
   countcolumns = i-1
   
 end function countcolumns
+
+
+
+subroutine update_terrain_irradiance(VF,cc,ii,jj,Qn,albedo,emiss,Qrefl,QIRin,Tsurf)
+  ! multiply SW and LW irradiances with viewfactors
+  use filemanager, only : NSx, NSy
+  implicit none
+  real(4), intent(IN) :: VF(:,:,:)
+  integer, intent(IN) :: cc(NSx,NSy)
+  integer(2), intent(IN) :: ii(:,:,:), jj(:,:,:)
+  real(8), intent(IN), dimension(NSx,NSy) :: Qn, albedo, Tsurf
+  real(8), intent(IN) :: emiss
+  real(8), intent(INOUT), dimension(NSx,NSy) :: Qrefl, QIRin
+  real(8), parameter :: sigSB = 5.6704e-8  
+  integer i, j, iii, jjj, k
+  real(8), dimension(NSx,NSy) :: Qvis, QIRout
+
+  Qvis(:,:) = albedo * (Qn + Qrefl)
+  QIRout(:,:) = emiss*sigSB*Tsurf**4 + (1-emiss)*QIRin
+  
+  do i=2,NSx-1
+     do j=2,NSy-1
+        Qrefl(i,j)=0.
+        QIRin(i,j)=0.
+        do k=1,cc(i,j)
+           iii = ii(i,j,k); jjj = jj(i,j,k)
+           Qrefl(i,j) = Qrefl(i,j) + VF(i,j,k)*Qvis(iii,jjj)
+           QIRin(i,j) = QIRin(i,j) + VF(i,j,k)*QIRout(iii,jjj)
+        enddo
+     enddo
+  enddo
+end subroutine update_terrain_irradiance
+
+
+
+subroutine update_terrain_irradiance_full(VF,Qn,albedo,emiss,Qrefl,QIRin,Tsurf)
+  ! multiply SW and LW irradiances using full (Nflat x Nflat) viewfactor matrix
+  use filemanager, only : NSx, NSy
+  implicit none
+  integer, parameter :: Nflat = (NSx-2)*(NSy-2)
+  real(4), intent(IN) :: VF(:,:)
+  real(8), intent(IN), dimension(NSx,NSy) :: Qn, albedo, Tsurf
+  real(8), intent(IN) :: emiss
+  real(8), intent(INOUT), dimension(NSx,NSy) :: Qrefl, QIRin
+  real(8), parameter :: sigSB = 5.6704e-8  
+  integer i, j, ii, jj, k, l
+  real(8), dimension(NSx,NSy) :: Qvis, QIRout
+  integer, external :: ij2k
+
+  Qvis(:,:) = albedo * (Qn + Qrefl)
+  QIRout(:,:) = emiss*sigSB*Tsurf**4 + (1-emiss)*QIRin
+
+  do i=2,NSx-1
+     do j=2,NSy-1
+        Qrefl(i,j)=0.
+        QIRin(i,j)=0.
+        l = ij2k(i,j,NSy)
+        do k=1,Nflat
+           call k2ij(k,NSy,ii,jj)
+           Qrefl(i,j) = Qrefl(i,j) + VF(l,k)*Qvis(ii,jj)
+           QIRin(i,j) = QIRin(i,j) + VF(l,k)*QIRout(ii,jj)
+        end do
+     end do
+  end do
+end subroutine update_terrain_irradiance_full
+
+
+
+subroutine update_terrain_irradiance_SVD(T,U,w,V,Qn,albedo,emiss,Qrefl,QIRin,Tsurf)
+  ! multiply SW and LW irradiances using truncated
+  use filemanager, only : NSx, NSy
+  implicit none
+  integer, parameter :: Nflat = (NSx-2)*(NSy-2)
+  integer, intent(IN) :: T  ! number of modes retained
+  real(8), intent(IN) :: U(:,:), w(T), V(:,:)
+  real(8), intent(IN), dimension(NSx,NSy) :: Qn, albedo, Tsurf
+  real(8), intent(IN) :: emiss
+  real(8), intent(INOUT), dimension(NSx,NSy) :: Qrefl, QIRin
+  real(8), parameter :: sigSB = 5.6704e-8  
+  integer ii, jj, k, l, i, j
+  real(8), dimension(NSx,NSy) :: Qvis, QIRout
+  real(8) tmpv1(T), tmpv2(T), tmpv3(T)
+  integer, external :: ij2k
+
+  Qvis(:,:) = albedo * (Qn + Qrefl)
+  QIRout(:,:) = emiss*sigSB*Tsurf**4 + (1-emiss)*QIRin
+  
+  do k=1,T ! (V^Transpose)*RHS
+     tmpv1(k) = 0.
+     tmpv2(k) = 0.
+     tmpv3(k) = 0.
+     do ii=2,NSx-1
+        do jj=2,NSy-1
+           l = ij2k(ii,jj,NSy)
+           tmpv1(k) = tmpv1(k) + v(l,k)*Qvis(ii,jj)
+           tmpv2(k) = tmpv2(k) + v(l,k)*QIRout(ii,jj)
+        enddo
+     enddo
+  enddo
+  do k=1,T ! w*(V^Transpose)*RHS
+     tmpv1(k) = w(k)*tmpv1(k)
+     tmpv2(k) = w(k)*tmpv2(k)
+  enddo
+  Qrefl(:,:)=0.; QIRin(:,:)=0.
+  do k=1,Nflat ! u*RHS
+     call k2ij(k,NSy,i,j)
+     Qrefl(i,j) = Qrefl(i,j) + sum( u(k,1:T) * tmpv1(1:T) )
+     QIRin(i,j) = QIRin(i,j) + sum( u(k,1:T) * tmpv2(1:T) )
+  end do
+
+end subroutine update_terrain_irradiance_SVD

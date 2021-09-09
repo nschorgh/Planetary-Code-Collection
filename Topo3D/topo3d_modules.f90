@@ -195,7 +195,7 @@ MODULE allinterfaces
        real(4), intent(OUT) :: VF(NSx,NSy,(NSx-2)*(NSy-2))
      end subroutine getviewfactors_full
   end interface
-    interface
+  interface
      integer function getmaxfieldsize(NSx,NSy,ffn)
        implicit none
        integer, intent(IN) :: NSx,NSy
@@ -205,6 +205,41 @@ MODULE allinterfaces
   interface
      integer function countcolumns()
      end function countcolumns
+  end interface
+  interface
+     subroutine update_terrain_irradiance(VF,cc,ii,jj,Qn,albedo,emiss,Qrefl,QIRin,Tsurf)
+       use filemanager, only : NSx, NSy
+       implicit none
+       real(4), intent(IN) :: VF(:,:,:)
+       integer, intent(IN) :: cc(NSx,NSy)
+       integer(2), intent(IN) :: ii(:,:,:), jj(:,:,:)
+       real(8), intent(IN), dimension(NSx,NSy) :: Qn, albedo, Tsurf
+       real(8), intent(IN) :: emiss
+       real(8), intent(INOUT), dimension(NSx,NSy) :: Qrefl, QIRin
+     end subroutine update_terrain_irradiance
+  end interface
+  interface
+     subroutine update_terrain_irradiance_full(VF,Qn,albedo,emiss,Qrefl,QIRin,Tsurf)
+       use filemanager, only : NSx, NSy
+       implicit none
+       integer, parameter :: Nflat = (NSx-2)*(NSy-2)
+       real(4), intent(IN) :: VF(:,:)
+       real(8), intent(IN), dimension(NSx,NSy) :: Qn, albedo, Tsurf
+       real(8), intent(IN) :: emiss
+       real(8), intent(INOUT), dimension(NSx,NSy) :: Qrefl, QIRin
+     end subroutine update_terrain_irradiance_full
+  end interface
+  interface
+     subroutine update_terrain_irradiance_SVD(T,U,w,V,Qn,albedo,emiss,Qrefl,QIRin,Tsurf)
+       use filemanager, only : NSx, NSy
+       implicit none
+       integer, parameter :: Nflat = (NSx-2)*(NSy-2)
+       integer, intent(IN) :: T
+       real(8), intent(IN) :: U(:,:), w(T), V(:,:)
+       real(8), intent(IN), dimension(NSx,NSy) :: Qn, albedo, Tsurf
+       real(8), intent(IN) :: emiss
+       real(8), intent(INOUT), dimension(NSx,NSy) :: Qrefl, QIRin
+     end subroutine update_terrain_irradiance_SVD
   end interface
   
   ! mk_atmosphere.f90

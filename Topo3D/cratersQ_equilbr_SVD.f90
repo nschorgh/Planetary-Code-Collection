@@ -1,7 +1,8 @@
-program cratersQ_equilbr
+program cratersQ_equilbr_SVD
 !***********************************************************************
-!   cratersQ_equilbr: program to calculate surface energy balance
+!   cratersQ_equilbr_SVD: program to calculate surface energy balance
 !             for constant sun position; equilibrium solution
+!             uses truncated SVD of view factor matrix  
 !***********************************************************************
   use filemanager
   use allinterfaces
@@ -10,14 +11,18 @@ program cratersQ_equilbr
   real(8), parameter :: pi=3.1415926535897932, d2r=pi/180.
   real(8), parameter :: sigSB = 5.6704e-8  
 
-  integer n, i, j, CCMAX
+  integer n, i, j, k
+  integer, parameter :: Nflat = (NSx-2)*(NSy-2)
+  integer, parameter :: T=200  ! truncate after T terms
   real(8), dimension(NSx,NSy) :: h, SlopeAngle, azFac
-  real(8), dimension(NSx,NSy) :: Qn, QIRin, Qrefl   ! incoming
+  real(8), dimension(NSx,NSy) :: Qn, QIRin, Qrefl  ! incoming
   real(8) R, azSun, smax, emiss, betaSun, Qshadow1, Qshadow2
-  integer, dimension(NSx,NSy) :: cc
-  integer(2), dimension(:,:,:), allocatable :: ii,jj
-  real(8), dimension(NSx,NSy) :: Tsurf, viewsize, Qabs, albedo
-  real(4), dimension(:,:,:), allocatable :: VF
+  real(8), dimension(NSx,NSy) :: Tsurf, Qabs, albedo
+  real(8) w(Nflat)
+  real(8), allocatable :: u(:,:), v(:,:)
+  integer, external :: ij2k
+  !integer ierr, nelem
+  !real(8) buf, VF(Nflat,Nflat)
 
   ! azimuth in degrees east of north, 0=north facing
   albedo(:,:) = 0.12
@@ -33,20 +38,46 @@ program cratersQ_equilbr
   print *,'...reading horizons file...'
   call readhorizons
 
-  print *,'...reading huge viewfactors file...'
-  CCMAX = getmaxfieldsize(NSx,NSy,vfn)
-  print *,'... max field of view size=',CCMAX
-  allocate(ii(NSx,NSy,CCMAX), jj(NSx,NSy,CCMAX), VF(NSx,NSy,CCMAX))
-  !call getfieldofview(NSx,NSy,ffn,cc,ii,jj,dO12,landsize,CCMAX)
-  call getviewfactors(NSx,NSy,vfn,cc,ii,jj,VF,viewsize,CCMAX)
+  ! read outputs of xsvdcmp
+  allocate(u(Nflat,T), v(Nflat,T))
+  open(20,file='svd_U.dat',action='read')
+  do k=1,Nflat
+     read(20,*) u(k,1:T) ! matrix U
+  end do
+  close(20)
+  open(21,file='svd_sigma.dat',action='read')
+  read(21,*) w(1:T)  ! diagonal of matrix W
+  close(21)
+  open(22,file='svd_V.dat',action='read')
+  do k=1,T
+     read(22,*) v(1:Nflat,k)  ! matrix V-transpose
+  end do
+  close(22)
 
+!!$  test: block 
+!!$    print *,'...testing SVD decomposition...'
+!!$    open(7,file='viewfactors.dat',status='old',action='read',iostat=ierr)
+!!$    if (ierr>0) stop 'input file not found'
+!!$    do k=1,Nflat
+!!$       read(7,*) i,j,nelem,buf,buf,(VF(k,l), l=1,Nflat)
+!!$       if (nelem/=Nflat) stop 'wrong input'
+!!$    enddo
+!!$    close(7)
+!!$    ! Product U*W*(V^Transpose):
+!!$    do k = 1,Nflat
+!!$       do l = 1,Nflat
+!!$          b = sum( u(k,:) * w(:) * v(l,:) )  ! = b(k,l)
+!!$          if ( abs(a(k,l)-b)>1d-6 ) print *,'A-SVD(A)',a(k,l),b
+!!$       enddo
+!!$    enddo
+!!$  end block test
+  
   print *,'...calculating...'  
   print *,'beta=',betaSun/d2r,'azSun=',azSun/d2r
 
   do i=2,NSx-1
      do j=2,NSy-1
         smax = getonehorizon(i,j,azSun)
-        !smax = 0.
         Qn(i,j) = flux_wshad(R,sin(betaSun),azSun,SlopeAngle(i,j),azFac(i,j),smax)
      enddo
   enddo
@@ -57,9 +88,9 @@ program cratersQ_equilbr
   do n=1,7
      !print *,'Iteration',n
 
-     call update_terrain_irradiance(VF,cc,ii,jj,Qn,albedo,emiss,Qrefl,QIRin,Tsurf)
+     call update_terrain_irradiance_SVD(T,U,w(1:T),V,Qn,albedo,emiss,Qrefl,QIRin,Tsurf)
      !call update_terrain_irradiance_full(VF,Qn,albedo,emiss,Qrefl,QIRin,Tsurf)
-     
+       
      Qshadow1 = 0.; Qshadow2 = 0.
      do i=2,NSx-1
         Qshadow1 = Qshadow1 + sum(Qrefl(i,:),1,Qn(i,:)==0)
@@ -68,13 +99,13 @@ program cratersQ_equilbr
      
      ! Qabs is Q absorbed
      Qabs(:,:) = (1.-albedo(:,:))*(Qn+Qrefl) + emiss*QIRin
-     
+    
      Tsurf(:,:) = (Qabs/sigSB/emiss)**0.25
 
      print *,'Iteration',n,Qshadow1,Qshadow2
   enddo
 
-  deallocate(ii, jj, VF)
+  deallocate(u, v)
 
   open(unit=21,file='qinst.dat',action='write')
   do i=2,NSx-1
@@ -86,6 +117,6 @@ program cratersQ_equilbr
   enddo
   close(21)
 
-end program cratersQ_equilbr
+end program cratersQ_equilbr_SVD
 
 
