@@ -38,16 +38,16 @@ program cratersQ_equilbr
   print *,'...reading horizons file...'
   call readhorizons
 
-  print *,'...reading huge viewfactors file...'
-
   select case (method)
-  case(1) ! fild with non-zero view factors
+  case(1) ! file with non-zero view factors
+     print *,'...reading huge file of non-zero viewfactors...'
      CCMAX = getmaxfieldsize(NSx,NSy,vfn)
      print *,'... max field of view size=',CCMAX
      allocate(ii(NSx,NSy,CCMAX), jj(NSx,NSy,CCMAX), VF(NSx,NSy,CCMAX))
-     !call getfieldofview(NSx,NSy,ffn,cc,ii,jj,dO12,landsize,CCMAX)
+     !call getfieldofview(NSx,NSy,vfn,cc,ii,jj,VF,viewsize,CCMAX)
      call getviewfactors(NSx,NSy,vfn,cc,ii,jj,VF,viewsize,CCMAX)
   case(2) ! full square view factor matrix
+     print *,'...reading huge square viewfactor matrix...'
      CCMAX = (NSx-2) * (NSy-2)
      allocate(VF(NSx,NSy,CCMAX))
      call getviewfactors_full(NSx,NSy,vfn,viewsize,VF)
@@ -78,11 +78,14 @@ program cratersQ_equilbr
 
      select case(method)
      case(1)
-        call update_terrain_irradiance(VF,cc,ii,jj,Qn,albedo,emiss,Qrefl,QIRin,Tsurf)
+        call update_terrain_irradiance(VF,cc,ii,jj, &
+             & Qn,albedo,emiss,Qrefl,QIRin,Tsurf)
      case(2)
-        call update_terrain_irradiance_full(VF,Qn,albedo,emiss,Qrefl,QIRin,Tsurf)
+        call update_terrain_irradiance_full(VF, &
+             & Qn,albedo,emiss,Qrefl,QIRin,Tsurf)
      case(3)
-        call update_terrain_irradiance_SVD(T,U,w(1:T),V,Qn,albedo,emiss,Qrefl,QIRin,Tsurf)
+        call update_terrain_irradiance_SVD(T,U,w(1:T),V, &
+             & Qn,albedo,emiss,Qrefl,QIRin,Tsurf)
      end select
      
      Qshadow1 = 0.; Qshadow2 = 0.

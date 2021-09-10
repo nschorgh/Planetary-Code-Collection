@@ -243,29 +243,29 @@ end subroutine equatorial2horizontal
 
 
 
-subroutine getfieldofview(NSx,NSy,ffn,cc,ia,ja,dOh,landsize,CCMAX)
-  ! reads subtended spherical angles from file
+subroutine getfieldofview(NSx,NSy,fin,cc,ia,ja,VF,viewsize,CCMAX)
+  ! reads viewfactors or subtended spherical angles from file
   implicit none
   integer, intent(IN) :: NSx, NSy
-  character(len=*), intent(IN) :: ffn
+  character(len=*), intent(IN) :: fin
   integer, intent(IN) :: CCMAX
   integer, intent(OUT) :: cc(NSx,NSy) ! number of cells in field of view
   integer(2), intent(OUT), dimension(NSx,NSy,CCMAX) :: ia, ja
-  real(4), intent(OUT), dimension(NSx,NSy,CCMAX) :: dOh
-  real(8), intent(OUT) :: landsize(NSx,NSy)
+  real(4), intent(OUT), dimension(NSx,NSy,CCMAX) :: VF
+  real(8), intent(OUT) :: viewsize(NSx,NSy)
   integer i, j, k, i0_2, j0_2, ierr
 
-  open(unit=20,file=ffn,status='old',action='read',iostat=ierr)
+  open(unit=20,file=fin,status='old',action='read',iostat=ierr)
   if (ierr>0) stop 'getfieldofview: input file not found'
   do i=2,NSx-1
      do j=2,NSy-1
         read(20,'(2(i5,1x),i6,1x,f7.5,1x)',advance='no') & ! format must match
-             & i0_2,j0_2,cc(i,j),landsize(i,j) 
+             & i0_2,j0_2,cc(i,j),viewsize(i,j) 
         if (i/=i0_2 .or. j/=j0_2) stop 'getfieldofview: wrong data order'
         if (cc(i,j)>CCMAX) stop 'getfieldofview: not enough memory allocated'
         do k=1,cc(i,j)
            read(20,'(2(i5,1x),g10.4,1x)',advance='no') & ! format must match
-                & ia(i,j,k),ja(i,j,k),dOh(i,j,k)
+                & ia(i,j,k),ja(i,j,k),VF(i,j,k)
         enddo
         read(20,'()')
      enddo
@@ -277,6 +277,7 @@ end subroutine getfieldofview
 
 subroutine getviewfactors(NSx,NSy,vfn,cc,ia,ja,VF,viewsize,CCMAX)
   ! reads viewfactors from file
+  ! old file format, where each line starts with i0,j0,cc,landsize,viewsize
   implicit none
   integer, intent(IN) :: NSx, NSy
   character(len=*), intent(IN) :: vfn
@@ -316,13 +317,12 @@ subroutine getviewfactors_full(NSx,NSy,vfn,viewsize,VF)
   real(8), intent(OUT) :: viewsize(NSx,NSy)
   real(4), intent(OUT) :: VF(NSx,NSy,(NSx-2)*(NSy-2))
   integer cc, i, j, i0_2, j0_2, ierr
-  real(8) landsize(NSx,NSy)
   
   open(unit=21,file=vfn,status='old',action='read',iostat=ierr)
   if (ierr>0) stop 'getviewfactors_full: input file not found'
   do i=2,NSx-1
      do j=2,NSy-1
-        read(21,*) i0_2,j0_2,cc,landsize(i,j),viewsize(i,j),VF(i,j,:)
+        read(21,*) i0_2,j0_2,cc,viewsize(i,j),VF(i,j,:)
         if (i/=i0_2 .or. j/=j0_2) stop 'getviewfactors_full: wrong data order'
      enddo
   enddo

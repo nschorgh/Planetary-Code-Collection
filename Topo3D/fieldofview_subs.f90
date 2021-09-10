@@ -107,8 +107,11 @@ contains
        !angle_along_az = atan(slope_along_az)
        
        rcut(ak,cc(ak)) = r
-       !slocal(ak,cc(ak)) = tan(atan(s)-angle_along_az))
+       !slocal(ak,cc(ak)) = tan(atan(s)-atan(slope_along_az))
        slocal(ak,cc(ak)) = (s-slope_along_az)/(1+s*slope_along_az)
+
+       ! atan(slocal) is not the same as asin(cosv) because it considers
+       ! the slope in a *vertical* plane whereas cos(v) is 3D
        
        celli(ak,cc(ak))=i; cellj(ak,cc(ak))=j
        return
@@ -165,7 +168,7 @@ contains
              if (s>smax(ak)) smax(ak)=s
              
              slope_along_az = surfaceSlope*cos(azFac-azRay(ak))
-             !slocal(ak,cc(ak)) = tan(atan(s)-angle_along_az)
+             !slocal(ak,cc(ak)) = tan(atan(s)-atan(slope_along_az))
              slocal(ak,cc(ak)) = (s-slope_along_az)/(1+s*slope_along_az)
              
              celli(ak,cc(ak))=i; cellj(ak,cc(ak))=j
@@ -197,9 +200,8 @@ subroutine findviewfactors(h,i0,j0,unit,visibility)
   integer, parameter :: CCMAX = NSx*NSy 
   integer, dimension(CCMAX) :: cellx, celly
   real(8), dimension(CCMAX) :: dOstack, VFstack
-  real(8), dimension(4) :: hq, xq, yq, theta, phi  ! quadrangle corners
   logical, parameter :: full = .false.  ! output visible and invisible cells
-
+  
   cc=0
 
   call difftopo1(NSx,NSy,i0,j0,h,dx,dy,surfaceSlope,azFac)
@@ -218,35 +220,8 @@ subroutine findviewfactors(h,i0,j0,unit,visibility)
         r = horizontaldistance1(i*dx,j*dy,i0*dx,j0*dy)
         if (r>RMAX .and. .not.full) cycle  ! to save computational cost
 
-        !call xyz2thetaphi(dx*(i-i0),dy*(j-j0),h(i,j)-h(i0,j0),thetac,phic)
-
-!-------get quadrangle corners
-        ! upper right
-        hq(1) = (h(i+1,j)+h(i+1,j+1)+h(i,j+1)+h(i,j))/4.
-        xq(1) = dx*(i-i0+1./2.)
-        yq(1) = dy*(j-j0+1./2.)
-
-        ! upper left
-        hq(2) = (h(i-1,j)+h(i-1,j+1)+h(i,j+1)+h(i,j))/4.
-        xq(2) = dx*(i-i0-1./2.)
-        yq(2) = dy*(j-j0+1./2.)
-
-        ! lower left
-        hq(3) = (h(i-1,j)+h(i-1,j-1)+h(i,j-1)+h(i,j))/4.
-        xq(3) = dx*(i-i0-1./2.)
-        yq(3) = dy*(j-j0-1./2.)
-
-        ! lower right
-        hq(4) = (h(i+1,j)+h(i+1,j-1)+h(i,j-1)+h(i,j))/4.
-        xq(4) = dx*(i-i0+1./2.)
-        yq(4) = dy*(j-j0-1./2.)
-
-        hq(:) = hq(:) - h(i0,j0)
+        dOh = spherical_area(h,i,j,i0,j0)
         
-!-------calculate spherical angle
-        call xyz2thetaphi(xq,yq,hq,theta,phi) ! elemental
-
-        dOh = area_spherical_quadrangle(phi,theta)
         if (i==i0 .and. j==j0 .and. full) dOh = 0.
         
         ! cos(v)
@@ -275,9 +250,8 @@ subroutine findviewfactors(h,i0,j0,unit,visibility)
   landsize = sum(dOstack(1:cc))   ! 2*pi - (size of sky)
   viewsize = sum(VFstack(1:cc)) 
 
-  write(unit,'(2(i5,1x),i6,1x,2(f7.5,1x))',advance='no') &
-       & i0, j0, cc, landsize, viewsize
-  if (cc/=1521) print *,'cc=',cc
+  write(unit,'(2(i5,1x),i6,1x,f7.5,1x)',advance='no') &
+       & i0, j0, cc, viewsize
   do i=1,cc
      if (full) then
         if (VFstack(i)/=0.) then
@@ -293,6 +267,48 @@ subroutine findviewfactors(h,i0,j0,unit,visibility)
   write(unit,"('')")
   
 end subroutine findviewfactors
+
+
+
+function spherical_area(h,i,j,i0,j0)
+  use filemanager, only : NSx, NSy, dx, dy
+  use allinterfaces, except_this_one => spherical_area
+  implicit none
+  real(8) spherical_area
+  real(8), intent(IN) :: h(NSx,NSy)
+  integer, intent(IN) :: i, j, i0, j0
+  real(8), dimension(4) :: hq, xq, yq, theta, phi  ! quadrangle corners
+  
+  !call xyz2thetaphi(dx*(i-i0),dy*(j-j0),h(i,j)-h(i0,j0),thetac,phic)
+
+!-get quadrangle corners
+  ! upper right
+  hq(1) = (h(i+1,j)+h(i+1,j+1)+h(i,j+1)+h(i,j))/4.
+  xq(1) = dx*(i-i0+1./2.)
+  yq(1) = dy*(j-j0+1./2.)
+  
+  ! upper left
+  hq(2) = (h(i-1,j)+h(i-1,j+1)+h(i,j+1)+h(i,j))/4.
+  xq(2) = dx*(i-i0-1./2.)
+  yq(2) = dy*(j-j0+1./2.)
+  
+  ! lower left
+  hq(3) = (h(i-1,j)+h(i-1,j-1)+h(i,j-1)+h(i,j))/4.
+  xq(3) = dx*(i-i0-1./2.)
+  yq(3) = dy*(j-j0-1./2.)
+  
+  ! lower right
+  hq(4) = (h(i+1,j)+h(i+1,j-1)+h(i,j-1)+h(i,j))/4.
+  xq(4) = dx*(i-i0+1./2.)
+  yq(4) = dy*(j-j0-1./2.)
+  
+  hq(:) = hq(:) - h(i0,j0)
+        
+!-calculate spherical angle
+  call xyz2thetaphi(xq,yq,hq,theta,phi) ! elemental
+
+  spherical_area = area_spherical_quadrangle(phi,theta)
+end function spherical_area
 
 
 

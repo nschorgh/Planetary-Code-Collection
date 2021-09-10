@@ -90,7 +90,15 @@ MODULE allinterfaces
        logical, intent(IN) :: visibility(NSx,NSy)
      end subroutine findviewfactors
   end interface
-
+  interface
+     function spherical_area(h,i,j,i0,j0)
+       use filemanager, only : NSx, NSy, dx, dy
+       implicit none
+       real(8) spherical_area
+       real(8), intent(IN) :: h(NSx,NSy)
+       integer, intent(IN) :: i, j, i0, j0
+     end function spherical_area
+  end interface
   interface
      subroutine refinevisibility(i0,j0,h,visibility)
        use filemanager, only : NSx,NSy
@@ -164,14 +172,14 @@ MODULE allinterfaces
      end subroutine equatorial2horizontal
   end interface
   interface
-     subroutine getfieldofview(NSx,NSy,ffn,cc,ia,ja,dOh,landsize,CCMAX)
+     subroutine getfieldofview(NSx,NSy,fin,cc,ia,ja,VF,viewsize,CCMAX)
        integer, intent(IN) :: NSx, NSy
-       character(len=*), intent(IN) :: ffn
+       character(len=*), intent(IN) :: fin
        integer, intent(IN) :: CCMAX
        integer, intent(OUT) :: cc(NSx,NSy)
        integer(2), intent(OUT), dimension(NSx,NSy,CCMAX) :: ia, ja
-       real(4), intent(OUT), dimension(NSx,NSy,CCMAX) :: dOh
-       real(8), intent(OUT) :: landsize(NSx,NSy)
+       real(4), intent(OUT), dimension(NSx,NSy,CCMAX) :: VF
+       real(8), intent(OUT) :: viewsize(NSx,NSy)
      end subroutine getfieldofview
   end interface
   interface
@@ -215,7 +223,8 @@ MODULE allinterfaces
      end function countcolumns
   end interface
   interface
-     subroutine update_terrain_irradiance(VF,cc,ii,jj,Qn,albedo,emiss,Qrefl,QIRin,Tsurf)
+     subroutine update_terrain_irradiance(VF,cc,ii,jj,&
+          & Qn,albedo,emiss,Qrefl,QIRin,Tsurf)
        use filemanager, only : NSx, NSy
        implicit none
        real(4), intent(IN) :: VF(:,:,:)
@@ -227,7 +236,8 @@ MODULE allinterfaces
      end subroutine update_terrain_irradiance
   end interface
   interface
-     subroutine update_terrain_irradiance_full(VF,Qn,albedo,emiss,Qrefl,QIRin,Tsurf)
+     subroutine update_terrain_irradiance_full(VF, &
+          & Qn,albedo,emiss,Qrefl,QIRin,Tsurf)
        use filemanager, only : NSx, NSy
        implicit none
        integer, parameter :: Nflat = (NSx-2)*(NSy-2)
@@ -238,7 +248,8 @@ MODULE allinterfaces
      end subroutine update_terrain_irradiance_full
   end interface
   interface
-     subroutine update_terrain_irradiance_SVD(T,U,w,V,Qn,albedo,emiss,Qrefl,QIRin,Tsurf)
+     subroutine update_terrain_irradiance_SVD(T,U,w,V, &
+          & Qn,albedo,emiss,Qrefl,QIRin,Tsurf)
        use filemanager, only : NSx, NSy
        implicit none
        integer, parameter :: Nflat = (NSx-2)*(NSy-2)

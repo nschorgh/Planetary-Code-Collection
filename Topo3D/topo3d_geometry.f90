@@ -146,6 +146,8 @@ elemental function cos_viewing_angle(x0,y0,h00,surfaceSlope,azFac,xB,yB,hB)
 
   !viewing_angle = pi/2 - atan(s) + atan(slope_along_az)
   cos_viewing_angle = (s-slope_along_az)/sqrt(1+s**2)/sqrt(1+slope_along_az**2)
+  
+  ! cos_viewing_angle = (s-slope_along_az)/sqrt(1+s**2)/sqrt(1+surfaceSlope**2)
 end function cos_viewing_angle
 
 
