@@ -26,7 +26,7 @@ PROGRAM test_fieldofviews1pt
   do k=1,naz_s
      write(20,'(f6.2,1x,f6.4)') azRay_s(k)*r2d,smax(k)
   enddo
-  !call refinevisibility(i0,j0,h,visibility)
+  call refinevisibility_cart(i0,j0,h,visibility)
   open(unit=25,file='singlegrid.dat',action='write')
   do ii=1,NSx
      do jj=1,NSy

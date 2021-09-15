@@ -243,8 +243,8 @@ end subroutine equatorial2horizontal
 
 
 
-subroutine getfieldofview(NSx,NSy,fin,cc,ia,ja,VF,viewsize,CCMAX)
-  ! reads viewfactors or subtended spherical angles from file
+subroutine readviewfactors(NSx,NSy,fin,CCMAX,cc,ia,ja,VF,viewsize)
+  ! reads viewfactors from file
   implicit none
   integer, intent(IN) :: NSx, NSy
   character(len=*), intent(IN) :: fin
@@ -254,49 +254,20 @@ subroutine getfieldofview(NSx,NSy,fin,cc,ia,ja,VF,viewsize,CCMAX)
   real(4), intent(OUT), dimension(NSx,NSy,CCMAX) :: VF
   real(8), intent(OUT) :: viewsize(NSx,NSy)
   integer i, j, k, i0_2, j0_2, ierr
-
-  open(unit=20,file=fin,status='old',action='read',iostat=ierr)
-  if (ierr>0) stop 'getfieldofview: input file not found'
-  do i=2,NSx-1
-     do j=2,NSy-1
-        read(20,'(2(i5,1x),i6,1x,f7.5,1x)',advance='no') & ! format must match
-             & i0_2,j0_2,cc(i,j),viewsize(i,j) 
-        if (i/=i0_2 .or. j/=j0_2) stop 'getfieldofview: wrong data order'
-        if (cc(i,j)>CCMAX) stop 'getfieldofview: not enough memory allocated'
-        do k=1,cc(i,j)
-           read(20,'(2(i5,1x),g10.4,1x)',advance='no') & ! format must match
-                & ia(i,j,k),ja(i,j,k),VF(i,j,k)
-        enddo
-        read(20,'()')
-     enddo
-  enddo
-  close(20)
-end subroutine getfieldofview
-
-
-
-subroutine getviewfactors(NSx,NSy,vfn,cc,ia,ja,VF,viewsize,CCMAX)
-  ! reads viewfactors from file
-  ! old file format, where each line starts with i0,j0,cc,landsize,viewsize
-  implicit none
-  integer, intent(IN) :: NSx, NSy
-  character(len=*), intent(IN) :: vfn
-  integer, intent(IN) :: CCMAX
-  integer, intent(OUT) :: cc(NSx,NSy) ! number of cells in field of view
-  integer(2), intent(OUT), dimension(NSx,NSy,CCMAX) :: ia, ja
-  real(4), intent(OUT), dimension(NSx,NSy,CCMAX) :: VF
-  real(8), intent(OUT) :: viewsize(NSx,NSy)
-  integer i, j, k, i0_2, j0_2, ierr
-  real(8) landsize(NSx,NSy)
+  !real(8) landsize(NSx,NSy)
   
-  open(unit=21,file=vfn,status='old',action='read',iostat=ierr)
-  if (ierr>0) stop 'getviewfactors: input file not found'
+  open(unit=21,file=fin,status='old',action='read',iostat=ierr)
+  if (ierr>0) stop 'readviewfactors: input file not found'
   do i=2,NSx-1
      do j=2,NSy-1
-        read(21,'(2(i5,1x),i6,1x,2(f7.5,1x))',advance='no') & !format must match
-             & i0_2,j0_2,cc(i,j),landsize(i,j),viewsize(i,j)
-        if (i/=i0_2 .or. j/=j0_2) stop 'getviewfactors: wrong data order'
-        if (cc(i,j)>CCMAX) stop 'getviewfactors: not enough memory allocated'
+        
+        !read(21,'(2(i5,1x),i6,1x,2(f7.5,1x))',advance='no') & !format must match
+        !     & i0_2,j0_2,cc(i,j),landsize(i,j),viewsize(i,j)
+        read(21,'(2(i5,1x),i6,1x,f7.5,1x)',advance='no') & ! format must match
+             & i0_2,j0_2,cc(i,j),viewsize(i,j) 
+        
+        if (i/=i0_2 .or. j/=j0_2) stop 'readviewfactors: wrong data order'
+        if (cc(i,j)>CCMAX) stop 'readviewfactors: not enough memory allocated'
         do k=1,cc(i,j)
            read(21,'(2(i5,1x),g10.4,1x)',advance='no') & ! format must match
                 & ia(i,j,k),ja(i,j,k),VF(i,j,k)
@@ -305,34 +276,33 @@ subroutine getviewfactors(NSx,NSy,vfn,cc,ia,ja,VF,viewsize,CCMAX)
      enddo
   enddo
   close(21)
-end subroutine getviewfactors
+end subroutine readviewfactors
 
 
 
-subroutine getviewfactors_full(NSx,NSy,vfn,viewsize,VF)
+subroutine readviewfactors_full(NSx,NSy,vfn,VF,viewsize)
   ! reads full viewfactor matrix from file
   implicit none
   integer, intent(IN) :: NSx, NSy
   character(len=*), intent(IN) :: vfn
-  real(8), intent(OUT) :: viewsize(NSx,NSy)
   real(4), intent(OUT) :: VF(NSx,NSy,(NSx-2)*(NSy-2))
+  real(8), intent(OUT) :: viewsize(NSx,NSy)
   integer cc, i, j, i0_2, j0_2, ierr
   
   open(unit=21,file=vfn,status='old',action='read',iostat=ierr)
-  if (ierr>0) stop 'getviewfactors_full: input file not found'
+  if (ierr>0) stop 'readviewfactors_full: input file not found'
   do i=2,NSx-1
      do j=2,NSy-1
         read(21,*) i0_2,j0_2,cc,viewsize(i,j),VF(i,j,:)
-        if (i/=i0_2 .or. j/=j0_2) stop 'getviewfactors_full: wrong data order'
+        if (i/=i0_2 .or. j/=j0_2) stop 'readviewfactors_full: wrong data order'
      enddo
   enddo
   close(21)
-end subroutine getviewfactors_full
+end subroutine readviewfactors_full
 
 
 
 integer function getmaxfieldsize(NSx,NSy,ffn)
-  ! compatible with fieldofviews.dat and viewfactors.dat
   implicit none
   integer, intent(IN) :: NSx,NSy
   character(len=*), intent(IN) :: ffn
@@ -341,13 +311,13 @@ integer function getmaxfieldsize(NSx,NSy,ffn)
 
   print *,'reading ',ffn
   open(unit=20,file=ffn,status='old',action='read',iostat=ierr)
-  if (ierr>0) stop 'getmaxfieldsize: input file not found'
+  if (ierr>0) stop 'readmaxfieldsize: input file not found'
 
   maxsize=0
   do i=2,NSx-1
      do j=2,NSy-1
         read(20,'(2(i5,1x),i6,1x)') i0_2,j0_2,cc
-        if (i/=i0_2 .or. j/=j0_2) stop 'getmaxfieldsize: wrong data order'
+        if (i/=i0_2 .or. j/=j0_2) stop 'readmaxfieldsize: wrong data order'
         if (cc>maxsize) maxsize=cc
      enddo
   enddo
@@ -432,7 +402,8 @@ end function countcolumns
 
 
 
-subroutine update_terrain_irradiance(VF,cc,ii,jj,Qn,albedo,emiss,Qrefl,QIRin,Tsurf)
+subroutine update_terrain_irradiance(VF,cc,ii,jj, &
+     & Qn,albedo,emiss,Qrefl,QIRin,Tsurf)
   ! multiply SW and LW irradiances with viewfactors
   use filemanager, only : NSx, NSy
   implicit none
@@ -464,7 +435,8 @@ end subroutine update_terrain_irradiance
 
 
 
-subroutine update_terrain_irradiance_full(VF,Qn,albedo,emiss,Qrefl,QIRin,Tsurf)
+subroutine update_terrain_irradiance_full(VF, &
+     & Qn,albedo,emiss,Qrefl,QIRin,Tsurf)
   ! multiply SW and LW irradiances using full (Nflat x Nflat) viewfactor matrix
   use filemanager, only : NSx, NSy
   implicit none
@@ -495,7 +467,8 @@ end subroutine update_terrain_irradiance_full
 
 
 
-subroutine update_terrain_irradiance_SVD(T,U,w,V,Qn,albedo,emiss,Qrefl,QIRin,Tsurf)
+subroutine update_terrain_irradiance_SVD(T,U,w,V, &
+     & Qn,albedo,emiss,Qrefl,QIRin,Tsurf)
   ! multiply SW and LW irradiances using truncated SVD
   use filemanager, only : NSx, NSy
   implicit none

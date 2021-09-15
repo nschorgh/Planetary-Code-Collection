@@ -21,8 +21,7 @@ contains
 
   subroutine findallhorizon_wsort_v3(h,i0,j0,smax,visibility)
     ! finds horizons and determines visibility along all azimuth rays
-    use filemanager, only : NSx, NSy, RMAX, dx, dy
-    use allinterfaces, only : horizontaldistance1
+    use filemanager, only : NSx, NSy, dx, dy
     implicit none
     real(8), intent(IN) :: h(NSx,NSy)
     integer, intent(IN) :: i0, j0
@@ -46,11 +45,8 @@ contains
     visibility(:,:) = .false.
     
     do i=2,NSx-1
-       if (horizontaldistance1(i*dx,1*dy,x0,1*dy)>RMAX) cycle 
        do j=2,NSy-1
           if (i==i0 .and. j==j0) cycle
-          if (horizontaldistance1(i*dx,j*dy,x0,y0)>RMAX) cycle
-          
           call horizon_core_wsort(x0,y0,h00,smax,surfaceSlope,azFac,i,j,h)
        end do  ! end of j loop
     end do  ! end of i loop
@@ -63,7 +59,8 @@ contains
        do i=1,cc(ak)
           j=arr(i)
           ! avoid obstruction by nearby interpolated points
-          if (rcut(ak,j) < sqrt(dx**2+dy**2)) cycle 
+          if (rcut(ak,i)**2 < 1.5*(dx**2+dy**2) ) cycle
+          
           if (slocal(ak,j)>smaxlocal) then
              smaxlocal = slocal(ak,j)
              visibility(celli(ak,j),cellj(ak,j)) = .true.
@@ -183,23 +180,55 @@ END MODULE findvisibletopo
 
 
 
-subroutine findviewfactors(h,i0,j0,unit,visibility)
-  ! calculate subtended spherical angles and view factors of
-  !     all quadrangles visible from (i0*dx,j0*dy,h(i0,j0))
-  ! write view factors to file
+pure subroutine refinevisibility_cart(i0,j0,h,visibility)
+!***********************************************************************
+! refinevisibility: This correction is necessary because azimuth rays 
+!    for horizon calculation are not the same as azimuth rays connecting 
+!    surface elements
+!***********************************************************************
+  use filemanager, only : NSx, NSy, dx, dy
+  use allinterfaces
+  implicit none
+  integer, intent(IN) :: i0, j0
+  real(8), intent(IN) :: h(NSx,NSy)
+  logical, intent(INOUT) :: visibility(NSx,NSy)
+  integer ii, jj
+  real(8) n1x, n1y, n1z, n2x, n2y, n2z
+  real(8) x20, y20, z20, n1_dot_r2, n2_dot_r2
+
+  call h4tonormal(h(i0+1,j0),h(i0-1,j0),h(i0,j0+1),h(i0,j0-1),n1x,n1y,n1z)
+  
+  do ii=2,NSx-1
+     do jj=2,NSy-1
+        if (.not. visibility(ii,jj)) cycle
+
+        x20 = (ii-i0)*dx; y20 = (jj-j0)*dy; z20 = h(ii,jj)-h(i0,j0)
+        n1_dot_r2 = n1x*x20 + n1y*y20 + n1z*z20 
+        
+        call h4tonormal(h(ii+1,jj),h(ii-1,jj),h(ii,jj+1),h(ii,jj-1),n2x,n2y,n2z)
+        n2_dot_r2 = n2x*x20 + n2y*y20 + n2z*z20
+
+        if (n1_dot_r2<0. .or. n2_dot_r2>0.) visibility(ii,jj) = .false.
+     end do
+  end do
+end subroutine refinevisibility_cart
+
+
+
+subroutine findfacetareas(h,i0,j0,unit,visibility)
+  ! calculate subtended spherical angles of all quandrangles visible from
+  !     (i0*dx,j0*dy,h(i0,j0)) and write them to file
   use filemanager
-  use allinterfaces, except_this_one => findviewfactors
+  use allinterfaces
   implicit none
   integer, intent(IN) :: i0, j0, unit
   real(8), intent(IN) :: h(NSx,NSy)
   logical, intent(IN) :: visibility(NSx,NSy)
-  real(8), parameter :: pi=3.1415926535897932
   integer i, j, cc
-  real(8) r, dOh, landsize, cosv, VF, viewsize
-  real(8) surfaceSlope, azFac
+  real(8) dOh, landsize, surfaceSlope, azFac
   integer, parameter :: CCMAX = NSx*NSy 
   integer, dimension(CCMAX) :: cellx, celly
-  real(8), dimension(CCMAX) :: dOstack, VFstack
+  real(8), dimension(CCMAX) :: dOstack
   logical, parameter :: full = .false.  ! output visible and invisible cells
   
   cc=0
@@ -207,40 +236,21 @@ subroutine findviewfactors(h,i0,j0,unit,visibility)
   call difftopo1(NSx,NSy,i0,j0,h,dx,dy,surfaceSlope,azFac)
   
   do i=2,NSx-1
-     if (.not.full) then
-        !r = dx*abs(i-i0)
-        r = horizontaldistance1(i*dx,1*dy,i0*dx,1*dy)
-        if (r>RMAX) cycle  ! to save computational cost
-     end if
      do j=2,NSy-1
         dOh = 0.
-        VF = 0.
         if (i==i0 .and. j==j0 .and. .not.full) cycle
         if (.not.visibility(i,j) .and. .not.full) cycle
-        r = horizontaldistance1(i*dx,j*dy,i0*dx,j0*dy)
-        if (r>RMAX .and. .not.full) cycle  ! to save computational cost
 
         dOh = spherical_area(h,i,j,i0,j0)
-        
         if (i==i0 .and. j==j0 .and. full) dOh = 0.
         
-        ! cos(v)
-        cosv = cos_viewing_angle(i0*dx,j0*dy,h(i0,j0), &
-             & surfaceSlope,azFac,i*dx,j*dy,h(i,j))
-        VF = dOh*cosv/pi  ! view factor
-
-        !write(33,'(4(i5,1x),f7.2,1x,2(g10.4,1x),l)') &
-        !     & i0,j0,i,j,h(i,j),dOh,VF,visibility(i,j)
-
-        if (VF>0. .and. visibility(i,j)) then
+        if (dOh>0. .and. visibility(i,j)) then
            cc = cc+1
            cellx(cc)=i; celly(cc)=j
            dOstack(cc) = dOh
-           VFstack(cc) = VF
         elseif (full) then
            cc = cc+1
            dOstack(cc) = 0.
-           VFstack(cc) = 0.
         endif
         
      end do
@@ -248,25 +258,24 @@ subroutine findviewfactors(h,i0,j0,unit,visibility)
   if (full .and. cc /= (NSx-2)*(NSy-2) ) error stop 'entries missing'
   
   landsize = sum(dOstack(1:cc))   ! 2*pi - (size of sky)
-  viewsize = sum(VFstack(1:cc)) 
 
   write(unit,'(2(i5,1x),i6,1x,f7.5,1x)',advance='no') &
-       & i0, j0, cc, viewsize
+       & i0, j0, cc, landsize
   do i=1,cc
      if (full) then
-        if (VFstack(i)/=0.) then
-           write(unit,'(g10.4,1x)',advance='no') VFstack(i)
+        if (dOstack(i)/=0.) then
+           write(unit,'(g10.4,1x)',advance='no') dOstack(i)
         else ! compact zeros
            write(unit,'(f2.0,1x)',advance='no') 0.
         end if
      else
         write(unit,'(2(i5,1x),g10.4,1x)',advance='no') &
-             & cellx(i),celly(i),VFstack(i)
+             & cellx(i),celly(i),dOstack(i)
      end if
   end do
   write(unit,"('')")
   
-end subroutine findviewfactors
+end subroutine findfacetareas
 
 
 
@@ -312,42 +321,137 @@ end function spherical_area
 
 
 
-pure subroutine refinevisibility(i0,j0,h,visibility)
-!***********************************************************************
-! refinevisibility: This correction is necessary because azimuth rays 
-!    for horizon calculation are not the same as azimuth rays connecting 
-!    surface elements
-!***********************************************************************
-  use filemanager, only : NSx, NSy, dx, dy
-  use allinterfaces, only : difftopo1, cos_viewing_angle
+elemental subroutine xyz2thetaphi(x,y,z,theta,phi)
+  ! cartesian -> polar coordinates
   implicit none
-  integer, intent(IN) :: i0, j0
+  real(8), intent(IN) :: x,y,z
+  real(8), intent(OUT) :: theta,phi
+  theta = acos(z/sqrt(x**2+y**2+z**2))
+  phi = atan2(y,x)
+end subroutine xyz2thetaphi
+
+
+
+subroutine findviewfactors(h,i0,j0,unit,visibility)
+  ! calculate view factors of all quadrangles visible from
+  !     (i0*dx,j0*dy,h(i0,j0)) and write them to file
+  use filemanager, only : NSx, NSy, dx, dy
+  use allinterfaces
+  implicit none
+  integer, intent(IN) :: i0, j0, unit
   real(8), intent(IN) :: h(NSx,NSy)
-  logical, intent(INOUT) :: visibility(NSx,NSy)
-  integer ii, jj
-  real(8) cosv  ! cos(v)
-  real(8) surfaceSlope00, azFac00, x0, y0, h00
-  real(8) surfaceSlope, azFac, xB, yB, hB
+  logical, intent(IN) :: visibility(NSx,NSy)
+  integer i, j, cc
+  real(8) VF, viewsize
+  integer, parameter :: CCMAX = NSx*NSy 
+  integer, dimension(CCMAX) :: cellx, celly
+  real(8), dimension(CCMAX) :: VFstack
+  logical, parameter :: full = .false.  ! output visible and invisible cells
+  real(8) n1x, n1y, n1z, n2x, n2y, n2z
+  
+  cc=0
 
-  x0 = i0*dx; y0 = j0*dy; h00 = h(i0,j0)
-  call difftopo1(NSx,NSy,i0,j0,h,dx,dy,surfaceSlope00,azFac00)
+  call h4tonormal(h(i0+1,j0),h(i0-1,j0),h(i0,j0+1),h(i0,j0-1),n1x,n1y,n1z)
 
-  do ii=1,NSx
-     do jj=1,NSy
-        if (.not. visibility(ii,jj)) cycle
+  do i=2,NSx-1
+     do j=2,NSy-1
+        VF = 0.
+        if (i==i0 .and. j==j0 .and. .not.full) cycle
+        if (.not.visibility(i,j) .and. .not.full) cycle
 
-        xB = ii*dx; yB = jj*dy; hB = h(ii,jj)
+        call h4tonormal(h(i+1,j),h(i-1,j),h(i,j+1),h(i,j-1),n2x,n2y,n2z)
+
+        VF = viewfactor_cart(dx, dy, (i-i0)*dx, (j-j0)*dy, h(i,j)-h(i0,j0), &
+             & n1x, n1y, n1z, n2x, n2y, n2z)
+        if (i==i0 .and. j==j0 .and. full) VF = 0.
         
-        cosv = cos_viewing_angle(x0,y0,h00,surfaceSlope00,azFac00,xB,yB,hB)
-        if (cosv<=0.) then
-           visibility(ii,jj) = .false.
-           cycle
-        end if
+        if (VF>0. .and. visibility(i,j)) then
+           cc = cc+1
+           cellx(cc)=i; celly(cc)=j
+           VFstack(cc) = VF
+        elseif (full) then
+           cc = cc+1
+           VFstack(cc) = 0.
+        endif
         
-        call difftopo1(NSx,NSy,ii,jj,h,dx,dy,surfaceSlope,azFac)
-        cosv = cos_viewing_angle(xB,yB,hB,surfaceSlope,azFac,x0,y0,h00)
-        ! sometimes happens for first surface element beyond cusp at horizon
-        if (cosv<0.) visibility(ii,jj) = .false.
      end do
   end do
-end subroutine refinevisibility
+  if (full .and. cc /= (NSx-2)*(NSy-2) ) error stop 'entries missing'
+  
+  viewsize = sum(VFstack(1:cc)) 
+
+  write(unit,'(2(i5,1x),i6,1x,f7.5,1x)',advance='no') &
+       & i0, j0, cc, viewsize
+  do i=1,cc
+     if (full) then
+        if (VFstack(i)/=0.) then
+           write(unit,'(g10.4,1x)',advance='no') VFstack(i)
+        else ! compact zeros
+           write(unit,'(f2.0,1x)',advance='no') 0.
+        end if
+     else
+        write(unit,'(2(i5,1x),g10.4,1x)',advance='no') &
+             & cellx(i),celly(i),VFstack(i)
+     end if
+  end do
+  write(unit,"('')")
+  
+end subroutine findviewfactors
+
+
+
+pure subroutine h4tonormal(hip1,him1,hjp1,hjm1,nx,ny,nz)
+  use filemanager, only : dx, dy
+  implicit none
+  real(8), intent(IN) :: hip1, him1, hjp1, hjm1
+  real(8), intent(OUT) :: nx, ny, nz
+  real(8) sx, sy, snorm
+  ! surface normal = (-dh/dx, -dh/dy, 1) / norm
+  sx = (hip1-him1)/(2.*dx)
+  sy = (hjp1-hjm1)/(2.*dy)
+  snorm = sqrt(sx**2+sy**2+1.)
+  nx = -sx/snorm; ny = -sy/snorm; nz = 1./snorm
+end subroutine h4tonormal
+
+
+
+elemental function area_cart(dx, dy, x20, y20, z20, n2x, n2y, n2z)
+  ! spherical area of surface facet defined on rectangular grid
+  ! approximation for small factes
+  implicit none
+  real(8) area_cart
+  real(8), intent(IN) :: dx, dy, x20, y20, z20
+  real(8), intent(IN) :: n2x, n2y, n2z
+  real(8) n2dr2, R2
+  
+  R2 = x20**2 + y20**2 + z20**2
+  n2dr2 = n2x*x20 + n2y*y20 + n2z*z20
+
+  area_cart = -n2dr2 / R2**1.5
+
+  area_cart = area_cart *dx*dy/n2z
+  ! dA = dx*dy/n2z
+end function area_cart
+
+
+
+elemental function viewfactor_cart(dx, dy, x20, y20, z20, &
+     & n1x, n1y, n1z, n2x, n2y, n2z)
+  ! viewfactor of surface facet defined on rectangular grid
+  implicit none
+  real(8) viewfactor_cart
+  real(8), intent(IN) :: dx, dy, x20, y20, z20
+  real(8), intent(IN) :: n1x, n1y, n1z, n2x, n2y, n2z
+  real(8), parameter :: pi=3.1415926535897932
+  real(8) n1dr2, n2dr2, R2
+  
+  R2 = x20**2 + y20**2 + z20**2
+  n1dr2 = n1x*x20 + n1y*y20 + n1z*z20 
+  n2dr2 = n2x*x20 + n2y*y20 + n2z*z20
+
+  viewfactor_cart = - n1dr2 * n2dr2 / R2**2
+
+  viewfactor_cart = viewfactor_cart *dx*dy/n2z /pi
+  ! dA = dx*dy/n2z
+end function viewfactor_cart
+

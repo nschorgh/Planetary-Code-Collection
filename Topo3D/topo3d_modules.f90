@@ -45,22 +45,6 @@ MODULE allinterfaces
      end subroutine downsample
   end interface
   interface
-     elemental function cos_viewing_angle(x0,y0,h00,surfaceSlope,azFac, &
-          & xB,yB,hB)
-       implicit none
-       real(8) cos_viewing_angle
-       real(8), intent(IN) :: x0, y0, h00, surfaceSlope, azFac
-       real(8), intent(IN) :: xB, yB, hB
-     end function cos_viewing_angle
-  end interface
-  interface
-     elemental subroutine xyz2thetaphi(x,y,z,theta,phi)
-       implicit none
-       real(8), intent(IN) :: x,y,z
-       real(8), intent(OUT) :: theta,phi
-     end subroutine xyz2thetaphi
-  end interface
-  interface
      pure subroutine difftopo1(NSx,NSy,i,j,h,dx,dy,surfaceSlope,az)
        implicit none
        integer, intent(IN) :: NSx, NSy, i, j
@@ -82,15 +66,6 @@ MODULE allinterfaces
 
   ! begin fieldofview_subs.f90
   interface
-     subroutine findviewfactors(h,i0,j0,unit,visibility)
-       use filemanager
-       implicit none
-       integer, intent(IN) :: i0,j0,unit
-       real(8), intent(IN) :: h(NSx,NSy)
-       logical, intent(IN) :: visibility(NSx,NSy)
-     end subroutine findviewfactors
-  end interface
-  interface
      function spherical_area(h,i,j,i0,j0)
        use filemanager, only : NSx, NSy, dx, dy
        implicit none
@@ -100,13 +75,35 @@ MODULE allinterfaces
      end function spherical_area
   end interface
   interface
-     subroutine refinevisibility(i0,j0,h,visibility)
-       use filemanager, only : NSx,NSy
+     elemental subroutine xyz2thetaphi(x,y,z,theta,phi)
        implicit none
-       integer, intent(IN) :: i0,j0
-       logical, intent(INOUT) :: visibility(NSx,NSy)
-       real(8), intent(IN) :: h(NSx,NSy)
-     end subroutine refinevisibility
+       real(8), intent(IN) :: x,y,z
+       real(8), intent(OUT) :: theta,phi
+     end subroutine xyz2thetaphi
+  end interface
+  interface
+     pure subroutine h4tonormal(hip1,him1,hjp1,hjm1,nx,ny,nz)
+       implicit none
+       real(8), intent(IN) :: hip1, him1, hjp1, hjm1
+       real(8), intent(OUT) :: nx, ny, nz
+     end subroutine h4tonormal
+  end interface
+  interface
+     elemental function area_cart(dx, dy, x20, y20, z20, n2x, n2y, n2z)
+       implicit none
+       real(8) area_cart
+       real(8), intent(IN) :: dx, dy, x20, y20, z20
+       real(8), intent(IN) :: n2x, n2y, n2z
+     end function area_cart
+  end interface
+  interface
+     elemental function viewfactor_cart(dx, dy, x20, y20, z20, &
+          & n1x, n1y, n1z, n2x, n2y, n2z)
+       implicit none
+       real(8) viewfactor_cart
+       real(8), intent(IN) :: dx, dy, x20, y20, z20
+       real(8), intent(IN) :: n1x, n1y, n1z, n2x, n2y, n2z
+     end function viewfactor_cart
   end interface
 
   ! begin topo3d_common.f90
@@ -129,13 +126,6 @@ MODULE allinterfaces
        real(8), intent(IN) :: phi(3), theta(3)
        real(8) area_spherical_triangle
      end function area_spherical_triangle
-  end interface
-  interface
-     elemental function distanceonsphere(phi1,theta1,phi2,theta2)
-       implicit none
-       real(8), intent(IN) :: phi1,phi2,theta1,theta2
-       real(8) distanceonsphere
-     end function distanceonsphere
   end interface
   interface
      subroutine slicer(NSx,ilower,iupper,extc)
@@ -172,18 +162,7 @@ MODULE allinterfaces
      end subroutine equatorial2horizontal
   end interface
   interface
-     subroutine getfieldofview(NSx,NSy,fin,cc,ia,ja,VF,viewsize,CCMAX)
-       integer, intent(IN) :: NSx, NSy
-       character(len=*), intent(IN) :: fin
-       integer, intent(IN) :: CCMAX
-       integer, intent(OUT) :: cc(NSx,NSy)
-       integer(2), intent(OUT), dimension(NSx,NSy,CCMAX) :: ia, ja
-       real(4), intent(OUT), dimension(NSx,NSy,CCMAX) :: VF
-       real(8), intent(OUT) :: viewsize(NSx,NSy)
-     end subroutine getfieldofview
-  end interface
-  interface
-     subroutine getviewfactors(NSx,NSy,vfn,cc,ia,ja,VF,viewsize,CCMAX)
+     subroutine readviewfactors(NSx,NSy,vfn,CCMAX,cc,ia,ja,VF,viewsize)
        implicit none
        integer, intent(IN) :: NSx, NSy
        character(len=*), intent(IN) :: vfn
@@ -192,16 +171,7 @@ MODULE allinterfaces
        integer(2), intent(OUT), dimension(NSx,NSy,CCMAX) :: ia, ja
        real(4), intent(OUT), dimension(NSx,NSy,CCMAX) :: VF
        real(8), intent(OUT) :: viewsize(NSx,NSy)
-     end subroutine getviewfactors
-  end interface
-  interface
-     subroutine getviewfactors_full(NSx,NSy,vfn,viewsize,VF)
-       implicit none
-       integer, intent(IN) :: NSx, NSy
-       character(len=*), intent(IN) :: vfn
-       real(8), intent(OUT) :: viewsize(NSx,NSy)
-       real(4), intent(OUT) :: VF(NSx,NSy,(NSx-2)*(NSy-2))
-     end subroutine getviewfactors_full
+     end subroutine readviewfactors
   end interface
   interface
      integer function getmaxfieldsize(NSx,NSy,ffn)
@@ -326,25 +296,6 @@ MODULE allinterfaces
      end function evap_ingersoll
   end interface
 
-  ! megagrid_make.f90 
-  interface
-     subroutine findallgridpoints_MGR(i0,j0,RMG,L)
-       implicit none
-       integer, intent(IN) :: i0, j0, L
-       real(8), intent(IN) :: RMG
-     end subroutine findallgridpoints_MGR
-  end interface
-  interface
-     subroutine readonemegagrid(MGL,ifn,cc,i0,j0,ii,jj,L,w)
-       implicit none
-       integer, intent(IN) :: MGL
-       character(len=*), intent(IN) :: ifn
-       integer, intent(OUT) :: cc, i0, j0
-       integer, dimension(MGL), intent(OUT) :: ii, jj, L
-       real(8), intent(OUT), optional :: w(4,MGL)
-     end subroutine readonemegagrid
-  end interface
-  
   ! f90 routines in Common/
   interface
      pure function flux_wshad(R,sinbeta,azSun,SlopeAngle,azFac,emax)

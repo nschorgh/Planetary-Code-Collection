@@ -42,7 +42,7 @@ elemental function horizontaldistance1(x1,y1,x2,y2)
   real(8) horizontaldistance1
   real(8), intent(IN) :: x1,y1,x2,y2
   
-  horizontaldistance1 = sqrt((x1-x2)**2+(y1-y2)**2)  ! Eucledian
+  horizontaldistance1 = sqrt((x1-x2)**2+(y1-y2)**2)  ! Eucledean
 end function horizontaldistance1
 
 
@@ -126,43 +126,6 @@ end subroutine downsample
 
 
 
-elemental function cos_viewing_angle(x0,y0,h00,surfaceSlope,azFac,xB,yB,hB)
-!***********************************************************************
-!  function that calculates angle between surface normal at (x0,y0,h00)
-!     and vector pointing to (xB,yB,h(xB,yB)) as in horizon_core_wsort
-!***********************************************************************
-  use allinterfaces, only : horizontaldistance1, azimuth1
-  implicit none
-  real(8) cos_viewing_angle
-  real(8), intent(IN) :: x0, y0, h00, surfaceSlope, azFac
-  real(8), intent(IN) :: xB, yB, hB
-  real(8) az, s, r, slope_along_az
-
-  r = horizontaldistance1(xB,yB,x0,y0)
-  az = azimuth1(x0,y0,xB,yB)
-  s = (hB-h00)/r
-
-  slope_along_az = surfaceSlope*cos(azFac-az)
-
-  !viewing_angle = pi/2 - atan(s) + atan(slope_along_az)
-  cos_viewing_angle = (s-slope_along_az)/sqrt(1+s**2)/sqrt(1+slope_along_az**2)
-  
-  ! cos_viewing_angle = (s-slope_along_az)/sqrt(1+s**2)/sqrt(1+surfaceSlope**2)
-end function cos_viewing_angle
-
-
-
-elemental subroutine xyz2thetaphi(x,y,z,theta,phi)
-  ! cartesian -> polar coordinates
-  implicit none
-  real(8), intent(IN) :: x,y,z
-  real(8), intent(OUT) :: theta,phi
-  theta = acos(z/sqrt(x**2+y**2+z**2))
-  phi = atan2(y,x)
-end subroutine xyz2thetaphi
-
-
-
 pure subroutine difftopo1(NSx,NSy,i,j,h,dx,dy,surfaceSlope,az)
   ! calculate slope and azimuth of surface element
   implicit none
@@ -190,3 +153,4 @@ pure subroutine difftopo1(NSx,NSy,i,j,h,dx,dy,surfaceSlope,az)
   surfaceSlope = sqrt(sx**2+sy**2)  
   az = atan2(sx,-sy)  ! north is up, clockwise
 end subroutine difftopo1
+

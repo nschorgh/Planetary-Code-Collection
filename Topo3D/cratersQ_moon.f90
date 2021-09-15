@@ -68,8 +68,7 @@ PROGRAM cratersQ_moon
      CCMAX = getmaxfieldsize(NSx,NSy,vfn)
      print *,'... max field of view size=',CCMAX
      allocate(ii(NSx,NSy,CCMAX), jj(NSx,NSy,CCMAX), VF(NSx,NSy,CCMAX))
-     !call getfieldofview(NSx,NSy,ffn,cc,ii,jj,dO12,landsize,CCMAX)
-     call getviewfactors(NSx,NSy,vfn,cc,ii,jj,VF,viewsize,CCMAX)
+     call readviewfactors(NSx,NSy,vfn,CCMAX,cc,ii,jj,VF,viewsize)
   endif
   if (subsurface) allocate(T(1000,NSx,NSy), Qnm1(NSx,NSy))
 
@@ -94,7 +93,8 @@ PROGRAM cratersQ_moon
      end do
 
      if (reflection) then
-        call update_terrain_irradiance(VF,cc,ii,jj,Qn,albedo,emiss,Qrefl,QIRin,Tsurf)
+        call update_terrain_irradiance(VF,cc,ii,jj, &
+             & Qn,albedo,emiss,Qrefl,QIRin,Tsurf)
         Qabs(:,:) = (1.-albedo(:,:))*(Qn+Qrefl) + emiss*QIRin  ! Q absorbed
      else
         Qabs(:,:) = (1.-albedo(:,:))*Qn
@@ -159,8 +159,8 @@ PROGRAM cratersQ_moon
   do i=2,NSx-1
      do j=2,NSy-1
         !write(21,'(2(i4,1x),f9.2,2x,f6.4,4(1x,f6.1),1x,f5.1)') & 
-        !     & i,j,h(i,j),SlopeAngle(i,j),Qn(i,j),Qabs(i,j),QIRin(i,j),Qrefl(i,j), &
-        !     & Tsurf(i,j)
+        !     & i,j,h(i,j),SlopeAngle(i,j), &
+        !     & Qn(i,j),Qabs(i,j),QIRin(i,j),Qrefl(i,j),Tsurf(i,j)
         write(22,'(2(i4,1x),f9.2,2x,f6.4,4(1x,f6.1),1x,f5.1,2(1x,f6.1),1x,f5.1)') &
              & i,j,h(i,j),SlopeAngle(i,j),Qmeans(i,j,1:4), &
              & Tmean(i,j),Qmax1(i,j),Qmax2(i,j),Tmaxi(i,j)

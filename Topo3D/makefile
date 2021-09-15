@@ -18,13 +18,11 @@ shadows: $(OBJFLS) shadow_subs.o multigrid.o topo3d_common.o shadows.o \
 	$(CC) $(LFLAGS) shadows.o shadow_subs.o hpsort.o topo3d_common.o \
 	multigrid.o topo3d_geometry.o -o $@
 
-
-fieldofviews: $(OBJFLS) fieldofview_subs.o topo3d_common.o \
-	topo3d_geometry.o fieldofviews.o hpsort.o makefile
+fieldofviews: $(OBJFLS) fieldofview_subs.o topo3d_common.o topo3d_geometry.o \
+	fieldofviews.o hpsort.o makefile
 
 	$(CC) $(LFLAGS) fieldofviews.o topo3d_common.o hpsort.o \
 	fieldofview_subs.o topo3d_geometry.o -o $@
-
 
 cratersQ_equilbr equilbr: $(OBJFLS) topo3d_subs.o topo3d_common.o \
 	cratersQ_equilbr.o makefile
@@ -33,23 +31,20 @@ cratersQ_equilbr equilbr: $(OBJFLS) topo3d_subs.o topo3d_common.o \
 	$(CC) $(LFLAGS) cratersQ_equilbr.o topo3d_subs.o topo3d_common.o \
 	$(SR)flux_noatm.o 
 
-
 cratersQ_moon: $(OBJFLS) topo3d_subs.o cratersQ_moon.o topo3d_common.o \
 	makefile
 	make -C $(SR) common
-	$(CC) $(LFLAGS) cratersQ_moon.o topo3d_common.o \
-	$(SR)generalorbit.o topo3d_subs.o $(SR)grids.o $(SR)conductionQ.o \
-	$(SR)flux_noatm.o $(SR)tridag.o -o $@
+	$(CC) $(LFLAGS) cratersQ_moon.o topo3d_common.o $(SR)generalorbit.o \
+	topo3d_subs.o $(SR)grids.o $(SR)conductionQ.o $(SR)flux_noatm.o \
+	$(SR)tridag.o -o $@
 
-insol3d_mars: $(OBJFLS) topo3d_subs.o topo3d_common.o insol3d_mars.o \
-	makefile
+insol3d_mars: $(OBJFLS) topo3d_subs.o topo3d_common.o insol3d_mars.o makefile
 
 	make -C $(SR) common
 	make -C $(SRM) common-mars
 
 	$(CC) $(LFLAGS) insol3d_mars.o topo3d_common.o topo3d_subs.o \
 	$(SR)flux_noatm.o $(SR)julday.o $(SRM)marsorbit.o
-
 
 cratersQ_mars: $(OBJFLS) topo3d_subs.o conductionT2.o conductionQ2.o \
 	cratersQ_mars.o topo3d_common.o topo3d_subs_mars.o makefile
@@ -62,19 +57,16 @@ cratersQ_mars: $(OBJFLS) topo3d_subs.o conductionT2.o conductionQ2.o \
 	conductionT2.o $(SR)julday.o $(SRM)marsorbit.o $(SR)psv.o \
 	topo3d_subs_mars.o -o $@
 
-
-cratersQ_mars_parallel: $(OBJFLS) topo3d_subs.o conductionT2.o \
-	conductionQ2.o cratersQ_mars_parallel.o topo3d_common.o \
-	topo3d_subs_mars.o makefile
+cratersQ_mars_parallel: $(OBJFLS) topo3d_subs.o conductionT2.o conductionQ2.o \
+	cratersQ_mars_parallel.o topo3d_common.o topo3d_subs_mars.o makefile
 
 	make -C $(SR) common
 	make -C $(SRM) common-mars
 
-	$(CC) $(LFLAGS) cratersQ_mars_parallel.o topo3d_common.o \
-	topo3d_subs.o $(SRM)flux_mars.o $(SR)grids.o conductionQ2.o \
-	$(SR)tridag.o conductionT2.o $(SR)julday.o $(SRM)marsorbit.o \
-	$(SR)psv.o topo3d_subs_mars.o 
-
+	$(CC) $(LFLAGS) cratersQ_mars_parallel.o topo3d_common.o topo3d_subs.o \
+	$(SRM)flux_mars.o $(SR)grids.o conductionQ2.o $(SR)tridag.o \
+	conductionT2.o $(SR)julday.o $(SRM)marsorbit.o $(SR)psv.o \
+	topo3d_subs_mars.o 
 
 cratersQ_mars_full: $(OBJFLS) topo3d_subs.o conductionT2.o conductionQ2.o \
 	cratersQ_mars_full.o topo3d_common.o topo3d_subs_mars.o makefile
@@ -82,25 +74,23 @@ cratersQ_mars_full: $(OBJFLS) topo3d_subs.o conductionT2.o conductionQ2.o \
 	make -C $(SR) common
 	make -C $(SRM) common-mars
 
-	$(CC) $(LFLAGS) cratersQ_mars_full.o topo3d_common.o \
-	topo3d_subs.o $(SRM)flux_mars.o $(SR)grids.o conductionQ2.o \
-	$(SR)tridag.o conductionT2.o $(SR)julday.o $(SRM)marsorbit.o \
-	$(SR)psv.o topo3d_subs_mars.o 
-
+	$(CC) $(LFLAGS) cratersQ_mars_full.o topo3d_common.o topo3d_subs.o \
+	$(SRM)flux_mars.o $(SR)grids.o conductionQ2.o $(SR)tridag.o \
+	conductionT2.o $(SR)julday.o $(SRM)marsorbit.o $(SR)psv.o \
+	topo3d_subs_mars.o 
 
 fieldproperties: $(OBJFLS) topo3d_common.o topo3d_subs.o fieldproperties.o \
 	makefile
 	$(CC) $(LFLAGS) fieldproperties.o topo3d_common.o topo3d_subs.o 
 
-test test_shadows1pt: $(OBJFLS) shadow_subs.o multigrid.o \
-	fieldofview_subs.o topo3d_common.o topo3d_geometry.o hpsort.o \
-	test_shadows1pt.o makefile
+test_shadows1pt test: $(OBJFLS) shadow_subs.o multigrid.o fieldofview_subs.o \
+	topo3d_common.o topo3d_geometry.o hpsort.o test_shadows1pt.o makefile
 
 	$(CC) $(LFLAGS) test_shadows1pt.o shadow_subs.o topo3d_common.o \
 	multigrid.o topo3d_geometry.o hpsort.o fieldofview_subs.o
 
-test_fov1pt: $(OBJFLS) fieldofview_subs.o test_fov1pt.o topo3d_common.o \
-	topo3d_geometry.o hpsort.o makefile
+test_fov1pt test_fov: $(OBJFLS) fieldofview_subs.o test_fov1pt.o \
+	topo3d_common.o topo3d_geometry.o hpsort.o makefile
 	$(CC) $(LFLAGS) test_fov1pt.o topo3d_common.o topo3d_geometry.o \
 	fieldofview_subs.o hpsort.o 
 

@@ -45,7 +45,6 @@ end function area_spherical_quadrangle
 
 
 pure function area_spherical_triangle(phi,theta)
-  use allinterfaces, only : distanceonsphere
   implicit none
   real(8), intent(IN) :: phi(3), theta(3)
   real(8) area_spherical_triangle  ! [steradian]  
@@ -63,23 +62,22 @@ pure function area_spherical_triangle(phi,theta)
   E = 4*atan(sqrt(buf))
 
   area_spherical_triangle = E
+
+contains
+  elemental function distanceonsphere(phi1,theta1,phi2,theta2)
+    ! spherical distance between two points in radians
+    implicit none
+    real(8), intent(IN) :: phi1,phi2,theta1,theta2  ! [radians]
+    real(8) distanceonsphere, buf, lat1, lat2
+    real(8), parameter :: pi=3.1415926535897932
+    lat1=pi/2-theta1; lat2=pi/2-theta2
+    
+    ! buf = square of half of cord length distance
+    buf = sin((lat1-lat2)/2.)**2 + cos(lat1)*cos(lat2)*sin((phi1-phi2)/2.)**2
+    distanceonsphere = 2.*asin(sqrt(buf))
+    !distanceonsphere = 2.*atan2(sqrt(buf),sqrt(1-buf))
+  end function distanceonsphere
 end function area_spherical_triangle
-
-
-
-elemental function distanceonsphere(phi1,theta1,phi2,theta2)
-! spherical distance between two points in radians
-  implicit none
-  real(8), intent(IN) :: phi1,phi2,theta1,theta2  ! [radians]
-  real(8) distanceonsphere, buf, lat1, lat2
-  real(8), parameter :: pi=3.1415926535897932
-  lat1=pi/2-theta1; lat2=pi/2-theta2
-
-  ! buf = square of half of cord length distance
-  buf = sin((lat1-lat2)/2.)**2 + cos(lat1)*cos(lat2)*sin((phi1-phi2)/2.)**2
-  distanceonsphere = 2.*asin(sqrt(buf))
-  !distanceonsphere = 2.*atan2(sqrt(buf),sqrt(1-buf))
-end function distanceonsphere
 
 
 

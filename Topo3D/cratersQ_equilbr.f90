@@ -1,7 +1,7 @@
 program cratersQ_equilbr
 !***********************************************************************
-!   cratersQ_equilbr: program to calculate surface energy balance
-!             for constant sun position; equilibrium solution
+! cratersQ_equilbr: program to calculate surface energy balance
+!                   for constant sun position; equilibrium solution
 !***********************************************************************
   use filemanager
   use allinterfaces
@@ -44,13 +44,12 @@ program cratersQ_equilbr
      CCMAX = getmaxfieldsize(NSx,NSy,vfn)
      print *,'... max field of view size=',CCMAX
      allocate(ii(NSx,NSy,CCMAX), jj(NSx,NSy,CCMAX), VF(NSx,NSy,CCMAX))
-     !call getfieldofview(NSx,NSy,vfn,cc,ii,jj,VF,viewsize,CCMAX)
-     call getviewfactors(NSx,NSy,vfn,cc,ii,jj,VF,viewsize,CCMAX)
+     call readviewfactors(NSx,NSy,vfn,CCMAX,cc,ii,jj,VF,viewsize)
   case(2) ! full square view factor matrix
      print *,'...reading huge square viewfactor matrix...'
      CCMAX = (NSx-2) * (NSy-2)
      allocate(VF(NSx,NSy,CCMAX))
-     call getviewfactors_full(NSx,NSy,vfn,viewsize,VF)
+     call readviewfactors_full(NSx,NSy,vfn,VF,viewsize)
   case(3) ! truncated or full SVD (outputs of xsvdcmp)
      print *,'...reading SVD files...'
      allocate(u(Nflat,T), v(Nflat,T))

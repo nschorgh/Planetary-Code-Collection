@@ -58,7 +58,7 @@ PROGRAM fieldofviews
         call findallhorizon_wsort_v3(h,i,j,smax,visibility)
         !write(21,'(2(i0,1x))',advance='no') i,j
         !call compactoutput(21,smax,naz)
-        call refinevisibility(i,j,h,visibility)
+        !call refinevisibility_cart(i,j,h,visibility)
         call findviewfactors(h,i,j,23,visibility)
      end do
   end do

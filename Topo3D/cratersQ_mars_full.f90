@@ -116,7 +116,7 @@ PROGRAM cratersQ_mars
   CCMAX = getmaxfieldsize(NSx,NSy,vfn)
   print *,'... max field of view size=',CCMAX
   allocate(ii(NSx,NSy,CCMAX), jj(NSx,NSy,CCMAX), VF(NSx,NSy,CCMAX))
-  call getviewfactors(NSx,NSy,vfn,cc,ii,jj,VF,viewsize,CCMAX)
+  call readviewfactors(NSx,NSy,vfn,CCMAX,cc,ii,jj,VF,viewsize)
   
   Qrefl=0.; QIRre=0. 
   
