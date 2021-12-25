@@ -70,7 +70,8 @@ PROGRAM cratersQ_mars
   
   integer narg
   character(5) extc
-  narg = iargc()
+  !narg = iargc()
+  narg = COMMAND_ARGUMENT_COUNT()
   if (narg==2) then ! parallel implementation
      call slicer(NSx,Mx1,Mx2,extc)
      My1=2; My2=NSy-1
@@ -103,17 +104,25 @@ PROGRAM cratersQ_mars
   allocate(h(NSx,NSy))
   allocate(SlopeAngle(Mx1:Mx2,My1:My2), azFac(Mx1:Mx2,My1:My2))
   allocate(Qn(Mx1:Mx2,My1:My2), source=zero); Qn_flat=0.
-  allocate(Qnm1, Qdirect, source=Qn); Qnm1_flat=0.; Qdirect_flat=0.
+  allocate(Qnm1, source=Qn); Qnm1_flat=0.
+  allocate(Qdirect, source=Qn); Qdirect_flat=0.
   allocate(Tsurf(Mx1:Mx2,My1:My2))
   allocate(m(Mx1:Mx2,My1:My2), source=zero); m_flat=0.
   allocate(albedo(Mx1:Mx2,My1:My2), source=albedo0); albedo_flat=albedo0
   allocate(skyview(Mx1:Mx2,My1:My2)); skyview=1.
   allocate(gterm(Mx1:Mx2,My1:My2), source=zero)
   ! diagnostic variables
-  allocate(Qmean, Qmax, source=Qn)
-  allocate(Tmean(Mx1:Mx2,My1:My2), Tmaxi(Mx1:Mx2,My1:My2), source=zero)
-  allocate(frosttime, maxfrosttime, mmax, mmin, source=m)
-  allocate(co2last, co2first, h2olast, mold=m)
+  allocate(Qmean, source=Qn)
+  allocate(Qmax, source=Qn)
+  allocate(Tmean(Mx1:Mx2,My1:My2), source=zero)
+  allocate(Tmaxi(Mx1:Mx2,My1:My2), source=zero)
+  allocate(frosttime, source=m)
+  allocate(maxfrosttime, source=m)
+  allocate(mmax, source=m)
+  allocate(mmin, source=m)
+  allocate(co2last, mold=m)
+  allocate(co2first, mold=m)
+  allocate(h2olast, mold=m)
   co2last=-9.; co2first=-9.; h2olast=-9.; mmin=1e32
   
   tmax = 5.*solsy

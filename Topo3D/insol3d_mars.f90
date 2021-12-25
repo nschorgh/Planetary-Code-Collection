@@ -32,8 +32,10 @@ program insol3d_mars
   
   allocate(h(NSx,NSy), SlopeAngle(NSx,NSy), azFac(NSx,NSy))
   allocate(Qn(Mx1:Mx2,My1:My2), source=0.d0)
-  allocate(Qmean, Qmax, source=Qn)
-  allocate(shadowtime, maxshadowtime, source=Qn)
+  allocate(Qmean, source=Qn)
+  allocate(Qmax, source=Qn)
+  allocate(shadowtime, source=Qn)
+  allocate(maxshadowtime, source=Qn)
   
   dt=0.02; 
   tmax = 2*solsy+1.

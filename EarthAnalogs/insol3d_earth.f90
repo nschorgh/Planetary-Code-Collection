@@ -29,7 +29,9 @@ program insol3d_earth
 
   allocate(h(NSx,NSy), SlopeAngle(NSx,NSy), azFac(NSx,NSy))
   allocate(Qn(NSx,NSy), Qsw(NSx,NSy))
-  allocate(Qmeans(NSx,NSy), Qmax(NSx,NSy), daytime(NSx,NSy), source=0.d0)
+  allocate(Qmeans(NSx,NSy), source=0.d0)
+  allocate(Qmax(NSx,NSy), source=0.d0)
+  allocate(daytime(NSx,NSy), source=0.d0)
 
   dtmin=10.
   ! dtmin=5.

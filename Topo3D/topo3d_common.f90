@@ -93,8 +93,10 @@ subroutine slicer(NSx,ilower,iupper,extc)
   
   call getarg(1,extc)
   read(extc,'(i4)') SLICE  ! string->integer
+  ! or try call get_command_argument(SLICE, extc); extc=trim(extc)
   call getarg(2,extc)
   read(extc,'(i4)') nr  ! string->integer
+  ! or try call get_command_argument(nr, extc)
   
   if (SLICE>NSx-2) stop 'not that many slices available'
   if (nr<1 .or. nr>SLICE) stop 'slice id outside of range'
