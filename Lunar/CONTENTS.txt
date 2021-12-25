@@ -18,6 +18,20 @@ subl_h2o.f90:
 subl_species.f90:
 	sublimation rate of CO2 ice
 
+bet.f90:
+	BET adsorption isotherm of H2O
+
+moon_subsdiff.f90: (main program)
+	microphysical model of subsurface migration of H2O on airless bodies
+
+moon_subsdiff_equilbr.f90: (main program)
+	continuum model for equilibrium subsurface adsorbate concentrations
+	matches time-averaged desorption rates at depth with those on surface
+
+subsdiff_subs.f90:
+	subroutines and functions for random-walk model of subsurface diffusion
+	in lunar regolith
+	
 
 
 makefile:

@@ -143,11 +143,16 @@ Common/tridag.for
 
 ### Lunar Ice Pump
 
-Lunar/oscidea1.f90 (main program)  
+Lunar/oscidea1.f90 (main program)
+Lunar/moon_subsdiff.f90 (main program)  
+Lunar/moon_subsdiff_equilbr.f90 (main program)  
+Lunar/bet.f90  
 Lunar/oscidea_subs.f90  
 Lunar/subl_h2o.f90  
+Lunar/subsdiff_subs.f90  
 *Documentation: User Guide Section 3.4  
-Documentation: Schorghofer, N. & Aharonson, O. (2014) ApJ 788, 169*  
+Documentation: Schorghofer, N. & Aharonson, O. (2014) ApJ 788, 169   
+Documentation: upcoming 2022 paper*  
 
 
 ### Irradiance Model for Terrestrial Analog
