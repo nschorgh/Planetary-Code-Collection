@@ -235,7 +235,7 @@ Mar 2016: Thanks to Lior Rubanenko for a bug report in cratersQ_*
 
 2005: Thanks to Mischa Kreslavsky for providing formulas for energy balance on a planar slope.
 
-Many Thanks to Andy Vaught for developing an open-source Fortran 95 compiler (www.g95.org).  The early versions of this code were developed with this compiler.
+Many Thanks to Andy Vaught for developing an open-source Fortran 95 compiler (G95).  The early versions of this code were developed with this compiler.
 
 2001: Samar Khatiwala invented an elegant implementation of the upper radiation boundary condition for the Crank-Nicolson method.
 

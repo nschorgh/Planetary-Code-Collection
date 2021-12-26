@@ -33,7 +33,7 @@ subroutine surface_integration(Tm,Ta,supply,spaceweather0, &
   Tmean = 0.
   Esurf = 0.; Ebase = 0.; avweather = 0.
   avtheta = 0.; fract = 0.
-  theta = theta0*supply/spaceweather0  ! initial guess
+  theta = min( theta0*supply/spaceweather0, theta0 )  ! initial guess
   time = 0.
   totalt = 0.
   mintheta = huge(8); maxtheta=-huge(8)
