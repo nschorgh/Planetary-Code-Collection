@@ -19,7 +19,7 @@ program tempr_driver
   integer, parameter :: earliest=5000+1  ! start time [kyr]
   integer, parameter :: nz=80     ! number of subsurface grid points
   real(8), parameter :: zfac=1.05 ! progressive spacing of grid points
-  integer i, k, iargc, ierr
+  integer i, k, ierr
   real(8) zmax, delta, z(nz), icetime, patm
   real(8), dimension(NP) :: latitude, albedo, thIn, rhoc
   real(8) ecc, omega, eps
@@ -27,8 +27,8 @@ program tempr_driver
   real(8), dimension(earliest) :: lasktime, laskecc, laskomega, laskeps
   character(10) ext
 
-  if (iargc() /= 1) stop 'USAGE: a.out ext'
-  call getarg( 1, ext )
+  if (command_argument_count() /= 1) stop 'USAGE: a.out ext'
+  call get_command_argument( 1, ext )
 
   thIn(:) = 250. ! will be overwitten by input
   albedo(:) = 0.2  ! will be overwritten by input
@@ -51,7 +51,7 @@ program tempr_driver
   zmax = 6.
   call setgrid(nz,z,zmax,zfac)
   open(unit=30,file='z.'//ext,action='write',status='unknown')
-  write(30,'(999(f8.5,1x))') (z(i),i=1,nz)
+  write(30,'(*(f8.5,1x))') (z(i),i=1,nz)
   close(30)
 
   ! ecc = 0.0934;  eps = 25.19*d2r;  omega = 250.87*d2r  ! today

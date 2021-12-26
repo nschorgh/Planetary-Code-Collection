@@ -1,14 +1,14 @@
 
 subroutine deriv1(z,nz,y,y0,yNp1,yp)
   ! first derivative of a function y(z) on irregular grid
-  ! fixed upper b.c. y(0)=y0
-  ! lower bc: yp =0
+  ! upper b.c.: y(0)=y0
+  ! lower b.c.: yp =0
   implicit none
   integer, intent(IN) :: nz
-  real*8, intent(IN) :: z(nz),y(nz),y0,yNp1
-  real*8, intent(OUT) :: yp(nz)
+  real(8), intent(IN) :: z(nz),y(nz),y0,yNp1
+  real(8), intent(OUT) :: yp(nz)
   integer j
-  real*8 hm,hp,c1,c2,c3
+  real(8) hm,hp,c1,c2,c3
 
   hp = z(2)-z(1)
   !hm = z(1)
@@ -31,14 +31,14 @@ end subroutine deriv1
 
 subroutine deriv2_full(z,nz,a,b,a0,b0,bNp1,yp2)
   ! second derivative (a*b_z)_z on irregular grid
-  ! fixed upper b.c. a(0)=a0, b(0)=b0
+  ! upper b.c.: a(0)=a0, b(0)=b0
   ! 2nd order, without cross-terms
   implicit none
   integer, intent(IN) :: nz
-  real*8, intent(IN) :: z(nz),a(nz),b(nz),a0,b0,bNp1
-  real*8, intent(OUT) :: yp2(nz)
+  real(8), intent(IN) :: z(nz),a(nz),b(nz),a0,b0,bNp1
+  real(8), intent(OUT) :: yp2(nz)
   integer j
-  real*8 hm,hp,c1,c2,c3
+  real(8) hm,hp,c1,c2,c3
   
   c1 = 1./(z(1)*z(2))
   c2 = 1./((z(2)-z(1))*z(1))
@@ -67,13 +67,13 @@ end subroutine deriv2_full
 
 subroutine deriv2_simple(z,nz,y,y0,yNp1,yp2)
   ! second derivative y_zz on irregular grid
-  ! b.c. y(0)=y0, y(nz+1)=yNp1
+  ! boundary conditions: y(0)=y0, y(nz+1)=yNp1
   implicit none
   integer, intent(IN) :: nz
-  real*8, intent(IN) :: z(nz),y(nz),y0,yNp1
-  real*8, intent(OUT) :: yp2(nz)
+  real(8), intent(IN) :: z(nz),y(nz),y0,yNp1
+  real(8), intent(OUT) :: yp2(nz)
   integer j
-  real*8 hm,hp,c1,c2,c3
+  real(8) hm,hp,c1,c2,c3
 
   c1 = +2./((z(2)-z(1))*z(2))
   c2 = -2./((z(2)-z(1))*z(1))

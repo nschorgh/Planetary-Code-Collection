@@ -12,14 +12,16 @@ program insol_driver
   implicit none
   integer, parameter :: NP=1  ! number of input latitudes
   integer, parameter :: earliest=5000   ! start time (kyr)
-  integer i, k, iargc, ierr
+  integer i, k, ierr
   real(8) icetime, ecc, omega, eps, timestep
   real(8), dimension(NP) :: latitude
   real(8), dimension(earliest+1) :: lasktime, laskecc, laskomega, laskeps
   character(10) ext
 
-  if (iargc() /= 1) stop 'USAGE: a.out ext'
-  call getarg( 1, ext )
+  !if (iargc() /= 1) stop 'USAGE: a.out ext'
+  !call getarg( 1, ext )
+  if (command_argument_count() /= 1) stop 'USAGE: a.out ext'
+  call get_command_argument( 1, ext )
 
   open(unit=21,file='lats.'//ext,action='read',status='old',iostat=ierr)
   if (ierr /= 0) then

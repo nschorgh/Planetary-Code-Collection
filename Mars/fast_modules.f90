@@ -160,8 +160,8 @@ module allinterfaces
      subroutine deriv1(z,nz,y,y0,yNp1,yp)
        implicit none
        integer, intent(IN) :: nz
-       real*8, intent(IN) :: z(nz),y(nz),y0,yNp1
-       real*8, intent(OUT) :: yp(nz)
+       real(8), intent(IN) :: z(nz),y(nz),y0,yNp1
+       real(8), intent(OUT) :: yp(nz)
      end subroutine deriv1
   end interface
 
@@ -169,26 +169,17 @@ module allinterfaces
      subroutine deriv2_full(z,nz,a,b,a0,b0,bNp1,yp2)
        implicit none
        integer, intent(IN) :: nz
-       real*8, intent(IN) :: z(nz),a(nz),b(nz),a0,b0,bNp1
-       real*8, intent(OUT) :: yp2(nz)
+       real(8), intent(IN) :: z(nz),a(nz),b(nz),a0,b0,bNp1
+       real(8), intent(OUT) :: yp2(nz)
      end subroutine deriv2_full
-  end interface
-
-  interface
-     subroutine deriv2(z,nz,a,b,a0,b0,bNp1,yp2,c)
-       implicit none
-       integer, intent(IN) :: nz
-       real*8, intent(IN) :: z(nz),a(nz),b(nz),a0,b0,bNp1,c(3,nz)
-       real*8, intent(OUT) :: yp2(nz)
-     end subroutine deriv2
   end interface
 
   interface
      subroutine deriv2_simple(z,nz,y,y0,yNp1,yp2)
        implicit none
        integer, intent(IN) :: nz
-       real*8, intent(IN) :: z(nz),y(nz),y0,yNp1
-       real*8, intent(OUT) :: yp2(nz)
+       real(8), intent(IN) :: z(nz),y(nz),y0,yNp1
+       real(8), intent(OUT) :: yp2(nz)
      end subroutine deriv2_simple
   end interface
 

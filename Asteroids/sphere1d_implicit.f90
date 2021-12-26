@@ -5,18 +5,18 @@ PROGRAM sphere1d_implicit
   integer, parameter :: nz = 100    ! number of grid points
   integer i, ierr
 
-  real*8 semia, ecc, Q, time0
-  real*8, parameter :: So = 1365    ! solar constant [W/m^2]
-  real*8, parameter :: A = 0.05     ! albedo
-  real*8, parameter :: emiss = 0.96 ! infrared emissivity
+  real(8) semia, ecc, Q, time0
+  real(8), parameter :: So = 1365    ! solar constant [W/m^2]
+  real(8), parameter :: A = 0.05     ! albedo
+  real(8), parameter :: emiss = 0.96 ! infrared emissivity
   
   logical :: init = .true.
-  real*8 z(nz), dr, kappa, Radius, dtsec, time, oldtime, Deltat
-  real*8 T(nz), Tsurf, Tsurfm1, Teff
+  real(8) z(nz), dr, kappa, Radius, dtsec, time, oldtime, Deltat
+  real(8) T(nz), Tsurf, Tsurfm1, Teff
 
-  real*8 zT  ! depth of ice table
-  real*8 Tatz, Elatent
-  real*8, external :: interp1, flux2T
+  real(8) zT  ! depth of ice table
+  real(8) Tatz, Elatent
+  real(8), external :: interp1, flux2T
 
   zT = 0.
   time = 0.  ! earliest time in input file
@@ -87,7 +87,8 @@ PROGRAM sphere1d_implicit
      end if
 
      ! lots of output
-     write(31,'(f11.0,1x,f7.4,1x,f6.4,3(1x,f5.1),1x,f8.3)') time,semia,ecc,Tsurf,T(nz),Tatz,zT
+     write(31,'(f11.0,1x,f7.4,1x,f6.4,3(1x,f5.1),1x,f8.3)') &
+          & time,semia,ecc,Tsurf,T(nz),Tatz,zT
      
   end do
   close(20)
@@ -123,11 +124,11 @@ subroutine conductionT_sphere(nz,dr,dt,T,Tsurf,Tsurfp1,kappa)
 !***********************************************************************
   implicit none
   integer, intent(IN) :: nz
-  real*8, intent(IN) :: dr, dt, Tsurf, Tsurfp1, kappa
-  real*8, intent(INOUT) :: T(nz)
+  real(8), intent(IN) :: dr, dt, Tsurf, Tsurfp1, kappa
+  real(8), intent(INOUT) :: T(nz)
   integer i
-  real*8 cp(nz), cm(nz), cn(nz)
-  real*8 alpha, a(nz), b(nz), c(nz), r(nz)
+  real(8) cp(nz), cm(nz), cn(nz)
+  real(8) alpha, a(nz), b(nz), c(nz), r(nz)
   
   alpha = kappa*dt/dr**2
 
@@ -164,18 +165,18 @@ end subroutine conductionT_sphere
 subroutine retreat_s(T,zT,Radius,dt,Elatent)
   ! retreat of ice table, 1D spherically symmetric
   implicit none
-  real*8, intent(IN) :: T  ! scalar temperature [K]
-  real*8, intent(IN) :: Radius  ! radius of body [m]
-  real*8, intent(IN) :: dt  ! time step [sec]
-  real*8, intent(INOUT) :: zT  ! depth of ice table below surface
-  real*8, intent(OUT) :: Elatent  ! latent heat, for diagnostics
-  real*8, parameter :: pi = 3.1415926535897932
-  real*8, parameter :: Lh2o = 2.834e6 ! latent heat of sublimation [J/kg]
-  real*8, parameter :: R = 8314.5 ! universal gas constant
-  real*8, parameter :: rhoice = 930. ! [kg/m^3]
-  real*8 D, rhos, buf, diam, porosity
-  real*8, external :: psv, vapordiffusivity
-  real*8 zTold, dV
+  real(8), intent(IN) :: T  ! scalar temperature [K]
+  real(8), intent(IN) :: Radius  ! radius of body [m]
+  real(8), intent(IN) :: dt  ! time step [sec]
+  real(8), intent(INOUT) :: zT  ! depth of ice table below surface
+  real(8), intent(OUT) :: Elatent  ! latent heat, for diagnostics
+  real(8), parameter :: pi = 3.1415926535897932
+  real(8), parameter :: Lh2o = 2.834e6 ! latent heat of sublimation [J/kg]
+  real(8), parameter :: R = 8314.5 ! universal gas constant
+  real(8), parameter :: rhoice = 930. ! [kg/m^3]
+  real(8) D, rhos, buf, diam, porosity
+  real(8), external :: psv, vapordiffusivity
+  real(8) zTold, dV
   
   diam = 100d-3; porosity = 0.5
   D=vapordiffusivity(diam,porosity,T)

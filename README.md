@@ -12,7 +12,7 @@ This program collection contains:
   * equilibrium ice table on Mars
   * asynchronously coupled method for subsurface-atmosphere vapor exchange on Mars
   * asynchronously coupled method for ice retreat on asteroids
-  * lunar ice pump (boundary-value formulation)   
+  * lunar ice pump   
 * 3D model of direct insolation, terrain shadowing, and terrain irradiance for airless bodies, Mars, and Mauna Kea
 * Monte-Carlo model for ballistic hops in the exospheres of the Moon and Ceres
 
@@ -143,7 +143,7 @@ Common/tridag.for
 
 ### Lunar Ice Pump
 
-Lunar/oscidea1.f90 (main program)
+Lunar/oscidea1.f90 (main program)  
 Lunar/moon_subsdiff.f90 (main program)  
 Lunar/moon_subsdiff_equilbr.f90 (main program)  
 Lunar/bet.f90  

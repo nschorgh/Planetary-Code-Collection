@@ -39,13 +39,13 @@ subroutine surface_integration(Tm,Ta,supply,spaceweather0, &
   mintheta = huge(8); maxtheta=-huge(8)
   nan = IEEE_VALUE( real(1.,8), IEEE_QUIET_NAN)
   !Tnp1 = Tm + Ta*sin(-2*pi/lunarDay*time)
-  Tnp1 = Tm + Ta*max(sin(-2*pi/lunarDay*time),0.)
+  Tnp1 = Tm + Ta*max(sin(-2*pi/lunarDay*time),0.d0)
   
   do  ! time loop 
      Tn = Tnp1
      time = time+dtsec
      !Tnp1 = Tm + Ta*sin(-2*pi/lunarDay*time) 
-     Tnp1 = Tm + Ta*max(sin(-2*pi/lunarDay*time),0.)   ! average is Tm+Ta/pi
+     Tnp1 = Tm + Ta*max(sin(-2*pi/lunarDay*time),0.d0)   ! average is Tm+Ta/pi
      T = (Tn+Tnp1)/2.
 
      ! simple Euler step

@@ -20,7 +20,7 @@ PROGRAM asteroid_fast
   integer SPINUPN   ! # number of spin-up steps
   real(8) spinupfac 
   parameter(SPINUPN=20, spinupfac=2.)
-  integer i, k, earliest, iargc, ierr
+  integer i, k, earliest, ierr
   real(8) tstart  ! (earth) years
   real(8) z(nz), icetime, timestep, sigma(nz,NP)
   real(8) bigstep, bssum, omega, porosity(nz)
@@ -29,10 +29,8 @@ PROGRAM asteroid_fast
   character(7) ext
 
   ! latitudes
-  if (iargc() /= 1) then
-     stop 'USAGE: asteroid_fast ext'
-  endif
-  call getarg( 1, ext )
+  if (command_argument_count() /= 1) stop 'USAGE: asteroid_fast ext'
+  call get_command_argument( 1, ext )
   open(unit=21,file='lats.'//ext,action='read',status='old',iostat=ierr)
   if (ierr /= 0) then
      print *,'File lats.'//ext,'not found'
@@ -53,17 +51,17 @@ PROGRAM asteroid_fast
   ! set eternal grid
   call setgrid(nz,z,zmax,zfac)
   open(unit=30,file='z.'//ext,action='write',status='unknown')
-  write(30,'(999(f8.5,1x))') z(1:nz)
+  write(30,'(*(f8.5,1x))') z(1:nz)
   close(30)
 
   ! porosity can decrease with depth, but should be constant within stirring depth
   porosity(:) = 0.4d0   ! ice-free porosity
   !porosity(:) = 0.23d0
-  do concurrent (i=1:nz)
+  do i=1,nz
      sigma(i,:) = porosity(i)*icedensity
   end do
   open(unit=30,file='poro.'//ext,action='write',status='unknown')
-  write(30,'(999(f7.5,1x))') porosity(1:nz)
+  write(30,'(*(f7.5,1x))') porosity(1:nz)
   close(30)
 
   print *,'RUNNING FAST ASTEROID MODEL'
