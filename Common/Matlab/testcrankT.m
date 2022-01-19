@@ -28,8 +28,8 @@ ti(:) = thIn;
   
 z = setgrid(nz,zmax,zfac);
 f2=fopen('z','w');
-fprintf(f2,'%f ',z(:))
-fprintf(f2,'\n')
+fprintf(f2,'%f ',z(:));
+fprintf(f2,'\n');
 fclose(f2);
   
 time = 0.;
@@ -46,7 +46,7 @@ for n = 0:NSTEPS
   if n > NSTEPS-STEPSPERSOL,
     if mod(n,10) == 9,  % synched with test_Tprofile.m
       disp([time/Period, Tsurf])
-      fprintf(fout,[repmat('%7.2f ',1,nz+1),'\n'],Tsurf,T(1:nz))
+      fprintf(fout,[repmat('%7.2f ',1,nz+1),'\n'],Tsurf,T(1:nz));
     end
   end
      

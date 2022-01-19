@@ -28,12 +28,18 @@ function [T, Fsurf] = conductionT(nz, z, dt, T, Tsurf, Tsurfp1, ti, rhoc, Fgeoth
 
   % set some constants
   k = ti.^2 ./ rhoc;  % thermal conductivity
-  rho2 = ( rhoc + shift(rhoc,-1) )/2;
-  alpha = shift(k,-1) *dt ./ (shift(z,-1)-shift(z,+1)) ./ rho2(:) ./ (shift(z,-1)-z(:));
-  gamma = k(:) *dt ./ (shift(z,-1)-shift(z,+1)) ./ rho2(:) ./ (z(:)-shift(z,+1));
-  
+
+  rho2 = zeros(nz,1);
+  alpha = zeros(nz,1);
+  gamma = zeros(nz,1);
+
   alpha(1) = k(2)*dt/rhoc(1)/(z(2)-z(1))/z(2);
   gamma(1) = k(1)*dt/rhoc(1)/z(1)/z(2);
+  
+  rho2(2:nz-1) = ( rhoc(2:nz-1) + rhoc(3:nz) )/2;
+  alpha(2:nz-1) = k(3:nz) *dt ./ (z(3:nz)-z(1:nz-2)) ./ rho2(2:nz-1) ./ (z(3:nz)-z(2:nz-1));
+  gamma(2:nz-1) = k(2:nz-1) *dt ./ (z(3:nz)-z(1:nz-2)) ./ rho2(2:nz-1) ./ (z(2:nz-1)-z(1:nz-2));
+  
   alpha(nz) = 0.;
   gamma(nz) = k(nz)*dt/(rhoc(nz)+rhoc(nz))/(z(nz)-z(nz-1))^2; % assumes rhoc(nz+1)=rhoc(nz)
   
@@ -43,8 +49,10 @@ function [T, Fsurf] = conductionT(nz, z, dt, T, Tsurf, Tsurfp1, ti, rhoc, Fgeoth
   c = -alpha(:);   %  c(nz) is not used
 
   % Set RHS
-  r = gamma.*shift(T,+1) + (1-alpha-gamma).*T + alpha.*shift(T,-1);
+  r = zeros(nz,1);
   r(1) = alpha(1)*T(2) + (1.-alpha(1)-gamma(1))*T(1) + gamma(1)*(Tsurf+Tsurfp1);
+  r(2:nz-1) = gamma(2:nz-1).*T(1:nz-2) + ...
+	      (1-alpha(2:nz-1)-gamma(2:nz-1)).*T(2:nz-1) + alpha(2:nz-1).*T(3:nz);
   r(nz) = gamma(nz)*T(nz-1) + (1.-gamma(nz))*T(nz) + ...
           dt/rhoc(nz)*Fgeotherm/(z(nz)-z(nz-1)); % assumes rhoc(nz+1)=rhoc(nz)
 
