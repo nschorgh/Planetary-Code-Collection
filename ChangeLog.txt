@@ -1,5 +1,7 @@
 ChangeLog
 
+26 Dec 2021: Release v1.1.8  doi:10.5281/zenodo.5805461
+
 14 Sep 2021: core of view factor calculations redone in cartesian rather than spherical coordinates
 
 8 Sep 2021: added truncated SVD as method to calculate approximate terrain irradiance
