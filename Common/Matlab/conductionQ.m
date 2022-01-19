@@ -36,17 +36,22 @@ function [T, Tsurf, Fsurf] = conductionQ(nz,z,dt,Qn,Qnp1,T,ti,rhoc,emiss,Tsurf,F
 %***********************************************************************
 
   % set some constants
-  k = ti.**2 ./ rhoc;  % thermal conductivity
-  rho2 = ( rhoc + shift(rhoc,-1) )/2;
-  alpha = shift(k,-1) *dt ./ (shift(z,-1)-shift(z,+1)) ./ rho2(:) ./ (shift(z,-1)-z(:));
-  gamma = k(:) *dt ./ (shift(z,-1)-shift(z,+1)) ./ rho2(:) ./ (z(:)-shift(z,+1));
+  k = ti.^2 ./ rhoc;  % thermal conductivity
 
+  rho2 = zeros(nz,1);
+  alpha = zeros(nz,1);
+  gamma = zeros(nz,1);
+  
   dz = 2.*z(1);
-  beta = dt/rhoc(1)/(2.*dz**2);
+  beta = dt/rhoc(1)/(2.*dz^2);
   alpha(1) = beta*k(2);
   gamma(1) = beta*k(1);
 
-  buf = dt/(z(nz)-z(nz-1))**2;
+  rho2(2:nz-1) = ( rhoc(2:nz-1) + rhoc(3:nz) )/2;
+  alpha(2:nz-1) = k(3:nz) *dt ./ (z(3:nz)-z(1:nz-2)) ./ rho2(2:nz-1) ./ (z(3:nz)-z(2:nz-1));
+  gamma(2:nz-1) = k(2:nz-1) *dt ./ (z(3:nz)-z(1:nz-2)) ./ rho2(2:nz-1) ./ (z(2:nz-1)-z(1:nz-2));
+  
+  buf = dt/(z(nz)-z(nz-1))^2;
   alpha(nz) = 0.;
   gamma(nz) = k(nz)*buf/(2*rhoc(nz)); % assumes rhoc(nz+1)=rhoc(nz)
   
@@ -58,10 +63,9 @@ function [T, Tsurf, Fsurf] = conductionQ(nz,z,dt,Qn,Qnp1,T,ti,rhoc,emiss,Tsurf,F
   c = -alpha(:);   %  c(nz) is not used
 
   Tr = Tsurf;            % 'reference' temperature
-  iter = 0;
   Told = T(:);
 
-  do,
+  for iter=0:10
 
     if iter>0,
       Tr = sqrt(Tr*Tsurf); % linearize around an intermediate temperature
@@ -70,17 +74,20 @@ function [T, Tsurf, Fsurf] = conductionQ(nz,z,dt,Qn,Qnp1,T,ti,rhoc,emiss,Tsurf,F
 
     % Emission
     sigSB=5.6704d-8;
-    arad = -3.*emiss*sigSB*Tr**4;
-    brad = 2.*emiss*sigSB*Tr**3;
+    arad = -3.*emiss*sigSB*Tr^4;
+    brad = 2.*emiss*sigSB*Tr^3;
     ann = (Qn-arad)/(k1+brad);
     annp1 = (Qnp1-arad)/(k1+brad);
     bn = (k1-brad)/(k1+brad);
     b(1) = 1. + alpha(1) + gamma(1) - gamma(1)*bn;
   
     % Set RHS         
-    r = gamma.*shift(T,+1) + (1-alpha-gamma).*T + alpha.*shift(T,-1);
+    r = zeros(nz,1);
     r(1) = gamma(1)*(annp1+ann) + ...
 	   (1.-alpha(1)-gamma(1)+gamma(1)*bn)*T(1) + alpha(1)*T(2);
+    r(2:nz-1) = gamma(2:nz-1).*T(1:nz-2) + ...
+		(1-alpha(2:nz-1)-gamma(2:nz-1)).*T(2:nz-1) + ...
+		alpha(2:nz-1).*T(3:nz);
     r(nz) = gamma(nz)*T(nz-1) + (1.-gamma(nz))*T(nz) ...
 	    + dt/rhoc(nz)*Fgeotherm/(z(nz)-z(nz-1)); % assumes rhoc(nz+1)=rhoc(nz)
 
@@ -92,13 +99,12 @@ function [T, Tsurf, Fsurf] = conductionQ(nz,z,dt,Qn,Qnp1,T,ti,rhoc,emiss,Tsurf,F
     Tsurf = 0.5*(annp1 + bn*T(1) + T(1)); % (T0+T1)/2
 
     % iterative predictor-corrector
-    iter++;
-    if iter >= 10,
+    % redo until Tr is within 20% of new surface temperature
+    % (under most circumstances, the 20% threshold is never exceeded)
+    if (Tsurf < 1.2*Tr && Tsurf > 0.8*Tr)
       break
-    endif
-  until (Tsurf < 1.2*Tr && Tsurf > 0.8*Tr)
-  % redo until Tr is within 20% of new surface temperature
-  % (under most circumstances, the 20% threshold is never exceeded)
+    end
+  end
     
   Fsurf = - k(1) * (T(1)-Tsurf) / z(1); % heat flux into surface
 

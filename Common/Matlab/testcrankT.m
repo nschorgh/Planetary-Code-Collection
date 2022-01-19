@@ -46,9 +46,9 @@ for n = 0:NSTEPS
   if n > NSTEPS-STEPSPERSOL,
     if mod(n,10) == 9,  % synched with test_Tprofile.m
       disp([time/Period, Tsurf])
-      fprintf(fout,fmt=[repmat('%7.2f ',1,nz+1),'\n'],Tsurf,T(1:nz))
-    endif
-  endif
+      fprintf(fout,[repmat('%7.2f ',1,nz+1),'\n'],Tsurf,T(1:nz))
+    end
+  end
      
 end         % end the time loop
 

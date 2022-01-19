@@ -35,7 +35,7 @@ function [T, Fsurf] = conductionT(nz, z, dt, T, Tsurf, Tsurfp1, ti, rhoc, Fgeoth
   alpha(1) = k(2)*dt/rhoc(1)/(z(2)-z(1))/z(2);
   gamma(1) = k(1)*dt/rhoc(1)/z(1)/z(2);
   alpha(nz) = 0.;
-  gamma(nz) = k(nz)*dt/(rhoc(nz)+rhoc(nz))/(z(nz)-z(nz-1))**2; % assumes rhoc(nz+1)=rhoc(nz)
+  gamma(nz) = k(nz)*dt/(rhoc(nz)+rhoc(nz))/(z(nz)-z(nz-1))^2; % assumes rhoc(nz+1)=rhoc(nz)
   
   % elements of tridiagonal matrix
   a = -gamma(:);   %  a(1) is not used

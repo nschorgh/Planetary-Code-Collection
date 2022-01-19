@@ -55,12 +55,12 @@ for n=0:NSTEPS
   [T, Tsurf, Fsurf] = conductionQ(nz,z,dt,Qn,Qnp1,T,ti,rhocv,emiss,Tsurf,Fgeo);
   Qn = Qnp1;
 
-  if (mod(n,3)==0),
-    fprintf(fout1,'%12.6f %9.3f %9.3f\n',time/Period,Tsurf,T(nz) )
+  if mod(n,3)==0,
+    fprintf(fout1,'%12.6f %9.3f %9.3f\n',time/Period,Tsurf,T(nz) );
   end
   if n > NSTEPS-STEPSPERSOL,
     if mod(n,10)==0,
-      fprintf(fout2,fmt=[repmat('%7.2f ',1,nz+1),'\n'],Tsurf,T(:) ) 
+      fprintf(fout2,[repmat('%7.2f ',1,nz+1),'\n'],Tsurf,T(:) );
     end
     Fmean = Fsurf + Fmean;
     Tmean(:) = Tmean(:) + T(:);

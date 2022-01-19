@@ -17,7 +17,7 @@ function Q = flux_noatm(R,decl,latitude,HA,SlopeAngle,azFac)
   % beta = elevation of sun above (horizontal) horizon 
   sinbeta = c1*cos(HA) + s1;
   
-  cosbeta = sqrt(1-sinbeta**2);
+  cosbeta = sqrt(1-sinbeta^2);
   % ha -> az
   buf = (sin(decl)-sin(latitude)*sinbeta) / (cos(latitude)*cosbeta);
   % buf can be NaN if cosbeta = 0
@@ -36,7 +36,7 @@ function Q = flux_noatm(R,decl,latitude,HA,SlopeAngle,azFac)
   sintheta = max(sintheta,0.);  % horizon
   sinbeta = max(sinbeta,0.);  % horizontal horizon at infinity
   
-  Q = sintheta*So/(R**2);
+  Q = sintheta*So/(R^2);
   
 
 
