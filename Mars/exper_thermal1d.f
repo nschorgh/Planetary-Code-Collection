@@ -24,7 +24,7 @@ C***********************************************************************
       real*8 cumice, cumvapor, fill, f(NMAX), f0, cumads, Fsurf
       real*8 rhoav(NMAX), rhoavs, rhoavb1, rhoavb2, zdepth, D0
       real*8 buf,minrho
-      character*100 dum1
+      character(len=100) dum1
       real*8 Tsurface, rhofold(NMAX), porosity
       external Tsurface,psv
 
@@ -81,7 +81,7 @@ C     Initialize and write to file
          rhoav(i) = 0.
       enddo
       D0=Diff
-      nm=0; rhoavs=0.; 
+      nm=0; rhoavs=0.;
       rhoavb1=0.; rhoavb2=0.
       if (zfac>1.) then
          dz=zmax/(3.+2.*zfac*(zfac**(nz-2)-1.)/(zfac-1.))
@@ -116,7 +116,7 @@ C     Initialize and write to file
 
 !      Tsurf=253.; Tsurfp1=Tsurf; 
 !      call assignTprofile(z,nz,253.d0,233.d0,T)
-!      write(22,'(f8.4,1000(x,f6.2))') time,(Th+T(i),i=1,nz)
+!      write(22,'(f8.4,*(1x,f6.2))') time,(Th+T(i),i=1,nz)
       Tsurf=Tsurface(time,Tmean,Tampl)  ! prescribed surface temperature
 C-------loop over time steps 
       do n=0,nsteps-1
@@ -163,33 +163,33 @@ c--------only output and diagnostics below this line
             enddo
             cumvapor = cumvapor*18./8314.5
             cumice = cumice/icedensity
-            write(25,'(f12.0,x,g17.11,2(x,g11.5))') 
+            write(25,'(f12.0,1x,g17.11,2(1x,g11.5))')
      &           time,cumice,cumvapor,cumads
             buf = psurf/Tsurf*18./8314.5
             minrho = minrho*18./8314.5
-!            write(25,'(f12.0,x,g17.11,5(x,g11.5))') 
+!            write(25,'(f12.0,1x,g17.11,5(1x,g11.5))')
 !     &           time,cumice,cumvapor,cumads,buf,minrho
          endif
 c        output from last year or last day
          if (time>=tmax-669.and.mod(n,nint(669./dt/512.))==0) then
 !         if (time>=tmax-1..and.mod(n,nint(1./dt/32.))==0) then
-!            write(22,'(f12.0,999(x,f6.2))') time,Tsurf,(T(i),i=1,nz)
-!            write(23,'(f12.0,999(x,f7.4))') time,psurf,(p(i),i=1,nz)
-!            write(24,'(f12.0,999(x,g9.3))') time,
+!            write(22,'(f12.0,*(1x,f6.2))') time,Tsurf,(T(i),i=1,nz)
+!            write(23,'(f12.0,*(1x,f7.4))') time,psurf,(p(i),i=1,nz)
+!            write(24,'(f12.0,*(1x,g9.3))') time,
 !     &           (rhof(i)/icedensity,i=1,nz)
 !            call adsorption2(p,T,f,nz,psurf,Tsurf,f0)
-!            write(26,'(f12.0,999(x,g11.5))') time,f0,(f(i),i=1,nz)
-!            write(27,'(f12.0,999(x,g11.5))') 
+!            write(26,'(f12.0,*(1x,g11.5))') time,f0,(f(i),i=1,nz)
+!            write(27,'(f12.0,*(1x,g11.5))') 
 !     &           time,psurf/Tsurf,(psv(T(i))/T(i),i=1,nz)
          endif
 c        output in equally spaced time intervals
          if (time>=0..and.mod(n,max(1,nsteps/60))==0) then
-            write(22,'(f12.0,999(x,f6.2))') time,Tsurf,(T(i),i=1,nz)
-            write(23,'(f12.0,999(x,f7.4))') time,psurf,(p(i),i=1,nz)
-            write(24,'(f12.0,999(x,g10.4))') 
+            write(22,'(f12.0,*(1x,f6.2))') time,Tsurf,(T(i),i=1,nz)
+            write(23,'(f12.0,*(1x,f7.4))') time,psurf,(p(i),i=1,nz)
+            write(24,'(f12.0,*(1x,g10.4))') 
      &           time,(rhof(i)/icedensity,i=1,nz)
 !            call adsorption2(p,T,f,nz,psurf,Tsurf,f0)
-!            write(26,'(f12.0,999(x,g11.5))') time,f0,(f(i),i=1,nz)
+!            write(26,'(f12.0,*(1x,g11.5))') time,f0,(f(i),i=1,nz)
          endif
 c        vapor densities in last year
          if (time>=tmax-669.) then

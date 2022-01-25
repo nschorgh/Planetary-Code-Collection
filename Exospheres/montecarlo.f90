@@ -123,7 +123,7 @@ subroutine hop1(p_r, p_s, p_t, idum, Tsurf, Q)
      print *,'hop1: this cannot happen',p_r(2)
      !stop
   endif
-  p_r(1) = modulo(p_r(1),360.)   ! 0 <= p_r(1) < 360.
+  p_r(1) = modulo(p_r(1),360.d0)   ! 0 <= p_r(1) < 360.
   
   p_s = 1
   p_t = p_t + flighttime
@@ -165,7 +165,7 @@ function residence_time2(T,sigma)
   real(8), parameter :: sigma0 = 1e19
   real(8), external :: sublrate
   real(8) frac
-  frac = min(sigma/sigma0,1.)
+  frac = min(sigma/sigma0,1.d0)
   residence_time2 = sigma0/sublrate(T)
   residence_time2 = residence_time2/frac
   if (T==0.) residence_time2 = 1e32

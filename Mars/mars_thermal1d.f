@@ -30,8 +30,8 @@ C***********************************************************************
       real*8 co2albedo, Fgeotherm, Tsurfold, Fsurf, Fsurfold, m, dE
       real*8 co2emiss, Tinit, Tmean0, Tmean2, geof, ps, pb, psv
 !     real*8 psurf, psurf_season, tfrostco2
-      character*100 dum1
-      character*40 fileout1, fileout2  ! character arrays for output filenames
+      character(len=100) dum1
+      character(40) fileout1, fileout2  ! character arrays for output filenames
       external julday, flux_mars77, psv
 
 C-----read input       
