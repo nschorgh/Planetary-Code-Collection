@@ -1,0 +1,3 @@
+# Exclude files from GitHub language statistics
+Mars/*.ph  	linguist-vendored
+Mars/Test/*.ph  linguist-vendored
