@@ -29,7 +29,7 @@ reads 'mapgrid2.dat' and outputs 'mapgrid3.dat', which should be idential to
 
 
 
-2a. Equilibrium ice table for a list of sites using mars_mapii:
+2b. Equilibrium ice table for a list of sites using mars_mapii:
 
 make mars_mapi
 
