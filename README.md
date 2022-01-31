@@ -6,102 +6,63 @@ Planetary Code Collection
 
 This program collection contains:
 
-* Semi-implicit one-dimensional thermal model for planetary surfaces (Crank-Nicolson with nonlinear b.c.)  
-* Explicit subsurface vapor diffusion and ice deposition model (1D diffusion, sublimation, adsorption)  
+* Semi-implicit one-dimensional thermal model for planetary surfaces (Crank-Nicolson solver with Stefan-Boltzmann Law boundary condition)  
+* Subsurface vapor diffusion and ice deposition model (1D diffusion, sublimation, adsorption)  
 * Long-term ice evolution (temperature and ice content):  
   * equilibrium ice table on Mars
   * asynchronously coupled method for subsurface-atmosphere vapor exchange on Mars
   * asynchronously coupled method for ice retreat on asteroids
   * lunar ice pump   
-* 3D model of direct insolation, terrain shadowing, and terrain irradiance for airless bodies, Mars, and Mauna Kea
+* 3D model of direct insolation, terrain shadowing, and terrain irradiance for airless bodies, Mars, and Mauna Kea (prototype) 
 * Monte-Carlo model for ballistic hops in the exospheres of the Moon and Ceres
 
 
+The theory behind the numerical methods is described in [UserGuide.pdf](./UserGuide.pdf) or in individual journal articles cited below.
 
-Mars Subsurface Ice Model (M-SIM)
----------------------------------
+
+Mars Subsurface Ice Model (MSIM)
+--------------------------------
+
+Directory: `Mars/`  
+See `Mars/CONTENTS.txt` for synopsis of individual programs.  
+
 
 ### Mars Thermal Model
 
-Mars/mars_thermal1d.f (main program)  
-Mars/flux_mars.f90  
-Mars/marsorbit.f90  
-Mars/soilthprop_mars.f90  
-Common/conductionQ.f90  
-Common/conductionT.f90  
-Common/grids.f90  
-Common/julday.for  
-Common/psvco2.f  
-Common/tridag.for  
+This model calculates realistic surface temperatures on Mars. The thermal model solves the heat equation in the top few meters of the subsurface, using direct solar energy and sky irradiance as energy inputs.  It also includes CO<sub>2</sub> frost.   
+
+The finite-difference method is flux-conservative even on an irregularly spaced vertical grid and the thermal properties of the soil can vary spatially and with time.
+The solver for the one-dimensional heat equation is semi-implicit, which implies that the size of the time step is not limited by the spatial discretization, as it would be for simpler heat equation solvers.  As a result, the model is ultra-fast. For example, `mars_thermal1d.f` takes 100 steps per sol and calculates temperatures for 10 Mars years, on the surface and at 80 depths, in 1.3 seconds. (As far as I am aware, this is still the fastest Mars thermal model available.)
+
+The orbit of Mars can be for the present-day or the past.
+The standard configuration is for a horizontal unobstructed surface, but planar slopes can also be modeled.  
+
 *Documentation: User Guide Part 1*  
+`Mars/MilankOutput/` contains surface temperature outputs for the last 21 Myr in intervals of 1 kyr.   
 
 
 ### Vapor Diffusion Model
 
-Mars/exper_thermal1d.f (main program)  
-Mars/vapordiffusioni.f  
-Mars/adsorption.f  
+This model solves the one-dimensional vapor diffusion equation in a porous medium, including phase transitions (sublimation and adsorption), which makes the partial differential equation non-linear. Specifically, it simulates water vapor diffusion through the CO<sub>2</sub>-filled pore spaces in martian regolith. Diffusion can be outward or inward. The same model can also be used (and has been used) for laboratory experiments under physically analogous environments.  
+
 *Documentation: User Guide Part 2  
-Documentation: Schorghofer, N. & Aharonson, O. (2005) J. Geophys. Res. 110, E05003, Appendices*  
-Mars/Misc/  (an animation for illustration)  
+Documentation: [Schorghofer & Aharonson (2005), Appendix B](https://doi.org/10.1029/2004JE002350)*  
+`Mars/Misc/` contains an animation of "vapor pumping" for illustration.
 
 
 ### Equilibrium Ice Table
 
-Mars/mars_mapi.f (main program)  
-Mars/mars_mapii.f90 (main program)  
-Mars/mars_mapt.f (main program)  
-Mars/mars_mapi2p.f90 (main program)  
-Mars/jsub.f90    
-Mars/jsubv.f90  
-Mars/marsorbit.f90  
-Mars/flux_mars.f90  
-Mars/soilthprop_mars.f90  
-Common/conductionQ.f90  
-Common/conductionT.f90  
-Common/grids.f90  
-Common/julday.for  
-Common/psv.f  
-Common/psvco2.f  
-Common/tridag.for  
-*Documentation: User Guide Section 3.1  
-Documentation: Schorghofer, N. & Aharonson, O. (2005) J. Geophys. Res. 110, E05003*  
+The theory of subsurface-atmosphere vapor exchange leads to the concept of an equilibrium ice table, a depth where the (time-averaged) saturation vapor pressure of H<sub>2</sub>O matches the (time-averaged) vapor density in the atmosphere immediately above the surface. A Mars thermal model is run until equilibrated, and then annual mean vapor densities are evaluated to determine whether and at what depth a vapor equilibrium exists. Ice changes the thermal properties of the ground, so the thermal model is re-run to determine the final depth of the equilibrium ice table.  
 
-
-### Mars Long-Term Thermal Model
-
-Mars/insol_driver.f90 (main program)  
-Mars/tempr_driver.f90 (main program)  
-Mars/flux_mars.f90  
-Mars/soilthprop_mars.f90  
-Common/conductionQ.f90  
-Common/conductionT.f90
-Common/generalorbit.f  
-Common/grids.f90  
-Common/psvco2.f  
-Common/tridag.for  
-Mars/MilankOutput/  (surface temperatures from last 21Myr)  
+*Documentation: [Schorghofer & Aharonson (2005)](https://doi.org/10.1029/2004JE002350)*  
 
 
 ### Fast (asynchronously-coupled) Method for Subsurface Ice Dynamics
 
-Mars/stabgrow_fast.f90 (main program)  
-Mars/exper_fast.f90 (main program)  
-Mars/mars_fast.f90 (main program)  
-Mars/fast_modules.f90  
-Mars/fast_subs_exper.f90  
-Mars/fast_subs_mars.f90  
-Mars/fast_subs_univ.f90  
-Mars/soilthprop_mars.f90  
-Common/conductionQ.f90  
-Common/conductionT.f90  
-Common/derivs.f90  
-Common/generalorbit.f  
-Common/grids.f90  
-Common/psv.f  
-Common/psvco2.f  
-Common/tridag.for  
+This dynamical model of ice evolution goes beyond the concept of the equilibrium ice table and calculates the amount of ice lost from or gained within the porous subsurface on Mars as a result of vapor exchange with the atmosphere. To accomplish that, without the computationally slow method of explicitly solving the nonlinear vapor transport equations, it uses time-averaged transport equations. The method involves some sophistication and is described in a dedicated paper by [Schorghofer (2010)](http://dx.doi.org/10.1016/j.icarus.2010.03.022).  
+
 *Documentation: Schorghofer, N. (2010) Icarus 208, 598-607*  
+
 
 
 Other Models for Planetary Surfaces
@@ -109,112 +70,57 @@ Other Models for Planetary Surfaces
 
 ### Basic Thermal Model for Airless Bodies
 
-Asteroids/asteroid_thermal.f90 (main program)  
-Asteroids/oneasteroid_thermal1d.f90  
-Asteroids/insolonly.f90   
-Common/conductionQ.f90  
-Common/flux_noatm.f90  
-Common/generalorbit.f  
-Common/grids.f90  
-Common/tridag.for  
+Standard thermal model for asteroidal surfaces. The one-dimensional heat equation is solved, based on solar energy input and thermal radiation from the surface to space.  The solver for the one-dimensional heat equation is semi-implicit, with the Stefan-Boltzmann radiation law as upper boundary condition.  The finite-difference method is flux-conservative even on an irregularly spaced vertical grid and the thermal properties of the soil can vary spatially and with time.  (This is a simplified version of the Mars Thermal Model. They both use the same flux-conservative spatial discretization and the same Crank-Nicolson solver with nonlinear boundary condition.)  
+
+Directory: `Asteroids/`  
+The core subroutines for the thermal model are located in `Common/` and available in Fortran, C, Matlab, and Python.  
 *Documentation: User Guide Part 1*  
 
 
 ### Asynchronous Models for Temperature, Impact Stirring, and Ice Loss on Asteroids
 
-Asteroids/asteroid_fast1.f90 (main program)  
-Asteroids/asteroid_fast2.f90 (main program)  
-Asteroids/fast_modules_asteroid.f90  
-Asteroids/fast_subs_asteroid1.f90  
-Asteroids/fast_subs_asteroid2.f90  
-Asteroids/impactstirring.f90  
-Asteroids/common_subs.f90  
-Asteroids/sphere1d_implicit.f90 (main program)  
-Common/conductionQ.f90  
-Common/derivs.f90  
-Common/flux_noatm.f90  
-Common/generalorbit.f  
-Common/grids.f90  
-Common/psv.f  
-Common/ran2.for  
-Common/tridag.for  
+This set of models for asteroidal surfaces combines diurnally-resolved temperatures, the long-term loss of near-surface ice to space, and probabilistic impact stirring (only one-dimensional). It can be used to estimate long-term ice loss from near the surface due to sublimation as the orbit is changing, the Sun brightens, or ice is mixed due to impacts.  
+
+A significant complexity in this model arises from partially ice-filled pore spaces (necessary to incorporate the consequences of impact stirring), because the re-distribution of ice within the pores due to vapor diffusion and deposition adds another partial differential equation. A simpler two-layer version, where pore spaces are either empty or full, is also implemented.  
+
+Directory: `Asteroids/`  
 *Documentation: Schorghofer, N. (2016) Icarus 276, 88-95*  
 
 
 ### Lunar Ice Pump
 
-Lunar/oscidea1.f90 (main program)  
-Lunar/moon_subsdiff.f90 (main program)  
-Lunar/moon_subsdiff_equilbr.f90 (main program)  
-Lunar/bet.f90  
-Lunar/oscidea_subs.f90  
-Lunar/subl_h2o.f90  
-Lunar/subsdiff_subs.f90  
-*Documentation: User Guide Section 3.4  
-Documentation: Schorghofer, N. & Aharonson, O. (2014) ApJ 788, 169   
-Documentation: upcoming 2022 paper*  
+Two types of models for water vapor migration in the shallow lunar subsurface are implemented. One is a particle-based microphysical model that follows water molecules that undergo a random walk. The other uses the time-averaged boundary value formulation for the same process. Both models are one-dimensional, and primarily intended for the low temperature regime, when molecular adsorption times are long.
+
+Directory: `Lunar/`  
+*Documentation for boundary-value model: [Schorghofer & Aharonson (2014)](https://doi.org/10.1088/0004-637X/788/2/169)  
+No documentation has yet been written for the random walk model.*  
 
 
 ### Irradiance Model for Terrestrial Analog
 
-EarthAnalogs/insol3d_earth.f90 (main program)  
-EarthAnalogs/insol_flat.f90 (simple main program)  
-EarthAnalogs/mk_atmosphere.f90  
-EarthAnalogs/sunpos.f90  
-EarthAnalogs/filemanager.f90  
-Common/flux_noatm.f90  
-Topo3D/topo3d_modules.f90  
-Topo3D/topo3d_common.f90  
-Topo3D/topo3d_subs.f90  
-*Documentation: User Guide Sections 4.1, 5.1, 5.3-5.7*  
+Clear-sky direct and indirect short-wave irradiance on Mauna Kea summit, based on optical path length but an otherwise 0-parameter atmospheric model.
+The incoming irradiance can be calculated for a flat unobstructed surface, but also for a tilted and obstructed horizon, i.e., 3D sky irradiance.  
+
+Directory: `EarthAnalogs/`  
+*Documentation: User Guide Sections 4.1, 5.1, and 5.6*  
 
 
 ### Terrain Shadowing and 3D Surface Energy Balance 
 
-Topo3D/shadows.f90 (main program)  
-Topo3D/fieldofviews.f90 (main program)  
-Topo3D/cratersQ_equilbr.f90 (main program)  
-Topo3D/cratersQ_moon.f90 (main program)  
-Topo3D/cratersQ_mars.f90 (main program)  
-Topo3D/cratersQ_mars_parallel.f90 (main program)  
-Topo3D/cratersQ_mars_full.f90 (main program)  
-Topo3D/insol3d_mars.f90 (main program)  
-Topo3D/filemanager.f90  
-Topo3D/topo3d_common.f90  
-Topo3D/topo3d_geometry.f90  
-Topo3D/topo3d_modules.f90   
-Topo3D/shadow_subs.f90  
-Topo3D/fieldofview_subs.f90  
-Topo3D/topo3d_subs.f90  
-Topo3D/topo3d_subs_mars.f90  
-Topo3D/multigrid.f90  
-Topo3D/fieldproperties.f90 (main program)  
-Topo3D/hpsort.for  
-Topo3D/makegaussian.c   
-Topo3D/xsvdcmp.py   
-Common/conductionQ.f90    
-Common/conductionQ2.f90  
-Common/conductionT2.f90  
-Common/flux_noatm.f90  
-Common/grids.f90  
-Common/julday.for  
-Common/tridag.for  
-Mars/flux_mars.f90  
-Mars/marsorbit.f90  
+This model of the three-dimensional surface energy balance calculates horizons from a digital elevation model and, optionally, also view factors for use in terrain shadowing and terrain irradiance calculations. The surface energy balance model can then be coupled to the model of subsurface heat conduction introduced above. This then provides a complete thermal model for  rugged terrain on Mars or airless bodies. This model is still at prototype stage, but has been used in several research studies.
+
+Directory: `Topo3D/`  
 *Documentation: User Guide Part 5*  
 
 
 ### Monte-Carlo Model for Surface-bounded Exospheres
 
-Exosphere/moon_exo.f90 (main program)  
-Exosphere/ceres_exo.f90 (main program)  
-Exosphere/body.f90  
-Exosphere/montecarlo.f90  
-Exosphere/geogrid.f90  
-Exosphere/geogrid_D.f90  
-Exosphere/subl_subs.f90  
-Exosphere/gasdev.for  
-Common/ran2.for  
+Ballistic trajectories of neutral molecules or atoms are modeled for large airless bodies (the Moon and Ceres).  Individual water molecules are launched with probabilistically distributed velocities. The model then computes the molecule's impact location and time analytically, using a closed-form solution for the intersection of an ellipse with a sphere, i.e., without numerical integration of the particle trajectory.
+An event-driven algorithm processes landing and launching events in time-order.
+Molecules may be lost or destroyed by photo-dissociation before they land.
+Surface temperatures are based on the thermal model for airless bodies.  
+
+Directory: `Exospheres/`  
 *Documentation: User Guide Part 6*  
 
 
@@ -227,11 +133,11 @@ NOTE: Third party source code from Numerical Recipes is covered by a separate co
 
 2019: Thanks to Sam Potter for comments that helped me speed up the view factor calculations  
 
-Mar 2016: Thanks to Lior Rubanenko for a bug report in cratersQ_*
-
-2010, 2005: Thanks to Oded Aharonson for improvements on mars_mapi2p and a better treatment of the frost/no-frost surface boundary condition.
+2016: Thanks to Lior Rubanenko for a bug report in cratersQ_*
 
 2006: Troy Hudson discovered a grid-point offset in conductionT and conductionQ, which has been corrected.
+
+2005: Thanks to Oded Aharonson for improvements to what is now mars_mapi2p.
 
 2005: Thanks to Mischa Kreslavsky for providing formulas for energy balance on a planar slope.
 
