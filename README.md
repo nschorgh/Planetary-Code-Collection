@@ -29,13 +29,10 @@ See `Mars/CONTENTS.txt` for synopsis of individual programs.
 
 ### Mars Thermal Model
 
-This model calculates realistic surface temperatures on Mars. The thermal model solves the heat equation in the top few meters of the subsurface, using direct solar energy and sky irradiance as energy inputs.  It also includes CO<sub>2</sub> frost.   
-
-The finite-difference method is flux-conservative even on an irregularly spaced vertical grid and the thermal properties of the soil can vary spatially and with time.
-The solver for the one-dimensional heat equation is semi-implicit, which implies that the size of the time step is not limited by the spatial discretization, as it would be for simpler heat equation solvers.  As a result, the model is ultra-fast. For example, `mars_thermal1d.f` takes 100 steps per sol and calculates temperatures for 10 Mars years, on the surface and at 80 depths, in 1.3 seconds. (As far as I am aware, this is still the fastest Mars thermal model available.)
-
-The orbit of Mars can be for the present-day or the past.
-The standard configuration is for a horizontal unobstructed surface, but planar slopes can also be modeled.  
+This model calculates realistic surface temperatures on Mars. The thermal model solves the heat equation in the top few meters of the subsurface, using direct solar energy and sky irradiance as energy inputs.  It also includes CO<sub>2</sub> frost. 
+The finite-difference method is flux-conservative even on an irregularly spaced grid and the thermal properties of the soil can vary with depth and with time.
+The solver for the one-dimensional heat equation is semi-implicit, which implies that the size of the time step is not limited by the spatial discretization, as it would be for simpler heat equation solvers.  As a result, the model is ultra-fast. For example, `mars_thermal1d.f` takes 100 steps per sol and calculates temperatures for 10 Mars years, on the surface and at 80 depths, in 1.3 seconds. (As far as I am aware, this is still the fastest Mars thermal model available.) 
+The orbit of Mars can be for the present-day or the past. The standard configuration is for a horizontal unobstructed surface, but planar slopes can also be modeled.  
 
 *Documentation: User Guide Part 1*  
 `Mars/MilankOutput/` contains surface temperature outputs for the last 21 Myr in intervals of 1 kyr.   
@@ -61,8 +58,6 @@ The theory of subsurface-atmosphere vapor exchange leads to the concept of an eq
 
 This dynamical model of ice evolution goes beyond the concept of the equilibrium ice table and calculates the amount of ice lost from or gained within the porous subsurface on Mars as a result of vapor exchange with the atmosphere. To accomplish that, without the computationally slow method of explicitly solving the nonlinear vapor transport equations, it uses time-averaged transport equations. The method involves some sophistication and is described in a dedicated paper by [Schorghofer (2010)](http://dx.doi.org/10.1016/j.icarus.2010.03.022).  
 
-*Documentation: Schorghofer, N. (2010) Icarus 208, 598-607*  
-
 
 
 Other Models for Planetary Surfaces
@@ -79,12 +74,11 @@ The core subroutines for the thermal model are located in `Common/` and availabl
 
 ### Asynchronous Models for Temperature, Impact Stirring, and Ice Loss on Asteroids
 
-This set of models for asteroidal surfaces combines diurnally-resolved temperatures, the long-term loss of near-surface ice to space, and probabilistic impact stirring (only one-dimensional). It can be used to estimate long-term ice loss from near the surface due to sublimation as the orbit is changing, the Sun brightens, or ice is mixed due to impacts.  
-
+This set of models for asteroidal surfaces combines diurnally-resolved temperatures, the long-term loss of near-surface ice to space, and probabilistic impact stirring (only one-dimensional). It can be used to estimate long-term ice loss from near the surface due to sublimation as the orbit is changing, the Sun brightens, or ice is mixed due to impacts. 
 A significant complexity in this model arises from partially ice-filled pore spaces (necessary to incorporate the consequences of impact stirring), because the re-distribution of ice within the pores due to vapor diffusion and deposition adds another partial differential equation. A simpler two-layer version, where pore spaces are either empty or full, is also implemented.  
 
 Directory: `Asteroids/`  
-*Documentation: Schorghofer, N. (2016) Icarus 276, 88-95*  
+*Documentation: [Schorghofer (2016)](https://doi.org/10.1016/j.icarus.2016.04.037)*  
 
 
 ### Lunar Ice Pump
@@ -99,7 +93,7 @@ No documentation has yet been written for the random walk model.*
 ### Irradiance Model for Terrestrial Analog
 
 Clear-sky direct and indirect short-wave irradiance on Mauna Kea summit, based on optical path length but an otherwise 0-parameter atmospheric model.
-The incoming irradiance can be calculated for a flat unobstructed surface, but also for a tilted and obstructed horizon, i.e., 3D sky irradiance.  
+The incoming irradiance can be calculated for a flat unobstructed surface, but also for a tilted suface with horizons, i.e., 3D sky irradiance.  
 
 Directory: `EarthAnalogs/`  
 *Documentation: User Guide Sections 4.1, 5.1, and 5.6*  
