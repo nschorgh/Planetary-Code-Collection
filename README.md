@@ -29,9 +29,9 @@ See `Mars/CONTENTS.txt` for synopsis of individual programs.
 
 ### Mars Thermal Model
 
-This model calculates realistic surface temperatures on Mars. The thermal model solves the heat equation in the top few meters of the subsurface, using direct solar energy and sky irradiance as energy inputs.  It also includes CO<sub>2</sub> frost. 
+This model calculates realistic surface temperatures on Mars. The heat equation is solved in the top few meters of the subsurface, using direct solar energy and sky irradiance as energy inputs.  The model also includes CO<sub>2</sub> frost. 
 The finite-difference method is flux-conservative even on an irregularly spaced grid and the thermal properties of the soil can vary with depth and with time.
-The solver for the one-dimensional heat equation is semi-implicit, which implies that the size of the time step is not limited by the spatial discretization, as it would be for simpler heat equation solvers.  As a result, the model is ultra-fast. For example, `mars_thermal1d.f` takes 100 steps per sol and calculates temperatures for 10 Mars years, on the surface and at 80 depths, in 1.3 seconds. (As far as I am aware, this is still the fastest Mars thermal model available.) 
+The solver for the one-dimensional heat equation is semi-implicit, which implies that the size of the time step is not limited by the spatial discretization, as it would be for simpler heat equation solvers.  As a result, the model is ultra-fast. For example, `mars_thermal1d.f` takes 100 steps per sol and calculates temperatures for 10 Mars years, on the surface and at 80 depths, in 1.3 seconds. As far as I am aware, this is still the fastest Mars thermal model available. 
 The orbit of Mars can be for the present-day or the past. The standard configuration is for a horizontal unobstructed surface, but planar slopes can also be modeled.  
 
 *Documentation: User Guide Part 1*  
@@ -40,7 +40,7 @@ The orbit of Mars can be for the present-day or the past. The standard configura
 
 ### Vapor Diffusion Model
 
-This model solves the one-dimensional vapor diffusion equation in a porous medium, including phase transitions (sublimation and adsorption), which makes the partial differential equation non-linear. Specifically, it simulates water vapor diffusion through the CO<sub>2</sub>-filled pore spaces in martian regolith. Diffusion can be outward or inward. The same model can also be used (and has been used) for laboratory experiments under physically analogous environments.  
+This model solves the one-dimensional vapor diffusion equation in a porous medium, including phase transitions (sublimation and adsorption), which makes the partial differential equation non-linear. Specifically, it simulates water vapor diffusion through the CO<sub>2</sub>-filled pore spaces in martian regolith. Diffusion can be outward or inward. The same model can also be used (and has been used) for laboratory experiments in physically analogous environments.  
 
 *Documentation: User Guide Part 2  
 Documentation: [Schorghofer & Aharonson (2005), Appendix B](https://doi.org/10.1029/2004JE002350)*  
@@ -56,7 +56,7 @@ The theory of subsurface-atmosphere vapor exchange leads to the concept of an eq
 
 ### Fast (asynchronously-coupled) Method for Subsurface Ice Dynamics
 
-This dynamical model of ice evolution goes beyond the concept of the equilibrium ice table and calculates the amount of ice lost from or gained within the porous subsurface on Mars as a result of vapor exchange with the atmosphere. To accomplish that, without the computationally slow method of explicitly solving the nonlinear vapor transport equations, it uses time-averaged transport equations. The method involves some sophistication and is described in a dedicated paper by [Schorghofer (2010)](http://dx.doi.org/10.1016/j.icarus.2010.03.022).  
+This dynamical model of ice evolution goes beyond the concept of the equilibrium ice table and calculates the amount of ice lost from or gained within the porous subsurface on Mars as a result of vapor exchange with the atmosphere. To accomplish that, without the computationally slow method of explicitly solving the nonlinear vapor transport equations, it uses time-averaged transport equations. The method involves some complexities and is described in a dedicated paper by [Schorghofer (2010)](http://dx.doi.org/10.1016/j.icarus.2010.03.022).  
 
 
 
@@ -86,8 +86,8 @@ Directory: `Asteroids/`
 Two types of models for water vapor migration in the shallow lunar subsurface are implemented. One is a particle-based microphysical model that follows water molecules that undergo a random walk. The other uses the time-averaged boundary value formulation for the same process. Both models are one-dimensional, and primarily intended for the low temperature regime, when molecular adsorption times are long.
 
 Directory: `Lunar/`  
-*Documentation for boundary-value model: [Schorghofer & Aharonson (2014)](https://doi.org/10.1088/0004-637X/788/2/169)  
-No documentation has yet been written for the random walk model.*  
+*Documentation for boundary-value model: [Schorghofer & Aharonson (2014)](https://doi.org/10.1088/0004-637X/788/2/169)*  
+No documentation has yet been written for the random walk model.  
 
 
 ### Irradiance Model for Terrestrial Analog
@@ -101,7 +101,7 @@ Directory: `EarthAnalogs/`
 
 ### Terrain Shadowing and 3D Surface Energy Balance 
 
-This model of the three-dimensional surface energy balance calculates horizons from a digital elevation model and, optionally, also view factors for use in terrain shadowing and terrain irradiance calculations. The surface energy balance model can then be coupled to the model of subsurface heat conduction introduced above. This then provides a complete thermal model for  rugged terrain on Mars or airless bodies. This model is still at prototype stage, but has been used in several research studies.
+This model of the three-dimensional surface energy balance calculates horizons from a digital elevation model for terrain shadowing calculations and, optionally, also view factors for use in terrain irradiance calculations. The surface energy balance model can then be coupled to the model of subsurface heat conduction introduced above. This then provides a complete thermal model for  rugged terrain on Mars or airless bodies. The model is still at prototype stage, but has been used in several research studies.
 
 Directory: `Topo3D/`  
 *Documentation: User Guide Part 5*  
@@ -109,7 +109,7 @@ Directory: `Topo3D/`
 
 ### Monte-Carlo Model for Surface-bounded Exospheres
 
-Ballistic trajectories of neutral molecules or atoms are modeled for large airless bodies (the Moon and Ceres).  Individual water molecules are launched with probabilistically distributed velocities. The model then computes the molecule's impact location and time analytically, using a closed-form solution for the intersection of an ellipse with a sphere, i.e., without numerical integration of the particle trajectory.
+Ballistic trajectories of neutral molecules or atoms are modeled for large airless bodies (the Moon and Ceres).  Individual molecules are launched with probabilistically distributed velocities. The model then computes the molecule's impact location and time analytically, using a closed-form solution for the intersection of an ellipse with a sphere, i.e., without numerical integration of the particle trajectory.
 An event-driven algorithm processes landing and launching events in time-order.
 Molecules may be lost or destroyed by photo-dissociation before they land.
 Surface temperatures are based on the thermal model for airless bodies.  
@@ -120,7 +120,9 @@ Directory: `Exospheres/`
 
 ---
 
-NOTE: Third party source code from Numerical Recipes is covered by a separate copyright. These are files ending with .for.  A few code snippets from other sources are also used, as documented in the source code.
+### Notes
+
+Third party source code from Numerical Recipes is covered by a separate copyright. These are files ending with .for.  A few code snippets from other sources are also used, as documented in the source code.
 
 
 ### ACKNOWLEDGMENTS

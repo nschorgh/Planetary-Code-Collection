@@ -11,7 +11,7 @@ flux_mars.f90:
 
 mars_thermal1d.f: (main program)
 	1D diffusion of temperature for Mars; prototype example of how to call
-	conductionQ/T with seasonal CO2 frost cover
+	conductionQ and conductionT with seasonal CO2 frost cover
 
 marsorbit.f90:
 	position of the sun as seen from Mars; data from Allison & McEwen (2000)
@@ -44,10 +44,10 @@ adsorption.f:
 
 
 jsub.f90:
-	net flux between ice table and surface, includes thermal model
+	net vapor flux between ice table and surface; includes thermal model
 
 jsubv.f90:
-	vectorized version of jsub, includes emission from one surface to another
+	vectorized version of jsub; includes emission from one surface to another
 	for planar slopes
 
 mars_mapi.f: (main program)
@@ -55,19 +55,19 @@ mars_mapi.f: (main program)
 	the entire globe) using the bisection method
 
 mars_mapii.f90: (main program)
-	determines equilibrium ice table depth for a list of locations,
+	determines equilibrium ice table depth for a list of locations;
 	same functionality as mars_mapi.f, but uses an iteration method
 
 mapgrid.dat:
 	Example input file for mars_mapi.f and mars_mapt.f
 
 mars_mapt.f: (main program)
-	calculates temperatures and other variables for a list of locations
+	calculates temperatures and other variables for a list of locations;
 	calls jsub for a list of locations (such as the entire globe)
 
 mars_mapi2p.f90: (main program)
-        calculates temperatures on thermally coupled planar slopes
-	also calculates equilibrium ice table depths
+        calculates temperatures on thermally coupled planar slopes;
+	also calculates equilibrium ice table depths;
 	configured for parallel job execution
 
 mapgrid.slp:
@@ -79,7 +79,7 @@ mars_mapi2p_go.cmd
 
 
 insol_driver.f90: (simple main program)
-  	insolation quantities over the past 20 Myr
+  	insolation (incoming solar radiation) over the past 20 Myr
 
 tempr_driver.f90: (main program)
   	temperatures over the past 20 Myr

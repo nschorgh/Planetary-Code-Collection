@@ -5,11 +5,11 @@
 !**********************************************************************
 
 
-function solidconductivity(z)
+function solidconductivity(z, H)
   ! thermal conduction through solid
   implicit none
   real(8) solidconductivity
-  real(8), intent(IN) :: z
+  real(8), intent(IN) :: z, H
   real(8) kc, k_s, k_d
   real(8), external :: twolayers
   
@@ -18,7 +18,7 @@ function solidconductivity(z)
   k_s = 7.4e-4; k_d = 3.4e-3
 
   !kc = k_d - (k_d - k_s) * exp(-z/H)
-  kc = twolayers(k_s, k_d, z)
+  kc = twolayers(k_s, k_d, z, H)
   solidconductivity = kc 
 
   ! rho = (1-porosity)*rhosolid,  porosity = 1-rho/rhosolid
@@ -51,28 +51,16 @@ end function heatcapacity
 
 
 
-pure function twolayers(s,d,z)
+pure function twolayers(s,d,z,H)
   ! s ... surface value (z=0)
   ! d ... value at great depth (z=Inf)
   ! z ... depth
+  ! H ... depth-scale
   implicit none
   real(8) twolayers
-  real(8), intent(IN) :: s, d, z
-  real(8) H
-  H = 0.07 ! Hayne et al. (2017) average
+  real(8), intent(IN) :: s, d, z, H
+  !H = 0.07 ! Hayne et al. (2017) average
   !H = 0.06 ! Hayne et al. (2017) Fig. A2
+  !e.g., rho_s = 1100; rho_d = 1800 
   twolayers = d - (d-s) * exp(-z/H)
 end function twolayers
-
-
-
-function twolayerdensity(z)
-  implicit none
-  real(8) twolayerdensity
-  real(8), intent(IN) :: z
-  real(8), external :: twolayers
-  real(8) rho_s, rho_d
-  ! Hayne et al. (2017)
-  rho_s = 1100; rho_d = 1800
-  twolayerdensity = twolayers(rho_s,rho_d,z)
-end function twolayerdensity
