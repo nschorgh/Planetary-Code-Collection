@@ -51,6 +51,36 @@ end function heatcapacity
 
 
 
+function radconductivity(T, ell, emiss, porosity)
+  ! radiative contribution to thermal conductivity
+  implicit none
+  real(8) radconductivity
+  real(8), parameter :: sigSB = 5.6704d-8
+  real(8), intent(IN) :: T, ell, emiss, porosity
+  real(8) A
+  
+  A = 4 * emiss/(2-emiss) * sigSB * ell * (porosity/(1-porosity))**(1./3.)
+  ! A = kc*chi/350**3
+
+  ! Sakatani et al. (2017)
+  ! zeta = 0.12
+  ! A = 8*emiss/(2-emiss)*sigSB*zeta*( porosity /(1-porosity) )**(1./3.)*ell/2
+  
+  radconductivity = A*T**3  ! also known as kr
+end function radconductivity
+
+
+
+function radconductivity1(T,chi,kc)
+  ! radiative contribution to thermal conductivity
+  implicit none
+  real(8) radconductivity1
+  real(8), intent(IN) :: T, chi, kc
+  radconductivity1 = kc * ( 1 + chi*(T/350.)**3 )
+end function radconductivity1
+
+
+
 pure function twolayers(s,d,z,H)
   ! s ... surface value (z=0)
   ! d ... value at great depth (z=Inf)
