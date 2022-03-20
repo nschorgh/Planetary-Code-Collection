@@ -14,17 +14,10 @@ function solidconductivity(z, H)
   real(8), external :: twolayers
   
   ! Hayne et al. (2017) JGR
-  !rho_s = 1100; rho_d = 1800
   k_s = 7.4e-4; k_d = 3.4e-3
-
-  !kc = k_d - (k_d - k_s) * exp(-z/H)
-  kc = twolayers(k_s, k_d, z, H)
-  solidconductivity = kc 
-
-  ! rho = (1-porosity)*rhosolid,  porosity = 1-rho/rhosolid
-  ! 1-1100/2500 = 0.560 ! s
-  ! 1-1800/2500 = 0.280 ! d
-  ! porosity(z) = 0.28 + (0.56-0.28)*exp(-z/H)
+  
+  kc = twolayers(k_s, k_d, z, H)  !kc = k_d - (k_d - k_s) * exp(-z/H)
+  solidconductivity = kc
 end function solidconductivity
 
 
@@ -91,6 +84,11 @@ pure function twolayers(s,d,z,H)
   real(8), intent(IN) :: s, d, z, H
   !H = 0.07 ! Hayne et al. (2017) average
   !H = 0.06 ! Hayne et al. (2017) Fig. A2
-  !e.g., rho_s = 1100; rho_d = 1800 
   twolayers = d - (d-s) * exp(-z/H)
+
+  ! rho = (1-porosity)*rhosolid,  porosity = 1-rho/rhosolid
+  ! e.g., rho_s = 1100; rho_d = 1800
+  ! 1-1100/2500 = 0.560 ! s
+  ! 1-1800/2500 = 0.280 ! d
+  ! porosity(z) = 0.28 + (0.56-0.28)*exp(-z/H)
 end function twolayers
