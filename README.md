@@ -29,9 +29,9 @@ See `Mars/CONTENTS.txt` for synopsis of individual programs.
 
 ### Mars Thermal Model
 
-This model calculates realistic surface temperatures on Mars. The heat equation is solved in the top few meters of the subsurface, using direct solar energy and sky irradiance as energy inputs.  The model also includes CO<sub>2</sub> frost. 
-The finite-difference method is flux-conservative even on an irregularly spaced grid and the thermal properties of the soil can vary with depth and with time.
-The solver for the one-dimensional heat equation is semi-implicit, which implies that the size of the time step is not limited by the spatial discretization, as it would be for simpler heat equation solvers.  As a result, the model is ultra-fast. For example, `mars_thermal1d.f` takes 100 steps per sol and calculates temperatures for 10 Mars years, on the surface and at 80 depths, in 1.3 seconds. As far as I am aware, this is still the fastest Mars thermal model available. 
+This model calculates realistic surface temperatures on Mars. The heat equation is solved in the top few meters of the subsurface, using direct solar energy and sky irradiance as energy inputs.  The surface energy balance also includes the latent heat of CO<sub>2</sub> frost. 
+The finite-difference method is flux-conservative even on an irregularly spaced grid and the thermal properties of the soil can vary with depth and time.
+The solver for the one-dimensional heat equation is semi-implicit, which implies that the size of the time step is not limited by the spatial discretization, as it would be for simpler heat equation solvers.  For example, `mars_thermal1d.f` takes 100 steps per sol and calculates temperatures for 10 Mars years on the surface and at 80 depths in 1.3 seconds. As far as I am aware, this is still the fastest Mars thermal model available. 
 The orbit of Mars can be for the present-day or the past. The standard configuration is for a horizontal unobstructed surface, but planar slopes can also be modeled.  
 
 *Documentation: User Guide Part 1*  
@@ -40,7 +40,7 @@ The orbit of Mars can be for the present-day or the past. The standard configura
 
 ### Vapor Diffusion Model
 
-This model solves the one-dimensional vapor diffusion equation in a porous medium, including phase transitions (sublimation and adsorption), which makes the partial differential equation non-linear. Specifically, it simulates water vapor diffusion through the CO<sub>2</sub>-filled pore spaces in martian regolith. Diffusion can be outward or inward. The same model can also be used (and has been used) for laboratory experiments in physically analogous environments.  
+This model solves the one-dimensional vapor diffusion equation in a porous medium, including phase transitions (sublimation and adsorption), which makes the partial differential equation non-linear. Specifically, it simulates H<sub>2</sub>O vapor diffusion through the CO<sub>2</sub>-filled pore spaces in martian regolith. Diffusion can be outward or inward. The same model can also be used (and has been used) for laboratory experiments in physically analogous environments.  
 
 *Documentation: User Guide Part 2  
 Documentation: [Schorghofer & Aharonson (2005), Appendix B](https://doi.org/10.1029/2004JE002350)*  
@@ -92,7 +92,7 @@ No documentation has yet been written for the random walk model.
 
 ### Irradiance Model for Terrestrial Analog
 
-Clear-sky direct and indirect short-wave irradiance on Mauna Kea summit, based on optical path length but an otherwise 0-parameter atmospheric model.
+Clear-sky direct and indirect short-wave irradiance on Mauna Kea summit, based on optical path length but an otherwise 0-dimensional atmospheric model.
 The incoming irradiance can be calculated for a flat unobstructed surface, but also for a tilted suface with horizons, i.e., 3D sky irradiance.  
 
 Directory: `EarthAnalogs/`  
@@ -125,7 +125,7 @@ Directory: `Exospheres/`
 Third party source code from Numerical Recipes is covered by a separate copyright. These are files ending with .for.  A few code snippets from other sources are also used, as documented in the source code.
 
 
-### ACKNOWLEDGMENTS
+### Acknowledgments
 
 2019: Thanks to Sam Potter for comments that helped me speed up the view factor calculations  
 
