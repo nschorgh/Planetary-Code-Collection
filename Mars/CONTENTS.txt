@@ -3,124 +3,20 @@ Mars/
 Mars Subsurface Ice Model (M-SIM) Collection
 ============================================
 
+The content of this folder has moved to https://github.com/nschorgh/MSIM/tree/main/Mars/
+
+The few remaining files are needed for dependencies by other programs.
+
 
 flux_mars.f90: 
 	insolation with a zero-dimensional Mars	atmosphere
 	flux_mars77: horizontal unobstructed surface
 	flux_mars2: planar slope
 
-mars_thermal1d.f: (main program)
-	1D diffusion of temperature for Mars; prototype example of how to call
-	conductionQ and conductionT with seasonal CO2 frost cover
-
 marsorbit.f90:
 	position of the sun as seen from Mars; data from Allison & McEwen (2000)
 	marsclock24: marsorbit + local Mars time
 
-soilthprop_mars.f90:
-	thermal properties of icy soil on Mars
-
-input.par:
-	example input file for mars_thermal1d.f
-
-
-
-exper_thermal1d.f: (main program)
-	1D diffusion of temperature and optionally also water vapor with 
-	prescribed surface temperature for laboratory setting
-
-exper.par:
-	example input file for exper_thermal1d.f
-
-
-
-vapordiffusioni.f:
-	diffusion of water vapor with phase transitions on irregularly spaced
-	grid, explicit solver
-
-adsorption.f:
-	amount of adsorbed H2O and more
-
-
-
-jsub.f90:
-	net vapor flux between ice table and surface; includes thermal model
-
-jsubv.f90:
-	vectorized version of jsub; includes emission from one surface to another
-	for planar slopes
-
-mars_mapi.f: (main program)
-	determines equilibrium ice table depth for a list of locations (such as
-	the entire globe) using the bisection method
-
-mars_mapii.f90: (main program)
-	determines equilibrium ice table depth for a list of locations;
-	same functionality as mars_mapi.f, but uses an iteration method
-
-mapgrid.dat:
-	Example input file for mars_mapi.f and mars_mapt.f
-
-mars_mapt.f: (main program)
-	calculates temperatures and other variables for a list of locations;
-	calls jsub for a list of locations (such as the entire globe)
-
-mars_mapi2p.f90: (main program)
-        calculates temperatures on thermally coupled planar slopes;
-	also calculates equilibrium ice table depths;
-	configured for parallel job execution
-
-mapgrid.slp:
-	example input file for mars_mapi2p.f90
-
-mars_mapi2p_go.cmd
-	shell script for parallel execution of mars_mapi2p
-	
-
-
-insol_driver.f90: (simple main program)
-  	insolation (incoming solar radiation) over the past 20 Myr
-
-tempr_driver.f90: (main program)
-  	temperatures over the past 20 Myr
-
-lats.milank:
-	example input file for tempr_driver.f90
-
-
-
-fast_modules.f90:
-	asynchronously coupled routines for growth and depletion of subsurface ice,
-	Fortran modules
-
-fast_subs_univ.f90:
-	asynchronously coupled routines for growth and depletion of subsurface ice, 
-	general subroutines
-
-fast_subs_exper.f90:
-	asynchronously coupled routines for growth and depletion of subsurface ice,
-	subroutines for laboratory experiment
-
-fast_subs_mars.f90:
-	asynchronously coupled routines for growth and depletion of subsurface ice,
-	subroutines for Mars
-
-stabgrow_fast.f90: (main program)
-	asynchronously coupled model for growth of pore ice
-
-exper_fast.f90: (main program)
-	asynchronously coupled model for growth and depletion of subsurface ice
-	for laboratory experiment
-
-input_fast.par:
-	example input file for stabgrow_fast.f90 and exper_fast.f90
-
-mars_fast.f90: (main program)
-	asynchronously coupled model for growth and depletion of subsurface ice
-	for Mars
-
-lats.ph:
-	example input file for mars_fast.f90
 
 
 

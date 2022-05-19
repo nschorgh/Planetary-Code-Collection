@@ -1,6 +1,9 @@
 ChangeLog
 
-27 Apr 2021: Release v1.1.9 (Last release that includes MSIM. MSIM now has its own repository, and future releases of the Planetary-Code-Collection will no longer include MSIM.) 
+19 May 2022: Moved MSIM out of PCC
+
+27 Apr 2022: Release v1.1.9  DOI:10.5281/zenodo.6499678
+Last release that includes MSIM. MSIM now has its own repository, and future releases of the Planetary-Code-Collection will no longer include MSIM.
 
 26 Dec 2021: Release v1.1.8  doi:10.5281/zenodo.5805461
 

@@ -1,5 +1,0 @@
-Movie Caption (movie1zooms.wmv):
-
-This animation shows the downward migration of ice over several annual temperature cycles according to a one-dimensional model of the conduction of heat and the diffusion, sublimation, and deposition of water vapor. The three panels are the instantaneous vertical profiles of temperature, partial pressure, and the fraction of pore space filled with ice. Ice seasonally migrates inward during the warming part of the cycle and begins to fill the subsurface with ice below are sharply defined interface. A sinusoidal surface temperature and constant daytime partial pressure typical for Mars are assumed in this model calculation. (The vapor diffusivity chosen here is much smaller than in reality, which allows for a larger time step during the numerical solution of the vapor diffusion equation, so the amount that accumulates every year is larger than indicated in this animation.)
-
-For further details see Aharonson & Schorghofer (2005). Stability and exchange of subsurface ice on Mars. J. Geophys. Res. 110(E5), E05003. This pumping phenomenon was first studied by Mellon & Jakosky in 1993.

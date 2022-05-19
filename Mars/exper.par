@@ -1,9 +1,0 @@
-C dt,tmax in units of timescale, timescale in seconds
- 5.e-4, 8.e2, 88775.244
-C nz, zmax, zfac
- 80, 4., 1.01
-C thermalInertia, rho*c
-  280.00,  1280000.
-C atm. H20 pressure, mean temperature, diffusivity, initial filling
-  0.10, 190., 20., 1.e-5, 0.
-
