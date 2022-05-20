@@ -10,10 +10,11 @@ This program collection contains:
 * 3D model of direct insolation, terrain shadowing, and terrain irradiance for airless bodies, Mars, and Mauna Kea  
 * Monte-Carlo model for ballistic hops in the exospheres of the Moon and Ceres
 * Miscellaneous
-  * insolation model for Mauna Kea  
+  * insolation model for Mauna Kea
+  * asynchronously coupled method for ice retreat on asteroids    
   * lunar ice pump (in boundary value formation)  
   * vapor diffusion at lunar conditions (microphysical model)  
-  * asynchronously coupled method for ice retreat on asteroids  
+
 
 The theory behind the numerical methods is described in [UserGuide.pdf](./UserGuide.pdf) or in individual journal articles cited below.
 
@@ -21,7 +22,7 @@ The theory behind the numerical methods is described in [UserGuide.pdf](./UserGu
 Mars Subsurface Ice Model (MSIM)
 --------------------------------
 
-__NOTE:__ MSIM now has its own repository at https://github.com/nschorgh/MSIM and is no longer part of the Planetary-Code-Collection repository. 
+__NOTE:__ MSIM now has its own repository at https://github.com/nschorgh/MSIM and is no longer part of the Planetary-Code-Collection. 
 
 In brief, MSIM contains:
 
@@ -67,7 +68,7 @@ Clear-sky direct and indirect short-wave irradiance on Mauna Kea summit, based o
 The incoming irradiance can be calculated for a flat unobstructed surface, but also for a tilted suface with horizons, i.e., 3D sky irradiance.  
 
 Directory: `EarthAnalogs/`  
-*Documentation: User Guide Sections 4.1, 5.1, and 5.6*  
+*Documentation: User Guide Sections 3.1 and 2.5*  
 
 
 ### Terrain Shadowing and 3D Surface Energy Balance 
@@ -75,7 +76,7 @@ Directory: `EarthAnalogs/`
 This model of the three-dimensional surface energy balance calculates horizons from a digital elevation model for terrain shadowing calculations and, optionally, also view factors for use in terrain irradiance calculations. The surface energy balance model can then be coupled to the model of subsurface heat conduction introduced above. This then provides a complete thermal model for  rugged terrain on Mars or airless bodies. The model is still at prototype stage, but has been used in several research studies.
 
 Directory: `Topo3D/`  
-*Documentation: User Guide Part 5*  
+*Documentation: User Guide Part 2*  
 
 
 ### Monte-Carlo Model for Surface-bounded Exospheres
@@ -86,7 +87,7 @@ Molecules may be lost or destroyed by photo-dissociation before they land.
 Surface temperatures are based on the thermal model for airless bodies.  
 
 Directory: `Exospheres/`  
-*Documentation: User Guide Part 6*  
+*Documentation: User Guide Part 4*  
 
 
 ---
