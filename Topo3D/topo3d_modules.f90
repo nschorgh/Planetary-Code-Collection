@@ -325,12 +325,11 @@ MODULE allinterfaces
      end subroutine conductionT
   end interface
   
-  ! Fortran 77 programs
   interface
      pure function psv(T)
        implicit none
-       real*8, intent(IN) :: T
-       real*8 psv
+       real(8), intent(IN) :: T
+       real(8) psv
      end function psv
   end interface
 
