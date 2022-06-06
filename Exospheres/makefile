@@ -22,8 +22,6 @@ ceres_exo: geogrid.o body.o ceres_exo.o montecarlo.o gasdev.o subl_subs.o \
 	$(SR)flux_noatm.o $(SR)conductionQ.o $(SR)tridag.o $(SR)grids.o \
 	$(SR)psv.o subl_subs.o gasdev.o $(SR)ran2.o $(SR)generalorbit.o
 
-%.o:	%.f makefile
-	$(CC) $(CFLAGS) -c $<
 
 %.o:	%.for makefile
 	$(CC) $(CFLAGS) -c $<

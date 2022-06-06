@@ -14,8 +14,6 @@ LFLAGS = -O2 -Wall
 common: generalorbit.o flux_noatm.o conductionQ.o conductionT.o tridag.o \
 	grids.o derivs.o psv.o psvco2.o julday.o ran2.o makefile 
 
-%.o:	%.f makefile
-	$(CC) $(CFLAGS) -c $<
 
 %.o:	%.for makefile
 	$(CC) $(CFLAGS) -c $<

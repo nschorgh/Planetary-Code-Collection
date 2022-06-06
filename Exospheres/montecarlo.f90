@@ -51,7 +51,7 @@ end module exo_species
 subroutine hop1(p_r, p_s, p_t, idum, Tsurf, Q)
   ! ballistic flight of one particle
   use body, only: g, Rbody, semia, vescape, siderealDay
-  use exo_species 
+  use exo_species
   implicit none
   real(8), intent(INOUT) :: p_r(2) ! (1)=longitude  (2)=latitude
   integer, intent(OUT)   :: p_s    ! status
@@ -76,10 +76,10 @@ subroutine hop1(p_r, p_s, p_t, idum, Tsurf, Q)
 
   ! Armand distribution launch velocities; P(vz)=vz/sigma^2*exp(-vz^2/2*sigma^2)
   ! see e.g. Devroye, p29
-  !v(3) = sqrt(2.)*sigma*sqrt(-log(ran2(idum))) 
+  !v(3) = sqrt(2.)*sigma*sqrt(-log(ran2(idum)))
   ! use the same v(1), v(2), and sigma as for Maxwell-Boltzmann
   
-  if (CORIOLIS) v(1) = v(1) - 2*Rbody*pi/siderealDay*cos(p_r(2)*d2r) 
+  if (CORIOLIS) v(1) = v(1) - 2*Rbody*pi/siderealDay*cos(p_r(2)*d2r)
   vspeed = sqrt(sum(v(:)**2))
   if (vspeed>vescape) then  ! gravitational escape
      p_s = -2  ! destroyed by escape
@@ -102,7 +102,7 @@ subroutine hop1(p_r, p_s, p_t, idum, Tsurf, Q)
   cosaz = v(2)/sqrt(v(1)**2+v(2)**2)
   lat = p_r(2)*d2r
   sinph2 = sin(d/Rbody)*cos(lat)*cosaz + sin(lat)*cos(d/Rbody)
-  !write(70,*) asin(sinph2)/d2r-p_r(2)   
+  !write(70,*) asin(sinph2)/d2r-p_r(2)
   p_r(2) = asin(sinph2)/d2r
   cosph2 = sqrt(1.-sinph2**2)
   if (cosph2/=0) then  ! not on pole
@@ -110,11 +110,11 @@ subroutine hop1(p_r, p_s, p_t, idum, Tsurf, Q)
      if (cosdlon>+1.) cosdlon=+1.  ! roundoff
      if (cosdlon<-1.) cosdlon=-1.  ! roundoff
      dlon = acos(cosdlon)
-     if (v(1)<0.) dlon=-dlon 
-     !write(70,*) dlon  
+     if (v(1)<0.) dlon=-dlon
+     !write(70,*) dlon
      p_r(1) = p_r(1) + dlon/d2r
   else    ! on pole
-     ! longitude does not matter 
+     ! longitude does not matter
      p_r(1) = 0.  ! just in case
   endif
   if (CORIOLIS) p_r(1) = p_r(1) + flighttime/siderealDay*360.
@@ -145,12 +145,12 @@ end subroutine hop1
 
 function residence_time(T)
   implicit none
-  real(8), intent(IN) :: T
+  real(8), intent(IN) :: T  ! temperature
   real(8) residence_time
   real(8), parameter :: sigma0 = 1e19  ! H2O
   real(8), external :: sublrate
-  residence_time = sigma0/sublrate(T) 
-  !residence_time = residence_time*400   ! 0.1 monolayers (see S&A, 2014)
+  residence_time = sigma0/sublrate(T)
+  !residence_time = residence_time*8.2   ! longer for adsorbed molecules
   if (T==0.) residence_time = 1e32
   !residence_time = 0. ! Ar, He, (noncondensible species)
 end function residence_time
@@ -195,8 +195,8 @@ end function residence_timeR
 
 
 
-subroutine montecarlo(Np,idum,p_r,p_s,p_t,p_n,Tsurf,dtsec,ccc,Q) 
-  ! called once an hour
+subroutine montecarlo(Np,idum,p_r,p_s,p_t,p_n,Tsurf,dtsec,ccc,Q)
+  ! called once every temperature time step Dt (e.g., one hour)
   implicit none
   integer, intent(IN) :: np
   real(8), intent(IN) :: Tsurf(*), dtsec, Q(*)
@@ -212,7 +212,7 @@ subroutine montecarlo(Np,idum,p_r,p_s,p_t,p_n,Tsurf,dtsec,ccc,Q)
   do i=1,np
      if (VERBOSE) print *,'montecarlo: working on particle',i
 
-     do ! do this for an hour
+     do ! do this for time interval Dt
         if (p_t(i) > dtsec .or. p_s(i)<0) exit
 
         if (VERBOSE) print *,'next event is',i,p_t(i),p_s(i)
@@ -222,7 +222,7 @@ subroutine montecarlo(Np,idum,p_r,p_s,p_t,p_n,Tsurf,dtsec,ccc,Q)
         case(0)  ! leaving
            k = inbox(p_r(i,:))
            !write(70,*) i,p_r(i,:), p_s(i), p_t(i), Tsurf(k), Q(k)
-           call hop1(p_r(i,:),p_s(i),p_t(i),idum,Tsurf(k),Q(k)) 
+           call hop1(p_r(i,:),p_s(i),p_t(i),idum,Tsurf(k),Q(k))
            if (p_s(i)==-1) ccc(1)=ccc(1)+1
            if (p_s(i)==-2) ccc(2)=ccc(2)+1
            p_n(i) = p_n(i)+1
@@ -233,7 +233,7 @@ subroutine montecarlo(Np,idum,p_r,p_s,p_t,p_n,Tsurf,dtsec,ccc,Q)
               if (p_r(i,2)>0.) p_s(i)=-3
               if (p_r(i,2)<0.) p_s(i)=-4
               if (p_s(i)==-3) ccc(3)=ccc(3)+1
-              if (p_s(i)==-4) ccc(4)=ccc(4)+1 
+              if (p_s(i)==-4) ccc(4)=ccc(4)+1
               p_t(i)=residence_time(100.d0)
               cycle
            endif
@@ -243,7 +243,7 @@ subroutine montecarlo(Np,idum,p_r,p_s,p_t,p_n,Tsurf,dtsec,ccc,Q)
            if (VERBOSE) &
                 & print *,'landed, adding residence time',residencetime,Tsurf(k)
            p_t(i) = p_t(i) + residencetime
-           p_s(i)=0
+           p_s(i) = 0
         end select
      enddo  ! end loop over hour
 
@@ -276,7 +276,7 @@ subroutine production(Np,p_r,p_s,p_n,idum,newcc,Tsurf)
         p_n(i)=0
 
         ! in subsolar region
-        do 
+        do
            p_r(i,1) = 360.*ran2(idum)
            p_r(i,2) = 20*(2*ran2(idum)-1.)
            k = inbox(p_r(i,:))
@@ -284,7 +284,7 @@ subroutine production(Np,p_r,p_s,p_n,idum,newcc,Tsurf)
         enddo
 
         ! global and uniform
-        !do 
+        !do
         !   p_r(i,1) = 360.*ran2(idum)
         !   p_r(i,2) = r2d*asin(2*ran2(idum)-1.)
         !   if (.not.incoldtrap(p_r(i,:))) exit
@@ -397,7 +397,7 @@ pure logical function incoldtrap(p_r)
 
   ! MERCURY
   ! 28,000 km^2 PSR south of 85S, Chabot et al. (2012) = 0.075% of hemisphere
-  !if (abs(p_r(2))> 90-2.2) incoldtrap = .TRUE. 
+  !if (abs(p_r(2))> 90-2.2) incoldtrap = .TRUE.
 
   ! CERES
   !if (p_r(2)> +90-2.92) incoldtrap = .TRUE.  ! 0.13% of hemisphere
@@ -415,9 +415,10 @@ subroutine nonuniformgravity(vspeed,alpha,d,t)
   ! not suitable for small velocities due to roundoff
   use body
   implicit none
-  real(8), intent(IN) :: vspeed
+  real(8), intent(IN) :: vspeed ! launch speed
   real(8), intent(IN) :: alpha  ! zenith angle of launch velocity
-  real(8), intent(OUT) :: d, t  ! distance and flighttime
+  real(8), intent(OUT) :: d  ! flight distance
+  real(8), intent(OUT) :: t  ! flighttime
   !real(8), parameter :: pi=3.1415926535897932
   real(8) gamma, ecc, Ep
 
@@ -428,8 +429,8 @@ subroutine nonuniformgravity(vspeed,alpha,d,t)
   d = 2*Rbody*acos(1/ecc*(1-2*gamma*sin(alpha)**2))
   !d = 2*Rbody*acos(theta)
   !Ep = pi - 2*atan(sqrt((1-ecc)/(1+ecc))/tan(d/(4*Rbody)))
-  Ep = 2*atan(sqrt((1+ecc)/(1-ecc))*tan(d/(4*Rbody))) 
-  !Ep = 2*atan(sqrt((1+ecc)/(1-ecc)*(1-theta)/(1+theta))) 
+  Ep = 2*atan(sqrt((1+ecc)/(1-ecc))*tan(d/(4*Rbody)))
+  !Ep = 2*atan(sqrt((1+ecc)/(1-ecc)*(1-theta)/(1+theta)))
   if (ecc>1.-1d-5) then
      d = Rbody*4*gamma*sin(alpha)
      !Ep = pi - 2*atan(sqrt((1-gamma)/gamma))
