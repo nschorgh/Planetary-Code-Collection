@@ -80,7 +80,7 @@ PROGRAM cratersQ_moon
      Decl=0.; R=1.
 
      ! for small landscapes these can be here
-     HA = 2.*pi*mod(sdays,1.)   ! hour angle
+     HA = 2.*pi*mod(sdays,1.d0)   ! hour angle
      call equatorial2horizontal(Decl,latitude,HA,sinbeta,azSun)
 
      print *,sdays,n,HA/d2r,asin(sinbeta)/d2r,azSun/d2r

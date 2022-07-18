@@ -76,7 +76,7 @@ PROGRAM testcrankQ
   do n=0,50000
      !print *,time/Period,Qn
      time = (n+1)*dt   !   time at n+1; 
-     HA = 2*pi*mod(time/Period,1.) !  hour angle
+     HA = 2*pi*mod(time/Period,1.d0) !  hour angle
      Qnp1 = (1-albedo)*flux_noatm(Rau,Decl,latitude,HA,zero,zero)
 !    Qnp1=sigSB*200.**4
 !    call crankn1(nz,Qn,Qnp1,T,1.,a,b,c,alpha,k1)

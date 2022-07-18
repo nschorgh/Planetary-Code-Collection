@@ -120,7 +120,7 @@ subroutine downsample(NSx,NSy,h,hhalf)
      enddo
   enddo
   !do j2=1,NSy/2
-  !   write(*,'(9999(f3.1,1x))') wsum(:,j2)
+  !   write(*,'(*(f3.1,1x))') wsum(:,j2)
   !enddo
 end subroutine downsample
 

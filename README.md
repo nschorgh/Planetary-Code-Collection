@@ -97,6 +97,11 @@ Directory: `Exospheres/`
 Third party source code from Numerical Recipes is covered by a separate copyright. These are files ending with .for.  A few code snippets from other sources are also used, as documented in the source code.
 
 
+### Technical Notes
+
+Most of the code was developed with a `gfortran` compiler on Intel processors. Many components were also run on various Linux clusters, sometimes using other compilers. The non-portable `real(8)` and `real*8` are meant to correspond to an 8-byte floating point number.
+
+
 ### Acknowledgments
 
 2019: Thanks to Sam Potter for comments that helped me speed up the view factor calculations  

@@ -32,7 +32,7 @@ program maketopo
         if (h(i,j)>0) h(i,j)=0.
 
      enddo
-     write(20,'(999(f7.3,1x))') h(1:NSx,j)
+     write(20,'(*(f7.3,1x))') h(1:NSx,j)
   enddo
 end program maketopo
 
