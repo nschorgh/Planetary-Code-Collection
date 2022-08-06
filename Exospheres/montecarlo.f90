@@ -75,7 +75,7 @@ subroutine hop1(p_r, p_s, p_t, idum, Tsurf, Q)
   v(3) = abs(gasdev(idum))*sigma
 
   ! Armand distribution launch velocities; P(vz)=vz/sigma^2*exp(-vz^2/2*sigma^2)
-  ! see e.g. Devroye, p29
+  ! Devroye (1986), p29 describes how to generate a Rayleigh distribution
   !v(3) = sqrt(2.)*sigma*sqrt(-log(ran2(idum)))
   ! use the same v(1), v(2), and sigma as for Maxwell-Boltzmann
   

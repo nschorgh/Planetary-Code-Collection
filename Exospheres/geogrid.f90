@@ -5,8 +5,9 @@ module grid
   real(8), parameter :: pi=3.1415926535897932, d2r=pi/180.
   real(8) dlon, dlat
   integer nlon, nlat2
-  !parameter (dlon=7.5, nlon=48) 
-  parameter (dlon=1, nlon=360) 
+  !parameter (dlon=15., nlon=24)
+  !parameter (dlon=7.5, nlon=48)
+  parameter (dlon=1, nlon=360)
 
   !parameter (dlat=0.5, nlat2=180)
   parameter (dlat=2., nlat2=45)
@@ -78,7 +79,7 @@ end subroutine k2lonlat
 
 
 subroutine areas(dA)
-  ! areas of surface elements
+  ! areas of surface elements (steradian)
   use grid, only: pi,d2r,dlat,dlon,veclen
   implicit none
   real(8), intent(OUT) :: dA(veclen)
@@ -91,6 +92,7 @@ subroutine areas(dA)
      dA(k) = dlat*dlon*d2r**2*cos(lat)
   enddo
   dA(veclen) = dA(1)
+  !print *,'pi=',sum(dA)/4  ! test
 end subroutine areas
 
 
