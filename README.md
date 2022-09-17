@@ -6,13 +6,13 @@ Planetary Code Collection
 
 This program collection contains:
 
-* Semi-implicit one-dimensional thermal model for planetary surfaces (Crank-Nicolson solver with Stefan-Boltzmann Law boundary condition)  
+* Semi-implicit one-dimensional thermal model for planetary surfaces (Crank-Nicolson solver with Stefan-Boltzmann Law boundary condition; flux-conservative spatial discretization)  
 * 3D model of direct insolation, terrain shadowing, and terrain irradiance for airless bodies, Mars, and Mauna Kea  
 * Monte-Carlo model for ballistic hops in the exospheres of the Moon and Ceres
 * Miscellaneous
-  * insolation model for Mauna Kea
-  * asynchronously coupled method for ice retreat on asteroids    
-  * lunar ice pump (in boundary value formation)  
+  * incoming solar irradiance on Mauna Kea
+  * asynchronously coupled method for retreat of near-surface ice on asteroids
+  * lunar ice pump (boundary value formation) 
   * vapor diffusion at lunar conditions (microphysical model)  
 
 
@@ -22,7 +22,7 @@ The theory behind the numerical methods is described in [UserGuide.pdf](./UserGu
 Mars Subsurface Ice Model (MSIM)
 --------------------------------
 
-__NOTE:__ MSIM now has its own repository at https://github.com/nschorgh/MSIM and is no longer part of the Planetary-Code-Collection. 
+MSIM has its own repository at https://github.com/nschorgh/MSIM and is no longer part of the Planetary-Code-Collection. 
 
 In brief, MSIM contains:
 
@@ -30,6 +30,8 @@ In brief, MSIM contains:
 * Vapor Diffusion Model for Mars
 * Equilibrium Ice Table
 * Fast (asynchronously-coupled) Method for Subsurface Ice Dynamics
+
+The three-dimensional surface energy balance model for Mars is part of the Planetary-Code-Collection.
 
 
 Other Models for Planetary Surfaces
@@ -94,12 +96,12 @@ Directory: `Exospheres/`
 
 ### Notes
 
-Third party source code from Numerical Recipes is covered by a separate copyright. These are files ending with .for.  A few code snippets from other sources are also used, as documented in the source code.
+Third party source code from Numerical Recipes is covered by a separate copyright. These are files ending with `.for`.  A few code snippets from other sources are also used, as documented in the source code.
 
 
-### Technical Notes
+### Technical Note
 
-Most of the code was developed with a `gfortran` compiler on Intel processors. Many components were also run on various Linux clusters, sometimes using other compilers. The non-portable `real(8)` and `real*8` are meant to correspond to an 8-byte floating point number.
+The non-portable Fortran declarations `real(8)` and `real*8` are meant to correspond to an 8-byte floating point number.
 
 
 ### Acknowledgments
