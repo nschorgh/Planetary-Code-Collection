@@ -14,6 +14,10 @@ function tau  = residence_time(T)
   sublrate = psv ./ sqrt(2*pi*kB*T*mu);
 
   tau = sigma0 ./ sublrate;
+
+  % optionally, distribute tau probabilistically
+  y = rand;  % uniformly distributed between 0 and 1
+  tau = -tau/log(y);  % 1/t is distributed exponentially and <1/t>=1/tau
   
   if T==0.,
     tau = 1e32;

@@ -10,9 +10,7 @@ function [p_r, p_s, p_t] = hop1(p_r, p_t, Tsurf, Q)
   taudissoc = 1/12.6e-6;  % Crovisier (1989)
 
   mmass = 18.015;   % H2O
-  global vescape
-  global g
-  global Rbody
+  global semia g Rbody vescape
   
   % Maxwell-Boltzmann launch velocities
   sigma = sqrt(Tsurf*8314.46/mmass);  % standard deviation
@@ -97,8 +95,7 @@ function [d,t] = nonuniformgravity(vspeed,alpha)
   % alpha ... zenith angle of launch velocity (radian)
   % d ... flight distance (m)
   % t ... flighttime (s)
-  global vescape
-  global Rbody
+  global vescape Rbody
   
   gamma = (vspeed/vescape)^2;
   %a = Rbody/2./(1-gamma);

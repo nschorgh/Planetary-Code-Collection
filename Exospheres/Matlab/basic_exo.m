@@ -22,7 +22,7 @@ p_r = nan(NP,2); % longitude(1) and latitude(2)
 p_s = int8(zeros(NP,1))-9; % status 0=on surface, 1=inflight, <0= destroyed or trapped
 p_t = zeros(NP,1); % time
 p_n = int16(zeros(NP,1)); % # of hops (diagnostic only)
-Q = 0.; % photo-destruction not implemented
+Q = 0.; % anything larger than zero turns on photo-destruction
 
 disp('Model parameters:')
 disp(sprintf('Time step = %f sec',dtsec))
@@ -32,8 +32,9 @@ disp(sprintf('Number of molecules = %d',NP))
 % initialize random number generator to make results repeatable
 if exist('OCTAVE_VERSION', 'builtin') == 0,
   rng(752)  % Matlab
-else
-  randn('state',752)  % Octave 
+else  % Octave
+  randn('state',752)  % for randn in hop1
+  rand('state',451)   % for rand in residence_time
 end
 
 % initialize counters
