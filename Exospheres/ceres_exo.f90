@@ -20,7 +20,7 @@ PROGRAM exospherebody
   real(8), dimension(np) :: p_t ! time
   integer, dimension(np) :: p_n ! # of hops (diagnostic only)
 
-  integer, external :: inbox, totalnr
+  integer, external :: inbox
   real(8), external :: residence_time
   real(8), external :: flux_noatm
   

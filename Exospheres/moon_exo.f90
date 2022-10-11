@@ -21,7 +21,7 @@ PROGRAM allofmoon
   real(8), dimension(np) :: p_t ! time
   integer, dimension(np) :: p_n ! # of hops (diagnostic only)
 
-  integer, external :: inbox, totalnr
+  integer, external :: inbox
   real(8), external :: residence_time
   real(8), external :: flux_noatm, ran2
   
@@ -308,7 +308,7 @@ subroutine particles2sigma(Np, p_r, p_s, sigma)
   else
      open(unit=40,file='sigma.dat',action='write',position='append')
   endif
-  write(40,'(999999(1x,g11.5))') sigma
+  write(40,'(*(1x,g11.5))') sigma
   close(40)
 end subroutine particles2sigma
 

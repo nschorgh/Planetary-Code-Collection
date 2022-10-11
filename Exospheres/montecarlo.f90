@@ -196,7 +196,7 @@ end function residence_timeR
 
 
 subroutine montecarlo(Np,idum,p_r,p_s,p_t,p_n,Tsurf,dtsec,ccc,Q)
-  ! called once every temperature time step Dt (e.g., one hour)
+  ! called once every temperature time step dtsec (e.g., one hour)
   implicit none
   integer, intent(IN) :: np
   real(8), intent(IN) :: Tsurf(*), dtsec, Q(*)
@@ -234,7 +234,7 @@ subroutine montecarlo(Np,idum,p_r,p_s,p_t,p_n,Tsurf,dtsec,ccc,Q)
               if (p_r(i,2)<0.) p_s(i)=-4
               if (p_s(i)==-3) ccc(3)=ccc(3)+1
               if (p_s(i)==-4) ccc(4)=ccc(4)+1
-              p_t(i)=residence_time(100.d0)
+              p_t(i) = residence_time(100.d0)  ! very long
               cycle
            endif
            residencetime = residence_time(Tsurf(k))
@@ -245,7 +245,7 @@ subroutine montecarlo(Np,idum,p_r,p_s,p_t,p_n,Tsurf,dtsec,ccc,Q)
            p_t(i) = p_t(i) + residencetime
            p_s(i) = 0
         end select
-     enddo  ! end loop over hour
+     enddo  ! end loop after dtsec time
 
   enddo  ! end loop over particles
 
