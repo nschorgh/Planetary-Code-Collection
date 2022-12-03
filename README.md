@@ -96,10 +96,8 @@ Directory: `Exospheres/`
 
 ### Notes
 
-Third party source code from Numerical Recipes is covered by a separate copyright. These are files ending with `.for`.  A few code snippets from other sources are also used, as documented in the source code.
+Third party source code from Numerical Recipes is covered by a separate copyright. These are files ending with `.for`.  A few code snippets from other sources are also used, as documented in the source code.  
 
-
-### Technical Note
 
 The non-portable Fortran declarations `real(8)` and `real*8` are meant to correspond to an 8-byte floating point number.
 

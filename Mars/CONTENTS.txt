@@ -3,7 +3,7 @@ Mars/
 Mars Subsurface Ice Model (M-SIM) Collection
 ============================================
 
-The content of this folder has moved to https://github.com/nschorgh/MSIM/tree/main/Mars/
+The content of this folder has moved to https://github.com/nschorgh/MSIM/
 
 The few remaining files are needed for dependencies by other programs.
 

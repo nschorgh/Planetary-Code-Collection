@@ -11,12 +11,12 @@ pure function flux_mars77(R,decl,latitude,HA,albedo,fracir,fracscat)
 !     fracscat: fraction of scattering
 !***********************************************************************
   implicit none
-  real*8 flux_mars77
-  real*8, intent(IN) :: R,decl,latitude,HA,albedo,fracIR,fracScat
-  real*8, parameter :: So=1365. ! [W/m^2]
-  real*8, parameter :: sigSB=5.6704d-8
-  real*8 c1,s1,Qo,solarAttenuation,Q
-  real*8 sinbeta,sinbetaNoon,Qdir,Qscat,Qlw,Fout
+  real(8) flux_mars77
+  real(8), intent(IN) :: R,decl,latitude,HA,albedo,fracIR,fracScat
+  real(8), parameter :: So=1365. ! [W/m^2]
+  real(8), parameter :: sigSB=5.6704d-8
+  real(8) c1,s1,Qo,solarAttenuation,Q
+  real(8) sinbeta,sinbetaNoon,Qdir,Qscat,Qlw,Fout
 
   c1 = cos(latitude)*cos(decl)
   s1 = sin(latitude)*sin(decl)
