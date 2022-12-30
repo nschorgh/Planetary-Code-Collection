@@ -1,5 +1,7 @@
 ChangeLog
 
+30 Dec 2022: Release v1.2.0
+
 19 May 2022: Moved MSIM out of PCC
 
 27 Apr 2022: Release v1.1.9  DOI:10.5281/zenodo.6499678

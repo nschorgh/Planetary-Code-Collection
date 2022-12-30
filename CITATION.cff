@@ -4,8 +4,8 @@ authors:
   - family-names: Schorghofer
     given-names: Norbert
     orcid: https://orcid.org/0000-0002-5821-4066
-title: "Planetary-Code-Collection: Thermal and Ice Evolution Models for Planetary Surfaces"
-version: 1.1.9
+title: "Planetary-Code-Collection: Thermal, Ice Evolution, and Exosphere Models for Planetary Surfaces"
+version: 1.2.0
 doi: 10.5281/zenodo.594268
 url: "https://github.com/nschorgh/Planetary-Code-Collection/"
-date-released: 2022-04-27
+date-released: 2022-12-30
