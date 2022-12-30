@@ -1,6 +1,6 @@
 pure function flux_mars77(R,decl,latitude,HA,albedo,fracir,fracscat)
 !***********************************************************************
-! flux_mars77: calculates insolation at Mars
+! flux_mars77: calculates insolation (incoming solar radiation) on Mars
 !     flat surface only; also works in polar regions
 !
 !     R: distance from sun [AU]
@@ -50,10 +50,11 @@ end function flux_mars77
 
 pure subroutine flux_mars2(R,decl,latitude,HA,fracIR,fracScat, &
      &   SlopeAngle,azFac,emax,Qdir,Qscat,Qlw)
-!***********************************************************************
-! flux_mars2: Insolation at Mars on tilted surface;
+!*****************************************************************************
+! flux_mars2: Insolation (incoming solar radiation) at Mars on sloped surface;
 !             returns several irradiances
 !
+! INPUTS:
 !     R: distance from sun [AU]
 !     decl: planetocentric solar declination [radians]
 !     latitude: [radians]
@@ -61,13 +62,14 @@ pure subroutine flux_mars2(R,decl,latitude,HA,fracIR,fracScat, &
 !     fracIR: fraction of absorption
 !     fracScat: fraction of scattering
 !     SlopeAngle: >0, [radians]
-!     azFac: azimuth of gradient (radians east of north)
+!     azFac: azimuth of topographic gradient (radians east of north)
 !            azFac=0 is south-facing  
 !     emax: maximum horizon elevation in direction of azimuth [radians]
+! OUTPUTS:
 !     Qdir: direct incoming short-wavelength irradiance [W/m^2]
 !     Qscat: diffuse short-wavelength irradiance from atmosphere [W/m^2]
 !     Qlw: diffuse long-wavelength irradiance from atmosphere [W/m^2]
-!***********************************************************************
+!*****************************************************************************
   implicit none
   real(8), parameter :: pi=3.1415926535897932, So=1365.
   real(8), parameter :: sigSB=5.6704d-8
@@ -113,7 +115,7 @@ pure subroutine flux_mars2(R,decl,latitude,HA,fracIR,fracScat, &
      Qscat = 0.
   endif
   
-! For a horizontal surface
+! For a horizontal and unobstructed surface
 !   absorbed flux = (1-albedo)*(Qdir+Qscat) + emiss*Qlw
 !
 ! For a tilted surface

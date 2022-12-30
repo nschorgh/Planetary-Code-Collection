@@ -67,9 +67,6 @@ sphere1d sphere1d_implicit: sphere1d_implicit.o common_subs.o makefile
 #    body.mod, constants.mod, and allinterfaces.mod in fast_modules_asteroid.f90
 
 
-%.o:	%.f makefile
-	$(CC) $(CFLAGS) -c $<
-
 %.o:	%.for makefile
 	$(CC) $(CFLAGS) -c $<
 

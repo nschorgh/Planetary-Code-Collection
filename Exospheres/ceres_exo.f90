@@ -1,6 +1,6 @@
 PROGRAM exospherebody
 !***********************************************************************
-! surface temperatures of airless body with H2O exosphere
+! H2O exosphere and surface temperatures for airless body
 !***********************************************************************
   use grid
   use body, only: solarDay, dtsec
@@ -15,10 +15,10 @@ PROGRAM exospherebody
   real(8), dimension(veclen) :: Tsurf, Qn
   real(8) residencetime, HAi
 
-  real(8), dimension(np,2) :: p_r ! longitude(1) and latitude(2)
-  integer, dimension(np) :: p_s ! status 0=on surface, 1=inflight, <0= destroyed or trapped
-  real(8), dimension(np) :: p_t ! time
-  integer, dimension(np) :: p_n ! # of hops (diagnostic only)
+  real(8), dimension(Np,2) :: p_r ! longitude(1) and latitude(2)
+  integer, dimension(Np) :: p_s ! status 0=on surface, 1=inflight, <0= destroyed or trapped
+  real(8), dimension(Np) :: p_t ! time
+  integer, dimension(Np) :: p_n ! # of hops (diagnostic only)
 
   integer, external :: inbox
   real(8), external :: residence_time
@@ -40,7 +40,7 @@ PROGRAM exospherebody
   print *,'Equilibration time',tequil,' solar days'
   print *,'Maximum time',tmax,' solar days',tmax*solarDay/(86400.*365.242),' years'
   print *,'grid size',nlon,'x',nlat,'veclen=',veclen
-  print *,'number of molecules',np
+  print *,'number of molecules',Np
 
   HAi = 0.  ! noon
 
@@ -51,7 +51,7 @@ PROGRAM exospherebody
   ! initial configuration
   !p_t(:)=0.;  p_s(:)=0    ! all particles on surface
   p_t(:)=1d99; p_s(:)=-9   ! no particles
-  !do i=1,np
+  !do i=1,Np
      !p_r(i,1)=360.*ran2(idum)
      !p_r(i,2)=0.
   !enddo
@@ -62,9 +62,9 @@ PROGRAM exospherebody
   open(unit=50,file='particles',status='unknown',action='write')
   open(unit=51,file='particles_end',status='unknown',action='write')
 
-  !-------loop over time steps 
+  !-------loop over time steps
   do n=-nequil,1000000
-     time =(n+1)*dtsec   ! time at n+1 
+     time =(n+1)*dtsec   ! time at n+1
      if (time>tmax*solarDay) exit
 
      !-- Temperature
@@ -72,7 +72,7 @@ PROGRAM exospherebody
      if (n<0) cycle   ! skip remainder
 
      ! some output
-     call totalnrs(np,p_s,cc)
+     call totalnrs(Np,p_s,cc)
      print *,time/3600.,'Ten minute call',sum(cc(1:2))
      write(30,*) time/3600.,cc(1:2),ccc(1:4),cc_prod_total
 
@@ -82,7 +82,7 @@ PROGRAM exospherebody
      cc_prod_total = cc_prod_total + cc_prod
 
      ! update residence times with new temperature
-     do i=1,np
+     do i=1,Np
         if (p_s(i)==0) then ! on surface
            k = inbox(p_r(i,:))
            residencetime = residence_time(Tsurf(k))
@@ -91,12 +91,12 @@ PROGRAM exospherebody
      enddo
      
      if (n==0) then ! write out initial distribution
-        !call writeparticles(50,np,p_r,p_s,p_t,p_n)
+        !call writeparticles(50,Np,p_r,p_s,p_t,p_n)
         call writeglobe(20,Tsurf)
      endif
 
      ! 1 hour of hopping
-     call montecarlo(np,idum,p_r,p_s,p_t,p_n,Tsurf,dtsec,ccc,Qn)
+     call montecarlo(Np,idum,p_r,p_s,p_t,p_n,Tsurf,dtsec,ccc,Qn)
 
      call totalnrs(Np,p_s,cc)
 

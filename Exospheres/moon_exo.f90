@@ -1,6 +1,6 @@
 PROGRAM allofmoon
 !***********************************************************************
-! surface temperatures of airless body with H2O exosphere
+! H2O exosphere and surface temperatures for the Moon
 !***********************************************************************
   use grid
   use body, only: solarDay, dtsec, Rmoon => Rbody
@@ -12,19 +12,19 @@ PROGRAM allofmoon
   integer cc(6), cc_prod, cc_prod_total, ccc(4)
   integer :: idum=-92309   ! random number seed
   real(8) tmax, time, tequil
-  real(8), dimension(veclen) :: Tsurf, Qn !, sigma 
+  real(8), dimension(veclen) :: Tsurf, Qn !, sigma
   real(8) residencetime, HAi
   character(10) ext
 
-  real(8), dimension(np,2) :: p_r ! longitude(1) and latitude(2)
-  integer, dimension(np) :: p_s ! status 0=on surface, 1=inflight, <0= destroyed or trapped
-  real(8), dimension(np) :: p_t ! time
-  integer, dimension(np) :: p_n ! # of hops (diagnostic only)
+  real(8), dimension(Np,2) :: p_r ! longitude(1) and latitude(2)
+  integer, dimension(Np) :: p_s ! status 0=on surface, 1=inflight, <0= destroyed or trapped
+  real(8), dimension(Np) :: p_t ! time
+  integer, dimension(Np) :: p_n ! # of hops (diagnostic only)
 
   integer, external :: inbox
   real(8), external :: residence_time
   real(8), external :: flux_noatm, ran2
-  
+
   ! if used with Diviner surface temperature maps as input
   !integer, parameter :: NT=708  ! tied to timestep of 708/(29.53*86400.) = 3596 sec
   !real(8) lon(nlon),lat(nlat),Tbig(nlon,nlat,24)
@@ -46,7 +46,7 @@ PROGRAM allofmoon
   print *,'Equilibration time',tequil,' lunar days'
   print *,'Maximum time',tmax,' lunar days',tmax*solarDay/(86400.*365.242),' years'
   print *,'grid size',nlon,'x',nlat,'veclen=',veclen
-  print *,'number of molecules',np
+  print *,'number of molecules',Np
 
   HAi = 0.  ! noon
 
@@ -57,10 +57,10 @@ PROGRAM allofmoon
   ! initial configuration
   !p_t(:)=0.;  p_s(:)=0    ! all particles on surface
   p_t(:)=1d99; p_s(:)=-9   ! no particles
-  !do i=1,np
-     !p_r(i,1)=360.*ran2(idum); 
+  !do i=1,Np
+     !p_r(i,1)=360.*ran2(idum)
      !p_r(i,1)=0.
-     !p_r(i,2)=0.; 
+     !p_r(i,2)=0.
   !enddo
 
   open(unit=20,file='Tsurface',status='unknown',action='write')
@@ -75,9 +75,9 @@ PROGRAM allofmoon
   ! if Diviner surface temperatures are read in
   !call readTmaps(nlon,nlat,lon,lat,Tbig)
 
-  !-------loop over time steps 
+  !-------loop over time steps
   do n=-nequil,1000000
-     time =(n+1)*dtsec   ! time at n+1 
+     time =(n+1)*dtsec   ! time at n+1
      if (time>tmax*solarDay) exit
 
      !-- Temperature
@@ -86,7 +86,7 @@ PROGRAM allofmoon
      if (n<0) cycle   ! skip remainder
 
      ! some output
-     call totalnrs(np,p_s,cc)
+     call totalnrs(Np,p_s,cc)
      print *,time/3600.,'One hour call',sum(cc(1:2))
      write(30,*) time/3600.,cc(1:2),ccc(1:4),cc_prod_total
 
@@ -96,7 +96,7 @@ PROGRAM allofmoon
      cc_prod_total = cc_prod_total + cc_prod
 
      ! update residence times with new temperature
-     do i=1,np
+     do i=1,Np
         if (p_s(i)==0) then ! on surface
            k = inbox(p_r(i,:))
            residencetime = residence_time(Tsurf(k))
@@ -105,14 +105,14 @@ PROGRAM allofmoon
      enddo
      
      if (n==0) then ! write out initial distribution
-        !call writeparticles(50,np,p_r,p_s,p_t,p_n)
+        !call writeparticles(50,Np,p_r,p_s,p_t,p_n)
         call writeglobe(20,Tsurf)
      endif
 
      write(ext,'(i0.4)') n
      call deblank(ext)
      !open(unit=27,file='particles.'//ext,status='unknown',action='write')
-     !call writeparticles(27,np,p_r,p_s,p_t,p_n)
+     !call writeparticles(27,Np,p_r,p_s,p_t,p_n)
      !close(27)
      !open(unit=28,file='tsurf.'//ext,status='unknown',action='write')
      !call writeglobe(28,Tsurf)
@@ -122,7 +122,7 @@ PROGRAM allofmoon
      !endif
 
      ! 1 hour of hopping
-     call montecarlo(np,idum,p_r,p_s,p_t,p_n,Tsurf,dtsec,ccc,Qn)
+     call montecarlo(Np,idum,p_r,p_s,p_t,p_n,Tsurf,dtsec,ccc,Qn)
 
      call totalnrs(Np,p_s,cc)
 
@@ -205,8 +205,8 @@ subroutine SurfaceTemperature(dtsec,HAi,time,Tsurf,Qn)
   ! toy orbit
   decl = 0.
   sunR = semia
-  ! better orbit 
-  !eps = 1.54*d2r    ! lunar obliquity to ecliptic 
+  ! better orbit
+  !eps = 1.54*d2r    ! lunar obliquity to ecliptic
   !ecc=0.; omega=0.
   !call generalorbit(time/86400.,semia,ecc,omega,eps,Ls,decl,sunR)
 
@@ -272,11 +272,14 @@ subroutine particles2sigma(Np, p_r, p_s, sigma)
   integer, intent(IN) :: Np, p_s(Np)
   real(8), intent(IN) :: p_r(Np,2)
   real(8), intent(OUT) :: sigma(veclen)
-  integer i, k, nr0(veclen), nr1(veclen), totalnr0, totalnr1
-  real(8) dA(veclen)
+  integer i, k, totalnr0, totalnr1
+  integer, allocatable :: nr0(:), nr1(:)
+  real(8), allocatable :: dA(:)  ! allocation avoids max-stack-var-size warning
   logical, save :: FirstCall = .TRUE.
   integer, external :: inbox
 
+  allocate( nr0(veclen), nr1(veclen), dA(veclen) )
+  
   nr0(:)=0;  nr1(:)=0
   do i=1,Np
      if (p_s(i)==0) then
@@ -293,7 +296,7 @@ subroutine particles2sigma(Np, p_r, p_s, sigma)
   dA = dA*Rbody**2
 
   sigma(:) = nr0(:)/dA(:)
-  !sigma(:) = nr1(:)/dA(:)  
+  !sigma(:) = nr1(:)/dA(:)
   !print *,'total area',sum(dA)/(4*pi*Rbody**2)  ! test
   totalnr0 = sum(nr0(:))
   totalnr1 = sum(nr1(:))
@@ -301,7 +304,7 @@ subroutine particles2sigma(Np, p_r, p_s, sigma)
 
   !where(sigma>maxsigma) maxsigma=sigma
   
-  if (FirstCall) then 
+  if (FirstCall) then
      open(unit=40,file='sigma.dat',action='write')
      FirstCall = .FALSE.
      !maxsigma=0.
@@ -310,6 +313,7 @@ subroutine particles2sigma(Np, p_r, p_s, sigma)
   endif
   write(40,'(*(1x,g11.5))') sigma
   close(40)
+  deallocate(nr0,nr1,dA)
 end subroutine particles2sigma
 
 
@@ -321,9 +325,11 @@ subroutine fallmap(unit, fall)
   implicit none
   integer, intent(IN) :: unit, fall(veclen)
   integer i,j,k
-  real(8) sigma(veclen), dA(veclen)
+  real(8), dimension(:), allocatable :: sigma(:), dA(:)
+  ! allocation avoids max-stack-var-size warning
   real(8) longitude(nlon), latitude(nlat)
 
+  allocate( sigma(veclen), dA(veclen) )
   call areas(dA)
   dA = dA*Rmoon**2
 
@@ -334,7 +340,7 @@ subroutine fallmap(unit, fall)
   write(unit,110) 0.,90.,sigma(1)
   do j=1,nlat
      do i=1,nlon
-        k = 1 + i + (j-1)*nlon 
+        k = 1 + i + (j-1)*nlon
         write(unit,110) longitude(i),latitude(j),sigma(k)
      enddo
   enddo
@@ -342,5 +348,6 @@ subroutine fallmap(unit, fall)
 110 format (f5.1,1x,f6.2,1x,g10.4)
 
   print *,'Total area',sum(dA)
+  deallocate( sigma, dA)
 end subroutine fallmap
 

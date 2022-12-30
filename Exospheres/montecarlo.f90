@@ -1,6 +1,6 @@
 ! Monte Carlo model of ballistically hopping molecules
 ! each particle has 
-! x (longitude), y (latitude), status (on surface or in flight), 
+! x (longitude), y (latitude), status (on surface or in flight),
 ! time (until it arrives on surface or until it will leave the surface)
 
 module exo_species
@@ -198,10 +198,10 @@ end function residence_timeR
 subroutine montecarlo(Np,idum,p_r,p_s,p_t,p_n,Tsurf,dtsec,ccc,Q)
   ! called once every temperature time step dtsec (e.g., one hour)
   implicit none
-  integer, intent(IN) :: np
+  integer, intent(IN) :: Np
   real(8), intent(IN) :: Tsurf(*), dtsec, Q(*)
-  integer, intent(INOUT) :: idum, p_s(np), p_n(np), ccc(4)
-  real(8), intent(INOUT) :: p_r(np,2), p_t(np)
+  integer, intent(INOUT) :: idum, p_s(Np), p_n(Np), ccc(4)
+  real(8), intent(INOUT) :: p_r(Np,2), p_t(Np)
   integer i, k
   real(8) residencetime
   logical, parameter :: VERBOSE = .false.
@@ -209,7 +209,7 @@ subroutine montecarlo(Np,idum,p_r,p_s,p_t,p_n,Tsurf,dtsec,ccc,Q)
   integer, external :: inbox, insidecoldtrap
   real(8), external :: residence_time
 
-  do i=1,np
+  do i=1,Np
      if (VERBOSE) print *,'montecarlo: working on particle',i
 
      do ! do this for time interval Dt

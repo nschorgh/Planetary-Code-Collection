@@ -27,7 +27,7 @@ conductionT2.f90:
 	version of conductionT that precomputes coefficients
 
 derivs.f90:
-	first and second derivatives on irregular grid
+	first and second derivatives on irregularly spaced 1D-grid
 	
 grids.f90:
 	creates appropriate 1D grids, and contains other grid-related functions
