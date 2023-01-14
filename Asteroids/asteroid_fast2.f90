@@ -1,6 +1,7 @@
 PROGRAM asteroid_fast
-!************************************************************************
-! Asynchronously coupled model of temperature and ice retreat on asteroids
+!*************************************************************************
+! Asynchronously coupled model of temperature and near-surface ice retreat
+!    on airless body
 !
 !  - diurnally resolved 1D thermal model
 !  - ice loss by vapor diffusion through porous layer
@@ -10,7 +11,10 @@ PROGRAM asteroid_fast
 !  - increasing solar luminosity
 ! 
 ! written by Norbert Schorghofer 2012-2015
-!************************************************************************
+! description of methods published in
+!      Schorghofer, N. Icarus 276, 88-95 (2016).
+!      doi:10.1016/j.icarus.2016.04.037
+!*************************************************************************
   use constants, only : pi, d2r
   use body, only : nz, zfac, zmax, ecc, icedensity, eps
   use allinterfaces

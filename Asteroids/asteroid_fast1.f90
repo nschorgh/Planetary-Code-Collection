@@ -1,6 +1,7 @@
 PROGRAM asteroid_fast1
-!************************************************************************
-! Asynchronously coupled model of temperature and ice retreat on asteroids
+!*************************************************************************
+! Asynchronously coupled model of temperature and near-surface ice retreat
+!    on airless bodies
 !
 !  - diurnally resolved 1D thermal model
 !  - ice loss by vapor diffusion through porous layer
@@ -11,7 +12,7 @@ PROGRAM asteroid_fast1
 !  x no impact stirring
 !
 ! mostly a simplified version of asteroid_fast2    2016-2017
-!************************************************************************
+!*************************************************************************
   use constants, only : pi, d2r
   use body, only : nz, zfac, zmax, ecc, eps
   use allinterfaces

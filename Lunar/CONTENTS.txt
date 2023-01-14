@@ -41,6 +41,7 @@ makefile:
 
 NOTES
 
+* Models for retreat of subsurface ice on airless bodies are in directory Asteroids/
 * Lunar exosphere model is in directory Exospheres/
 * Terrain irradiance model for airless bodies is in directory Topo3D/
 

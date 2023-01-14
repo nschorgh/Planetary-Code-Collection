@@ -1,6 +1,11 @@
 !************************************************************************
-! Subroutines for fast asteroid method
+! Subroutines for retreat of subsurface ice on airless bodies,
+!      based on time-averaged vapor transport equations
+!
 ! written by Norbert Schorghofer 2014-2015
+! description of equations published in
+!      Schorghofer, N. Icarus 276, 88-95 (2016).
+!      doi:10.1016/j.icarus.2016.04.037
 !************************************************************************
 
 
@@ -51,7 +56,7 @@ subroutine icelayer_asteroid(bigstep,NP,z,porosity,Tinit,zdepthP,sigma, &
      end do
      
      ! run thermal model
-     call ajsub_asteroid(latitude(k)*d2r, albedo(k), z, ti, rhocv, & 
+     call ajsub_asteroid(latitude(k)*d2r, albedo(k), z, ti, rhocv, &
           &     ecc, omega, eps, S0, typeP, Diff(:), Diff0, avrho(:), &
           &     Tinit, ypp, Jp, Tmean1(k), Tmean3(k), Tmin(k), Tmax(k))
 
