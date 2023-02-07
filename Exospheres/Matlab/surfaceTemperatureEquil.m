@@ -6,7 +6,7 @@ function Tsurf = surfaceTemperatureEquil(dtsec,HAi,time)
   % Ceres
   global semia; % = 2.7675;
   solarDay = 9.076*3600.;
-  albedo = 0.034; % Bond albedo from Li et al. (2016)
+  %albedo = 0.034; % Bond albedo from Li et al. (2016)
   albedo = 0.090; % V-band
   emiss = 0.95; 
 
@@ -27,4 +27,5 @@ function Tsurf = surfaceTemperatureEquil(dtsec,HAi,time)
     end
   end
   Tsurf(:,:) = ( Qn(:,:) / (1-albedo) / emiss / sigSB ).^0.25;
+
 end

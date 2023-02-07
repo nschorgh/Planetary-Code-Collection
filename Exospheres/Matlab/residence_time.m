@@ -18,9 +18,12 @@ function tau  = residence_time(T)
   % optionally, distribute tau probabilistically
   y = rand;  % uniformly distributed between 0 and 1
   tau = -tau/log(y);  % 1/t is distributed exponentially and <1/t>=1/tau
+
+  % optionally, increase residence time to represent adsorption
+  tau = 5*tau;
   
   if T==0.,
-    tau = 1e32;
+    tau = 1e32;  % very long
   end
   
 end 

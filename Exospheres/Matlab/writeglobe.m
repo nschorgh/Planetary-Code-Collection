@@ -3,9 +3,9 @@ function writeglobe(unit,Tsurf)
 
   global nlon nlat
   % must match temperature grid   
-  dlon = 360/nlon;
+  dlon = 360./nlon;
   longitude = [0.5:1:nlon]*dlon;
-  dlat = 180/nlat;
+  dlat = 180./nlat;
   latitude = 90 - [0.5:1:nlat]*dlat;
   
   for j=1:nlat

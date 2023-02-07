@@ -101,7 +101,7 @@ writeglobe(u61,Tsurf)
 cc = totalnrs(p_s);
 disp(sprintf('# particles on surface %d',cc(1)))
 disp(sprintf('# particles in flight %d',cc(2)))
-disp(sprintf('# particles destroyed, photodissociation %d',ccc(1)))
+disp(sprintf('# particles destroyed, photodestruction %d',ccc(1)))
 disp(sprintf('# particles destroyed, escape %d',ccc(2)))
 disp(sprintf('# particles coldtrapped %d %d %d',ccc(3),ccc(4),ccc(3)+ccc(4)))
 disp(sprintf('# particles produced %d',0))

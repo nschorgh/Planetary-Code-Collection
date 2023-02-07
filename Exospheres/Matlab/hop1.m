@@ -19,7 +19,7 @@ function [p_r, p_s, p_t] = hop1(p_r, p_t, Tsurf, Q)
   
   % Armand distribution launch velocities; P(vz)=vz/sigma^2*exp(-vz^2/2*sigma^2)
   % see e.g. Devroye, p29
-  %v(3) = sqrt(2.)*sigma*sqrt(-log(rand)) 
+  v(3) = sqrt(2.)*sigma*sqrt(-log(rand));
   % use the same v(1), v(2), and sigma as for Maxwell-Boltzmann
   
   if CORIOLIS,
@@ -41,9 +41,8 @@ function [p_r, p_s, p_t] = hop1(p_r, p_t, Tsurf, Q)
     alpha = atan(sqrt(v(1)^2+v(2)^2)/v(3));  % angle from zenith
     [d,flighttime] = nonuniformgravity(vspeed,alpha);
   end
-  %write(70,*) 'flighttime',flighttime,d  ! for flighttime statistics
-  %az = atan2(v(2),v(1))
-  %write(70,*) d,az   ! for statistical tests
+  %disp([flighttime,d])  % for flighttime statistics
+  %az = atan2(v(2),v(1))   % for statistical tests
   cosaz = v(2) / sqrt(v(1)^2+v(2)^2);
   lat = deg2rad( p_r(2) );
   sinph2 = sin(d/Rbody)*cos(lat)*cosaz + sin(lat)*cos(d/Rbody);
@@ -52,7 +51,7 @@ function [p_r, p_s, p_t] = hop1(p_r, p_t, Tsurf, Q)
   if cosph2~=0,  % not on pole
     cosdlon= (cos(d/Rbody)*cos(lat)-sin(lat)*sin(d/Rbody)*cosaz)/cosph2;
     if (cosdlon>+1.), cosdlon=+1.; end  % roundoff
-    if (cosdlon<-1.), cosdlon=-1.; end % roundoff
+    if (cosdlon<-1.), cosdlon=-1.; end  % roundoff
     dlon = acos(cosdlon);
     if v(1)<0., dlon=-dlon; end
     p_r(1) = p_r(1) + rad2deg(dlon);
