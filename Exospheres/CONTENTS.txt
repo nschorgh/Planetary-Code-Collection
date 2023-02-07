@@ -40,4 +40,4 @@ makefile:
 
 
 Matlab/
-	Matlab/Octave version of exosphere model for Ceres (under development)
+	Matlab/Octave version of exosphere model for Ceres

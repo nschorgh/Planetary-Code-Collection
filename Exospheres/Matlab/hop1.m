@@ -3,14 +3,14 @@ function [p_r, p_s, p_t] = hop1(p_r, p_t, Tsurf, Q)
   %    p_r(2)   (1)=longitude  (2)=latitude
   %    p_s      status
   %    p_t      time
-  CORIOLIS = false;  % turn Coriolis effect on or off
+  CORIOLIS = true;  % turn Coriolis effect on or off
 
   % photodissociation time scale at 1 AU
   %taudissoc = 20.*3600.;  % Potter & delDuca (1964)
   taudissoc = 1/12.6e-6;  % Crovisier (1989)
 
   mmass = 18.015;   % H2O
-  global semia g Rbody vescape
+  global semia g Rbody vescape siderealDay
   
   % Maxwell-Boltzmann launch velocities
   sigma = sqrt(Tsurf*8314.46/mmass);  % standard deviation

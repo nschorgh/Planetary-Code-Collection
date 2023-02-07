@@ -5,7 +5,7 @@
 %    time (until it arrives on surface or until it will leave the surface)
 
 
-function [p_r,p_s,p_t,p_n,ccc] = montecarlo(NP,p_r,p_s,p_t,p_n,Tsurf,dtsec,ccc,Q)
+function [p_r,p_s,p_t,p_n,ccc] = montecarlo(NP,p_r,p_s,p_t,p_n,Tsurf,dtsec,ccc,Qdissoc)
   % particle migration within a time interval of duration dtsec
   % event-driven 
   
@@ -22,13 +22,13 @@ function [p_r,p_s,p_t,p_n,ccc] = montecarlo(NP,p_r,p_s,p_t,p_n,Tsurf,dtsec,ccc,Q
         case num2cell(-10:-1)
           break
         case{0}  % leaving surface
-          %k = inbox(p_r(i,:),nlon,nlat);
-          [p_r(i,:), p_s(i), p_t(i)] = hop1(p_r(i,:),p_t(i),Tsurf,Q);
+          [ii,jj] = inbox(p_r(i,:));
+          [p_r(i,:), p_s(i), p_t(i)] = hop1(p_r(i,:),p_t(i),Tsurf(ii,jj),Qdissoc);
           if p_s(i)==-1, ccc(1)=ccc(1)+1; end
           if p_s(i)==-2, ccc(2)=ccc(2)+1; end
           p_n(i) = p_n(i)+1;  % count hops
         case{1}  % landing
-          %k = inbox(p_r(i,:),nlon,nlat);
+          [ii,jj] = inbox(p_r(i,:));
           if incoldtrap(p_r(i,:)),
             if p_r(i,2)>0., p_s(i)=-3; end
             if p_r(i,2)<0., p_s(i)=-4; end
@@ -36,7 +36,7 @@ function [p_r,p_s,p_t,p_n,ccc] = montecarlo(NP,p_r,p_s,p_t,p_n,Tsurf,dtsec,ccc,Q
             if p_s(i)==-4, ccc(4)=ccc(4)+1; end
             p_t(i) = residence_time(90.);  % very long
 	  else
-            residencetime = residence_time(Tsurf);
+            residencetime = residence_time(Tsurf(ii,jj));
             p_t(i) = p_t(i) + residencetime;
             p_s(i) = 0;
 	  end
