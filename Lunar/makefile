@@ -18,7 +18,13 @@ equilbr moon_subsdiff_equilbr: moon_subsdiff_equilbr.o bet.o subl_h2o.o \
 	$(CC) $(LFLAGS) moon_subsdiff_equilbr.o bet.o $(SR)psv.o subl_h2o.o
 
 
-common-lunar: subl_h2o.o subl_species.o soilthprop_moon.o bet.o \
+ensemble: ensemble.o flux_moon.o soilthprop_moon.o makefile
+	make -C $(SR) common
+	$(CC) $(LFLAGS) ensemble.o $(SR)conductionQ.o $(SR)tridag.o $(SR)ran2.o \
+	$(SR)grids.o flux_moon.o $(SR)flux_noatm.o soilthprop_moon.o
+
+
+common-lunar: subl_h2o.o subl_species.o soilthprop_moon.o flux_moon.o bet.o \
 	subsdiff_subs.o makefile
 
 

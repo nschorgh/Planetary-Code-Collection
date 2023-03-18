@@ -31,7 +31,20 @@ moon_subsdiff_equilbr.f90: (main program)
 subsdiff_subs.f90:
 	subroutines and functions for random-walk model of subsurface diffusion
 	in lunar regolith
-	
+
+
+
+Other
+=====
+
+ensemble.f90:
+	produces an ensemble of lunar surface temperature time series (for
+	thermal properties determination)
+
+flux_moon.f90:
+	insolation on lunar surface according a specific model by Keihm (1984),
+	which is also used the Standard Diviner Thermal Model
+
 
 
 makefile:
