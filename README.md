@@ -12,11 +12,11 @@ This program collection contains:
 * Miscellaneous
   * incoming solar irradiance on Mauna Kea
   * asynchronously coupled method for retreat of near-surface ice on asteroids
-  * lunar ice pump (boundary value formation) 
+  * lunar ice pump (boundary value formulation)
   * vapor diffusion at lunar conditions (microphysical model)  
 
 
-The theory behind the numerical methods is described in [UserGuide.pdf](./UserGuide.pdf) or in individual journal articles cited below.
+The theory behind the numerical methods is described in [UserGuide.pdf](./UserGuide.pdf) or in the individual journal articles cited below.
 
 
 ### Mars Subsurface Ice Model (MSIM)

@@ -9,9 +9,6 @@ oscidea1.f90: (main program)
 oscidea_subs.f90:
 	subroutines for ice pump calculations
 
-soilthprop_moon.f90:
-	thermal properties of lunar surface layer
-
 subl_h2o.f90:
 	set of functions for sublimation rate of H2O ice
 
@@ -34,16 +31,19 @@ subsdiff_subs.f90:
 
 
 
-Other
-=====
+Lunar 1D Thermal Model Components
+=================================
 
-ensemble.f90:
+ensemble.f90: (main program)
 	produces an ensemble of lunar surface temperature time series (for
 	thermal properties determination)
 
 flux_moon.f90:
-	insolation on lunar surface according a specific model by Keihm (1984),
-	which is also used the Standard Diviner Thermal Model
+	insolation on lunar surface according to Keihm (1984), which is also
+	used in the Standard Diviner Thermal Model (Hayne et al. 2017)
+
+soilthprop_moon.f90:
+	thermal properties of lunar surface layer
 
 
 
