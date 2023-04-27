@@ -40,6 +40,11 @@ pure function heatcapacity(T)
   ! Hayne et al., JGR 122, 2371 (2017)
   c = 8.9093E-09*T**4 -1.2340E-05*T**3 +2.36160E-03*T**2 + 2.7431*T -3.6125
   heatcapacity = c
+
+  ! Biele et al., Int. J. Thermophys. 43, 144 (2022), eq. 24
+  !x = log(T)
+  !c = exp((3.*x**3 -54.45*x**2 +306.8*x -376.6)/(x**2 -16.81*x +87.32))
+  !heatcapacity = c
 end function heatcapacity
 
 

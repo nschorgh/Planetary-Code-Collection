@@ -1,4 +1,5 @@
-ChangeLog
+Log of major changes (going back to times before git version control)
+---------------------------------------------------------------------
 
 30 Dec 2022: Release v1.2.0  doi:10.5281/zenodo.7495755
 First release without MSIM
@@ -152,3 +153,4 @@ Summer 2009: switched from g95/g77 to gfortran compiler.
 
 31 Oct 2008: added deriv1_onesided to derivs.f90
 
+...

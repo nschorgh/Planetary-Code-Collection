@@ -3,8 +3,6 @@ Common/
 Common Subroutines and Functions
 ================================
 
-No main programs in this directory
-
 flux_noatm.f90:
 	flux_noatm: Insolation on horizontal or sloped surface without atmosphere
 	flux_wshad: incoming flux for airless body with distant horizon
@@ -45,7 +43,7 @@ makefile:
 
 
 
-3RD PARTY FUNCTIONS AND SUBROUTINES FROM NUMERICAL RECIPES(C)
+3RD PARTY FUNCTIONS AND SUBROUTINES
 
 tridag.for:
 	from Numerical Recipes (C), without stop and pause statements, NMAX=1000
