@@ -37,19 +37,26 @@ def conductionT(nz,z,dt,T,Tsurf,Tsurfp1,ti,rhoc,Fgeotherm,Fsurf):
     k = ti[:]**2/rhoc[:] # thermal conductivity
     alpha = np.empty(nz+1)
     gamma = np.empty(nz+1)
-    for i in range(1,nz):
-        buf = dt/(z[i+1]-z[i-1])
-        alpha[i] = k[i+1]*buf*2./(rhoc[i]+rhoc[i+1])/(z[i+1]-z[i])
-        gamma[i] = k[i]*buf*2./(rhoc[i]+rhoc[i+1])/(z[i]-z[i-1])
+    #for i in range(1,nz):
+    #    buf = dt/(z[i+1]-z[i-1])
+    #    alpha[i] = k[i+1]*buf*2./(rhoc[i]+rhoc[i+1])/(z[i+1]-z[i])
+    #    gamma[i] = k[i]*buf*2./(rhoc[i]+rhoc[i+1])/(z[i]-z[i-1])
+    buf2 = dt * 2./(rhoc[:]+np.roll(rhoc,-1)) / (np.roll(z,-1)-np.roll(z,+1))
+    alpha[:] = np.roll(k,-1)*buf2[:]/ (np.roll(z,-1)-z[:])
+    gamma[:] = k[:]*buf2[:]/ (z[:]-np.roll(z,+1))
+    alpha[1] = k[2]*dt/z[2]*2./(rhoc[1]+rhoc[2])/(z[2]-z[1])
+    gamma[1] = k[1]*dt/z[2]*2./(rhoc[1]+rhoc[2])/z[1]
+        
     alpha[nz] = 0.  # ensure b[nz] = 1+gammma[nz]
     buf = dt/(z[nz]-z[nz-1])**2
     gamma[nz] = k[nz]*buf/(rhoc[nz]+rhoc[nz]) # assumes rhoc[nz+1]=rhoc[nz]
   
     # Set RHS
     r = np.empty(nz+1)
+    r[:] = gamma[:]*np.roll(T,+1) + (1.-alpha[:]-gamma[:])*T[:] + alpha[:]*np.roll(T,-1)
     r[1] = alpha[1]*T[2] + (1.-alpha[1]-gamma[1])*T[1] + gamma[1]*(Tsurf+Tsurfp1)
-    for i in range(2,nz):
-        r[i] = gamma[i]*T[i-1] + (1.-alpha[i]-gamma[i])*T[i] + alpha[i]*T[i+1]
+    #for i in range(2,nz):
+    #    r[i] = gamma[i]*T[i-1] + (1.-alpha[i]-gamma[i])*T[i] + alpha[i]*T[i+1]
     r[nz] = gamma[nz]*T[nz-1] + (1.-gamma[nz])*T[nz] + \
         dt/rhoc[nz]*Fgeotherm/(z[nz]-z[nz-1]) # assumes rhoc[nz+1]=rhoc[nz]
 

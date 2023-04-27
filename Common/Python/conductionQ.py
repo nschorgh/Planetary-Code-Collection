@@ -45,14 +45,17 @@ def conductionQ(nz,z,dt,Qn,Qnp1,T,ti,rhoc,emiss,Fgeotherm,Fsurf):
     k = ti[:]**2/rhoc[:] # thermal conductivity
     alpha = np.empty(nz+1)
     gamma = np.empty(nz+1)
+    buf2 = dt * 2./(rhoc[:]+np.roll(rhoc,-1)) / (np.roll(z,-1)-np.roll(z,+1))
+    alpha[:] = np.roll(k,-1)*buf2[:] / (np.roll(z,-1)-z[:])
+    gamma[:] = k[:]*buf2[:] / (z[:]-np.roll(z,+1))
     dz = 2*z[1]
     beta = dt/(rhoc[1]+rhoc[2])/dz**2 
     alpha[1] = beta*k[2]
     gamma[1] = beta*k[1]
-    for i in range(2,nz):  # 2 ... nz-1
-        buf = dt / (z[i+1]-z[i-1])
-        alpha[i] = 2*k[i+1]*buf/(rhoc[i]+rhoc[i+1])/(z[i+1]-z[i])
-        gamma[i] = 2*k[i]*buf/(rhoc[i]+rhoc[i+1])/(z[i]-z[i-1])
+    #for i in range(2,nz):  # 2 ... nz-1
+    #    buf = dt / (z[i+1]-z[i-1])
+    #    alpha[i] = 2*k[i+1]*buf/(rhoc[i]+rhoc[i+1])/(z[i+1]-z[i])
+    #    gamma[i] = 2*k[i]*buf/(rhoc[i]+rhoc[i+1])/(z[i]-z[i-1])
     alpha[nz] = 0.  # ensures b[nz] = 1 + gamma[nz]
     buf = dt/(z[nz]-z[nz-1])**2
     gamma[nz] = k[nz]*buf/(2*rhoc[nz]) # assumes rhoc[nz+1]=rhoc[nz]
@@ -88,10 +91,11 @@ def conductionQ(nz,z,dt,Qn,Qnp1,T,ti,rhoc,emiss,Fgeotherm,Fsurf):
   
         # Set RHS
         r = np.empty(nz+1)
+        r[:] = gamma[:]*np.roll(T,+1) + (1.-alpha[:]-gamma[:])*T[:] + alpha[:]*np.roll(T,-1)
         r[1] = gamma[1] * (annp1+ann) + \
             (1.-alpha[1]-gamma[1]+gamma[1]*bn) * T[1] + alpha[1] * T[2]
-        for i in range(2,nz): # 2...nz-1
-            r[i] = gamma[i]*T[i-1] + (1.-alpha[i]-gamma[i])*T[i]+ alpha[i]*T[i+1]
+        #for i in range(2,nz): # 2...nz-1
+        #    r[i] = gamma[i]*T[i-1] + (1.-alpha[i]-gamma[i])*T[i]+ alpha[i]*T[i+1]
         r[nz] = gamma[nz]*T[nz-1] + (1.-gamma[nz])*T[nz] \
             + dt/rhoc[nz]*Fgeotherm/(z[nz]-z[nz-1]) # assumes rhoc[nz+1]=rhoc[nz]
 
