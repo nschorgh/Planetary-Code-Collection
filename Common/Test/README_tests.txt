@@ -2,7 +2,7 @@ Validation and Example Results
 ==============================
 
 1. Test of a semi-implicit heat equation solver with prescribed surface temperature
-conductionT.f90
+(conductionT.f90)
 
 make testcrankT
 a.out
@@ -11,14 +11,15 @@ a.out
 - z.testcrankT contains the coordinates of the vertical grid
 - test_Tprofile.m reads these profiles and compares them to the analytical solution
 
+The result is shown in Figure 1.1 of the UserGuide.pdf
+
 Note: The analytical solution is for an infinitely thick domain, so the small
       deviations toward the bottom boundary are okay.
 
 
 
-2. Example solution of semi-implicit heat equation solver with Stefan-Boltzmann Law boundary condition
-conductionQ.f90 or conductionQ2.f90
-Crank-Nicoloson solver with nonlinear upper boundary condition
+2. Example solution of semi-implicit heat equation solver with Stefan-Boltzmann Law
+boundary condition (conductionQ.f90 or conductionQ2.f90)
 
 make testcrankQ
 a.out 
@@ -28,3 +29,15 @@ a.out
 - stdout_of_testcrankQ.txt contains the time-averaged temperature profile and heat flux
 After the temperature has equilibrated, the time-averaged heat flux must be
 constant with depth and must equal the heat flux specified at the bottom boundary.
+
+
+
+3. Test implementation of nonlinear boundary condition in Crank-Nicolson solver
+(conductionQ.f90)
+
+make testcrankQ_asymp
+a.out
+
+The numerical solution is in the 2nd column of the output file 'Tsurface' and
+the analytical solution for small times is in the 4th column. The result is shown
+in Figure 1.3 of the UserGuide.pdf.

@@ -19,6 +19,10 @@ testcrankT: testcrankT.o makefile
 	make CC='$(CC)' CFLAGS='$(CFLAGS)' -C $(SR) common
 	$(CC) $(LFLAGS) testcrankT.o $(SR)conductionT.o $(SR)tridag.o $(SR)grids.o
 
+testcrankQ_asymp asymp: testcrankQ_asymp.o makefile
+	make CC='$(CC)' CFLAGS='$(CFLAGS)' -C $(SR) common
+	$(CC) $(LFLAGS) testcrankQ_asymp.o $(SR)conductionQ.o $(SR)tridag.o \
+	$(SR)grids.o
 
 
 %.o:	%.f90 makefile
