@@ -40,4 +40,4 @@ a.out
 
 The numerical solution is in the 2nd column of the output file 'Tsurface' and
 the analytical solution for small times is in the 4th column. The result is shown
-in Figure 1.3 of the UserGuide.pdf.
+in Figure 1.4 of the UserGuide.pdf.
