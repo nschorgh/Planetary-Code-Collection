@@ -41,3 +41,13 @@ a.out
 The numerical solution is in the 2nd column of the output file 'Tsurface' and
 the analytical solution for small times is in the 4th column. The result is shown
 in Figure 1.4 of the UserGuide.pdf.
+
+
+
+4. Test rate of convergence of conductionQ.f90 with time step
+
+make testcrankQ_conv
+a.out
+
+The output file 'Tprofiles', contains temperature profiles for eight different
+values for the time step. Errors can be defined by differences between these profiles.

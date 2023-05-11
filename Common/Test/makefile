@@ -24,6 +24,11 @@ testcrankQ_asymp asymp: testcrankQ_asymp.o makefile
 	$(CC) $(LFLAGS) testcrankQ_asymp.o $(SR)conductionQ.o $(SR)tridag.o \
 	$(SR)grids.o
 
+testcrankQ_conv conv: testcrankQ_conv.o makefile
+	make -C $(SR) common
+	$(CC) -O1 testcrankQ_conv.o $(SR)flux_noatm.o $(SR)conductionQ.o \
+	$(SR)tridag.o $(SR)grids.o
+
 
 %.o:	%.f90 makefile
 	$(CC) $(CFLAGS) -c $<  
