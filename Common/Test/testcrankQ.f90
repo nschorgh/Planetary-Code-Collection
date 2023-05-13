@@ -15,9 +15,9 @@ PROGRAM testcrankQ
   real*8 thIn  ! thermal inertia
   real*8 rhocv(nz), Qn, Qnp1
   real*8 Rau, Decl, HA
-  real*8 flux_noatm, delta, ti(nz), Fsurf, Tsurf, z(nz), Fmean
+  real*8 delta, ti(nz), Fsurf, Tsurf, z(nz), Fmean
   real*8 Tmean(nz), Hflux(nz), kcond(nz)
-  external flux_noatm
+  real*8, external :: flux_noatm
   
   STEPSPERSOL = 120
   dt = Period / STEPSPERSOL
@@ -58,7 +58,7 @@ PROGRAM testcrankQ
   
   latitude = latitude*d2r
   
-  !write(22,'(f8.4,1000(x,f7.2))') time,(T(i),i=1,nz)
+  !write(22,'(f8.4,*(x,f7.2))') time,T(1:nz)
   
   do i=1,nz
      !if (i>nz/4) ti(i)=2.*ti(i)
@@ -75,13 +75,12 @@ PROGRAM testcrankQ
       
   do n=0,50000
      !print *,time/Period,Qn
-     time = (n+1)*dt   !   time at n+1; 
+     time = (n+1)*dt   !   time at n+1
      HA = 2*pi*mod(time/Period,1.d0) !  hour angle
      Qnp1 = (1-albedo)*flux_noatm(Rau,Decl,latitude,HA,zero,zero)
 !    Qnp1=sigSB*200.**4
-!    call crankn1(nz,Qn,Qnp1,T,1.,a,b,c,alpha,k1)
-!    call crankn1(nz,dz,dt,Qn,Qnp1,T,thIn,rhoc,1.d0)
-!    call cranknv(nz,dz,dt,Qn,Qnp1,T,ti,rhoc,1.d0)
+!    call crankn1(nz,dz,dt,Qn,Qnp1,T,thIn,rhoc,emiss)
+!    call cranknv(nz,dz,dt,Qn,Qnp1,T,ti,rhoc,emiss)
      call conductionQ(nz,z,dt,Qn,Qnp1,T,ti,rhocv,emiss,Tsurf,Fgeo,Fsurf)
 !    call conductionQ2(nz,Qn,Qnp1,T,emiss,Tsurf,Fsurf)
      Qn = Qnp1
@@ -91,7 +90,7 @@ PROGRAM testcrankQ
      endif
      if (n > 50000-STEPSPERSOL) then
         if (mod(n,10)==0) then
-           write(22,'(1000(x,f7.2))') Tsurf,(T(i),i=1,nz)
+           write(22,'(*(x,f7.2))') Tsurf,T(1:nz)
         endif
         Fmean = Fsurf + Fmean
         Tmean(:) = Tmean(:) + T(:)

@@ -4,8 +4,7 @@ PROGRAM testcrankQ_conv
 !***********************************************************************
   implicit none
   integer, parameter :: nz=30
-  real*8, parameter :: pi=3.1415926535897931, d2r=pi/180.
-  real*8, parameter :: sigSB=5.6704d-8, zero=0.
+  real*8, parameter :: pi=3.1415926535897931, d2r=pi/180., zero=0.
   real*8, parameter :: Period=88775.244*670, emiss=1., Fgeo=0.0
 
   integer n, i, STEPSPERSOL, kk
@@ -14,8 +13,8 @@ PROGRAM testcrankQ_conv
   real*8 thIn  ! thermal inertia
   real*8 rhocv(nz), Qn, Qnp1
   real*8 Rau, Decl, HA
-  real*8 flux_noatm, delta, ti(nz), Fsurf, Tsurf, z(nz)
-  external flux_noatm
+  real*8 delta, ti(nz), Fsurf, Tsurf, z(nz)
+  real*8, external :: flux_noatm
   
   thIn = 120.
   albedo = 0.2

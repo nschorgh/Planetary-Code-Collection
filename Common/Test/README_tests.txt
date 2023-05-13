@@ -49,5 +49,5 @@ in Figure 1.4 of the UserGuide.pdf.
 make testcrankQ_conv
 a.out
 
-The output file 'Tprofiles', contains temperature profiles for eight different
+The output file 'Tprofiles' contains temperature profiles for eight different
 values for the time step. Errors can be defined by differences between these profiles.
