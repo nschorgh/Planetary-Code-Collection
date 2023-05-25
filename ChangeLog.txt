@@ -1,6 +1,8 @@
 Log of major changes (going back to times before git version control)
 ---------------------------------------------------------------------
 
+12 May 2023: Release v1.2.1  doi:10.5281/zenodo.7931987
+
 30 Dec 2022: Release v1.2.0  doi:10.5281/zenodo.7495755
 First release without MSIM
 

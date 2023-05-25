@@ -6,9 +6,9 @@ from math import sin, pi, sqrt
 
 
 if __name__ == '__main__':
-#***********************************************************************
-# test Crank-Nicolson subroutine
-#***********************************************************************
+      """
+      test Crank-Nicolson subroutine
+      """
       Period = 88775.244*670  # [seconds]
       NSTEPS = 50000
       Fgeo = 0.  # [W/m^2]

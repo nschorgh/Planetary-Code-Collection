@@ -92,7 +92,7 @@ The non-portable Fortran declarations `real(8)` and `real*8` are meant to corres
 
 ### Acknowledgments
 
-2023: Thanks to Cyril Mergny for hints on how to speed up conduction?.py
+2023: Thanks to Cyril Mergny for a major speed improvement of conductionQ.py
 
 2019: Thanks to Sam Potter for comments that helped me speed up the view factor calculations  
 

@@ -6,9 +6,9 @@ from flux_noatm import flux_noatm
 
 
 if __name__ == '__main__':
-#***********************************************************************
-# test Crank-Nicolson subroutine
-#***********************************************************************
+    """
+    test Crank-Nicolson subroutine
+    """
     sigSB = 5.6704e-8
     Period = 88775.244*670 # [seconds]
     NSTEPS = 50000
