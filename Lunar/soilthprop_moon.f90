@@ -62,7 +62,10 @@ function radconductivity(T, ell, emiss, porosity)
 
   ! Sakatani et al. (2017)
   ! zeta = 0.12
-  ! A = 8*emiss/(2-emiss)*sigSB*zeta*( porosity /(1-porosity) )**(1./3.)*ell/2
+  ! A = 8*emiss/(2-emiss)*sigSB*zeta*( porosity/(1-porosity) )**(1./3.)*ell/2
+
+  ! Gundlach & Blum (2013)
+  ! A = 8*emiss*sigSB*1.34* porosity/(1-porosity) *ell/2
   
   radconductivity = A*T**3  ! also known as kr
 end function radconductivity

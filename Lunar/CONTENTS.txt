@@ -1,13 +1,15 @@
 Lunar/
 
-Lunar Ice Pump Model
-====================
+Lunar Ice Pump and Diffusion Models
+===================================
 
 oscidea1.f90: (main program)
 	ice pump calculations for one location; uses boundary-value formulation
+	used in Schorghofer & Aharonson, ApJ 788, 169 (2014)
 
 oscidea_subs.f90:
 	subroutines for ice pump calculations
+	used in Schorghofer & Aharonson, ApJ 788, 169 (2014)
 
 subl_h2o.f90:
 	set of functions for sublimation rate of H2O ice
@@ -20,11 +22,13 @@ bet.f90:
 
 moon_subsdiff.f90: (main program)
 	microphysical model of subsurface migration of H2O on airless bodies
-
+	used in Schorghofer, ApJL 927, L34 (2022)
+	
 moon_subsdiff_equilbr.f90: (main program)
 	continuum model for equilibrium subsurface adsorbate concentrations
 	matches time-averaged desorption rates at depth with those on surface
-
+	used in Schorghofer, ApJL 927, L34 (2022)
+	
 subsdiff_subs.f90:
 	subroutines and functions for random-walk model of subsurface diffusion
 	in lunar regolith

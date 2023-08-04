@@ -101,3 +101,50 @@ real(8) function padsr(x)
 end function padsr
 
 
+
+elemental function desorptionrate(T,theta)
+  ! Desorption rate of water molecules from lunar grains as a function of
+  ! temperature and coverage according to Schorghofer, PSJ (2023), in review
+  ! assumes efficient grain surface diffusion
+  ! - written in 2023
+  implicit none
+  real(8), intent(IN) :: T ! [K]
+  real(8), intent(IN) :: theta ! [molecules/m^2]
+  real(8) desorptionrate  ! [molecules/m^2/s]
+  real(8), parameter :: kBeV = 8.617333262e-5 ! [eV/K]
+  real(8), parameter :: nu=1e16, thetam=1e19
+  real(8), parameter :: Eice=0.529, Ec=0.65, W=0.22
+  real(8) v, S, gamma
+  
+  v = theta/thetam
+  if (v<0) then
+     S = 0.
+  elseif (v<=1) then  ! sub-monolayer
+     S = nu *theta * exp(-Ec/kBeV/T) *v**(1+W/kBeV/T) / (1+W/kBeV/T)
+  else ! multi-layer
+     ! option 1 (expansion of BET formula around infinite v)
+     S = nu * thetam * exp(-Eice/kBeV/T)*(1-1./v) + exp(-Ec/kBeV/T) / (1+W/kBeV/T) /v**2
+     ! option 2 (based on rescaled distribution of desorption energies)
+     gamma = 1. / (1 + (v-1)*(Ec-Eice+W)/kBeV/T)
+     !S = nu * thetam * exp(-Eice/kBeV/T) * exp(-gamma*(Ec-Eice)/kBeV/T) / (1+gamma*W/kBeV/T)
+  end if
+
+  desorptionrate = S
+  !if (S/=S) print *,T,theta,'S undefined'
+end function desorptionrate
+
+
+elemental function desorptionrate_ice(T)
+  ! sublimation rate of ice using formulation as in function desorptionrate
+  implicit none
+  real(8), intent(IN) :: T ! [K]
+  real(8) desorptionrate_ice
+  real(8), parameter :: kBeV = 8.617333262e-5 ! [eV/K]
+  real(8), parameter :: nu=1e16, thetam=1e19
+  real(8), parameter :: Eice=0.529
+  real(8) Sice
+  
+  Sice = thetam*nu*exp(-Eice/kBeV/T)  ! [molecules/m^2/s]
+
+  desorptionrate_ice = Sice
+end function desorptionrate_ice
