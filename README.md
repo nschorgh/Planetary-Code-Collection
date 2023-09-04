@@ -92,9 +92,11 @@ The non-portable Fortran declarations `real(8)` and `real*8` are meant to corres
 
 ### Acknowledgments
 
-2023: Thanks to Cyril Mergny for a major speed improvement of conductionQ.py
+Sep 2023: Thanks to Alexander Smolka for catching and fixing an error in function hop1
 
-2019: Thanks to Sam Potter for comments that helped me speed up the view factor calculations  
+May 2023: Thanks to Cyril Mergny for a major speed improvement of conductionQ.py
+
+2019: Thanks to Sam Potter for comments that helped me speed up the view factor calculations
 
 2016: Thanks to Lior Rubanenko for a bug report in cratersQ_*
 

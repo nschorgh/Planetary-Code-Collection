@@ -31,7 +31,7 @@ pure real(8) function restime_species(T)
   real(8), parameter :: A=-7814.5, B=+7.5741   ! Int. Crit. Tbls. Vol 3
   real(8), parameter :: sigma0 = 8.42e18   ! (1623/(40*1.66e-27))**(2./3.)
   psv = 10**(0.05223*A/T + B)*133.32  ! mmHg -> Pa
-  !real(8), parameter :: A=4.46903, B=481.012, C=22.156  ! 114-150K, NIST Webbook
+  !real(8), parameter :: A=4.46903, B=481.012, C=22.156 ! 114-150K, NIST Webbook
   !psv = 10**(A-(B/(T+C)))*1.e5   ! Antoine equation
   
   ! CO2

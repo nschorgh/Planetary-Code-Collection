@@ -101,7 +101,7 @@ PROGRAM exospherebody
      call totalnrs(Np,p_s,cc)
 
   enddo
-!50 continue
+
   call writeparticles(51,Np,p_r,p_s,p_t,p_n)
   call writeglobe(21,Tsurf)
 
@@ -116,7 +116,7 @@ PROGRAM exospherebody
 
   close(20); close(21)
   close(30)
-  close(40); close(41)
+  close(50); close(51)
 END PROGRAM exospherebody
 
 

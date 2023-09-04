@@ -49,10 +49,13 @@ function [p_r, p_s, p_t] = hop1(p_r, p_t, Tsurf, Q)
   p_r(2) = asind(sinph2);
   cosph2 = sqrt(1.-sinph2^2);
   if cosph2~=0,  % not on pole
-    cosdlon= (cos(d/Rbody)*cos(lat)-sin(lat)*sin(d/Rbody)*cosaz)/cosph2;
+    cosdlon = (cos(d/Rbody)*cos(lat)-sin(lat)*sin(d/Rbody)*cosaz)/cosph2;
     if (cosdlon>+1.), cosdlon=+1.; end  % roundoff
     if (cosdlon<-1.), cosdlon=-1.; end  % roundoff
     dlon = acos(cosdlon);
+    if (d/Rbody>pi)
+      dlon = 2*pi-dlon;
+    end
     if v(1)<0., dlon=-dlon; end
     p_r(1) = p_r(1) + rad2deg(dlon);
   else   % on pole

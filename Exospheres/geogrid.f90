@@ -57,7 +57,8 @@ end function inbox
 
 pure subroutine k2lonlat(k,lon,lat)
   ! inverse of  k = 1 + i + (j-1)*nlon
-  ! linear enumeration of grid cells, but first element is north pole and last element is south pole
+  ! linear enumeration of grid cells, but first element is north pole and
+  !     last element is south pole
   use grid
   implicit none
   integer, intent(IN) :: k

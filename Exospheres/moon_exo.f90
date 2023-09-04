@@ -127,7 +127,7 @@ PROGRAM allofmoon
      call totalnrs(Np,p_s,cc)
 
   enddo
-!50 continue
+
   call writeparticles(51,Np,p_r,p_s,p_t,p_n)
   !call particles2sigma(Np,p_r,p_s,sigma)
   call writeglobe(21,Tsurf)
@@ -144,7 +144,7 @@ PROGRAM allofmoon
 
   close(20); close(21)
   close(30)
-  close(40); close(41)
+  close(50); close(51)
 END PROGRAM allofmoon
 
 
@@ -324,7 +324,7 @@ subroutine fallmap(unit, fall)
   use grid
   implicit none
   integer, intent(IN) :: unit, fall(veclen)
-  integer i,j,k
+  integer i, j, k
   real(8), dimension(:), allocatable :: sigma(:), dA(:)
   ! allocation avoids max-stack-var-size warning
   real(8) longitude(nlon), latitude(nlat)

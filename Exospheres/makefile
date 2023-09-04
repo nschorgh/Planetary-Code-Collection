@@ -9,18 +9,22 @@ SR = ../Common/
 
 
 moon_exo: geogrid.o body.o moon_exo.o montecarlo.o gasdev.o subl_subs.o \
-	makefile 
+	makefile
+
 	make -C $(SR) common
-	$(CC) $(LFLAGS) moon_exo.o montecarlo.o geogrid.o \
-	$(SR)flux_noatm.o $(SR)conductionQ.o $(SR)tridag.o $(SR)grids.o \
-	$(SR)psv.o subl_subs.o gasdev.o $(SR)ran2.o
+
+	$(CC) $(LFLAGS) moon_exo.o montecarlo.o geogrid.o $(SR)flux_noatm.o \
+	$(SR)conductionQ.o $(SR)tridag.o $(SR)grids.o $(SR)psv.o subl_subs.o \
+	gasdev.o $(SR)ran2.o
 
 ceres_exo: geogrid.o body.o ceres_exo.o montecarlo.o gasdev.o subl_subs.o \
-	makefile 
+	makefile
+
 	make -C $(SR) common
-	$(CC) $(LFLAGS) ceres_exo.o montecarlo.o geogrid.o \
-	$(SR)flux_noatm.o $(SR)conductionQ.o $(SR)tridag.o $(SR)grids.o \
-	$(SR)psv.o subl_subs.o gasdev.o $(SR)ran2.o $(SR)generalorbit.o
+
+	$(CC) $(LFLAGS) ceres_exo.o montecarlo.o geogrid.o $(SR)flux_noatm.o \
+	$(SR)conductionQ.o $(SR)tridag.o $(SR)grids.o $(SR)psv.o subl_subs.o \
+	gasdev.o $(SR)ran2.o $(SR)generalorbit.o
 
 
 %.o:	%.for makefile

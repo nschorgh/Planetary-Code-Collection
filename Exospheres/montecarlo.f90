@@ -62,7 +62,6 @@ subroutine hop1(p_r, p_s, p_t, idum, Tsurf, Q)
   real(8) d, v(3), lat, sigma, cosaz, sinph2, cosph2, cosdlon, dlon
   real(8) u, flighttime, destr_rate, vspeed, alpha
   real(8), parameter :: pi=3.1415926535897932, d2r=pi/180.
-  integer, external :: inbox
   real(8), external :: ran2    ! uniform random number generator
   real(8), external :: gasdev  ! gaussian with unit variance
   logical, parameter :: CORIOLIS = .false.
@@ -110,6 +109,7 @@ subroutine hop1(p_r, p_s, p_t, idum, Tsurf, Q)
      if (cosdlon>+1.) cosdlon=+1.  ! roundoff
      if (cosdlon<-1.) cosdlon=-1.  ! roundoff
      dlon = acos(cosdlon)
+     if (d/Rbody>pi) dlon = 2*pi-dlon ! error fixed by Alexander Smolka
      if (v(1)<0.) dlon=-dlon
      !write(70,*) dlon
      p_r(1) = p_r(1) + dlon/d2r
