@@ -90,7 +90,7 @@ subroutine hop1(p_r, p_s, p_t, idum, Tsurf, Q)
   ! ground track is thus part of a great circle
   flighttime = 2*v(3)/g   ! time of flight for constant g
   d = 2/g*v(3)*sqrt(v(1)**2+v(2)**2)  ! distance for constant g
-  if (vspeed>0.4*vescape) then  ! use non-uniform gravity formula
+  if (vspeed>0.3*vescape) then  ! use non-uniform gravity formula
   !if (d>0.1*Rbody) then
      alpha = atan(sqrt(v(1)**2+v(2)**2)/v(3))  ! angle from zenith
      call nonuniformgravity(vspeed,alpha,d,flighttime)

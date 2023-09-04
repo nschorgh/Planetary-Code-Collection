@@ -17,7 +17,8 @@ testcrankQ: testcrankQ.o makefile
 
 testcrankT: testcrankT.o makefile
 	make CC='$(CC)' CFLAGS='$(CFLAGS)' -C $(SR) common
-	$(CC) $(LFLAGS) testcrankT.o $(SR)conductionT.o $(SR)tridag.o $(SR)grids.o
+	$(CC) $(LFLAGS) testcrankT.o $(SR)conductionT.o $(SR)tridag.o \
+	$(SR)grids.o
 
 testcrankQ_asymp asymp: testcrankQ_asymp.o makefile
 	make CC='$(CC)' CFLAGS='$(CFLAGS)' -C $(SR) common
