@@ -1,5 +1,7 @@
-Log of major changes (going back to times before git version control)
+Log of major changes (goes back to times before git version control)
 ---------------------------------------------------------------------
+
+28 Dec 2023: Shifted lower boundary condition for thermal solver by half a layer.
 
 12 May 2023: Release v1.2.1  doi:10.5281/zenodo.7931987
 

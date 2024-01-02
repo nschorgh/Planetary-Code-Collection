@@ -28,39 +28,39 @@ subroutine conductionT(nz,z,dt,T,Tsurf,Tsurfp1,ti,rhoc,Fgeotherm,Fsurf)
   implicit none
 
   integer, intent(IN) :: nz
-  real*8, intent(IN) :: z(nz), dt, Tsurf, Tsurfp1, ti(nz), rhoc(nz)
-  real*8, intent(IN) :: Fgeotherm
-  real*8, intent(INOUT) :: T(nz)
-  real*8, intent(OUT) :: Fsurf
+  real(8), intent(IN) :: z(nz), dt, Tsurf, Tsurfp1, ti(nz), rhoc(nz)
+  real(8), intent(IN) :: Fgeotherm
+  real(8), intent(INOUT) :: T(nz)
+  real(8), intent(OUT) :: Fsurf
   integer i
-  real*8 alpha(nz), k(nz), gamma(nz), buf
-  real*8 a(nz), b(nz), c(nz), r(nz)
+  real(8) alpha(nz), k(nz), gamma(nz), buf
+  real(8) a(nz), b(nz), c(nz), r(nz)
   
   ! set some constants
-  k(:) = ti(:)**2/rhoc(:) ! thermal conductivity
-  alpha(1) = k(2)*dt/rhoc(1)/(z(2)-z(1))/z(2) 
-  gamma(1) = k(1)*dt/rhoc(1)/z(1)/z(2) 
+  k(:) = ti(:)**2 / rhoc(:) ! thermal conductivity
+  alpha(1) = dt * k(2) / rhoc(1) / (z(2)-z(1)) / z(2)
+  gamma(1) = dt * k(1) / rhoc(1) / z(1) / z(2)
   do i=2,nz-1
-     buf = dt/(z(i+1)-z(i-1))
-     alpha(i) = k(i+1)*buf*2./(rhoc(i)+rhoc(i+1))/(z(i+1)-z(i))
-     gamma(i) = k(i)*buf*2./(rhoc(i)+rhoc(i+1))/(z(i)-z(i-1))
+     buf = 2.*dt / (z(i+1)-z(i-1)) / (rhoc(i)+rhoc(i+1))
+     alpha(i) = k(i+1) * buf/ (z(i+1)-z(i))
+     gamma(i) = k(i) * buf / (z(i)-z(i-1))
   enddo
-  buf = dt/(z(nz)-z(nz-1))**2
-  gamma(nz) = k(nz)*buf/(rhoc(nz)+rhoc(nz)) ! assumes rhoc(nz+1)=rhoc(nz)
+  gamma(nz) = dt * k(nz) / (2.*rhoc(nz)) / (z(nz)-z(nz-1))**2
   
   ! elements of tridiagonal matrix
   a(:) = -gamma(:)   !  a(1) is not used
   b(:) = 1. + alpha(:) + gamma(:)
   c(:) = -alpha(:)   !  c(nz) is not used
-  b(nz) = 1. + gamma(nz)
+  a(nz) = -2*gamma(nz)
+  b(nz) = 1. + 2*gamma(nz)
   
   ! Set RHS         
   r(1)= alpha(1)*T(2) + (1.-alpha(1)-gamma(1))*T(1) + gamma(1)*(Tsurf+Tsurfp1)
   do concurrent (i=2:nz-1)
      r(i) = gamma(i)*T(i-1) + (1.-alpha(i)-gamma(i))*T(i) + alpha(i)*T(i+1)
   enddo
-  r(nz) = gamma(nz)*T(nz-1) + (1.-gamma(nz))*T(nz) + &
-       &     dt/rhoc(nz)*Fgeotherm/(z(nz)-z(nz-1)) ! assumes rhoc(nz+1)=rhoc(nz)
+  r(nz) = 2.*gamma(nz)*T(nz-1) + (1.-2.*gamma(nz))*T(nz) + &
+       &     2.*dt/rhoc(nz)*Fgeotherm/(z(nz)-z(nz-1))
 
   ! Solve for T at n+1
   call tridag(a,b,c,r,T,nz) ! update by tridiagonal inversion

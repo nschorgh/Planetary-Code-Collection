@@ -36,40 +36,41 @@ subroutine conductionQ(nz,z,dt,Qn,Qnp1,T,ti,rhoc,emiss,Tsurf, &
 !***********************************************************************
 
   implicit none
-  real*8, parameter :: sigSB=5.6704d-8
+  real(8), parameter :: sigSB=5.6704d-8
   
   integer, intent(IN) :: nz
-  real*8, intent(IN) :: z(nz), dt, Qn, Qnp1, ti(nz),rhoc(nz)
-  real*8, intent(IN) :: emiss, Fgeotherm
-  real*8, intent(INOUT) :: T(nz), Tsurf
-  real*8, intent(OUT) :: Fsurf
+  real(8), intent(IN) :: z(nz), dt, Qn, Qnp1, ti(nz),rhoc(nz)
+  real(8), intent(IN) :: emiss, Fgeotherm
+  real(8), intent(INOUT) :: T(nz), Tsurf
+  real(8), intent(OUT) :: Fsurf
   integer i, iter
-  real*8 k(nz), k1, alpha(nz), gamma(nz), Tr
-  real*8 a(nz), b(nz), c(nz), r(nz), Told(nz)
-  real*8 arad, brad, ann, annp1, bn, buf, dz, beta
+  real(8) k(nz), k1dz, alpha(nz), gamma(nz), Tr
+  real(8) a(nz), b(nz), c(nz), r(nz), Told(nz)
+  real(8) arad, brad, ann, annp1, bn, buf, dz, beta
   
   ! set some constants
-  k(:) = ti(:)**2/rhoc(:) ! thermal conductivity
+  k(:) = ti(:)**2 / rhoc(:) ! thermal conductivity
   dz = 2.*z(1)
   beta = dt/rhoc(1)/(2.*dz**2)   ! assumes rhoc(0)=rhoc(1)
   alpha(1) = beta*k(2)
   gamma(1) = beta*k(1)
   do i=2,nz-1
-     buf = dt/(z(i+1)-z(i-1))
-     alpha(i) = 2.*k(i+1)*buf/(rhoc(i)+rhoc(i+1))/(z(i+1)-z(i))
-     gamma(i) = 2.*k(i)*buf/(rhoc(i)+rhoc(i+1))/(z(i)-z(i-1))
+     buf = 2.*dt / (rhoc(i)+rhoc(i+1)) / (z(i+1)-z(i-1))
+     alpha(i) = k(i+1) * buf / (z(i+1)-z(i))
+     gamma(i) = k(i) * buf / (z(i)-z(i-1))
   enddo
-  buf = dt/(z(nz)-z(nz-1))**2
-  gamma(nz) = k(nz)*buf/(2*rhoc(nz)) ! assumes rhoc(nz+1)=rhoc(nz)
+  gamma(nz) = dt * k(nz) / (2.*rhoc(nz)) / (z(nz)-z(nz-1))**2
   
-  k1 = k(1)/dz
+  k1dz = k(1)/dz
   
   ! elements of tridiagonal matrix
   a(:) = -gamma(:)   !  a(1) is not used
   b(:) = 1. + alpha(:) + gamma(:) !  b(1) has to be reset at every timestep
   c(:) = -alpha(:)   !  c(nz) is not used
   b(nz) = 1. + gamma(nz)
-
+  a(nz) = -2.*gamma(nz)
+  b(nz) = 1. + 2.*gamma(nz)
+  
   Tr = Tsurf            ! 'reference' temperature
   iter = 0
   Told(:) = T(:)
@@ -78,27 +79,27 @@ subroutine conductionQ(nz,z,dt,Qn,Qnp1,T,ti,rhoc,emiss,Tsurf, &
   ! Emission
   arad = -3.*emiss*sigSB*Tr**4
   brad = 2.*emiss*sigSB*Tr**3
-  ann = (Qn-arad)/(k1+brad)
-  annp1 = (Qnp1-arad)/(k1+brad)
-  bn = (k1-brad)/(k1+brad)
+  ann = (Qn-arad) / (k1dz+brad)
+  annp1 = (Qnp1-arad) / (k1dz+brad)
+  bn = (k1dz-brad) / (k1dz+brad)
   b(1) = 1. + alpha(1) + gamma(1) - gamma(1)*bn
   
   ! Set RHS         
   r(1) = gamma(1)*(annp1+ann) + &
        &     (1.-alpha(1)-gamma(1)+gamma(1)*bn)*T(1) + alpha(1)*T(2)
   do concurrent (i=2:nz-1)
-     r(i) = gamma(i)*T(i-1) + (1.-alpha(i)-gamma(i))*T(i)+ alpha(i)*T(i+1)
+     r(i) = gamma(i)*T(i-1) + (1.-alpha(i)-gamma(i))*T(i) + alpha(i)*T(i+1)
   enddo
-  r(nz) = gamma(nz)*T(nz-1) + (1.-gamma(nz))*T(nz) &
-       &     + dt/rhoc(nz)*Fgeotherm/(z(nz)-z(nz-1)) ! assumes rhoc(nz+1)=rhoc(nz)
-
+  r(nz) = 2.*gamma(nz)*T(nz-1) + (1.-2.*gamma(nz))*T(nz) + &
+       &     2.*dt/rhoc(nz)*Fgeotherm/(z(nz)-z(nz-1))
+  
   ! Solve for T at n+1
   call tridag(a,b,c,r,T,nz) ! update by tridiagonal inversion
   
   Tsurf = 0.5*(annp1 + bn*T(1) + T(1)) ! (T0+T1)/2
 
-  ! iterative predictor-corrector
-  if ((Tsurf > 1.2*Tr .or. Tsurf < 0.8*Tr) .and. iter<10) then  ! linearization error expected
+  ! iterative predictor-corrector for Tr
+  if ((Tsurf > 1.2*Tr .or. Tsurf < 0.8*Tr) .and. iter<10) then
      ! redo until Tr is within 20% of new surface temperature
      ! (under most circumstances, the 20% threshold is never exceeded)
      iter = iter+1
