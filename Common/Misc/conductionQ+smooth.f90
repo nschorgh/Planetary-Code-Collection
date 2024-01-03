@@ -29,13 +29,12 @@ subroutine cranknQ(nz,z,dt,Qn,Qnp1,T,ti,rhoc,emiss,Tsurf,Fgeotherm,Fsurf)
 !         k(i), rhoc(i), ti(i) are midway between z(i-1) and z(i)
 !     
 !   originally written by Samar Khatiwala, 2001
-!   extended to variable thermal properties and 
+!   extended to variable thermal properties and
 !         irregular grid by Norbert Schorghofer
-!   added Volterra predictor, January 2024, -Norbert
 !************************************************************************
 
   implicit none
-  real(8), parameter :: sigSB=5.6704d-8, pi=3.1415926535897931d0
+  real(8), parameter :: sigSB=5.6704d-8
   
   integer, intent(IN) :: nz
   real(8), intent(IN) :: z(nz), dt, Qn, Qnp1, ti(nz),rhoc(nz)
@@ -46,7 +45,6 @@ subroutine cranknQ(nz,z,dt,Qn,Qnp1,T,ti,rhoc,emiss,Tsurf,Fgeotherm,Fsurf)
   real(8) k(nz), k1dz, alpha(nz), gamma(nz), Tr
   real(8) a(nz), b(nz), c(nz), r(nz)
   real(8) arad, brad, ann, annp1, bn, buf, dz, beta
-  real(8) seb, Tpred
   
   ! set some constants
   k(:) = ti(:)**2 / rhoc(:) ! thermal conductivity
@@ -70,15 +68,8 @@ subroutine cranknQ(nz,z,dt,Qn,Qnp1,T,ti,rhoc,emiss,Tsurf,Fgeotherm,Fsurf)
   a(nz) = -2.*gamma(nz)
   b(nz) = 1. + 2.*gamma(nz)
 
-  ! Volterra predictor (optional)
-  Fsurf = - k(1) * ( T(1)-Tsurf ) / z(1)  ! heat flux
-  seb = -Fsurf -emiss*sigSB*Tsurf**4 + (2*Qnp1 + Qn)/3.
-  !Tpred = Tsurf + sqrt(4*dt/pi) / ti(1) * seb  ! 1st order  
-  Tpred = Tsurf + seb / ( sqrt(pi/(4.*dt))*ti(1) + 8./3.*emiss*sigSB*Tsurf**3 )
-  Tr = (Tsurf+Tpred)/2.  ! better reference temperature
-  
   ! Emission
-  !Tr = Tsurf            ! 'reference' temperature  
+  Tr = Tsurf            ! 'reference' temperature  
   arad = -3.*emiss*sigSB*Tr**4
   brad = 2.*emiss*sigSB*Tr**3
   ann = (Qn-arad) / (k1dz+brad)

@@ -43,7 +43,8 @@ PROGRAM testcrankQ_asymp
   do n=-10,50-1
      time = (n+1)*dt   !   time at n+1; 
      if (time>0.) Qnp1 = 0. ! turn off the flux
-     call conductionQ(nz,z,dt,Qn,Qnp1,T,ti,rhocv,emiss,Tsurf,Fgeo,Fsurf)
+     call cranknQ(nz,z,dt,Qn,Qnp1,T,ti,rhocv,emiss,Tsurf,Fgeo,Fsurf)
+     !call conductionQ(nz,z,dt,Qn,Qnp1,T,ti,rhocv,emiss,Tsurf,Fgeo,Fsurf)
      Qn = Qnp1
 
      ! asymptotic solution from Handelsman & Olmstead (1972)

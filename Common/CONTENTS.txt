@@ -68,4 +68,7 @@ Python/
 
 Test/
 	Fortran validation and example runs
+	
+Misc/
+	Experimental variants of conductionQ
 

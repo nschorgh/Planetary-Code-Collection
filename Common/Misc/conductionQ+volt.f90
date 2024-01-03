@@ -1,10 +1,11 @@
-subroutine cranknQ(nz,z,dt,Qn,Qnp1,T,ti,rhoc,emiss,Tsurf,Fgeotherm,Fsurf)
-!************************************************************************
-!   cranknQ:  program to calculate the diffusion of temperature into the
-!             ground and thermal emission at the surface with variable
-!             thermal properties on irregular grid
+subroutine conductionQ(nz,z,dt,Qn,Qnp1,T,ti,rhoc,emiss,Tsurf, &
+     &     Fgeotherm,Fsurf)
+!***********************************************************************
+!   conductionQ:  program to calculate the diffusion of temperature 
+!                 into the ground and thermal emission at the surface 
+!                 with variable thermal properties on irregular grid
 !   Crank-Nicolson scheme, flux conservative
-!                          uses Samar's radiation formula
+!                 uses Samar's radiation formula and Volterra predictor
 !   Eqn: rhoc*T_t = (k*T_z)_z 
 !   BC (z=0): Q(t) + kT_z = em*sig*T^4
 !   BC (z=L): heat flux = Fgeotherm
@@ -29,10 +30,10 @@ subroutine cranknQ(nz,z,dt,Qn,Qnp1,T,ti,rhoc,emiss,Tsurf,Fgeotherm,Fsurf)
 !         k(i), rhoc(i), ti(i) are midway between z(i-1) and z(i)
 !     
 !   originally written by Samar Khatiwala, 2001
-!   extended to variable thermal properties and 
-!         irregular grid by Norbert Schorghofer
-!   added Volterra predictor, January 2024, -Norbert
-!************************************************************************
+!   extended to variable thermal properties
+!         and irregular grid by Norbert Schorghofer
+!   added Volterra predictor 12/2023 -norbert
+!***********************************************************************
 
   implicit none
   real(8), parameter :: sigSB=5.6704d-8, pi=3.1415926535897931d0
@@ -70,15 +71,15 @@ subroutine cranknQ(nz,z,dt,Qn,Qnp1,T,ti,rhoc,emiss,Tsurf,Fgeotherm,Fsurf)
   a(nz) = -2.*gamma(nz)
   b(nz) = 1. + 2.*gamma(nz)
 
-  ! Volterra predictor (optional)
+  ! Volterra predictor, 2nd order
   Fsurf = - k(1) * ( T(1)-Tsurf ) / z(1)  ! heat flux
   seb = -Fsurf -emiss*sigSB*Tsurf**4 + (2*Qnp1 + Qn)/3.
   !Tpred = Tsurf + sqrt(4*dt/pi) / ti(1) * seb  ! 1st order  
   Tpred = Tsurf + seb / ( sqrt(pi/(4.*dt))*ti(1) + 8./3.*emiss*sigSB*Tsurf**3 )
   Tr = (Tsurf+Tpred)/2.  ! better reference temperature
-  
+
   ! Emission
-  !Tr = Tsurf            ! 'reference' temperature  
+  !Tr = Tsurf            ! 'reference' temperature
   arad = -3.*emiss*sigSB*Tr**4
   brad = 2.*emiss*sigSB*Tr**3
   ann = (Qn-arad) / (k1dz+brad)
@@ -101,45 +102,6 @@ subroutine cranknQ(nz,z,dt,Qn,Qnp1,T,ti,rhoc,emiss,Tsurf,Fgeotherm,Fsurf)
   Tsurf = 0.5*(annp1 + bn*T(1) + T(1)) ! (T0+T1)/2
 
   Fsurf = - k(1) * (T(1)-Tsurf) / z(1) ! heat flux into surface
-end subroutine cranknQ
-
-
-
-subroutine conductionQ(nz,z,dt,Qn,Qnp1,T,ti,rhoc,emiss,Tsurf,Fgeotherm,Fsurf)
-!***********************************************************************
-!   conductionQ:  wrapper for cranknQ, which improves stability
-!
-!   Arguments and restrictions are the same as for subroutine cranknQ above.
-!     
-!   created wrapper using flux smoothing 12/2023  
-!***********************************************************************
-  implicit none
-  integer, intent(IN) :: nz
-  real(8), intent(IN) :: z(nz), dt, Qn, Qnp1, ti(nz),rhoc(nz)
-  real(8), intent(IN) :: emiss, Fgeotherm
-  real(8), intent(INOUT) :: T(nz), Tsurf
-  real(8), intent(OUT) :: Fsurf
-  integer, parameter :: Ni=5  ! for flux smoothing
-  integer j
-  real(8) k1, Tsurfold, Told(nz), Qartiold, Qarti
-
-  Tsurfold = Tsurf
-  Told(:) = T(:)
-  
-  call cranknQ(nz,z,dt,Qn,Qnp1,T,ti,rhoc,emiss,Tsurf,Fgeotherm,Fsurf)
-  
-  ! artificial flux smoothing
-  if ( Tsurf>1.2*Tsurfold .or. Tsurf<0.8*Tsurfold ) then  ! linearization error
-     Tsurf = Tsurfold
-     T(1:nz) = Told(1:nz)
-     do j=1,Ni
-        Qartiold = ( (Ni-j+1)*Qn + (j-1)*Qnp1 ) / Ni
-        Qarti    = ( (Ni-j)*Qn + j*Qnp1 ) / Ni
-        call cranknQ(nz,z,dt/Ni,Qartiold,Qarti,T,ti,rhoc,emiss,Tsurf, &
-               & Fgeotherm,Fsurf)
-     end do
-  endif
-
-  k1 = ti(1)**2/rhoc(1)
-  Fsurf = - k1 * (T(1)-Tsurf) / z(1) ! heat flux into surface
+  !Fsurf = - k(1) * ( -4./3.*Tsurf +3./2.*T(1) -T(2)/6. ) / z(1) 
 end subroutine conductionQ
+
