@@ -42,28 +42,29 @@ void conductionT(int nz, double z[], double dt, double T[], double Tsurf,
     alpha[1] = k[2]*dt / rhoc[1] / (z[2]-z[1]) / z[2];
     gamma[1] = k[1]*dt / rhoc[1] / z[1] / z[2];
     for (i=2; i<nz; i++) {
-        buf = dt / (z[i+1]-z[i-1]);
-	alpha[i] = 2 * k[i+1] * buf / (rhoc[i]+rhoc[i+1]) / (z[i+1]-z[i]);
-	gamma[i] = 2 * k[i] * buf / (rhoc[i]+rhoc[i+1]) / (z[i]-z[i-1]);
+        buf = 2. * dt / (rhoc[i]+rhoc[i+1]) / (z[i+1]-z[i-1]);
+	alpha[i] = k[i+1] * buf / (z[i+1]-z[i]);
+	gamma[i] = k[i] * buf / (z[i]-z[i-1]);
     }
     buf = dt / (z[nz]-z[nz-1]) / (z[nz]-z[nz-1]);
-    gamma[nz] = k[nz] * buf / (rhoc[nz]+rhoc[nz]); // assumes rhoc[nz+1]=rhoc[nz]
-  
+    gamma[nz] = k[nz] * buf / (2. * rhoc[nz]);  // assumes rhoc(nz+1)=rhoc(nz)
+    
     /* elements of tridiagonal matrix */
-    for (i=1; i<=nz; i++) {
+    for (i=1; i<nz; i++) {
         a[i] = -gamma[i];   //  a[1] is not used
 	b[i] = 1. + alpha[i] + gamma[i];
 	c[i] = -alpha[i];   //  c[nz] is not used
     }
-    b[nz] = 1. + gamma[nz];
+    a[nz] = -2.*gamma[nz];
+    b[nz] = 1. + 2.*gamma[nz];
   
     /* Set RHS */
     r[1] = alpha[1]*T[2] + (1.-alpha[1]-gamma[1])*T[1] + gamma[1]*(Tsurf+Tsurfp1);
     for (i=2; i<nz; i++) {
         r[i] = gamma[i]*T[i-1] + (1.-alpha[i]-gamma[i])*T[i] + alpha[i]*T[i+1];
     }
-    r[nz] = gamma[nz]*T[nz-1] + (1.-gamma[nz])*T[nz] + 
-      dt/rhoc[nz]*Fgeotherm/(z[nz]-z[nz-1]); // assumes rhoc[nz+1]=rhoc[nz]
+    r[nz] = 2.*gamma[nz]*T[nz-1] + (1.-2.*gamma[nz])*T[nz] + 
+        2.*dt/rhoc[nz]*Fgeotherm/(z[nz]-z[nz-1]); // assumes rhoc[nz+1]=rhoc[nz]
 
     /* Solve for T at n+1 */
     tridag(a,b,c,r,T,nz); // update by tridiagonal inversion

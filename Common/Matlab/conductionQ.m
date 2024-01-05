@@ -51,17 +51,18 @@ function [T, Tsurf, Fsurf] = conductionQ(nz,z,dt,Qn,Qnp1,T,ti,rhoc,emiss,Tsurf,F
   alpha(2:nz-1) = k(3:nz) *dt ./ (z(3:nz)-z(1:nz-2)) ./ rho2(2:nz-1) ./ (z(3:nz)-z(2:nz-1));
   gamma(2:nz-1) = k(2:nz-1) *dt ./ (z(3:nz)-z(1:nz-2)) ./ rho2(2:nz-1) ./ (z(2:nz-1)-z(1:nz-2));
   
-  buf = dt/(z(nz)-z(nz-1))^2;
   alpha(nz) = 0.;
-  gamma(nz) = k(nz)*buf/(2*rhoc(nz)); % assumes rhoc(nz+1)=rhoc(nz)
+  gamma(nz) = k(nz)*dt/(2*rhoc(nz))/(z(nz)-z(nz-1))^2;
   
-  k1 = k(1)/dz;
+  k1dz = k(1)/dz;
   
   % elements of tridiagonal matrix
   a = -gamma(:);   %  a(1) is not used
   b = 1. + alpha(:) + gamma(:); %  b(1) has to be reset at every timestep
   c = -alpha(:);   %  c(nz) is not used
-
+  a(nz) = -2*gamma(nz);
+  b(nz) = 1 + 2*gamma(nz);
+  
   Tr = Tsurf;            % 'reference' temperature
   Told = T(:);
 
@@ -76,9 +77,9 @@ function [T, Tsurf, Fsurf] = conductionQ(nz,z,dt,Qn,Qnp1,T,ti,rhoc,emiss,Tsurf,F
     sigSB=5.6704d-8;
     arad = -3.*emiss*sigSB*Tr^4;
     brad = 2.*emiss*sigSB*Tr^3;
-    ann = (Qn-arad)/(k1+brad);
-    annp1 = (Qnp1-arad)/(k1+brad);
-    bn = (k1-brad)/(k1+brad);
+    ann = (Qn-arad)/(k1dz+brad);
+    annp1 = (Qnp1-arad)/(k1dz+brad);
+    bn = (k1dz-brad)/(k1dz+brad);
     b(1) = 1. + alpha(1) + gamma(1) - gamma(1)*bn;
   
     % Set RHS         
@@ -88,8 +89,8 @@ function [T, Tsurf, Fsurf] = conductionQ(nz,z,dt,Qn,Qnp1,T,ti,rhoc,emiss,Tsurf,F
     r(2:nz-1) = gamma(2:nz-1).*T(1:nz-2) + ...
 		(1-alpha(2:nz-1)-gamma(2:nz-1)).*T(2:nz-1) + ...
 		alpha(2:nz-1).*T(3:nz);
-    r(nz) = gamma(nz)*T(nz-1) + (1.-gamma(nz))*T(nz) ...
-	    + dt/rhoc(nz)*Fgeotherm/(z(nz)-z(nz-1)); % assumes rhoc(nz+1)=rhoc(nz)
+    r(nz) = 2*gamma(nz)*T(nz-1) + (1.-2*gamma(nz))*T(nz) ...
+	    + 2*dt/rhoc(nz)*Fgeotherm/(z(nz)-z(nz-1)); 
 
     % Solve for T at n+1
     D = [ [a(2:nz);0], b, [0;c(1:nz-1)] ];

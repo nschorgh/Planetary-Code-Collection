@@ -41,20 +41,22 @@ function [T, Fsurf] = conductionT(nz, z, dt, T, Tsurf, Tsurfp1, ti, rhoc, Fgeoth
   gamma(2:nz-1) = k(2:nz-1) *dt ./ (z(3:nz)-z(1:nz-2)) ./ rho2(2:nz-1) ./ (z(2:nz-1)-z(1:nz-2));
   
   alpha(nz) = 0.;
-  gamma(nz) = k(nz)*dt/(rhoc(nz)+rhoc(nz))/(z(nz)-z(nz-1))^2; % assumes rhoc(nz+1)=rhoc(nz)
+  gamma(nz) = k(nz)*dt/(2.*rhoc(nz))/(z(nz)-z(nz-1))^2;
   
   % elements of tridiagonal matrix
   a = -gamma(:);   %  a(1) is not used
   b = 1. + alpha(:) + gamma(:);
   c = -alpha(:);   %  c(nz) is not used
+  a(nz) = -2*gamma(nz);
+  b(nz) = 1 + 2*gamma(nz);
 
   % Set RHS
   r = zeros(nz,1);
   r(1) = alpha(1)*T(2) + (1.-alpha(1)-gamma(1))*T(1) + gamma(1)*(Tsurf+Tsurfp1);
   r(2:nz-1) = gamma(2:nz-1).*T(1:nz-2) + ...
 	      (1-alpha(2:nz-1)-gamma(2:nz-1)).*T(2:nz-1) + alpha(2:nz-1).*T(3:nz);
-  r(nz) = gamma(nz)*T(nz-1) + (1.-gamma(nz))*T(nz) + ...
-          dt/rhoc(nz)*Fgeotherm/(z(nz)-z(nz-1)); % assumes rhoc(nz+1)=rhoc(nz)
+  r(nz) = 2*gamma(nz)*T(nz-1) + (1.-2*gamma(nz))*T(nz) + ...
+          2*dt/rhoc(nz)*Fgeotherm/(z(nz)-z(nz-1)); % assumes rhoc(nz+1)=rhoc(nz)
 
   % Solve for T at n+1
   D = [ [a(2:nz);0], b, [0;c(1:nz-1)] ];
