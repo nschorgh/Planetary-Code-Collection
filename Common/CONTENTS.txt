@@ -57,7 +57,7 @@ ran2.for:
 
 
 
-Cversion/
+C/
 	C version of conductionQ and conductionT
 
 Matlab/
