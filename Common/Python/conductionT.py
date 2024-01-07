@@ -45,14 +45,13 @@ def conductionT(nz,z,dt,T,Tsurf,Tsurfp1,ti,rhoc,Fgeotherm,Fsurf):
     alpha[1] = k[2] * dt / z[2] *2. / (rhoc[1]+rhoc[2]) / (z[2]-z[1])
     gamma[1] = k[1] * dt / z[2] *2. / (rhoc[1]+rhoc[2]) / z[1]
 
-    buf2 = dt * 2./(rhoc[2:-1]+rhoc[3:]) / (z[3:]-z[1:-2])
+    buf2 = dt * 2. / (rhoc[2:-1]+rhoc[3:]) / (z[3:]-z[1:-2])
     alpha[2:-1] = k[3:] * buf2[:] / (z[3:]-z[2:-1])
     gamma[2:-1] = k[2:-1] * buf2[:] / (z[2:-1]-z[1:-2])
         
-    alpha[nz] = 0.  # ensure b[nz] = 1+gammma[nz]
-    buf = dt / (z[nz]-z[nz-1])**2
-    gamma[nz] = k[nz] * buf / (rhoc[nz]+rhoc[nz]) # assumes rhoc[nz+1]=rhoc[nz]
-  
+    alpha[nz] = 0.  # ensure b[nz] = 1+gamma[nz]
+    gamma[nz] = dt * k[nz] / (2*rhoc[nz]) / (z[nz]-z[nz-1])**2
+    
     # Set RHS
     r = np.empty(nz+1)
     r[1] = alpha[1]*T[2] + (1.-alpha[1]-gamma[1])*T[1] + gamma[1]*(Tsurf+Tsurfp1)
@@ -60,8 +59,8 @@ def conductionT(nz,z,dt,T,Tsurf,Tsurfp1,ti,rhoc,Fgeotherm,Fsurf):
     #    r[i] = gamma[i]*T[i-1] + (1.-alpha[i]-gamma[i])*T[i] + alpha[i]*T[i+1]
     r[2:-1] = gamma[2:-1]*T[1:-2] + (1.-alpha[2:-1]-gamma[2:-1])*T[2:-1] \
         + alpha[2:-1]*T[3:]
-    r[nz] = gamma[nz]*T[nz-1] + (1.-gamma[nz])*T[nz] + \
-        dt/rhoc[nz]*Fgeotherm/(z[nz]-z[nz-1]) # assumes rhoc[nz+1]=rhoc[nz]
+    r[nz] = 2*gamma[nz]*T[nz-1] + (1.-2*gamma[nz])*T[nz] + \
+        2*dt/rhoc[nz]*Fgeotherm/(z[nz]-z[nz-1]) # assumes rhoc[nz+1]=rhoc[nz]
 
     # elements of tridiagonal matrix
     # special matrix for solve_banded
@@ -69,7 +68,10 @@ def conductionT(nz,z,dt,T,Tsurf,Tsurfp1,ti,rhoc,Fgeotherm,Fsurf):
     D[0,1:] = -alpha[1:-1]               # coefficient 'c'
     D[1,:] = 1. + alpha[1:] + gamma[1:]  # coefficient 'b'
     D[2,:-1] = -gamma[2:]                # coefficient 'a'
-
+    #D[2,:-3] = -gamma[2:-2]
+    D[1,-1] = 1. + 2*gamma[nz]
+    D[2,-2] = -2*gamma[nz]
+    
     # Solve for T at n+1
     T[1:] = scipy.linalg.solve_banded((1,1), D, r[1:])
     T[0] = Tsurfp1

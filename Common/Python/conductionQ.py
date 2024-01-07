@@ -41,10 +41,10 @@ def conductionQ(nz, z, dt, Qn, Qnp1, T, ti, rhoc, emiss, Fgeotherm, Fsurf):
     sigSB = 5.6704e-8
 
     # set some constants
-    k = np.empty(nz + 1)
+    k = np.empty(nz+1)
     k = ti[:] ** 2 / rhoc[:]  # thermal conductivity
-    alpha = np.empty(nz + 1)
-    gamma = np.empty(nz + 1)
+    alpha = np.empty(nz+1)
+    gamma = np.empty(nz+1)
 
     dz = 2 * z[1]
     beta = dt / (rhoc[1] + rhoc[2]) / dz**2
@@ -55,16 +55,15 @@ def conductionQ(nz, z, dt, Qn, Qnp1, T, ti, rhoc, emiss, Fgeotherm, Fsurf):
     alpha[2:-1] = k[3:] * buf2 / (z[3:] - z[2:-1])
     gamma[2:-1] = k[2:-1] * buf2 / (z[2:-1] - z[1:-2])
 
-    buf = dt / (z[nz] - z[nz - 1]) ** 2
-    alpha[nz] = 0.0  # ensures b[nz] = 1 + gamma[nz]
-    gamma[nz] = k[nz] * buf / (2 * rhoc[nz])  # assumes rhoc[nz+1]=rhoc[nz]
+    alpha[nz] = 0.0  
+    gamma[nz] = dt * k[nz] / (2 * rhoc[nz]) / (z[nz]-z[nz-1])**2
 
     # for i in range(2,nz):  # 2 ... nz-1
     #    buf = dt / (z[i+1]-z[i-1])
     #    alpha[i] = 2*k[i+1]*buf/(rhoc[i]+rhoc[i+1])/(z[i+1]-z[i])
     #    gamma[i] = 2*k[i]*buf/(rhoc[i]+rhoc[i+1])/(z[i]-z[i-1])
 
-    k1 = k[1] / dz
+    k1dz = k[1] / dz
 
     # elements of tridiagonal matrix
     # special matrix for solve_banded
@@ -73,10 +72,12 @@ def conductionQ(nz, z, dt, Qn, Qnp1, T, ti, rhoc, emiss, Fgeotherm, Fsurf):
     D[1, :] = 1.0 + alpha[1:] + gamma[1:]  # coefficient 'b'
     D[2, :-1] = -gamma[2:]  # coefficient 'a'
     # b[1] has to be reset at every timestep
-
+    D[1,-1] = 1. + 2*gamma[nz]
+    D[2,-2] = -2*gamma[nz]
+    
     Tr = T[0]  # 'reference' temperature
     iter = 0
-    Told = np.empty(nz + 1)
+    Told = np.empty(nz+1)
     Told[:] = T[:]
 
     while iter < 10:
@@ -87,30 +88,30 @@ def conductionQ(nz, z, dt, Qn, Qnp1, T, ti, rhoc, emiss, Fgeotherm, Fsurf):
         # Emission
         arad = -3.0 * emiss * sigSB * Tr**4
         brad = 2.0 * emiss * sigSB * Tr**3
-        ann = (Qn - arad) / (k1 + brad)
-        annp1 = (Qnp1 - arad) / (k1 + brad)
-        bn = (k1 - brad) / (k1 + brad)
+        ann = (Qn - arad) / (k1dz + brad)
+        annp1 = (Qnp1 - arad) / (k1dz + brad)
+        bn = (k1dz - brad) / (k1dz + brad)
         b1 = 1.0 + alpha[1] + gamma[1] - gamma[1] * bn  # b[1]
 
         # Set RHS
-        r = np.empty(nz + 1)
+        r = np.empty(nz+1)
         r[1] = (
             gamma[1] * (annp1 + ann)
             + (1.0 - alpha[1] - gamma[1] + gamma[1] * bn) * T[1]
             + alpha[1] * T[2]
         )
+        # for i in range(2,nz): # 2...nz-1
+        #    r[i] = gamma[i]*T[i-1] + (1.-alpha[i]-gamma[i])*T[i]+ alpha[i]*T[i+1]
         r[2:-1] = (
             gamma[2:-1] * T[1:-2]
             + (1.0 - alpha[2:-1] - gamma[2:-1]) * T[2:-1]
             + alpha[2:-1] * T[3:]
         )
         r[nz] = (
-            gamma[nz] * T[nz - 1]
-            + (1.0 - gamma[nz]) * T[nz]
-            + dt / rhoc[nz] * Fgeotherm / (z[nz] - z[nz - 1])
-        )  # assumes rhoc[nz+1]=rhoc[nz]
-        # for i in range(2,nz): # 2...nz-1
-        #    r[i] = gamma[i]*T[i-1] + (1.-alpha[i]-gamma[i])*T[i]+ alpha[i]*T[i+1]
+            2*gamma[nz] * T[nz-1]
+            + (1.0 - 2*gamma[nz]) * T[nz]
+            + 2 * dt / rhoc[nz] * Fgeotherm / (z[nz] - z[nz-1])
+        )
 
         D[1, 0] = b1  # coefficient b[1]
 
