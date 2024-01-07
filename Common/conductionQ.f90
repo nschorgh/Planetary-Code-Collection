@@ -73,7 +73,7 @@ subroutine cranknQ(nz,z,dt,Qn,Qnp1,T,ti,rhoc,emiss,Tsurf,Fgeotherm,Fsurf)
   ! Volterra predictor (optional)
   Fsurf = - k(1) * ( T(1)-Tsurf ) / z(1)  ! heat flux
   seb = -Fsurf -emiss*sigSB*Tsurf**4 + (2*Qnp1 + Qn)/3.
-  !Tpred = Tsurf + sqrt(4*dt/pi) / ti(1) * seb  ! 1st order  
+  ! Tpred = Tsurf + sqrt(4*dt/pi) / ti(1) * seb  ! 1st order
   Tpred = Tsurf + seb / ( sqrt(pi/(4.*dt))*ti(1) + 8./3.*emiss*sigSB*Tsurf**3 )
   Tr = (Tsurf+Tpred)/2.  ! better reference temperature
   
@@ -121,7 +121,7 @@ subroutine conductionQ(nz,z,dt,Qn,Qnp1,T,ti,rhoc,emiss,Tsurf,Fgeotherm,Fsurf)
   real(8), intent(OUT) :: Fsurf
   integer, parameter :: Ni=5  ! for flux smoothing
   integer j
-  real(8) k1, Tsurfold, Told(nz), Qartiold, Qarti
+  real(8) Tsurfold, Told(nz), Qartiold, Qarti, avFsurf
 
   Tsurfold = Tsurf
   Told(:) = T(:)
@@ -132,14 +132,15 @@ subroutine conductionQ(nz,z,dt,Qn,Qnp1,T,ti,rhoc,emiss,Tsurf,Fgeotherm,Fsurf)
   if ( Tsurf>1.2*Tsurfold .or. Tsurf<0.8*Tsurfold ) then  ! linearization error
      Tsurf = Tsurfold
      T(1:nz) = Told(1:nz)
+     avFsurf = 0.
      do j=1,Ni
         Qartiold = ( (Ni-j+1)*Qn + (j-1)*Qnp1 ) / Ni
         Qarti    = ( (Ni-j)*Qn + j*Qnp1 ) / Ni
         call cranknQ(nz,z,dt/Ni,Qartiold,Qarti,T,ti,rhoc,emiss,Tsurf, &
-               & Fgeotherm,Fsurf)
+             & Fgeotherm,Fsurf)
+        avFsurf = avFsurf + Fsurf
      end do
+     Fsurf = avFsurf/Ni
   endif
 
-  k1 = ti(1)**2/rhoc(1)
-  Fsurf = - k1 * (T(1)-Tsurf) / z(1) ! heat flux into surface
 end subroutine conductionQ

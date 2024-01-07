@@ -2,13 +2,13 @@
 #include "thrmlLib.h"
 
 
-void cranknQ(int nz, double z[], double dt, double Qn, double Qnp1,
-	     double T[], double ti[], double rhoc[], double emiss,
-	     double Fgeotherm, double *Fsurf)  {
+void conductionQ(int nz, double z[], double dt, double Qn, double Qnp1,
+		double T[], double ti[], double rhoc[], double emiss,
+		double Fgeotherm, double *Fsurf)  {
 /************************************************************************ 
-   cranknnQ:  program to calculate the diffusion of temperature into the
-              ground and thermal emission at the surface with variable
-              thermal properties on irregular grid 
+   conductionQ:  program to calculate the diffusion of temperature 
+                 into the ground and thermal emission at the surface 
+                 with variable thermal properties on irregular grid 
    Crank-Nicolson scheme, flux conservative 
                           uses Samar's radiation formula 
    Eqn: rhoc*T_t = (k*T_z)_z 
@@ -42,15 +42,14 @@ void cranknQ(int nz, double z[], double dt, double Qn, double Qnp1,
    extended to variable thermal properties 
          and irregular grid by Norbert Schorghofer 
    converted from Fortran to C in 2019
-   added Volterra predictor 1/2024 -norbert
 ************************************************************************/
   
-  int i;
-  const double sigSB = 5.6704e-8, pi=3.1415926535897931;
+  int i, iter;
+  const double sigSB = 5.6704e-8;
   double a[nz+1], b[nz+1], c[nz+1], r[nz+1];
   double k[nz+1], k1dz, alpha[nz+1], gamma[nz+1], Tr;
   double arad, brad, ann, annp1, bn, buf, dz, beta;
-  double seb, Tpred;
+  double Told[nz+1];
   
   /* set some constants */
   for (i=1; i<=nz; i++) {
@@ -78,16 +77,13 @@ void cranknQ(int nz, double z[], double dt, double Qn, double Qnp1,
   }
   a[nz] = -2.*gamma[nz];
   b[nz] = 1. + 2.*gamma[nz];
-
-  /* Volterra predictor (optional) */
-  *Fsurf = - k[1] * ( T[1]-T[0] ) / z[1];  // heat flux;
-  seb = -(*Fsurf) -emiss*sigSB*pow(T[0],4) + (2*Qnp1 + Qn)/3.;
-    // Tpred = Tsurf + sqrt(4*dt/pi) / ti(1) * seb;  ! 1st order  
-  Tpred = T[0] + seb / ( sqrt(pi/(4.*dt))*ti[1] + 8./3.*emiss*sigSB*pow(T[0],3) );
-  Tr = (T[0]+Tpred)/2.;  // better reference temperature
   
-  /* Emission */
   Tr = T[0];    //   'reference' temperature
+  iter = 0;
+  for (i=1; i<=nz; i++) Told[i] = T[i];
+ lbpredcorr: 
+
+  /* Emission */
   arad = -3 * emiss * sigSB * Tr * Tr * Tr * Tr;
   brad = 2 * emiss * sigSB * Tr * Tr * Tr;
   ann = (Qn - arad) / (k1dz + brad);
@@ -109,39 +105,18 @@ void cranknQ(int nz, double z[], double dt, double Qn, double Qnp1,
   
   T[0] = 0.5 * (annp1 + bn * T[1] + T[1]);
 
+  /* iterative predictor-corrector */
+  if ((T[0] > 1.2*Tr || T[0] < 0.8*Tr) && iter<10) {  // linearization error expected
+     /* redo until Tr is within 20% of new surface temperature
+       (under most circumstances, the 20% threshold is never exceeded)
+     */
+     iter++;
+     Tr = sqrt(Tr * T[0]);  // linearize around an intermediate temperature
+     for (i=1; i<=nz; i++) T[i] = Told[i];
+     goto lbpredcorr;
+  }
+  // if (iter>=5) printf("consider taking shorter time steps %d\n",iter);
+  
   *Fsurf = -k[1] * (T[1] - T[0]) / z[1];  // heat flux into surface 
 
-} /* cranknQ */
-
-
-
-void conductionQ(int nz, double z[], double dt, double Qn, double Qnp1,
-		double T[], double ti[], double rhoc[], double emiss,
-		double Fgeotherm, double *Fsurf)  {
-  /*
-    conductionQ:  wrapper for cranknQ, which improves stability
-    Arguments and restrictions are the same as for function cranknQ above.
-    created wrapper using flux smoothing 1/2024  
-  */
-  int i, j;
-  const int Ni=5;  // for flux smoothing
-  double Told[nz+1], Qartiold, Qarti, avFsurf;
-
-  for (i=0; i<=nz; i++) Told[i] = T[i];
-  
-  cranknQ(nz, z, dt, Qn, Qnp1, T, ti, rhoc, emiss, Fgeotherm, Fsurf);
-
-  /* artificial flux smoothing */
-  if ( T[0]>1.2*Told[0] || T[0]<0.8*Told[0] ) { // linearization error
-    for (i=0; i<=nz; i++) T[i] = Told[i];
-    avFsurf = 0.;
-    for (j=0; j<=Ni; j++) {
-      Qartiold = ( (Ni-j+1)*Qn + (j-1)*Qnp1 ) / Ni;
-      Qarti    = ( (Ni-j)*Qn + j*Qnp1 ) / Ni;
-      cranknQ(nz,z,dt/Ni,Qartiold,Qarti,T,ti,rhoc,emiss,Fgeotherm,Fsurf);
-      avFsurf += *Fsurf;
-    }
-    *Fsurf = avFsurf/Ni;
-  }
-  
 } /* conductionQ */
