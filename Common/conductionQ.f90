@@ -31,7 +31,7 @@ subroutine cranknQ(nz,z,dt,Qn,Qnp1,T,ti,rhoc,emiss,Tsurf,Fgeotherm,Fsurf)
 !   originally written by Samar Khatiwala, 2001
 !   extended to variable thermal properties and 
 !         irregular grid by Norbert Schorghofer
-!   added Volterra predictor, January 2024, -Norbert
+!   added Volterra predictor, January 2024, -norbert
 !************************************************************************
 
   implicit none
@@ -108,9 +108,7 @@ end subroutine cranknQ
 subroutine conductionQ(nz,z,dt,Qn,Qnp1,T,ti,rhoc,emiss,Tsurf,Fgeotherm,Fsurf)
 !***********************************************************************
 !   conductionQ:  wrapper for cranknQ, which improves stability
-!
 !   Arguments and restrictions are the same as for subroutine cranknQ above.
-!     
 !   created wrapper using flux smoothing 12/2023  
 !***********************************************************************
   implicit none

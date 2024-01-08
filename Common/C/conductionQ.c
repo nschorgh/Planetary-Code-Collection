@@ -135,7 +135,7 @@ void conductionQ(int nz, double z[], double dt, double Qn, double Qnp1,
   if ( T[0]>1.2*Told[0] || T[0]<0.8*Told[0] ) { // linearization error
     for (i=0; i<=nz; i++) T[i] = Told[i];
     avFsurf = 0.;
-    for (j=0; j<=Ni; j++) {
+    for (j=1; j<=Ni; j++) {
       Qartiold = ( (Ni-j+1)*Qn + (j-1)*Qnp1 ) / Ni;
       Qarti    = ( (Ni-j)*Qn + j*Qnp1 ) / Ni;
       cranknQ(nz,z,dt/Ni,Qartiold,Qarti,T,ti,rhoc,emiss,Fgeotherm,Fsurf);
