@@ -9,8 +9,8 @@ void cranknQ(int nz, double z[], double dt, double Qn, double Qnp1,
    cranknnQ:  program to calculate the diffusion of temperature into the
               ground and thermal emission at the surface with variable
               thermal properties on irregular grid 
-   Crank-Nicolson scheme, flux conservative 
-                          uses Samar's radiation formula 
+   Crank-Nicolson scheme, flux conservative, uses Samar's radiation formula
+
    Eqn: rhoc*T_t = (k*T_z)_z 
    BC (z=0): Q(t) + kT_z = em*sig*T^4 
    BC (z=L): heat flux = Fgeotherm 
@@ -82,7 +82,7 @@ void cranknQ(int nz, double z[], double dt, double Qn, double Qnp1,
   /* Volterra predictor (optional) */
   *Fsurf = - k[1] * ( T[1]-T[0] ) / z[1];  // heat flux;
   seb = -(*Fsurf) -emiss*sigSB*pow(T[0],4) + (2*Qnp1 + Qn)/3.;
-  // Tpred = Tsurf + sqrt(4*dt/pi) / ti(1) * seb;  ! 1st order  
+  // Tpred = T[0] + sqrt(4*dt/pi) / ti(1) * seb;  ! 1st order
   Tpred = T[0] + seb / ( sqrt(pi/(4.*dt))*ti[1] + 8./3.*emiss*sigSB*pow(T[0],3) );
   Tr = (T[0]+Tpred)/2.;  // better reference temperature
   

@@ -75,7 +75,7 @@ if __name__ == '__main__':
             Fmean += Fmean
             Tmean = Tmean[:] + T[:]            
             if n%10 == 0:
-                np.savetxt(fout2,np.column_stack(T[:]),fmt="%7.2f"*(nz+1))
+                np.savetxt(fout2,np.column_stack(T[:]),fmt=" %7.2f"*(nz+1))
                 
     # end of time loop
     

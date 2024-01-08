@@ -69,8 +69,8 @@ int main(void)  {
        }
        if (n > 50000 - STEPSPERSOL) {
 	  if (n%10 == 0) {
-	     fprintf(fout2, "%7.2f  ", T[0]);
-	     for (i=1; i <= nz; i++)  fprintf(fout2, "%7.2f  ",T[i]);
+	     fprintf(fout2, "%7.2f ", T[0]);
+	     for (i=1; i <= nz; i++)  fprintf(fout2, "%7.2f ",T[i]);
 	     fprintf(fout2, "\n");
 	  }
        }

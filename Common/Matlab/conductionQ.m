@@ -26,8 +26,8 @@ function [T, Tsurf, Fsurf] = conductionQ(nz,z,dt,Qn,Qnp1,T,ti,rhoc,emiss,...
         avFsurf = avFsurf + Fsurf;
      end
      Fsurf = avFsurf/Ni;
-
   end
+  
 end
 
 

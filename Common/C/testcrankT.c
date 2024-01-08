@@ -65,8 +65,8 @@ int main(void)  {
     if (n>50000-STEPSPERSOL) {
       if (n%10==9) {  // synched with test_Tprofile.m
 	printf("%f %f\n",time/Period,Tsurf);
-	fprintf(fout, "%7.2f  ", Tsurf);
-	for (i=1; i<=nz; i++)  fprintf(fout, "%7.2f  ",T[i]);
+	fprintf(fout, "%7.2f ", Tsurf);
+	for (i=1; i<=nz; i++)  fprintf(fout, "%7.2f ",T[i]);
 	fprintf(fout, "\n");
 	
       }

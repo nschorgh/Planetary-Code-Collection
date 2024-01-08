@@ -3,8 +3,8 @@ subroutine cranknQ(nz,z,dt,Qn,Qnp1,T,ti,rhoc,emiss,Tsurf,Fgeotherm,Fsurf)
 !   cranknQ:  program to calculate the diffusion of temperature into the
 !             ground and thermal emission at the surface with variable
 !             thermal properties on irregular grid
-!   Crank-Nicolson scheme, flux conservative
-!                          uses Samar's radiation formula
+!   Crank-Nicolson scheme, flux conservative, uses Samar's radiation formula
+!  
 !   Eqn: rhoc*T_t = (k*T_z)_z 
 !   BC (z=0): Q(t) + kT_z = em*sig*T^4
 !   BC (z=L): heat flux = Fgeotherm
