@@ -87,7 +87,7 @@ subroutine conductionQ(nz,z,dt,Qn,Qnp1,T,ti,rhoc,emiss,Tsurf, &
   bn = (k1dz-brad) / (k1dz+brad)
   b(1) = 1. + alpha(1) + gamma(1) - gamma(1)*bn
   
-  ! Set RHS         
+  ! Set RHS 
   r(1) = gamma(1)*(annp1+ann) + &
        &     (1.-alpha(1)-gamma(1)+gamma(1)*bn)*T(1) + alpha(1)*T(2)
   do concurrent (i=2:nz-1)
@@ -102,6 +102,6 @@ subroutine conductionQ(nz,z,dt,Qn,Qnp1,T,ti,rhoc,emiss,Tsurf, &
   Tsurf = 0.5*(annp1 + bn*T(1) + T(1)) ! (T0+T1)/2
 
   Fsurf = - k(1) * (T(1)-Tsurf) / z(1) ! heat flux into surface
-  !Fsurf = - k(1) * ( -4./3.*Tsurf +3./2.*T(1) -T(2)/6. ) / z(1) 
+  !Fsurf = - k(1) * ( -4./3.*Tsurf +3./2.*T(1) -T(2)/6. ) / z(1)
 end subroutine conductionQ
 

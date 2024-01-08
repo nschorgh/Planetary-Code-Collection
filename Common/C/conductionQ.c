@@ -82,12 +82,12 @@ void cranknQ(int nz, double z[], double dt, double Qn, double Qnp1,
   /* Volterra predictor (optional) */
   *Fsurf = - k[1] * ( T[1]-T[0] ) / z[1];  // heat flux;
   seb = -(*Fsurf) -emiss*sigSB*pow(T[0],4) + (2*Qnp1 + Qn)/3.;
-    // Tpred = Tsurf + sqrt(4*dt/pi) / ti(1) * seb;  ! 1st order  
+  // Tpred = Tsurf + sqrt(4*dt/pi) / ti(1) * seb;  ! 1st order  
   Tpred = T[0] + seb / ( sqrt(pi/(4.*dt))*ti[1] + 8./3.*emiss*sigSB*pow(T[0],3) );
   Tr = (T[0]+Tpred)/2.;  // better reference temperature
   
   /* Emission */
-  Tr = T[0];    //   'reference' temperature
+  //Tr = T[0];    //   'reference' temperature
   arad = -3 * emiss * sigSB * Tr * Tr * Tr * Tr;
   brad = 2 * emiss * sigSB * Tr * Tr * Tr;
   ann = (Qn - arad) / (k1dz + brad);
@@ -105,7 +105,7 @@ void cranknQ(int nz, double z[], double dt, double Qn, double Qnp1,
      2.*dt/rhoc[nz]*Fgeotherm/(z[nz]-z[nz-1]);   // assumes rhoc[nz+1]=rhoc[nz]
   
   /*  Solve for T at n+1 */
-  tridag(a, b, c, r, T, (unsigned long)nz);  // update by tridiagonal inversion 
+  tridag(a, b, c, r, T, (unsigned long)nz);  // update by tridiagonal inversion
   
   T[0] = 0.5 * (annp1 + bn * T[1] + T[1]);
 
