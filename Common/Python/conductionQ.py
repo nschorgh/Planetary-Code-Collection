@@ -73,15 +73,15 @@ def cranknQ(nz, z, dt, Qn, Qnp1, T, ti, rhoc, emiss, Fgeotherm, Fsurf):
     D[1, :] = 1.0 + alpha[1:] + gamma[1:]  # coefficient 'b'
     D[2, :-1] = -gamma[2:]  # coefficient 'a'
     # b[1] has to be reset at every timestep
-    D[1,-1] = 1. + 2*gamma[nz]
+    D[1,-1] = 1.0 + 2*gamma[nz]
     D[2,-2] = -2*gamma[nz]
 
     # Volterra predictor (optional)
     Fsurf = - k[1] * ( T[1]-T[0] ) / z[1]  # heat flux
-    seb = -Fsurf -emiss*sigSB*T[0]**4 + (2*Qnp1 + Qn)/3.
+    SEB = -Fsurf -emiss*sigSB*T[0]**4 + (2*Qnp1 + Qn)/3.
     pref = np.sqrt(4*dt/np.pi)
-    # Tpred = T[0] + pref / ti[1] * seb  ! 1st order
-    Tpred = T[0] + seb / ( ti[1]/pref + 8./3.*emiss*sigSB*T[0]**3 )
+    # Tpred = T[0] + pref / ti[1] * SEB  ! 1st order
+    Tpred = T[0] + SEB / ( ti[1]/pref + 8./3.*emiss*sigSB*T[0]**3 )
     Tr = (T[0]+Tpred)/2.  # better reference temperature
     
     # Emission
@@ -126,12 +126,12 @@ def cranknQ(nz, z, dt, Qn, Qnp1, T, ti, rhoc, emiss, Fgeotherm, Fsurf):
 
 def conductionQ(nz, z, dt, Qn, Qnp1, T, ti, rhoc, emiss, Fgeotherm, Fsurf):
     """
-    conductionQ:  wrapper for cranknQ, which improves stability
+    conductionQ:  wrapper for cranknQ, which improves stability.
     Arguments and restrictions are the same as for subroutine cranknQ above.
     created wrapper using flux smoothing 1/2024
     """
 
-    Ni=5  # number of sub-steps for flux smoothing
+    Ni = 5  # number of sub-steps for flux smoothing
 
     Told = np.copy(T)
     

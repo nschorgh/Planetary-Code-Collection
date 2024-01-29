@@ -26,7 +26,7 @@ PROGRAM testcrankQ_asymp
   print *,'zmax=',zmax
   print *,'Thermal inertia=',thIn
 
-  open(unit=21,file='Tsurface',status='unknown') ! surface temperature
+  open(unit=21,file='Tsurface_asymp',status='unknown') ! surface temperature
   
   Tsurf = T0
   T(1:nz) = T0
@@ -35,7 +35,7 @@ PROGRAM testcrankQ_asymp
   write(30,*) (z(i),i=1,nz)
   close(30)
   kappa = thIn**2/rhocv(1)**2  ! thermal diffusivity
-  print *,z(1)**2/(2*kappa)  ! time scale for heat propagation to first grid point
+  print *,z(1)**2/(2*kappa) ! time scale for heat propagation to first grid point
   
   Qn = emiss*sigSB*T0**4
   Qnp1 = Qn
@@ -44,7 +44,6 @@ PROGRAM testcrankQ_asymp
      time = (n+1)*dt   !   time at n+1; 
      if (time>0.) Qnp1 = 0. ! turn off the flux
      call cranknQ(nz,z,dt,Qn,Qnp1,T,ti,rhocv,emiss,Tsurf,Fgeo,Fsurf)
-     !call conductionQ(nz,z,dt,Qn,Qnp1,T,ti,rhocv,emiss,Tsurf,Fgeo,Fsurf)
      Qn = Qnp1
 
      ! asymptotic solution from Handelsman & Olmstead (1972)

@@ -23,8 +23,9 @@ testcrankT: testcrankT.o makefile
 testcrankQ_asymp asymp: testcrankQ_asymp.o makefile
 # 	use pure version of cranknQ
 	make CC='$(CC)' CFLAGS='$(CFLAGS)' -C $(SR) common
-	$(CC) $(LFLAGS) testcrankQ_asymp.o ../Misc/conductionQ+smooth.o \
-	$(SR)tridag.o $(SR)grids.o
+	$(CC) $(CFLAGS) -c ../Misc/conductionQ+smooth.f90
+	$(CC) $(LFLAGS) testcrankQ_asymp.o conductionQ+smooth.o $(SR)tridag.o \
+	$(SR)grids.o
 
 testcrankQ_conv conv: testcrankQ_conv.o makefile
 	make -C $(SR) common
