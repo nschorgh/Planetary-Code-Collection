@@ -40,18 +40,25 @@ fast_subs_asteroid1.f90:
 common_subs.f90:
 	functions used by many of these programs
 
+test_gardening1.f90:
+
+test_timejumps.f90:
+
+lats.0:
+	example input file for asteroid_fast?.f90
+
+
+Spherically Symmetric Thermal Model with Ice Retreat
+====================================================
+
 sphere1d_implicit.f90: (main program)
 	semi-implicit solver for 1D spherically symmetric heat equation and ice retreat
 
 orbit_A0000240.dat:
 	sample input for sphere1_implicit
 
-test_gardening1.f90
-
-test_timejumps.f90
 
 
 
 makefile:
 	shows file dependencies
-
