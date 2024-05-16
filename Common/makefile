@@ -1,14 +1,11 @@
 CC = gfortran
-CFLAGS = -O2 -Wall -Wno-integer-division
-LFLAGS = -O2 -Wall
+CFLAGS = -O3 -Wall -Wno-integer-division
 
 #CC = ifort
 #CFLAGS = -O2 #-warn all -warn notruncated_source -nogen-interface
-#LFLAGS = -O2 -warn all
 
 #CC = pgfortran
 #CFLAGS = -fast
-#LFLAGS = -fast
 
 
 common: generalorbit.o flux_noatm.o conductionQ.o conductionT.o tridag.o \

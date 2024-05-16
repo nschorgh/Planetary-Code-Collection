@@ -11,9 +11,9 @@ z=fscanf(fid,'%f');
 fclose(fid);
 %z=[0;z];
 
-% plot profiles
+% plot temperature profiles
 clf;
-set(gcf,'defaultaxesfontsize',16)
+set(gcf,'defaultaxesfontsize',12)  % Octave
 
 h1=plot(T(:,:),z,'k-');
 axis ij
@@ -31,12 +31,12 @@ hold on
 dt=P/12;
 for t=0:dt:P
   T=Tm+Ta*exp(-z/delta).*sin(z/delta-w*t);
-  h2=plot(T,z,'r-');
+  h2=plot(T,z,'r--');
 end
 hold off
 
 hl = legend([h1(1), h2],'Numerical','Analytical','location','southwest');
-set(hl,'fontsize',16)
+set(hl,'fontsize',12)
 
 % print -dpng test_Tprofile.png
 % print -depsc test_Tprofile.eps
