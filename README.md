@@ -1,7 +1,7 @@
 Planetary Code Collection
 =========================
 
-*by Norbert Schorghofer*
+*by Norbert Schörghofer*
 
 
 This program collection contains:
@@ -32,6 +32,7 @@ Directory: `Asteroids/`
 The core subroutines for the thermal model are located in `Common/` and available in Fortran, C, Matlab, and Python.
 `Common/Test/testcrankQ.f90` provides an example for how to call the semi-implicit solver for the heat equation.  
 *Documentation: User Guide Part 1*  
+*Documentation: [Schörghofer & Khatiwala (2024)](https://doi.org/10.3847/PSJ/ad4351)*
 
 
 ### Asynchronous Models for Temperature, Impact Stirring, and Ice Loss on Asteroids

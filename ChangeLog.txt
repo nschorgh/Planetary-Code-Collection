@@ -1,6 +1,8 @@
 Log of major changes (goes back to times before git version control)
 ---------------------------------------------------------------------
 
+May 2024: The thermal model is now also described in a paper by Schorghofer & Khatiwala (2024). The model is 20+ years old, but a new Volterra predictor step has been added, which makes it even better.
+
 29 Jan 2024: Release v1.2.2  doi:10.5281/zenodo.10583245
 
 2 Jan 2024: Added Volterra predictor to conductionQ. (This is a long story.)
