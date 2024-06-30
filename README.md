@@ -19,11 +19,6 @@ This program collection contains:
 The theory behind the numerical methods is described in [UserGuide.pdf](./UserGuide.pdf) or in the individual journal articles cited below.
 
 
-### Mars Subsurface Ice Model (MSIM)
-
-MSIM has moved to its own repository at https://github.com/nschorgh/MSIM and is no longer part of the Planetary-Code-Collection. In brief, MSIM contains a (semi-implicit) Mars thermal model, a vapor diffusion model for Mars, models for the equilibrium ice table, and implementations of a fast (asynchronously-coupled) method for subsurface ice dynamics on Mars. The three-dimensional surface energy balance model for Mars is still part of the Planetary-Code-Collection.
-
-
 ### Basic Thermal Model for Airless Bodies
 
 Standard thermal model for asteroidal surfaces. The one-dimensional heat equation is solved, based on solar energy input and thermal radiation from the surface to space.  The solver for the one-dimensional heat equation is semi-implicit, with the Stefan-Boltzmann radiation law as upper boundary condition.  The finite-difference method is flux-conservative even on an irregularly spaced vertical grid and the thermal properties of the soil can vary spatially and with time.  (This is a simplified version of the Mars Thermal Model. They both use the same flux-conservative spatial discretization and the same Crank-Nicolson solver with nonlinear boundary condition.)  
@@ -79,6 +74,12 @@ Surface temperatures are based on the thermal model for airless bodies.
 
 Directory: `Exospheres/`  
 *Documentation: User Guide Part 4*  
+
+
+### Mars Subsurface Ice Model (MSIM)
+
+MSIM has moved to its own repository at https://github.com/nschorgh/MSIM and is no longer part of the Planetary-Code-Collection. In brief, MSIM contains a (semi-implicit) Mars thermal model, a vapor diffusion model for Mars, models for the equilibrium ice table, and implementations of a fast (asynchronously-coupled) method for subsurface ice dynamics on Mars. The three-dimensional surface energy balance model for Mars is still part of the Planetary-Code-Collection.  
+
 
 
 ---
