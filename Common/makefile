@@ -1,11 +1,11 @@
-CC = gfortran
-CFLAGS = -O3 -Wall -Wno-integer-division
+FC = gfortran
+FFLAGS = -O3 -Wall -Wno-integer-division
 
-#CC = ifort
-#CFLAGS = -O2 #-warn all -warn notruncated_source -nogen-interface
+#FC = ifort
+#FFLAGS = -O2 #-warn all -warn notruncated_source -nogen-interface
 
-#CC = pgfortran
-#CFLAGS = -fast
+#FC = pgfortran
+#FFLAGS = -fast
 
 
 common: generalorbit.o flux_noatm.o conductionQ.o conductionT.o tridag.o \
@@ -13,10 +13,10 @@ common: generalorbit.o flux_noatm.o conductionQ.o conductionT.o tridag.o \
 
 
 %.o:	%.for makefile
-	$(CC) $(CFLAGS) -c $<
+	$(FC) $(FFLAGS) -c $<
 
 %.o:	%.f90 makefile
-	$(CC) $(CFLAGS) -c $< 
+	$(FC) $(FFLAGS) -c $<
 
 
 
