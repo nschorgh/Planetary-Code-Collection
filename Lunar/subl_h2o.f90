@@ -104,7 +104,7 @@ end function padsr
 
 elemental function desorptionrate(T,theta)
   ! Desorption rate of water molecules from lunar grains as a function of
-  ! temperature and coverage according to Schorghofer, PSJ (2023), in review
+  ! temperature and coverage according to Schorghofer (2023) PSJ 4, 164
   ! assumes efficient grain surface diffusion
   ! - written in 2023
   implicit none
@@ -114,19 +114,20 @@ elemental function desorptionrate(T,theta)
   real(8), parameter :: kBeV = 8.617333262e-5 ! [eV/K]
   real(8), parameter :: nu=1e16, thetam=1e19
   real(8), parameter :: Eice=0.529, Ec=0.65, W=0.22
-  real(8) v, S, gamma
+  real(8) v, S, gamma, b
   
   v = theta/thetam
+  b = 1./(kBeV*T)
   if (v<0) then
      S = 0.
   elseif (v<=1) then  ! sub-monolayer
-     S = nu *theta * exp(-Ec/kBeV/T) *v**(1+W/kBeV/T) / (1+W/kBeV/T)
+     S = nu *theta * exp(-Ec*b) *v**(W*b) / (1+W*b)
   else ! multi-layer
      ! option 1 (expansion of BET formula around infinite v)
-     S = nu * thetam * exp(-Eice/kBeV/T)*(1-1./v) + exp(-Ec/kBeV/T) / (1+W/kBeV/T) /v**2
+     S = nu * thetam * exp(-Eice*b)*(1-1./v) + exp(-Ec*b) / (1+W*b) /v**2
      ! option 2 (based on rescaled distribution of desorption energies)
-     gamma = 1. / (1 + (v-1)*(Ec-Eice+W)/kBeV/T)
-     !S = nu * thetam * exp(-Eice/kBeV/T) * exp(-gamma*(Ec-Eice)/kBeV/T) / (1+gamma*W/kBeV/T)
+     gamma = 1. / (1 + (v-1)*(Ec-Eice+W)*b)
+     !S = nu * thetam * exp(-Eice*b) * exp(-gamma*(Ec-Eice)*b) / (1+gamma*W*b)
   end if
 
   desorptionrate = S

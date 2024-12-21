@@ -30,7 +30,7 @@ pure function flux_mars77(R,decl,latitude,HA,albedo,fracir,fracscat)
   
   ! short-wavelength irradiance
   if (sinbeta>0.d0) then
-     solarAttenuation = (1.- fracIR - fracScat)**(1./max(sinbeta,0.04))
+     solarAttenuation = (1.- fracIR - fracScat)**(1./max(sinbeta,0.04d0))
      Qdir = Qo*sinbeta*solarAttenuation
      Qscat = 0.5*Qo*fracScat
      Q = (1.-albedo)*(Qdir + Qscat)

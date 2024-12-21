@@ -2,7 +2,7 @@ subroutine marsorbit(dt0,tj,Ls,dec,r)
 !=======================================================
 ! Subroutine to return various orbital parameters
 !
-! INPUTS: 
+! INPUTS:
 ! dt0 is the reference dt_J2000
 ! tj is the time (in days) relative to the reference day
 !
@@ -56,7 +56,7 @@ subroutine marsorbit(dt0,tj,Ls,dec,r)
   M=c2 + c3*dj  ! mean anomaly in radians
   alpha=270.3863d0 + 0.52403840d0*dj ! fictitious mean sun angle in degrees
   
-! Ls in degrees      
+! Ls in degrees
   Ls = alpha + (10.691d0 + 3.d-7*dj)*sin(M) + 0.623d0*sin(2*M) +  &
        &     0.05d0*sin(3*M) + 0.005d0*sin(4*M) + 0.0005d0*sin(5*M) + PBS
   Ls=mod(Ls,360.d0)*d2r  !  Ls in radians
@@ -85,7 +85,7 @@ subroutine marsclock24(JDUT,Deltat_J2000,Ls,dec,RM,Longitude_W,LTST)
   real(8), intent(OUT) :: dec, RM
 
   integer i
-  real(8) A(7), tau(7), phi(7) 
+  real(8) A(7), tau(7), phi(7)
   real(8) M, alpha_FMS, PBS
   real(8) numinusM   ! (degree)
   data A/ 0.0071, 0.0057, 0.0039, 0.0037, 0.0021, 0.0020, 0.0018 /
@@ -128,7 +128,7 @@ subroutine marsclock24(JDUT,Deltat_J2000,Ls,dec,RM,Longitude_W,LTST)
   enddo
   
   ! Equation of Center (AM2000, eqs. 19 and 20)
-  M = M*d2r 
+  M = M*d2r
   numinusM =(10.691d0 + 3.0d-7*Deltat_J2000)*sin(M)+0.623d0*sin(2*M) &
        &  + 0.050d0*sin(3*M) + 0.005d0*sin(4*M) + 0.0005d0*sin(5*M) + PBS ! (degree)
   

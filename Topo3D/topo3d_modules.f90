@@ -253,19 +253,19 @@ MODULE allinterfaces
   interface
      subroutine marsorbit(dt0,tj,Ls,dec,r)
        implicit none
-       real*8, intent(IN) :: dt0, tj
-       real*8, intent(OUT) :: Ls, dec, r
+       real(8), intent(IN) :: dt0, tj
+       real(8), intent(OUT) :: Ls, dec, r
      end subroutine marsorbit
   end interface
   interface
      subroutine marsclock24(JDUT,Deltat_J2000,Ls,dec,RM,Longitude_W,LTST)
        implicit none
-       real*8, intent(IN) :: JDUT
-       real*8, intent(OUT) :: Deltat_J2000
-       real*8, intent(OUT) :: Ls
-       real*8, intent(OUT) :: dec, RM
-       real*8, intent(IN) :: Longitude_W
-       real*8, intent(OUT) :: LTST
+       real(8), intent(IN) :: JDUT
+       real(8), intent(OUT) :: Deltat_J2000
+       real(8), intent(OUT) :: Ls
+       real(8), intent(OUT) :: dec, RM
+       real(8), intent(IN) :: Longitude_W
+       real(8), intent(OUT) :: LTST
      end subroutine marsclock24
   end interface
   
