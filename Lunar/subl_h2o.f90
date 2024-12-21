@@ -10,7 +10,7 @@ elemental function evap_vacuum_func(T)
   !psv = exp(9.550426 - 5723.265/T + 3.53068*log(T) - 0.00728332*T)
   !evap_vacuum_func = psv*sqrt(mu/(2*pi*R*T))
 
-  ! first coefficient: add log(sqrt(mu/(2*pi*R))) 
+  ! first coefficient: add log(sqrt(mu/(2*pi*R)))
   ! third coefficient: subtract 0.5
   evap_vacuum_func = exp(5.564214 -5723.265/T +3.03068*log(T) -0.00728332*T)
 
@@ -52,7 +52,7 @@ real(8) function sublr_amorph(T)
   real(8) E
 
   ! sublimation rate of amorphous H2O ice
-  ! according to Sack and Baragiola, Phys. Rev. B 48, 9973 (1993)  
+  ! according to Sack and Baragiola, Phys. Rev. B 48, 9973 (1993)
   E = 1.82e21*1e4*T**3.5*exp(-0.45*1.6022e-19/(kB*T)) ! [#/m^2/s]
 
   ! sublimation rate of crystalline H2O ice
@@ -133,19 +133,3 @@ elemental function desorptionrate(T,theta)
   desorptionrate = S
   !if (S/=S) print *,T,theta,'S undefined'
 end function desorptionrate
-
-
-elemental function desorptionrate_ice(T)
-  ! sublimation rate of ice using formulation as in function desorptionrate
-  implicit none
-  real(8), intent(IN) :: T ! [K]
-  real(8) desorptionrate_ice
-  real(8), parameter :: kBeV = 8.617333262e-5 ! [eV/K]
-  real(8), parameter :: nu=1e16, thetam=1e19
-  real(8), parameter :: Eice=0.529
-  real(8) Sice
-  
-  Sice = thetam*nu*exp(-Eice/kBeV/T)  ! [molecules/m^2/s]
-
-  desorptionrate_ice = Sice
-end function desorptionrate_ice

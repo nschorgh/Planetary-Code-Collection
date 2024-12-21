@@ -33,6 +33,9 @@ subsdiff_subs.f90:
 	subroutines and functions for random-walk model of subsurface diffusion
 	in lunar regolith
 
+desorptionrates.f90:
+	desorptionrates according to Schorghofer, PSJ 4, 164 (2024) and in
+	yet unpublished work
 
 
 Lunar 1D Thermal Model Components
