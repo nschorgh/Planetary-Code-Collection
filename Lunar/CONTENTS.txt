@@ -34,8 +34,15 @@ subsdiff_subs.f90:
 	in lunar regolith
 
 desorptionrates.f90:
-	desorptionrates according to Schorghofer, PSJ 4, 164 (2024) and in
+	desorptionrates of H2O according to Schorghofer, PSJ 4, 164 (2024) and in
 	yet unpublished work
+
+lunar_subsdiff.f90: (main program)
+	solves continuum equation for diffusion with a range of desorption energies
+
+params.f90:
+	parameters for program lunar_subsdiff
+	
 
 
 Lunar 1D Thermal Model Components

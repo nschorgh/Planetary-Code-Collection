@@ -61,7 +61,8 @@ elemental function desorptionrate(T,theta)
      gamma = 1./v**2
      S1 = nu*thetam * exp(-Eice*b) * &
           & exp(-gamma*(Ec-Eice)*b) / (1 + gamma* W*b)
-     S = min(S1,S2)
+     !S = min(S1,S2)
+     S = S1
   end if
 
   desorptionrate = S
@@ -134,52 +135,30 @@ elemental function desorptionrateXi1_multi(T,Ek,nArea,ThetaS)
 end function desorptionrateXi1_multi
 
 
-subroutine distribute_excess(NS,nArea,ThetaS)
-  ! redistribute adsorbate mass when it exceeds monolayer,
-  ! for endmember with otherwise no surface diffusion
-  use desorp, only: thetam
+subroutine desorptionrate_inverse_Xi(T,S,NS,maxE,ThetaS)
+  ! inverse of function desorptionrateXi_multi (end-member 2)
+  use desorp
   implicit none
   integer, intent(IN) :: NS
-  real(8), intent(IN) :: nArea(NS)
-  real(8), intent(INOUT) :: ThetaS(NS)
+  real(8), intent(IN) :: T, S, maxE
+  real(8), intent(OUT) :: ThetaS(NS)
   integer k
-  real(8) abovem, nmono(NS), before, dE, after
-  
-  abovem=0.
-  nmono = nArea(:)*thetam
-  dE = 2./200.
-  before = sum(ThetaS)*dE/thetam
+  real(8) nu, Eprime, Ek, dE, nmono, nArea(NS)
+
+  call sitedistribution(NS,maxE,nArea)
+  dE = maxE/real(NS)
+  nu = 2.2e17/sqrt(T)
   do k=1,NS
-     if (ThetaS(k)>nmono(k)) then
-        !print *,'excess at k=',k,ThetaS(k),nmono(k)
-        abovem = abovem + (Thetas(k)-nmono(k))
-        ThetaS(k) = nmono(k)
-     end if
-  end do
-  !if (abovem>0.) print *,'redistribute excess',abovem,sum(ThetaS)*dE/thetam
-  k = NS
-  do while (abovem>0. .and. k>=1)
-     !print *,'adding on',k
-     if (ThetaS(k)<nmono(k)) then
-        if (ThetaS(k)+abovem < nmono(k)) then
-           ThetaS(k) = ThetaS(k)+abovem
-           abovem = 0.
-        else
-           abovem = abovem - (nmono(k)-ThetaS(k))
-           ThetaS(k) = nmono(k)
-        end if
+     nmono = nArea(k)*thetam
+     Ek = k*dE
+     if (Ek<=kBeV*T*log(nu*thetam/S)) then
+        ThetaS(k) = S/nu*nArea(k)*exp(Ek/kBeV/T)
+     else
+        Eprime = -kBeV*T*log(S/nu/thetam)
+        ThetaS(k) = nmono * sqrt( (Ek-Eice) / (Eprime-Eice) )
      endif
-     k = k-1
   end do
-  if (abovem>0.) then
-     !print *,ThetaS
-     print *,sum(ThetaS),'distribute_excess: maxed out monolayer'
-     !stop 'distribute_excess: maxed out monolayer'
-  end if
-  after = sum(ThetaS)*dE/thetam
-  !print *,'before and after',before,after,(before==after)
-  if (abs(after-before)/before>0.1) stop
-end subroutine distribute_excess
+end subroutine desorptionrate_inverse_Xi
 
 
 subroutine distribute_pseudo(NS,nArea,maxE,ThetaS)
