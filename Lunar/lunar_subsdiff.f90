@@ -7,7 +7,7 @@ program lunar_subsdiff
   real(8) time ! [s]
   real(8), dimension(0:NZ) :: T  ! [K]
   real(8) theta(0:NZ)   ! [#molecules/m^2]
-  real(8) Sinfall, weath, Mtotal, outintrvl, theta0wo, Mprovided
+  real(8) Sinfall, weath, Mtotal, outintrvl, theta0wo, Mprovided, S(0:NZ)
   real(8), external :: desorptionrate, desorptionrate_ice
   real(8), external :: weathering, colintmass, solver_wodiffusion
 
@@ -18,9 +18,10 @@ program lunar_subsdiff
   open(24,file='longseries.dat',action='write')
   open(26,file='TprofilesC.dat',action='write')  ! last cycle
   open(27,file='aprofilesC.dat',action='write')  ! last cycle
+  open(28,file='Sprofiles.dat',action='write')
 
   theta(:) = 0.*thetaML   ! initial adsorption profile
-  !theta = 0.2*thetaML
+  !theta = 0.5*thetaML
   Mprovided = 0.
   
   do i=1,ceiling(maxtime/dtsec)  ! begin time loop
@@ -28,11 +29,11 @@ program lunar_subsdiff
 
      call temperatureprofile(NZ,time,T,Deltaz)
 
-     weath = 0.
+     !weath = 0.
      weath = weathering(theta(0),time)
 
-     !Sinfall = 0.
-     Sinfall = 1e19/(365.24*86400) *3
+     Sinfall = 0.
+     !Sinfall = 1e19/(365.24*86400) *3
      Mprovided = Mprovided + dtsec*Sinfall/thetaML
      
      call solver(T,time,weath,Sinfall,theta)
@@ -50,11 +51,15 @@ program lunar_subsdiff
      endif
 
      ! output depth profiles
-     !outintrvl = 1000.*secyear  ! e.g. at 130K, static profile
-     outintrvl = 100.*secyear  ! e.g. 250+/-100K
+     outintrvl = 1000.*secyear  ! e.g. at 130K, static profile
+     !outintrvl = 100.*secyear  ! e.g. 250+/-100K
      if (mod(time,outintrvl)<=dtsec/2. .or. mod(time,outintrvl)>outintrvl-dtsec/2.) then
         write(22,'(f0.4,*(1x,f0.3))') time/secyear, T(:)
         write(23,'(f0.4,*(1x,f0.5))') time/secyear, theta(:)/thetaML
+        do j=0,nz
+           S(j) = desorptionrate(T(j),theta(j))
+        end do
+        write(28,'(f0.4,*(1x,g0.5))') time/secyear, S(:)
      endif
      if (i> ceiling(maxtime/dtsec)-STEPSPERSOL) then
         write(26,'(f0.5,*(1x,f0.3))') time/secyear, T(:)
@@ -65,17 +70,15 @@ program lunar_subsdiff
   
   print *,'Total time',time,time/secyear
   close(22); close(23); close(24)
-  close(26); close(27)
+  close(26); close(27); close(28)
 
-  block ! some output
-    open(25,file='lastprofile.dat',action='write')
-    do j=0,NZ
-       write(25,'(f5.3,1x,f6.2,1x,f0.2,1x,g0.4)') &
-            & Deltaz*j,T(j),theta(j)/thetaML,desorptionrate(T(j),theta(j))
-    end do
-    write(25,*) Deltaz*(NZ+1),'Inf',desorptionrate_ice(T(NZ))
-    close(25)
-  end block
+  open(25,file='lastprofile.dat',action='write')
+  do j=0,NZ
+     write(25,'(f5.3,1x,f6.2,1x,f0.2,1x,g0.4)') &
+          & Deltaz*j,T(j),theta(j)/thetaML,desorptionrate(T(j),theta(j))
+  end do
+  write(25,*) Deltaz*(NZ+1),'Inf',desorptionrate_ice(T(NZ))
+  close(25)
 end program lunar_subsdiff
 
 
@@ -89,19 +92,18 @@ function weathering(theta0,time)
   real(8), parameter :: wsun = 1.16e14 ! space weathering (sunlit)
   real(8), parameter :: wLy = 7e10 ! Ly-alpha, Morgan & Shemansky (1991)
   real(8), parameter :: wI = 1e14 ! space weathering (impacts)
-  !real(8), parameter :: dLat = 85. ! latitude in degrees (for solar UV)
-  real(8), parameter :: dLat = 45. ! latitude in degrees (for solar UV)
+  real(8), parameter :: dLat = 85. ! latitude in degrees (for solar UV)
 
   w = 0.
 
   ! toggle the contributions on/off
   w = wsun/Yrough * min(theta0/thetaML,1.) ! solar photo-destruction, zenith
   ! incidence angle effect
-  w = w * max( cosd(dLat)*sin(-2*pi*time/lunation), 0.)  ! *cos(incidence angle)
-  !w = w * cosd(dLat) / pi  ! or use time-averaged value instead
+  !w = w * max( cosd(dLat)*sin(-2*pi*time/lunation), 0.)  ! *cos(incidence angle)
+  w = w * cosd(dLat) / pi  ! or use time-averaged value instead
   
-  w = w + wLy/Yrough * min(theta0/thetaML,1.)  ! interstellar Lyman-alpha
-  w = w + wI * min(SSA*mu*theta0,1.)  ! destrucion by impacts
+  !w = w + wLy/Yrough * min(theta0/thetaML,1.)  ! all-sky Lyman-alpha
+  !w = w + wI * min(SSA*mu*theta0,1.)  ! destruction by impacts
   weathering = w
 end function weathering
 
@@ -124,12 +126,13 @@ subroutine solver(T,time,w,Sinfall,theta)
   real(8), intent(IN) :: T(0:nz), time
   real(8), intent(IN) :: w, Sinfall
   real(8), intent(INOUT) :: theta(0:nz)  ! [#molecules/m^2]
+  real(8), parameter :: uconv = 86400*365.24/thetaML
   integer j
   real(8) alpha, SNp1, J0
   real(8), dimension(0:nz) :: S, Tnext
   real(8) S0next, theta0new
   real(8), external :: desorptionrate, desorptionrate_ice
-  logical, parameter :: ICETABLE = .false.
+  logical, parameter :: ICETABLE = .true.
 
   do j=0,nz
      S(j) = desorptionrate(T(j),theta(j))
@@ -143,10 +146,7 @@ subroutine solver(T,time,w,Sinfall,theta)
   ! Population change on surface: simple Euler step
   theta0new = theta(0) + dtsec*(-S(0) + Sinfall - J0)/Yrough - dtsec*w
 
-  block
-    real*8, parameter :: uconv = 86400*365.24/thetaML
-    !write(*,('(4(1x,g0.3))')) S(0)*uconv,w*uconv,J0*uconv
-  end block
+  !write(*,('(4(1x,g0.3))')) S(0)*uconv,w*uconv,J0*uconv
   
   if ((theta(0)>0.1 .and. (theta0new/theta(0)>1.2 .or. theta0new/theta(0)<0.8)) &
        & .or. theta0new<0.) then

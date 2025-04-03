@@ -24,19 +24,19 @@ module params
    real(8) Tm, Ta
 
    ! Static situations
-   !parameter (Tm=130., Ta=0.)
-   !parameter (NZ = 100, Deltaz=1e-3, maxtime=(1e6+0.1)*secyear) ! 130K, newest static
-   !real(8), parameter :: dtsec = 10.*secyear
+   parameter (Tm=130., Ta=0.)
+   parameter (NZ = 200, Deltaz=0.5e-3, maxtime=(1e6+0.1)*secyear) ! 130K, static
+   real(8), parameter :: dtsec = 10.*secyear
 
    ! Periodic situations
    integer STEPSPERSOL 
-   parameter (Tm=130., Ta=40.)
+   !parameter (Tm=130., Ta=40.)
    !parameter (Tm=250., Ta=100.)
+   !parameter (NZ = 200, Deltaz=0.5e-3, maxtime=(100e3+0.1)*secyear, STEPSPERSOL=24) ! 130+/-40K
    !parameter (NZ = 100, Deltaz=1e-5, maxtime=(1e3+0.1)*secyear, STEPSPERSOL=48)   ! Sin3m 250+/-100K
    !parameter (NZ = 10, Deltaz=1e-5, maxtime=(100e3+0.1)*secyear, STEPSPERSOL=24)   ! Sin3m 130+/-40K
    !parameter (NZ = 10, Deltaz=1e-4, maxtime=(10.+0.1)*secyear, STEPSPERSOL=96)   ! endmember2
-   parameter (NZ = 100, Deltaz=1e-3, maxtime=(100e3+0.1)*secyear, STEPSPERSOL=24) ! newest 130+/-40K
-   real(8), parameter :: dtsec = lunation/STEPSPERSOL ! time step [s]
+   !real(8), parameter :: dtsec = lunation/STEPSPERSOL ! time step [s]
    
    ! adjust upper and lower boundary conditions manually below
    ! adjust weathering rates manually below
@@ -72,7 +72,6 @@ subroutine temperatureprofile(nz,time,T,dz)
   real(8), intent(IN) :: time, dz
   real(8), intent(INOUT) :: T(0:nz)
   real(8), parameter :: delta = 0.05  ! thermal skin depth
-  !real(8), parameter :: g=0.   ! geothermal gradient [K/m]
   integer j
   real(8) z, phi
 

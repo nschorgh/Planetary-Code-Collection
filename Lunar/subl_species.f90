@@ -1,5 +1,7 @@
 elemental function evap_vacuum_species(T,species)
   ! sublimation rate of various ices into vacuum
+  ! most of the coefficients are from Schorghofer & Williams (2024)
+  ! also available at https://dataverse.harvard.edu/api/access/datafile/8550966
   implicit none
   real(8) evap_vacuum_species  ! [kg/m^2/s]
   real(8), intent(IN) :: T  ! [Kelvin]
@@ -64,7 +66,7 @@ elemental function evap_vacuum_species(T,species)
         
   end select
 
-  ! calculate sublimation rate from vapor pressure
+  ! calculate sublimation rate from vapor pressure using Hertz-Knudsen equation
   evap_vacuum_species = psv*sqrt(mu/(2*pi*Ru*T))
   
 end function evap_vacuum_species

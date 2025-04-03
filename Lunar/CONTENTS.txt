@@ -15,7 +15,7 @@ subl_h2o.f90:
 	set of functions for sublimation rate of H2O ice
 
 subl_species.f90:
-	sublimation rate of CO2 ice
+	sublimation rate of CO2 ice and several other supervolatiles
 
 bet.f90:
 	BET adsorption isotherm of H2O
@@ -35,13 +35,14 @@ subsdiff_subs.f90:
 
 desorptionrates.f90:
 	desorptionrates of H2O according to Schorghofer, PSJ 4, 164 (2024) and in
-	yet unpublished work
+	upcoming paper Schorghofer (2025)
 
 lunar_subsdiff.f90: (main program)
 	solves continuum equation for diffusion with a range of desorption energies
+	used in upcoming paper Schorghofer (2025)
 
 params.f90:
-	parameters for program lunar_subsdiff
+	module with parameters for program lunar_subsdiff
 	
 
 
