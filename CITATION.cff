@@ -5,7 +5,7 @@ authors:
     given-names: Norbert
     orcid: https://orcid.org/0000-0002-5821-4066
 title: "Planetary-Code-Collection: Thermal, Ice Evolution, and Exosphere Models for Planetary Surfaces"
-version: 1.2.2
+version: 1.2.3
 doi: 10.5281/zenodo.594268
 url: "https://github.com/nschorgh/Planetary-Code-Collection/"
-date-released: 2024-01-29
+date-released: 2025-04-05

@@ -1,7 +1,7 @@
 Lunar/
 
-Lunar Ice Pump and Diffusion Models
-===================================
+Lunar Vapor Diffusion Models
+============================
 
 oscidea1.f90: (main program)
 	ice pump calculations for one location; uses boundary-value formulation

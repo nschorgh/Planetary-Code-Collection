@@ -21,7 +21,7 @@ module params
 
    !real(8), parameter :: g=0.
    real(8), parameter :: g=9.  ! geothermal gradient [K/m]  g = 0.018/0.002
-   real(8) Tm, Ta
+   real(8) Tm, Ta  ! mean temperature and temperature amplitude [K]
 
    ! Static situations
    parameter (Tm=130., Ta=0.)
@@ -33,13 +33,11 @@ module params
    !parameter (Tm=130., Ta=40.)
    !parameter (Tm=250., Ta=100.)
    !parameter (NZ = 200, Deltaz=0.5e-3, maxtime=(100e3+0.1)*secyear, STEPSPERSOL=24) ! 130+/-40K
-   !parameter (NZ = 100, Deltaz=1e-5, maxtime=(1e3+0.1)*secyear, STEPSPERSOL=48)   ! Sin3m 250+/-100K
-   !parameter (NZ = 10, Deltaz=1e-5, maxtime=(100e3+0.1)*secyear, STEPSPERSOL=24)   ! Sin3m 130+/-40K
-   !parameter (NZ = 10, Deltaz=1e-4, maxtime=(10.+0.1)*secyear, STEPSPERSOL=96)   ! endmember2
+   !parameter (NZ = 100, Deltaz=1e-5, maxtime=(1e3+0.1)*secyear, STEPSPERSOL=48) ! Sin3m 250+/-100K
    !real(8), parameter :: dtsec = lunation/STEPSPERSOL ! time step [s]
    
-   ! adjust upper and lower boundary conditions manually below
-   ! adjust weathering rates manually below
+   ! adjust upper and lower boundary conditions manually
+   ! adjust weathering rates manually
 end module params
 
 

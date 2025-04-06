@@ -1,14 +1,16 @@
 module desorp
+  ! Adsorption parameters
   implicit none
   real(8), parameter :: kBeV=8.617333262e-5 ! [eV/K]
   !real(8), parameter :: nu=1e16
   real(8), parameter :: thetam=1e19
   real(8), parameter :: Eice=0.529, Ec=0.65, W=0.22
-  !real(8), parameter :: Eice=0.65, Ec=0.65, W=0.0
+  !real(8), parameter :: Eice=0.529, Ec=0.65, W=0.0
 end module desorp
 
 
 subroutine sitedistribution(NS,maxE,nArea)
+  ! Site distribution of desorption energies according to Schorghofer (2023)
   use desorp, only: Ec, W
   implicit none
   integer, intent(IN) :: NS
@@ -24,10 +26,10 @@ subroutine sitedistribution(NS,maxE,nArea)
         nArea(k) = 0.
      else
         nArea(k) = 1./W * exp(-(E(k)-Ec)/W)
-        !print *,k,n(k),(ThetaS(k)<=n(k)*thetam)
+        !print *,k,n(k),(ThetaS(k)<=nArea(k)*thetam)
      end if
   enddo
-  !write(*,'(a,1x,f0.3)') 'sum(n)=',sum(n)*dE
+  !write(*,'(a,1x,f0.3)') 'sum(n)=',sum(nArea)*dE
 end subroutine sitedistribution
 
 
@@ -57,12 +59,12 @@ elemental function desorptionrate(T,theta)
      gamma = 1. / ( 1 + (v-1)*(Ec-Eice+W)*b )
      S2 = nu * thetam * exp(-Eice*b) * exp(-gamma*(Ec-Eice)*b) / (1+gamma*W*b)
 
-     ! option 3 (composite)
+     ! option 3
      gamma = 1./v**2
      S1 = nu*thetam * exp(-Eice*b) * &
           & exp(-gamma*(Ec-Eice)*b) / (1 + gamma* W*b)
-     !S = min(S1,S2)
      S = S1
+     !S = min(S1,S2)  ! composite
   end if
 
   desorptionrate = S
@@ -101,6 +103,7 @@ end subroutine desorptionrateXi1
 
 
 elemental function desorptionrateXi1_multi(T,Ek,nArea,ThetaS)
+  ! spectral version of function desorptionrate
   use desorp, only: thetam, kBeV, Eice
   implicit none
   real(8), intent(IN) :: T ! [K]  
@@ -136,7 +139,7 @@ end function desorptionrateXi1_multi
 
 
 subroutine desorptionrate_inverse_Xi(T,S,NS,maxE,ThetaS)
-  ! inverse of function desorptionrateXi_multi (end-member 2)
+  ! inverse of function desorptionrateXi_multi
   use desorp
   implicit none
   integer, intent(IN) :: NS
@@ -162,8 +165,7 @@ end subroutine desorptionrate_inverse_Xi
 
 
 subroutine distribute_pseudo(NS,nArea,maxE,ThetaS)
-  ! redistribute adsorbate mass into highest energies to mimic endmember with
-  ! maximum surface diffusion
+  ! redistribute adsorbate mass into highest energies to mimic endmember 1
   use desorp, only: thetam
   implicit none
   integer, intent(IN) :: NS
