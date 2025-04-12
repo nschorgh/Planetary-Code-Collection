@@ -3,7 +3,8 @@ program lunar_subsdiff
   ! used in upcoming publication, Schorghofer (2025)
   use params
   implicit none
-  integer i, j
+  integer(8) i, nsteps  ! long integer
+  integer j
   real(8) time ! [s]
   real(8), dimension(0:NZ) :: T  ! [K]
   real(8) theta(0:NZ)   ! [#molecules/m^2]
@@ -23,8 +24,9 @@ program lunar_subsdiff
   theta(:) = 0.*thetaML   ! initial adsorption profile
   !theta = 0.5*thetaML
   Mprovided = 0.
-  
-  do i=1,ceiling(maxtime/dtsec)  ! begin time loop
+
+  nsteps = ceiling(maxtime/dtsec,8)
+  do i=1,nsteps  ! begin time loop
      time = i*dtsec
 
      call temperatureprofile(NZ,time,T,Deltaz)
@@ -61,7 +63,7 @@ program lunar_subsdiff
         end do
         write(28,'(f0.4,*(1x,g0.5))') time/secyear, S(:)
      endif
-     if (i> ceiling(maxtime/dtsec)-STEPSPERSOL) then
+     if (i>nsteps-STEPSPERSOL) then  ! last cycle
         write(26,'(f0.5,*(1x,f0.3))') time/secyear, T(:)
         write(27,'(f0.5,1x,g0.4,*(1x,f0.5))') time/secyear, colintmass(theta), theta(:)/thetaML
      endif

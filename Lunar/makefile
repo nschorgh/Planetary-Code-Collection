@@ -24,9 +24,7 @@ ensemble: ensemble.o flux_moon.o soilthprop_moon.o makefile
 
 lunar_subsdiff : params.o params.mod lunar_subsdiff.o desorptionrates.o \
 	makefile
-	make -C $(SR) common
-	$(FC) $(LFLAGS) lunar_subsdiff.o desorptionrates.o params.o \
-	$(SR)grids.o
+	$(FC) $(LFLAGS) lunar_subsdiff.o desorptionrates.o params.o
 
 common-lunar: subl_h2o.o subl_species.o soilthprop_moon.o flux_moon.o bet.o \
 	subsdiff_subs.o makefile

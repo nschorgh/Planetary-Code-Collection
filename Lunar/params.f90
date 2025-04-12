@@ -33,7 +33,7 @@ module params
    !parameter (Tm=130., Ta=40.)
    !parameter (Tm=250., Ta=100.)
    !parameter (NZ = 200, Deltaz=0.5e-3, maxtime=(100e3+0.1)*secyear, STEPSPERSOL=24) ! 130+/-40K
-   !parameter (NZ = 100, Deltaz=1e-5, maxtime=(1e3+0.1)*secyear, STEPSPERSOL=48) ! Sin3m 250+/-100K
+   !parameter (NZ = 100, Deltaz=1e-3, maxtime=(25e6+0.1)*secyear, STEPSPERSOL=24) ! Sin3m 250+/-100K
    !real(8), parameter :: dtsec = lunation/STEPSPERSOL ! time step [s]
    
    ! adjust upper and lower boundary conditions manually
