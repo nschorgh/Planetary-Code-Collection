@@ -16,7 +16,7 @@ subroutine sunpos(udtTime, dLongitude, dLatitude, dZenithAngle, dAzimuth, R)
   real(8), intent(IN) :: dLongitude, dLatitude  ! cLocation
   real(8), intent(OUT) :: dZenithAngle, dAzimuth, R  ! cSunCoordinates
 
-  real(8), parameter ::  pi =   3.14159265358979323846
+  real(8), parameter ::  pi = 3.14159265358979323846
   real(8), parameter ::  twopi = 2*pi, rad = pi/180.
   real(8), parameter ::  dEarthMeanRadius =  6371.01    ! In km
   real(8), parameter ::  dAstronomicalUnit = 149597890  ! In km
@@ -46,11 +46,11 @@ subroutine sunpos(udtTime, dLongitude, dLatitude, dZenithAngle, dAzimuth, R)
   ! Calculate time of the day in UT decimal hours
   dDecimalHours = udtTime%dHours + (udtTime%dMinutes + udtTime%dSeconds / 60.0 ) / 60.0
   ! Calculate current Julian Day
-  liAux1 =(udtTime%iMonth-14)/12
-  liAux2=(1461*(udtTime%iYear + 4800 + liAux1))/4 + (367*(udtTime%iMonth &
+  liAux1 = (udtTime%iMonth-14)/12
+  liAux2 = (1461*(udtTime%iYear + 4800 + liAux1))/4 + (367*(udtTime%iMonth &
        & - 2-12*liAux1))/12- (3*((udtTime%iYear + 4900 & 
        & + liAux1)/100))/4+udtTime%iDay-32075
-  dJulianDate=real(liAux2,8)-0.5+dDecimalHours/24.0
+  dJulianDate = real(liAux2,8)-0.5+dDecimalHours/24.0
   ! Calculate difference between current Julian Day and JD 2451545.0 
   dElapsedJulianDays = dJulianDate-2451545.0
 
@@ -58,41 +58,41 @@ subroutine sunpos(udtTime, dLongitude, dLatitude, dZenithAngle, dAzimuth, R)
   ! ecliptic in radians but without limiting the angle to be less than 2*Pi 
   ! (i.e., the result may be greater than 2*Pi)
 
-  dOmega=2.1429-0.0010394594*dElapsedJulianDays
-  dMeanLongitude = 4.8950630+ 0.017202791698*dElapsedJulianDays ! Radians
-  dMeanAnomaly = 6.2400600+ 0.0172019699*dElapsedJulianDays
+  dOmega = 2.1429-0.0010394594*dElapsedJulianDays
+  dMeanLongitude = 4.8950630 + 0.017202791698*dElapsedJulianDays ! Radians
+  dMeanAnomaly = 6.2400600 + 0.0172019699*dElapsedJulianDays
   dEclipticLongitude = dMeanLongitude + 0.03341607*sin( dMeanAnomaly ) &
-       & + 0.00034894*sin( 2*dMeanAnomaly )-0.0001134 &
-       & -0.0000203*sin(dOmega)
-  dEclipticObliquity = 0.4090928 - 6.2140e-9*dElapsedJulianDays  +0.0000396*cos(dOmega)
+       & +0.00034894*sin( 2*dMeanAnomaly ) -0.0001134 -0.0000203*sin(dOmega)
+  dEclipticObliquity = 0.4090928 -6.2140e-9*dElapsedJulianDays +0.0000396*cos(dOmega)
 
   ! Calculate celestial coordinates ( right ascension and declination ) in radians 
   ! but without limiting the angle to be less than 2*Pi (i.e., the result may be 
   ! greater than 2*Pi)
-  dSin_EclipticLongitude= sin( dEclipticLongitude )
+  dSin_EclipticLongitude = sin( dEclipticLongitude )
   dY = cos( dEclipticObliquity ) * dSin_EclipticLongitude
   dX = cos( dEclipticLongitude )
   dRightAscension = atan2( dY,dX )
-  if( dRightAscension < 0.0 ) dRightAscension = dRightAscension + twopi
+  if ( dRightAscension < 0.0 ) dRightAscension = dRightAscension + twopi
   dDeclination = asin( sin( dEclipticObliquity )*dSin_EclipticLongitude )
 
   ! Calculate local coordinates ( azimuth and zenith angle ) in degrees
-  dGreenwichMeanSiderealTime = 6.6974243242 + 0.0657098283*dElapsedJulianDays  + dDecimalHours
-  dLocalMeanSiderealTime = (dGreenwichMeanSiderealTime*15   + dLongitude)*rad
+  dGreenwichMeanSiderealTime = 6.6974243242 + 0.0657098283*dElapsedJulianDays + dDecimalHours
+  dLocalMeanSiderealTime = (dGreenwichMeanSiderealTime*15 + dLongitude)*rad
   dHourAngle = dLocalMeanSiderealTime - dRightAscension
   dLatitudeInRadians = dLatitude*rad
-  dCos_Latitude = cos( dLatitudeInRadians )
-  dSin_Latitude = sin( dLatitudeInRadians )
+  dCos_Latitude = cos( dLatitudeInRadians )   ! dCos_Latitude = cosd( dLatitude )
+  dSin_Latitude = sin( dLatitudeInRadians )   ! dSin_Latitude = sind( dLatitude )
   dCos_HourAngle= cos( dHourAngle )
-  dZenithAngle = (acos( dCos_Latitude*dCos_HourAngle*cos(dDeclination) + sin( dDeclination )*dSin_Latitude))
+  dZenithAngle = acos( dCos_Latitude*dCos_HourAngle*cos(dDeclination) &
+       &               + sin( dDeclination )*dSin_Latitude )
   dY = -sin( dHourAngle )
   dX = tan( dDeclination )*dCos_Latitude - dSin_Latitude*dCos_HourAngle
-  dAzimuth = atan2( dY, dX )
+  dAzimuth = atan2( dY,dX )
   if ( dAzimuth < 0.0 ) dAzimuth = dAzimuth + twopi
   dAzimuth = dAzimuth/rad
   ! Parallax Correction
-  dParallax=(dEarthMeanRadius/dAstronomicalUnit)*sin(dZenithAngle)
-  dZenithAngle=(dZenithAngle + dParallax)/rad
+  dParallax = (dEarthMeanRadius/dAstronomicalUnit)*sin(dZenithAngle)
+  dZenithAngle = (dZenithAngle + dParallax)/rad
 
   r = distancefromsun(dMeanAnomaly)
 end subroutine sunpos
@@ -106,7 +106,7 @@ function distancefromsun(dMeanAnomaly)
   real(8), parameter :: a=1     ! semimajor axis (AU)
   real(8), parameter :: ecc=0.0167  ! orbital eccentricity
   integer j
-  real*8 E,Eold
+  real(8) E,Eold
   
   ! E = eccentric anomaly 
   ! solve M = E - ecc*sin(E) by Newton Method

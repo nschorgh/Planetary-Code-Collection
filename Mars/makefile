@@ -14,9 +14,6 @@ SR = ../Common/
 common-mars: marsorbit.o flux_mars.o
 
 
-%.o:	%.f makefile
-	$(FC) $(FFLAGS) -c $<
-
 %.o:	%.f90 makefile
 	$(FC) $(FFLAGS) -c $<
 

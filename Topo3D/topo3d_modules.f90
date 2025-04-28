@@ -308,20 +308,20 @@ MODULE allinterfaces
           & Fsurf)
        implicit none
        integer, intent(IN) :: nz
-       real*8, intent(IN) :: z(nz), dt, Qn, Qnp1
-       real*8, intent(INOUT) :: T(nz), Tsurf
-       real*8, intent(IN) :: ti(nz), rhoc(nz), emiss, Fgeotherm
-       real*8, intent(OUT) :: Fsurf
+       real(8), intent(IN) :: z(nz), dt, Qn, Qnp1
+       real(8), intent(INOUT) :: T(nz), Tsurf
+       real(8), intent(IN) :: ti(nz), rhoc(nz), emiss, Fgeotherm
+       real(8), intent(OUT) :: Fsurf
      end subroutine conductionQ
   end interface
   interface
      subroutine conductionT(nz,z,dt,T,Tsurf,Tsurfp1,ti,rhoc,Fgeotherm,Fsurf)
        implicit none
        integer, intent(IN) :: nz
-       real*8, intent(IN) :: z(nz), dt, Tsurf, Tsurfp1, ti(nz), rhoc(nz)
-       real*8, intent(IN) :: Fgeotherm
-       real*8, intent(INOUT) :: T(nz)
-       real*8, intent(OUT) :: Fsurf
+       real(8), intent(IN) :: z(nz), dt, Tsurf, Tsurfp1, ti(nz), rhoc(nz)
+       real(8), intent(IN) :: Fgeotherm
+       real(8), intent(INOUT) :: T(nz)
+       real(8), intent(OUT) :: Fsurf
      end subroutine conductionT
   end interface
   
