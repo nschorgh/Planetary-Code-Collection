@@ -37,7 +37,7 @@ def cranknQ(nz, z, dt, Qn, Qnp1, T, ti, rhoc, emiss, Fgeotherm, Fsurf):
          and irregular grid by Norbert Schorghofer, 2004
     converted to Python 3/2021
     speed optimization by Cyril Mergny 5/2023
-    added Volterra predictor 1/2014 -norbert
+    added Volterra predictor 1/2024 -norbert
     """
     sigSB = 5.6704e-8
 

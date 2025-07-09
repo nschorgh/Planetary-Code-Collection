@@ -35,14 +35,15 @@ subsdiff_subs.f90:
 
 desorptionrates.f90:
 	desorptionrates of H2O according to Schorghofer, PSJ 4, 164 (2024) and in
-	upcoming paper Schorghofer (2025)
+	Schorghofer, PSJ, in press (2025)
 
 lunar_subsdiff.f90: (main program)
 	solves continuum equation for diffusion with a range of desorption energies
-	used in upcoming paper Schorghofer (2025)
+	used in Schorghofer, PSJ, in press (2025)
 
 params.f90:
 	module with parameters for program lunar_subsdiff
+	used in Schorghofer, PSJ, in press (2025)
 	
 
 
