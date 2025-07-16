@@ -1,7 +1,6 @@
 elemental function evap_vacuum_species(T,species)
   ! sublimation rate of various ices into vacuum
-  ! most of the coefficients are from Schorghofer & Williams (2024)
-  ! also available at https://dataverse.harvard.edu/api/access/datafile/8550966
+  ! most coefficients are from Schorghofer & Williams, Icarus 416, 116086 (2024)
   implicit none
   real(8) evap_vacuum_species  ! [kg/m^2/s]
   real(8), intent(IN) :: T  ! [Kelvin]
@@ -32,19 +31,18 @@ elemental function evap_vacuum_species(T,species)
         !  psv = exp(A-B/T)
         !end block
         
-        ! new parametrization - Nov 2023
-        b0=32.6; b1=3292; b2=-0.08
+        b0=32.61; b1=3291; b2=-0.7947  ! corrected Jul 2025
         psv = exp(b0-b1/T+b2*log(T))
         
      case('NH3') ! ammonia
         mu = 17.03
-        b0=28.7; b1=3903
+        b0=28.71; b1=3903
         psv = exp(b0-b1/T)
         
      case('SO2')
         mu = 64.06
-        !b0=29.9; b1=4262
-        b0=9; b1=3775; b2=3
+        !b0=28.92; b1=4262
+        b0=9.435; b1=3775; b2=3.225  ! corrected Jul 2025
         psv = exp(b0-b1/T+b2*log(T))
         
      case('HCN')
