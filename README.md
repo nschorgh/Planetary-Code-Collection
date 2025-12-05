@@ -59,7 +59,7 @@ Directory: `EarthAnalogs/`
 
 ### Terrain Shadowing and 3D Surface Energy Balance
 
-This model of the three-dimensional surface energy balance calculates horizons from a digital elevation model for terrain shadowing calculations and, optionally, also view factors for use in terrain irradiance calculations. The surface energy balance model can then be coupled to the model of subsurface heat conduction introduced above. This then provides a complete thermal model for  rugged terrain on Mars or airless bodies. The model is still at prototype stage, but has been used in several research studies.
+This model of the three-dimensional surface energy balance calculates horizons from a digital elevation model for terrain shadowing calculations and, optionally, also view factors for use in terrain irradiance calculations. The surface energy balance model can then be coupled to the model of subsurface heat conduction introduced above. This then constitutes a complete thermal model for rugged terrain on Mars or airless bodies. The model has been used in several published studies.  
 
 Directory: `Topo3D/`  
 *Documentation: User Guide Part 2*  

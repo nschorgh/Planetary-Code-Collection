@@ -21,7 +21,16 @@ real(8) function psv(T)
   !-----parametrization 3
   ! eq. (7) in Murphy & Koop, Q. J. R. Meteor. Soc. 131, 1539 (2005)
   ! psv = exp(9.550426 - 5723.265/T + 3.53068*log(T) - 0.00728332*T)
-      
+
+  !-----parametrization 4
+  ! International Association for the Properties of Water and Steam R14-08(2011)
+  ! http://www.iapws.org/relguide/MeltSub2011.pdf
+  !real(8), parameter :: a(3)=(/ -0.212144006d2,  0.273203819d2, -0.610598130d1 /)
+  !real(8), parameter :: b(3)=(/  0.333333333d-2, 0.120666667d1,  0.170333333d1 /)
+  !real(8) theta
+  !theta = T/273.16
+  !psv = 611.657*exp(1./theta*(a(1)*theta**b(1)+a(2)*theta**b(2)+a(3)*theta**b(3)))
+  
 end function psv
 
 
