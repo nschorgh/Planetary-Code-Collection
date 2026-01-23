@@ -7,7 +7,6 @@ module constants
   ! miscellaneous parameters that are very constant
   real(8), parameter :: pi=3.1415926535897932, d2r=pi/180.
   real(8), parameter :: sigSB=5.6704e-8
-  real(8), parameter :: kB=1.38065e-23
 end module constants
 
 
@@ -18,13 +17,12 @@ module body
 
   real(8) semia  ! semimajor axis [AU]
   real(8) ecc    ! orbital eccentricity 
-  real(8) Trot   ! length of solar day in Earth days
   real(8) solarDay ! length of solar day [seconds]
   real(8) emiss  ! IR emissivity of ice-free surface
   integer nz     ! number of vertical grid points
   real(8) zfac
   real(8) zmax   ! domain depth
-  real(8) eps    ! axis tilt (obliquity) [radian]
+  real(8) eps    ! axis tilt (obliquity) [radians]
 
   ! (1) Ceres
   parameter(semia = 2.76750591)
@@ -190,7 +188,15 @@ module allinterfaces
        real(8), intent(IN) :: diam, porosity, T
      end function vapordiffusivity
   end interface
-
+  
+  interface
+     elemental function meanfreepathinsoil(diam,porosity)
+       implicit none
+       real(8) meanfreepathinsoil ! ell
+       real(8), intent(IN) :: diam, porosity
+     end function meanfreepathinsoil
+  end interface
+  
   interface
      pure function faintsun(t)
        implicit none

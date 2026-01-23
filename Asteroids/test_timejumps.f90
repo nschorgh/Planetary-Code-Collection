@@ -1,5 +1,5 @@
 program asteroid_fast
-  ! Tests the step size increases in asteroid_fast2 
+  ! Tests the step size increases in asteroid_fast*.f90 
   implicit none
   integer SPINUPN   ! # number of spin-up steps
   real(8) spinupfac 
