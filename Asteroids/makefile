@@ -1,5 +1,5 @@
 FC = gfortran
-FFLAGS = -O2 -Wall
+FFLAGS = -O2 -Wall -std=f2018
 LFLAGS = -O2 -Wall
 
 #FC = ifort

@@ -100,3 +100,28 @@ pure function twolayers(s,d,z,H)
   ! 1-1800/2500 = 0.280 ! d
   ! porosity(z) = 0.28 + (0.56-0.28)*exp(-z/H)
 end function twolayers
+
+
+
+function kcond_vs_porosity(porosity)
+  ! relation between porosity and thermal conductivity in megaregolith
+  ! according to Warren, Meteor. Planet. Sci. 36, 53-78 (2011)
+  implicit none
+  real(8), intent(IN) :: porosity
+  real(8) kcond_vs_porosity
+  kcond_vs_porosity = 2.*exp(-12.46*porosity)
+end function kcond_vs_porosity
+
+
+
+function rho_fa(z)
+  ! density profile according to Chang'e 3 measurements
+  ! W. Fa, Earth Space Sci. 7, e2019A000801 (2020)
+  implicit none
+  real(8), intent(IN) :: z
+  real(8), parameter :: H = 1.03  ! [m]
+  real(8), parameter :: rho_s = 850., rho_d = 2250.  ! [kg/m^3]
+  real(8) rho_fa
+  real(8), external :: twolayers
+  rho_fa = twolayers(rho_s,rho_d,z,H)
+end function rho_fa

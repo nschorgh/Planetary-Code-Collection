@@ -100,16 +100,6 @@ pure function vapordiffusivity(diam,porosity,T)
 end function vapordiffusivity
 
 
-elemental function meanfreepathinsoil(diam,porosity)
-  ! mean-free path projected on vertical, ell [m]
-  implicit none
-  real(8) meanfreepathinsoil
-  real(8), intent(IN) :: diam, porosity
-
-  meanfreepathinsoil = diam/sqrt(2.)*porosity
-end function meanfreepathinsoil
-
-
 pure function faintsun(t)
   ! solar constant of the past
   implicit none

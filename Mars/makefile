@@ -3,7 +3,7 @@
 # make FC=ifort FFLAGS='-O3 -warn all' LFLAGS='-O3 -warn all'
 
 FC = gfortran
-FFLAGS = -O3 -Wall
+FFLAGS = -O3 -Wall -std=f2018
 LFLAGS = -O3 -Wall
 
 
