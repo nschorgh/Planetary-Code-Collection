@@ -30,6 +30,9 @@ derivs.f90:
 grids.f90:
 	creates appropriate 1D grids, and contains other grid-related functions
 
+julday.f90:
+	Julian date
+
 psv.f90:
 	psv: vapor pressure of H2O
 	frostpoint: inverse of psv
@@ -38,18 +41,18 @@ psvco2.f90:
        	psvco2: vapor pressure of CO2
 	tfrostpointco2: inverse of psvco2
 
+tridag.f90:
+	inversion of tridiagonal matrix
+
+
+
+
 makefile:
 	shows file dependencies
 
 
 
 3RD PARTY FUNCTIONS AND SUBROUTINES
-
-tridag.for:
-	from Numerical Recipes (C), without stop and pause statements, NMAX=1000
-
-julday.for:
-	Julian date, from Numerical Recipes (C), but without the pause statement
 
 ran2.for:
 	uniform random number generator from Numerical Recipes (C); changed
