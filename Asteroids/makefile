@@ -24,6 +24,19 @@ asteroid_thermal: asteroid_thermal.f90 asteroid_thermal.o \
 	$(SR)generalorbit.o insolonly.o common_subs.o -o $@
 
 
+trojans_fast3: fast_modules_airlessbody.o soilthprop_trojan.o common_subs3.o \
+	psv4.o makefile
+
+	make -C $(SR) common
+
+	$(FC) $(FFLAGS) -c body3.f90
+	$(FC) $(FFLAGS) -c trojans_fast3.f90
+	$(FC) $(FFLAGS) -c fast_subs_airlessbody3.f90
+
+	$(FC) $(LFLAGS) trojans_fast3.o fast_subs_airlessbody3.o \
+	$(SR)flux_noatm.o $(SR)conductionQ.o $(SR)tridag.o $(SR)grids.o \
+	$(SR)generalorbit.o common_subs3.o psv4.o soilthprop_trojan.o body3.o 
+
 asteroid_fast2: fast_modules_asteroid.f90 fast_modules_asteroid.o \
 	fast_subs_asteroid2.o asteroid_fast2.o impactstirring.o \
 	common_subs.o makefile 

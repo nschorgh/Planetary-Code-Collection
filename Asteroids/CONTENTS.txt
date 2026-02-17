@@ -1,6 +1,6 @@
 Asteroids/
 
-Basic Thermal Model for Asteroid Surfaces
+Basic Thermal Model for Asteroid Surfaces (~2006)
 =========================================
 
 asteroid_thermal.f90: (main program)
@@ -14,17 +14,18 @@ insolonly.f90:
 
 Asynchronously Coupled Model of Ice Loss, Temperature, and Impact Stirring on Asteroids
 =======================================================================================
+(2015-2016)
 
 asteroid_fast2.f90: (main program)
-	Asynchronously coupled model of ice loss, temperature, and impact 
+	asynchronously coupled model of ice loss, temperature, and impact 
 	stirring on asteroids
 
 asteroid_fast1.f90: (main program)
-	Asynchronously coupled model of ice loss and temperature on asteroids;
+	asynchronously coupled model of ice loss and temperature on asteroids;
 	mostly a simplified version of asteroid_fast2
 
 impactstirring.f90:
-	Model of ice homogenization due to impact stirring,
+	model of ice homogenization due to impact stirring,
 	for use with "fast" model
 
 fast_modules_asteroid.f90:
@@ -48,7 +49,7 @@ lats.0:
 	example input file for asteroid_fast?.f90
 
 
-Spherically Symmetric Thermal Model with Ice Retreat
+Spherically Symmetric Thermal Model with Ice Retreat (~2017)
 ====================================================
 
 sphere1d_implicit.f90: (main program)
@@ -56,6 +57,31 @@ sphere1d_implicit.f90: (main program)
 
 orbit_A0000240.dat:
 	sample input for sphere1_implicit
+
+
+Asynchronously Coupled Model of Temperature and Ice Loss on Trojans (2026-)
+===================================================================
+
+trojans_fast3.f90: (main program)
+	asynchronously coupled model of ice loss and temperature on Jovian Trojans 
+
+body3.f90:
+	body-specific parameters
+
+common_subs3.f90:
+	common functions used by these programs
+
+fast_modules_airlessbody.f90:
+	modules for trojans_fast3
+
+fast_subs_airlessbody3.f90:
+	subroutines and functions for trojans_fast
+
+psv4.f90:
+	vapor pressure of H2O
+
+soithprop_trojan.f90:
+	thermal properties of icy regolith on Trojans
 
 
 
