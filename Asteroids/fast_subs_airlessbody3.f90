@@ -17,8 +17,7 @@ subroutine icelayer_asteroid(bigstep,NP,z,porosity,icefrac,Tinit, &
 ! eps = axis tilt [radians]  
 ! S0 = solar constant relative to present
 !************************************************************************
-  use constants, only : d2r
-  use body, only : Tnominal, nz, diam, orbitp
+  use body, only : d2r, Tnominal, nz, diam, orbitp
   use allinterfaces
   implicit none
   integer, intent(IN) :: NP
@@ -97,8 +96,7 @@ subroutine ajsub_asteroid(latitude, z, ti, rhocv, Orbit, S0, &
 !
 !  Tinit = initalize if .true., otherwise use Tmean1 and Tmean3
 !************************************************************************
-  use constants
-  use body, only : EQUILTIME, dt, Fgeotherm, nz, emiss, albedo, orbitp
+  use body, only : pi, EQUILTIME, dt, Fgeotherm, nz, emiss, albedo, orbitp
   use allinterfaces
   implicit none
   real(8), intent(IN) :: latitude  ! [radians]
@@ -111,16 +109,17 @@ subroutine ajsub_asteroid(latitude, z, ti, rhocv, Orbit, S0, &
   logical, intent(IN) :: Tinit
   real(8), intent(INOUT) :: Tmean1, Tmean3
   real(8), intent(OUT) :: Tmin, Tmaxi
+  real(8), parameter :: sigSB=5.6704e-8
   real(8), parameter :: mmass = 18.  ! H2O
   real(8), parameter :: zero = 0.
   integer nsteps, n, nm
   real(8) tmax, time, Qn, Qnp1, tdays
   real(8) orbitR, orbitLs, orbitDec, HA
   real(8) Tsurf, Fsurf, T(nz)
-  real(8) Tmean0, S1, coslat, solsperyear
+  real(8) Tmean0, S1, coslat, solsperorbit
   
   ! initialize
-  solsperyear = sols_per_year( orbit%semia, orbit%solarDay)
+  solsperorbit = sols_per_orbit( orbit%semia, orbit%solarDay)
   if (Tinit) then
      S1 = S0*1365./ (orbit%semia)**2  ! must match solar constant in flux_noatm
      coslat = max( &
@@ -133,11 +132,11 @@ subroutine ajsub_asteroid(latitude, z, ti, rhocv, Orbit, S0, &
      write(34,*) '# initialized with temperature estimate of',Tmean0,'K'
      T(1:nz) = Tmean0 
      Tsurf = Tmean0
-     tmax = 3*EQUILTIME*solsperyear
+     tmax = 3*EQUILTIME*nint(solsperorbit)
   else
      T(:) = ( Tmean1*(z(nz)-z(:)) + Tmean3*z(:) ) / z(nz)
      Tsurf = Tmean1
-     tmax = EQUILTIME*solsperyear
+     tmax = EQUILTIME*nint(solsperorbit)
   endif
   Fsurf=0.
 
@@ -150,7 +149,7 @@ subroutine ajsub_asteroid(latitude, z, ti, rhocv, Orbit, S0, &
 
   time=0.
   call generalorbit( 0.d0, orbit%semia, orbit%ecc, orbit%omega, orbit%eps, &
-       & orbitLs,orbitDec,orbitR)
+       & orbitLs, orbitDec, orbitR)
   HA = 2.*pi*time            ! hour angle
   Qn = S0*(1-albedo)*flux_noatm(orbitR,orbitDec,latitude,HA,zero,zero)
   !----loop over time steps 
@@ -166,7 +165,7 @@ subroutine ajsub_asteroid(latitude, z, ti, rhocv, Orbit, S0, &
           &           Tsurf,Fgeotherm,Fsurf)
      Qn = Qnp1
 
-     if (time>=tmax-solsperyear) then
+     if ( time >= tmax - nint(solsperorbit) ) then
         Tmean1 = Tmean1+Tsurf
         Tmean3 = Tmean3+T(nz)
         if (typeT>0 .and. typeT<=nz) then

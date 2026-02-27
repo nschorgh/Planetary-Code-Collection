@@ -1,11 +1,3 @@
-module constants
-  ! miscellaneous parameters that are very constant
-  real(8), parameter :: pi=3.1415926535897932, d2r=pi/180.
-  real(8), parameter :: sigSB=5.6704e-8
-end module constants
-
-
-
 module allinterfaces
   
   ! Common/*.f90
@@ -44,10 +36,11 @@ module allinterfaces
   end interface
 
   interface
-     pure integer function sols_per_year(semia,solarDay)
+     pure function sols_per_orbit(semia,solarDay)
        implicit none
+       real(8) sols_per_orbit
        real(8), intent(IN) :: semia, solarDay
-     end function sols_per_year
+     end function sols_per_orbit
   end interface
 
   interface

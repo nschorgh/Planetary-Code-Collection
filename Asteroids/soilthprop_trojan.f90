@@ -46,7 +46,7 @@ subroutine assignthermalproperties3(nz,z,T,porosity,ti,rhocv,icefrac,zdepthT)
   real(8), intent(IN) :: z(nz), T(nz), porosity(nz)
   real(8), intent(OUT) :: ti(nz), rhocv(nz)
   real(8), intent(IN), optional :: icefrac(nz), zdepthT
-  real(8), parameter :: rhodry = 2500  ! bulk density
+  real(8), parameter :: rhodry = 2500  ! [kg/m^3]
   real(8), parameter :: icedensity = 933.  ! 120K  [kg/m^3]
   real(8), external :: heatcapacity
 
@@ -54,13 +54,16 @@ subroutine assignthermalproperties3(nz,z,T,porosity,ti,rhocv,icefrac,zdepthT)
   real(8) cice  ! heat capacity of pure ice
   real(8) kice  ! thermal conductivity of pure ice
   real(8) k(nz) ! thermal conductivity
-  real(8) thIn
+  real(8) thIn, Tday, buf
 
   thIn = 20.
   !thIn = 100.
   do j=1,nz
      rhocv(j) = (1.-porosity(j)) * rhodry * heatcapacity(T(j))
-     k(j) = thIn**2/rhocv(j)
+     
+     Tday = 150. ! estimated temperature when thIn was measured
+     buf = (1.-porosity(j)) * rhodry * heatcapacity(Tday)
+     k(j) = thIn**2/buf
   end do
   if (present(icefrac) .and. present(zdepthT)) then
      do j=1,nz
@@ -68,7 +71,7 @@ subroutine assignthermalproperties3(nz,z,T,porosity,ti,rhocv,icefrac,zdepthT)
            ! cice = 7.8*T(j) 
            cice = 7.49*T(j) + 90.  ! Klinger (1981), Shulman (2004)
            !kice = 632./T(j)+0.38-1.97e-3*T(j)
-           kice = 612./T(j)  ! DOI:10.17632/ttzbgxs9fw.1
+           kice = 612./T(j)  ! DOI:10.17632/ttzbgxs9fw.2
            k(j) = k(j) + icefrac(j)*kice  ! icefrac <= porosity
            rhocv(j) = rhocv(j) + icedensity*cice*icefrac(j)
         endif
