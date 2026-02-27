@@ -1,6 +1,8 @@
 Log of major changes (goes back to times before git version control)
 ---------------------------------------------------------------------
 
+10 Feb 2026: With the replacement of tridag, the 1d thermal model is now open source. 
+
 6 Apr 2025: Release v1.2.3  doi:10.5281/zenodo.15161597
 
 May 2024: The thermal model is now also described in a paper by Schorghofer & Khatiwala (2024). The model is 20+ years old, but a new Volterra predictor step has been added, which makes it even better.
