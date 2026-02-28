@@ -21,7 +21,7 @@ The theory behind the numerical methods is described in [UserGuide.pdf](./UserGu
 
 ### Basic Thermal Model for Airless Bodies
 
-Standard thermal model for asteroidal surfaces. The one-dimensional heat equation is solved, based on solar energy input and thermal radiation from the surface to space.  The solver for the one-dimensional heat equation is semi-implicit, with the Stefan-Boltzmann radiation law as upper boundary condition.  The finite-difference method is flux-conservative even on an irregularly spaced vertical grid and the thermal properties of the soil can vary spatially and with time.  (This is a simplified version of the Mars Thermal Model. They both use the same flux-conservative spatial discretization and the same Crank-Nicolson solver with nonlinear boundary condition.)  
+Standard thermal model for asteroidal surfaces. The one-dimensional heat equation is solved, based on solar energy input and thermal radiation from the surface to space. (In the asteroid literature this is sometimes called an "Advanced Thermophysical Model"). The numerical solver for the one-dimensional heat equation is semi-implicit, with the Stefan-Boltzmann radiation law as upper boundary condition.  The finite-difference method is flux-conservative even on an irregularly spaced vertical grid and the thermal properties of the soil can vary spatially and over time.  
 
 Directory: `Asteroids/`  
 The core subroutines for the thermal model are located in `Common/` and available in Fortran, C, Matlab, and Python.
@@ -86,7 +86,7 @@ MSIM has moved to its own repository at https://github.com/nschorgh/MSIM and is 
 
 ### Notes
 
-Third party source code from Numerical Recipes is covered by a separate copyright. These are files ending with `.for`.  A few code snippets from other sources are also used, as documented in the source code.  
+Files ending with `.for' contain third party source code from Numerical Recipes, which is covered by a separate copyright.  A few code snippets from other sources are also used, as documented in the source code.  
 
 
 The non-portable Fortran declarations `real(8)` and `real*8` are meant to correspond to an 8-byte floating point number.

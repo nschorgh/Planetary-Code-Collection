@@ -59,7 +59,7 @@ orbit_A0000240.dat:
 	sample input for sphere1_implicit
 
 
-Asynchronously Coupled Model of Temperature and Ice Loss on Trojans (2026-)
+Asynchronously Coupled Model of Temperature and Ice Loss on Trojans (2026)
 ===================================================================
 
 trojans_fast3.f90: (main program)
