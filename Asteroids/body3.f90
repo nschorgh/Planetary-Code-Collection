@@ -20,8 +20,8 @@ module body
        & orbitp(5.2, 0., 20.*d2r, 0., 12.*3600)  ! nominal Trojan
        !& orbitp(5.20, 0.089, 158.*d2r, 0., 8.702724*3600.)  ! Eurybates  
        !& orbitp(semia=5.17, ecc=0.095, solarDay=11.5*3600.) ! Polymele
-       !& orbitp(5.29, 0.064,  10.*d2r, 445.683*3600.)  ! Leucus  
-       !& orbitp(5.13, 0.037, 154.*d2r, 13.48617*3600.)  ! Orus
+       !& orbitp(5.29, 0.064,  10.*d2r, 0., 445.683*3600.)  ! Leucus  
+       !& orbitp(5.13, 0.037, 154.*d2r, 0., 13.48617*3600.)  ! Orus
        !& orbitp(semia=5.22, ecc=0.129, solarDay = 102.784*3600.) ! Patroclus
   !Orbit%eps = 0.; Orbit%omega=0.
   
@@ -34,7 +34,7 @@ module body
   
   real(8), parameter :: dt = 0.01  ! [solar days]
   real(8), parameter :: Fgeotherm = 0.
-  integer, parameter :: EQUILTIME = 10 ! [orbits]
+  integer, parameter :: EQUILTIME = 5 ! [orbits]
 end module body
 
 
@@ -53,7 +53,7 @@ subroutine outputmoduleparameters
   print *,'  Thermal model equilibration time',EQUILTIME,'orbits'
   print *,'  Semimajor axis',orbit%semia
   print *,'  Eccentricity',orbit%ecc
-  print *,'  Obliquity',orbit%eps
+  print *,'  Obliquity',orbit%eps / d2r
   print *,'  Solar day',orbit%solarDay, &
        & 'Sols per orbit',sols_per_orbit( orbit%semia, orbit%solarDay )
   print *,'  Vertical grid: nz=',nz,' zfac=',zfac,'zmax=',zmax

@@ -6,11 +6,10 @@
 !************************************************************************
 
 
-subroutine icelayer_asteroid(bigstep,NP,z,porosity,icefrac,Tinit, &
-     & zdepthT,Tmean1,Tmean3,Tmin,Tmax,latitude,Orbit,S0)
+subroutine icelayer_asteroid(bigstep,z,porosity,icefrac,Tinit, &
+     & zdepthT,Tmean,Tmini,Tmaxi,latitude,Orbit,S0)
 !************************************************************************
 ! bigstep = time step [Earth years]
-! NP = number of geographic locations (sites)
 ! z = depths [m]
 ! zdetphT = depth of ice table or shallowest depth with perennial ice [m]  
 ! latitude  [degree]
@@ -20,81 +19,78 @@ subroutine icelayer_asteroid(bigstep,NP,z,porosity,icefrac,Tinit, &
   use body, only : d2r, Tnominal, nz, diam, orbitp
   use allinterfaces
   implicit none
-  integer, intent(IN) :: NP
   real(8), intent(IN) :: bigstep
   real(8), intent(IN) :: z(nz), porosity(nz), icefrac(nz)
   logical, intent(IN) :: Tinit
-  real(8), intent(INOUT) :: zdepthT(NP), Tmean1(NP), Tmean3(NP)
-  real(8), intent(OUT) :: Tmin(NP), Tmax(NP)
-  real(8), intent(IN) :: latitude(NP), S0
+  real(8), intent(INOUT) :: zdepthT, Tmean(0:nz)
+  real(8), intent(OUT) :: Tmini(0:nz), Tmaxi(0:nz)
+  real(8), intent(IN) :: latitude, S0
   type(orbitp), intent(IN) :: Orbit
   
-  integer k, typeT, j, jump
+  integer typeT, j, jump
   real(8) ti(nz), rhocv(nz), T(nz)
   real(8) ell0, elleff, deltaz, avSice
   real(8), dimension(nz) :: ell
-  real(8), SAVE :: zdepth_old(100)  ! NP<=100
+  real(8), SAVE :: zdepth_old
 
-  do k=1,NP   ! big loop over sites
+  typeT = getfirst(zdepthT,nz,z)
 
-     typeT = getfirst(zdepthT(k),nz,z)
-
-     ! assign/update property profiles
-     if (Tinit) then
-        T(:) = spread(Tnominal,1,nz)
-     else
-        T(:) = ( Tmean1(k)*(z(nz)-z(:)) + Tmean3(k)*z(:) ) / z(nz)
-     end if
-     call assignthermalproperties3(nz,z(:),T,porosity, &
-          &                        ti(:),rhocv(:),icefrac(:),zdepthT(k))
-     ell0 = meanfreepathinsoil(diam,porosity(1)) ! surface
-     do j=1,nz
-        ell(j) = meanfreepathinsoil(diam,porosity(j)) 
-        if (z(j)>zdepthT(k) .and. zdepthT(k)>=0.) then
-           ell(j) = meanfreepathinsoil(diam,porosity(j)+icefrac(j)) 
-        endif
-     end do
+  ! assign/update property profiles
+  if (Tinit) then
+     T(:) = spread(Tnominal,1,nz)
+  else
+     !T(:) = ( Tmean1*(z(nz)-z(:)) + Tmean3*z(:) ) / z(nz)
+     T(:) = Tmean(1:nz)
+  end if
+  call assignthermalproperties3(nz,z(:),T,porosity, &
+       &                        ti(:),rhocv(:),icefrac(:),zdepthT)
+  ell0 = meanfreepathinsoil(diam,porosity(1)) ! surface
+  do j=1,nz
+     ell(j) = meanfreepathinsoil(diam,porosity(j)) 
+     if (z(j)>zdepthT .and. zdepthT>=0.) then
+        ell(j) = meanfreepathinsoil(diam,porosity(j)+icefrac(j)) 
+     endif
+  end do
      
-     ! run thermal model
-     call ajsub_asteroid(latitude(k)*d2r, z, ti, rhocv, Orbit, S0, &
-          &     typeT, avSice, Tinit, Tmean1(k), Tmean3(k), Tmin(k), Tmax(k))
+  ! run thermal model
+  call ajsub_asteroid(latitude*d2r, z, ti, rhocv, Orbit, S0, &
+       &     typeT, avSice, Tinit, Tmean(:), Tmini(:), Tmaxi(:))
 
-     ! run ice evolution model
-     if (typeT<=1) then
-        elleff = ell0
-     else
-        deltaz = colint(spread(1d0,1,nz),z,nz,1,typeT-1)  ! for normalization
-        elleff = deltaz/colint(1./ell(:),z(:),nz,1,typeT-1) 
-        if (minval(ell(1:typeT-1))<=0.) then
-           stop 'ELL_EFF PROBLEM'
-        endif
+  ! run ice evolution model
+  if (typeT<=1) then
+     elleff = ell0
+  else
+     deltaz = colint(spread(1d0,1,nz),z,nz,1,typeT-1)  ! for normalization
+     elleff = deltaz/colint(1./ell(:),z(:),nz,1,typeT-1) 
+     if (minval(ell(1:typeT-1))<=0.) then
+        stop 'ELL_EFF PROBLEM'
      endif
-     call icechanges3(nz,z(:),avSice,elleff,bigstep,zdepthT(k),porosity,icefrac)
+  endif
+  call icechanges3(nz,z(:),avSice,elleff,bigstep,zdepthT,porosity,icefrac)
 
-     ! diagnose
-     if (zdepthT(k)>=0.) then
-        jump = 0
-        do j=1,nz
-           if (zdepth_old(k)<z(j).and.zdepthT(k)>z(j)) jump=jump+1
-        end do
-     else
-        jump=-9
-     endif
-     write(34,'(f12.2,1x,f6.2,1x,f11.5,1x,g11.4,1x,i3,1x,g10.4)') &
-          &        bigstep,latitude(k),zdepthT(k),avSice,jump,elleff
-     zdepth_old(k) = zdepthT(k)
+  ! diagnose
+  if (zdepthT>=0.) then
+     jump = 0
+     do j=1,nz
+        if (zdepth_old<z(j) .and. zdepthT>z(j)) jump=jump+1
+     end do
+  else
+     jump=-9
+  endif
+  write(34,'(f12.2,1x,f6.2,1x,f11.5,1x,g11.4,1x,i3,1x,g10.4)') &
+       &        bigstep,latitude,zdepthT,avSice,jump,elleff
+  zdepth_old = zdepthT
 
-  end do  ! end of big loop
 end subroutine icelayer_asteroid
 
 
 
 subroutine ajsub_asteroid(latitude, z, ti, rhocv, Orbit, S0, &
-     &     typeT, avSice, Tinit, Tmean1, Tmean3, Tmin, Tmaxi)
+     &     typeT, avSice, Tinit, Tmean, Tmini, Tmaxi)
 !************************************************************************
 !  A 1D thermal model that also returns various time-averaged quantities
 !
-!  Tinit = initalize if .true., otherwise use Tmean1 and Tmean3
+!  Tinit = initalize if .true., otherwise use Tmean
 !************************************************************************
   use body, only : pi, EQUILTIME, dt, Fgeotherm, nz, emiss, albedo, orbitp
   use allinterfaces
@@ -107,10 +103,11 @@ subroutine ajsub_asteroid(latitude, z, ti, rhocv, Orbit, S0, &
   integer, intent(IN) :: typeT
   real(8), intent(OUT) :: avSice  ! annual mean sublimation rate [kg/m^2/s]
   logical, intent(IN) :: Tinit
-  real(8), intent(INOUT) :: Tmean1, Tmean3
-  real(8), intent(OUT) :: Tmin, Tmaxi
+  real(8), intent(INOUT) :: Tmean(0:nz)
+  real(8), intent(OUT) :: Tmini(0:nz), Tmaxi(0:nz)
   real(8), parameter :: sigSB=5.6704e-8
   real(8), parameter :: mmass = 18.  ! H2O
+  !real(8), parameter :: mmass = 27.0  ! HCN
   real(8), parameter :: zero = 0.
   integer nsteps, n, nm
   real(8) tmax, time, Qn, Qnp1, tdays
@@ -134,8 +131,10 @@ subroutine ajsub_asteroid(latitude, z, ti, rhocv, Orbit, S0, &
      Tsurf = Tmean0
      tmax = 3*EQUILTIME*nint(solsperorbit)
   else
-     T(:) = ( Tmean1*(z(nz)-z(:)) + Tmean3*z(:) ) / z(nz)
-     Tsurf = Tmean1
+     !T(:) = ( Tmean1*(z(nz)-z(:)) + Tmean3*z(:) ) / z(nz)
+     !Tsurf = Tmean1
+     T(:) = Tmean(1:nz)
+     Tsurf = Tmean(0)
      tmax = EQUILTIME*nint(solsperorbit)
   endif
   Fsurf=0.
@@ -143,9 +142,9 @@ subroutine ajsub_asteroid(latitude, z, ti, rhocv, Orbit, S0, &
   nsteps=int(tmax/dt)       ! calculate total number of timesteps
 
   nm=0
-  Tmean1=0.; Tmean3=0.
+  Tmean(:) = 0.
   avSice = 0.
-  Tmin=+1e32; Tmaxi=-9.
+  Tmini(:)=+1e32; Tmaxi(:)=-9.
 
   time=0.
   call generalorbit( 0.d0, orbit%semia, orbit%ecc, orbit%omega, orbit%eps, &
@@ -166,25 +165,27 @@ subroutine ajsub_asteroid(latitude, z, ti, rhocv, Orbit, S0, &
      Qn = Qnp1
 
      if ( time >= tmax - nint(solsperorbit) ) then
-        Tmean1 = Tmean1+Tsurf
-        Tmean3 = Tmean3+T(nz)
+        Tmean(0) = Tmean(0) + Tsurf
+        Tmean(1:nz) = Tmean(1:nz) + T(1:nz)
         if (typeT>0 .and. typeT<=nz) then
            !rhosatav = rhosatav+psv(T(typeT))/T(typeT)
            avSice = avSice + psv(T(typeT)) / sqrt(T(typeT))
         end if
         nm = nm+1
 
-        if (Tsurf<Tmin) Tmin=Tsurf
-        if (Tsurf>Tmaxi) Tmaxi=Tsurf
+        if (Tsurf<Tmini(0)) Tmini(0)=Tsurf
+        if (Tsurf>Tmaxi(0)) Tmaxi(0)=Tsurf
+        where (T<Tmini(1:nz)) Tmini(1:nz)=T(:)
+        where (T>Tmaxi(1:nz)) Tmaxi(1:nz)=T(:)
      endif
 
   end do  ! end of time loop
   
-  Tmean1 = Tmean1/nm; Tmean3 = Tmean3/nm
+  Tmean(:) = Tmean(:)/nm
   !rhosatav = rhosatav/nm
   !rhosatav = rhosatav*mmass/8314.46
   avSice = avSice/nm
-  avSice = avSice*sqrt(mmass/(2*pi*8314.46)) 
+  avSice = avSice*sqrt(mmass/(2*pi*8314.46))
   
   if (typeT<=0 .or. typeT>nz) avSice = -9999.
 end subroutine ajsub_asteroid

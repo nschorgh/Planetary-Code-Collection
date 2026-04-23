@@ -10,6 +10,7 @@ PROGRAM trojans_fast3
 !  x no deflation (ice fraction larger than porosity)  
 !  x no redistribution of ice within ice-rich layer
 !  x no impact stirring
+!  x only a single location, NP=1
 !
 ! builds on asteroid_fast1
 ! written by Norbert Schorghofer 2025-2026
@@ -17,18 +18,17 @@ PROGRAM trojans_fast3
   use body, only : pi, d2r, nz, zfac, zmax, Orbit
   use allinterfaces
   implicit none
-  integer, parameter :: NP=1    ! # of sites
   integer SPINUPN   ! # number of spin-up steps
   real(8) spinupfac 
-  parameter(SPINUPN=10, spinupfac=2.)
-  integer i, k, earliest, ierr
+  parameter(SPINUPN=15, spinupfac=2.)
+  integer i, earliest, ierr
   real(8) tstart  ! [Earth years]
   real(8) z(nz), icetime
   real(8) timestep ! time step at the end of spin-up [Earth years]
   real(8) bigstep, bssum, porosity(nz)
   real(8) icefrac(nz) ! volumetric ice concentration relative to total volume
-  real(8), dimension(NP) :: latitude, zdepthT
-  real(8), dimension(NP) :: Tmean1, Tmean3, Tmin, Tmax
+  real(8) latitude, zdepthT
+  real(8), dimension(0:nz) :: Tmean, Tmini, Tmaxi
   character(4) ext
 
   ! latitudes
@@ -39,18 +39,16 @@ PROGRAM trojans_fast3
      print *,'File lats.'//ext,'not found'
      stop
   endif
-  do k=1,NP
-     read(21,*,iostat=ierr) latitude(k)
-     if (latitude(k)>90. .or. latitude(k)<-90.) then
-        print *,latitude(k)
-        stop 'Latitude out of range'
-     end if
-  end do
+  read(21,*,iostat=ierr) latitude
+  if (latitude>90. .or. latitude<-90.) then
+     print *,latitude
+     stop 'Latitude out of range'
+  end if
   close(21)
 
   tstart = 4.4e9  ! Earth years
   timestep = 1e8  ! Earth years
-  zdepthT(:) = 0. ! initial ice depth
+  zdepthT = 0. ! initial ice depth
 
   orbit%omega = 0.*d2r
 
@@ -70,17 +68,13 @@ PROGRAM trojans_fast3
   print *,'Time step=',timestep,'years'
   print *,'Spinup',SPINUPN,spinupfac
   print *,'eps=',Orbit%eps/d2r,'ecc=',Orbit%ecc,'omega=',orbit%omega/d2r
-  print *,'Number of sites=',NP
   print *,'Site specific parameters:'
-  do k=1,NP
-     if (NP>1) print *,'  Site ',k
-     print *,'  Latitude (deg)',latitude(k)
-     call outputskindepths(z,porosity,icefrac)
-     print *,'  Initial ice depth=',zdepthT(k)
-     print *,'  Porosity=',minval(porosity),maxval(porosity)
-     print *,'  Ice fraction=',minval(icefrac),maxval(icefrac)
-     print *
-  end do
+  print *,'  Latitude (deg)',latitude
+  call outputskindepths(z,porosity,icefrac)
+  print *,'  Initial ice depth=',zdepthT
+  print *,'  Porosity=',minval(porosity),maxval(porosity)
+  print *,'  Ice fraction=',minval(icefrac),maxval(icefrac)
+  print *
   call outputmoduleparameters
   print *
 
@@ -92,12 +86,9 @@ PROGRAM trojans_fast3
 
   print *,'Equilibrating initial temperature'
   !icetime = -tstart
-  call icelayer_asteroid(0d0,NP,z,porosity,icefrac,.true., &
-       & zdepthT,Tmean1,Tmean3,Tmin,Tmax,latitude,Orbit,faintsun(icetime))
-  do k=1,NP
-     write(37,501) icetime,latitude(k),zdepthT(k), &
-          &  Tmean1(k),Tmean3(k),Tmin(k),Tmax(k)
-  end do
+  call icelayer_asteroid(0d0,z,porosity,icefrac,.true., &
+       & zdepthT,Tmean,Tmini,Tmaxi,latitude,Orbit,faintsun(icetime))
+  write(37,501) icetime,latitude,zdepthT,Tmean(0),Tmean(nz),Tmini(0),Tmaxi(0)
 
   icetime = - earliest*timestep
   print *,icetime
@@ -108,14 +99,12 @@ PROGRAM trojans_fast3
   do i=1,SPINUPN
      bigstep = spinupfac**i/bssum*timestep
      icetime = icetime + bigstep
-     call icelayer_asteroid(bigstep,NP,z,porosity,icefrac,.false., &
-          & zdepthT,Tmean1,Tmean3,Tmin,Tmax,latitude,Orbit,faintsun(icetime))
+     call icelayer_asteroid(bigstep,z,porosity,icefrac,.false., &
+          & zdepthT,Tmean,Tmini,Tmaxi,latitude,Orbit,faintsun(icetime))
      print *,i,'of',SPINUPN,'  ',bigstep,zdepthT,orbit%omega/d2r
-     do k=1,NP
-        ! variables were evaluated at previous time step
-        write(37,501) icetime,latitude(k),zdepthT(k), &
-             & Tmean1(k),Tmean3(k),Tmin(k),Tmax(k)
-     end do
+     ! variables were evaluated at previous time step
+     write(37,501) icetime,latitude,zdepthT, &
+          & Tmean(0),Tmean(nz),Tmini(0),Tmaxi(0)
      orbit%omega = mod(orbit%omega + 36.*d2r, 2*pi)  ! sweep
   end do
 
@@ -123,23 +112,29 @@ PROGRAM trojans_fast3
   print *,icetime
   do 
      icetime = icetime + timestep
-     call icelayer_asteroid(timestep,NP,z,porosity,icefrac,.false., &
-          & zdepthT,Tmean1,Tmean3,Tmin,Tmax,latitude,Orbit,faintsun(icetime))
-     do k=1,NP
-        ! variables were evaluated at previous time step
-        write(37,501) icetime,latitude(k),zdepthT(k), &
-             & Tmean1(k),Tmean3(k),Tmin(k),Tmax(k)
-     end do
+     call icelayer_asteroid(timestep,z,porosity,icefrac,.false., &
+          & zdepthT,Tmean,Tmini,Tmaxi,latitude,Orbit,faintsun(icetime))
+     ! variables were evaluated at previous time step
+     write(37,501) icetime,latitude,zdepthT,Tmean(0),Tmean(nz),Tmini(0),Tmaxi(0)
      print *,icetime
      if (icetime>=0.) exit
      orbit%omega = mod(orbit%omega + 36.*d2r, 2*pi)  ! sweep
   end do
-
   close(34)
   close(37)
-
-501 format (f12.0,2x,f7.3,4x,f12.6,4(2x,f6.2)) 
-
+501 format (f12.0,2x,f7.3,4x,f12.6,4(2x,f6.2))
+  
+  block
+    integer j
+    open(unit=38,file='profiles.'//ext,action='write',status='unknown')
+    write(38,502) latitude,0.,Tmini(0),Tmean(0),Tmaxi(0)
+    do j=1,nz
+       write(38,502) latitude,z(j),Tmini(j),Tmean(j),Tmaxi(j)
+    enddo
+    close(38)
+502 format (f7.3,1x,f12.6,3(1x,f7.3)) 
+  end block
+  
 END PROGRAM trojans_fast3
 
 
