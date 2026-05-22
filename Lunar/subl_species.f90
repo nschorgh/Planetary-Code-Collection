@@ -45,12 +45,16 @@ elemental function evap_vacuum_species(T,species)
         b0=9.435; b1=3775; b2=3.225  ! corrected Jul 2025
         psv = exp(b0-b1/T+b2*log(T))
         
-     case('HCN')
+     case('HCN')  ! hydrogen cyanide
         mu = 27.0253
-        b0=27.03; b1=4472
+        if (T>170.) then ! phase I
+           b0=27.03; b1=4472.
+        else ! phase II (Hudson & Gerakines, 2023) - added Apr 2026
+           b0=26.50; b1=4568.
+        end if
         psv = exp(b0-b1/T)
         
-     case('CH3OH')
+     case('CH3OH') ! methanol
         mu = 32.0419
         if (T<157.4) then ! alpha-phase
            b0=15.94; b1=2453

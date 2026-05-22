@@ -101,9 +101,9 @@ function [T, Tsurf, Fsurf] = cranknQ(nz,z,dt,Qn,Qnp1,T,ti,rhoc,emiss,...
    % Volterra predictor (optional)
    sigSB=5.6704e-8;
    Fsurf = - k(1) * ( T(1)-Tsurf ) / z(1);  % heat flux
-   seb = -Fsurf -emiss*sigSB*Tsurf**4 + (2*Qnp1 + Qn)/3.;
+   seb = -Fsurf -emiss*sigSB*Tsurf^4 + (2*Qnp1 + Qn)/3.;
    % Tpred = Tsurf + sqrt(4*dt/pi) / ti(1) * seb;  ! 1st order
-   Tpred = Tsurf + seb / ( sqrt(pi/(4.*dt))*ti(1) + 8./3.*emiss*sigSB*Tsurf**3 );
+   Tpred = Tsurf + seb / ( sqrt(pi/(4.*dt))*ti(1) + 8./3.*emiss*sigSB*Tsurf^3 );
    Tr = (Tsurf+Tpred)/2.;  % better reference temperature
 
    % Emission

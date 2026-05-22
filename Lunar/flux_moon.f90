@@ -15,7 +15,9 @@ pure function flux_moon(R,decl,latitude,HA,albedo0)
   real(8), intent(IN) :: R, decl, latitude, HA, albedo0
   real(8) c1, s1, sinbeta, cosbeta, azSun, buf
   real(8) incid, albedo
-  real(8), parameter :: a=0.06, b=0.25  ! Keihm, Icarus 60, 568 (1984)
+  !real(8), parameter :: a=0.03, b=0.14  ! Keihm, Icarus 60, 568 (1984)
+  !real(8), parameter :: a=0.045, b=0.14 ! Vasavada et al., JGR (2012)
+  real(8), parameter :: a=0.06, b=0.25  ! Hayne et al., JGR (2017)
   
   c1 = cos(latitude)*cos(decl)
   s1 = sin(latitude)*sin(decl)
