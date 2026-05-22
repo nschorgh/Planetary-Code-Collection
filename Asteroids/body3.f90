@@ -17,16 +17,22 @@ module body
   real(8) zmax   ! domain depth
 
   type(orbitp) :: Orbit = &
-       & orbitp(5.2, 0., 20.*d2r, 0., 12.*3600)  ! nominal Trojan
-       !& orbitp(5.20, 0.089, 158.*d2r, 0., 8.702724*3600.)  ! Eurybates  
-       !& orbitp(semia=5.17, ecc=0.095, solarDay=11.5*3600.) ! Polymele
-       !& orbitp(5.29, 0.064,  10.*d2r, 0., 445.683*3600.)  ! Leucus  
-       !& orbitp(5.13, 0.037, 154.*d2r, 0., 13.48617*3600.)  ! Orus
-       !& orbitp(semia=5.22, ecc=0.129, solarDay = 102.784*3600.) ! Patroclus
-  !Orbit%eps = 0.; Orbit%omega=0.
+       & orbitp(5.2, 0.07, 20.*d2r, 0., 12.*3600)  ! nominal Trojan
+       !& orbitp(5.20, 0.044, 158.*d2r, 0., 8.702724*3600.)  ! Eurybates  
+       !& orbitp(5.17, 0.057, 20.*d2r, 0., 11.5*3600.) ! Polymele
+       !& orbitp(5.29, 0.024,  10.*d2r, 0., 445.683*3600.)  ! Leucus  
+       !& orbitp(5.13, 0.013, 154.*d2r, 0., 13.48617*3600.)  ! Orus
+       !& orbitp(5.22, 0.101, 20.*d2r, 0., 102.784*3600.) ! Patroclus
   
-  parameter(emiss = 0.90d0, albedo = 0.05)
+  parameter(albedo = 0.05)   ! nominal
+  !parameter(albedo = 0.044)  ! Eurybates
+  !parameter(albedo = 0.092)  ! Polymele  
+  !parameter(albedo = 0.043)  ! Leucus
+  !parameter(albedo = 0.040)  ! Orus
+  ! none for Patroclus
 
+  parameter(emiss = 0.90d0)
+  
   parameter(nz=160, zfac=1.05d0, zmax=20.)  ! thIn=20
   !parameter(nz=100, zfac=1.05d0, zmax=1.)  ! without seasons
   real(8), parameter :: Tnominal = 120.  ! for initializations
@@ -41,7 +47,6 @@ end module body
 
 subroutine outputmoduleparameters
   use body
-  !use allinterfaces, only : sols_per_orbit
   implicit none
   real(8), external :: sols_per_orbit
   
@@ -49,7 +54,8 @@ subroutine outputmoduleparameters
   !print *,'  Ice bulk density',icedensity,'kg/m^3'
   print *,'  dt=',dt,'solar days'
   print *,'  Fgeotherm=',Fgeotherm,'W/m^2'
-  print *,'  Emissivity of surface=',emiss
+  print *,'  Albedo=',albedo
+  print *,'  Emissivity=',emiss
   print *,'  Thermal model equilibration time',EQUILTIME,'orbits'
   print *,'  Semimajor axis',orbit%semia
   print *,'  Eccentricity',orbit%ecc

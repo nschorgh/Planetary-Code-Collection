@@ -85,8 +85,8 @@ module allinterfaces
        implicit none
        integer, intent(IN) :: nz
        real(8), intent(IN) :: z(nz), avSice, elleff, bigstep
-       real(8), intent(IN) :: porosity(nz), icefrac(nz)
-       real(8), intent(INOUT) :: zdepthT
+       real(8), intent(IN) :: porosity(nz)
+       real(8), intent(INOUT) :: zdepthT, icefrac(nz)
      end subroutine icechanges3
   end interface
 
@@ -106,6 +106,16 @@ module allinterfaces
        real(8), intent(IN) :: T
      end function psv
   end interface
+
+  interface
+     elemental function psv_species(T,species)
+       implicit none
+       real(8) psv_species  ! [Pa]
+       real(8), intent(IN) :: T  ! [Kelvin]
+       character(*), intent(IN) :: species
+     end function psv_species
+  end interface
+  
 end module allinterfaces
 
 

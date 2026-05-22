@@ -63,7 +63,7 @@ Asynchronously Coupled Model of Temperature and Ice Loss on Trojans (2026)
 ===================================================================
 
 trojans_fast3.f90: (main program)
-	asynchronously coupled model of ice loss and temperature on Jovian Trojans 
+	asynchronously coupled model of ice loss and temperature on Jovian Trojans
 
 body3.f90:
 	body-specific parameters
@@ -83,6 +83,8 @@ psv4.f90:
 soithprop_trojan.f90:
 	thermal properties of icy regolith on Trojans
 
+array_job.sh:
+	optional slurm script that queues same exectuable with different input parameters
 
 
 

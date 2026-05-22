@@ -20,7 +20,8 @@ subroutine icelayer_asteroid(bigstep,z,porosity,icefrac,Tinit, &
   use allinterfaces
   implicit none
   real(8), intent(IN) :: bigstep
-  real(8), intent(IN) :: z(nz), porosity(nz), icefrac(nz)
+  real(8), intent(IN) :: z(nz), porosity(nz)
+  real(8), intent(INOUT) :: icefrac(nz)
   logical, intent(IN) :: Tinit
   real(8), intent(INOUT) :: zdepthT, Tmean(0:nz)
   real(8), intent(OUT) :: Tmini(0:nz), Tmaxi(0:nz)
@@ -107,7 +108,7 @@ subroutine ajsub_asteroid(latitude, z, ti, rhocv, Orbit, S0, &
   real(8), intent(OUT) :: Tmini(0:nz), Tmaxi(0:nz)
   real(8), parameter :: sigSB=5.6704e-8
   real(8), parameter :: mmass = 18.  ! H2O
-  !real(8), parameter :: mmass = 27.0  ! HCN
+  !real(8), parameter :: mmass = 27.02  ! HCN
   real(8), parameter :: zero = 0.
   integer nsteps, n, nm
   real(8) tmax, time, Qn, Qnp1, tdays
@@ -170,6 +171,7 @@ subroutine ajsub_asteroid(latitude, z, ti, rhocv, Orbit, S0, &
         if (typeT>0 .and. typeT<=nz) then
            !rhosatav = rhosatav+psv(T(typeT))/T(typeT)
            avSice = avSice + psv(T(typeT)) / sqrt(T(typeT))
+           !avSice = avSice + psv_species(T(typeT),'HCN') / sqrt(T(typeT))
         end if
         nm = nm+1
 
@@ -200,15 +202,18 @@ subroutine icechanges3(nz,z,avSice,elleff,bigstep,zdepthT,porosity,icefrac)
   implicit none
   integer, intent(IN) :: nz
   real(8), intent(IN) :: z(nz), avSice, elleff, bigstep
-  real(8), intent(IN) :: porosity(nz), icefrac(nz)
-  real(8), intent(INOUT) :: zdepthT
+  real(8), intent(IN) :: porosity(nz)
+  real(8), intent(INOUT) :: zdepthT, icefrac(nz)
   real(8), parameter :: icedensity = 933.  ! 120K  [kg/m^3]
-  integer typeT
+  integer typeT, typeTnew
   real(8) zdepthTnew, buf, bigdtsec, beta
 
-  if (zdepthT<0.) return   ! no ice anywhere
+  if (zdepthT<0. .or. zdepthT>z(nz)) then ! no ice anywhere
+     zdepthT=-9999.
+     return
+  end if
 
-  bigdtsec = bigstep*86400*365.24
+  bigdtsec = bigstep*86400*365.24 ! years -> seconds
 
   ! advance ice table
   if (any( icefrac > porosity )) then  ! deflation
@@ -217,18 +222,42 @@ subroutine icechanges3(nz,z,avSice,elleff,bigstep,zdepthT,porosity,icefrac)
   else
      beta = 1. ! no deflation
   end if
-  if (zdepthT>z(nz)) then
-     zdepthT=-9999.
-  else
-     typeT = getfirst(zdepthT,nz,z)
-     if (typeT<1) stop 'typeT<1 in subroutine icechanges3'
-     buf = elleff*avSice*beta/(icefrac(typeT)*icedensity)
-     zdepthTnew = sqrt(2*buf*bigdtsec + (zdepthT+elleff)**2) - elleff
-     print *,'# advance of ice table',zdepthT,zdepthTnew
 
-     zdepthT = zdepthTnew
-  end if
+  typeT = getfirst(zdepthT,nz,z)
+  if (typeT<1) stop 'typeT<1 in subroutine icechanges3'
   
+  buf = elleff*avSice*beta/(icefrac(typeT)*icedensity)
+  zdepthTnew = sqrt( 2*buf*bigdtsec + (zdepthT+elleff)**2 ) - elleff
+  
+  typeTnew = getfirst(zdepthTnew,nz,z)
+  if (typeTnew < 0) then
+     zdepthT=-9999.
+     icefrac(typeT:nz) = 0. 
+     return
+  end if
+  if (typeTnew > typeT) then
+     print *,'# advance crosses grid point',typeT,typeTnew
+     
+     if (typeTnew > typeT+1) then  ! take two half steps
+        print *,'# advance crosses more than one grid point'
+        bigdtsec = bigdtsec/2.
+        
+        zdepthTnew = sqrt( 2*buf*bigdtsec + (zdepthT+elleff)**2 ) - elleff
+        typeTnew = getfirst(zdepthTnew,nz,z)
+        
+        buf = elleff*avSice*beta/(icefrac(typeTnew)*icedensity)
+        zdepthTnew = sqrt( 2*buf*bigdtsec + (zdepthTnew+elleff)**2 ) - elleff
+        typeTnew = getfirst(zdepthTnew,nz,z)
+
+        ! icechanges in fast_subs_asteroid2.f90 has a more accurate treatment
+     endif
+     
+     icefrac(typeT:typeTnew-1) = 0.
+  endif
+  
+  print *,'# advance of ice table',zdepthT,zdepthTnew
+  
+  zdepthT = zdepthTnew
 end subroutine icechanges3
 
 
