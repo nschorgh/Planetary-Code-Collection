@@ -10,10 +10,10 @@ subroutine icelayer_asteroid(bigstep,z,porosity,icefrac,Tinit, &
      & zdepthT,Tmean,Tmini,Tmaxi,latitude,Orbit,S0)
 !************************************************************************
 ! bigstep = time step [Earth years]
-! z = depths [m]
+! z = depths of grid points [m]
 ! zdetphT = depth of ice table or shallowest depth with perennial ice [m]  
 ! latitude  [degree]
-! eps = axis tilt [radians]  
+! Orbit = composite data that contain orbital information
 ! S0 = solar constant relative to present
 !************************************************************************
   use body, only : d2r, Tnominal, nz, diam, orbitp

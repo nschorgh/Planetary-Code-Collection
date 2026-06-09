@@ -81,3 +81,23 @@ subroutine assignthermalproperties3(nz,z,T,porosity,ti,rhocv,icefrac,zdepthT)
   ti(1:nz) = sqrt(k(1:nz)*rhocv(1:nz))
   print *,'min thIn=',minval(ti)
 end subroutine assignthermalproperties3
+
+
+elemental function porosityprofile(z)
+  implicit none
+  real(8) porosityprofile
+  real(8), intent(IN) :: z
+  real(8) phi_s  ! surface porosity
+  real(8) phi_d  ! porosity at great depth
+  real(8) H ! depth-scale
+  
+  ! rho = (1-porosity)*rhosolid,  porosity = 1-rho/rhosolid
+  ! twolayers = rho_d - (rho_d - rho_s) * exp(-z/H)
+  
+  ! values inspired by Fa, Earth and Space Science 7, e2019EA000801 (2020)
+  H = 1.03
+  phi_s = 0.745   ! surface porosity
+  ! porosity at 5m depth is 0.323
+  phi_d = 0.33  ! 0.326 at z->infinity
+  porosityprofile = 0.33 + (0.66-0.33)*exp(-z/H)
+end function porosityprofile

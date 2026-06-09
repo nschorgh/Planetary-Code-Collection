@@ -79,6 +79,14 @@ module allinterfaces
      end subroutine assignthermalproperties3
   end interface
 
+  interface
+     elemental function porosityprofile(z)
+       implicit none
+       real(8) porosityprofile
+       real(8), intent(IN) :: z
+     end function porosityprofile
+  end interface
+  
   ! fast_subs_airlessbody3.f90
   interface
      subroutine icechanges3(nz,z,avSice,elleff,bigstep,zdepthT,porosity,icefrac)

@@ -8,7 +8,7 @@ PROGRAM trojans_fast3
 !  - mixture of silicates, ice, and void spaces
 !  - increasing solar luminosity
 !  x no deflation (ice fraction larger than porosity)  
-!  x no redistribution of ice within ice-rich layer
+!  x no redistribution of ice within ice-rich layer by vapor diffusion
 !  x no impact stirring
 !  x only a single location, NP=1
 !
@@ -59,8 +59,10 @@ PROGRAM trojans_fast3
   close(30)
 
   porosity(:) = 0.6d0   ! ice-free porosity
-  icefrac(:)  = 0.3     ! initial ice fraction relative to total volume
+  icefrac(:)  = 0.3d0   ! initial ice fraction relative to total volume
 
+  !porosity(:) = porosityprofile(z)
+  
   if (maxval(icefrac + porosity)>1.) stop 'icefrac>porosity>1'
   
   print *,'RUNNING FAST ASTEROID MODEL'
