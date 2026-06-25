@@ -24,7 +24,7 @@ make asteroid_fast2
 ./fast 0
 (This might take 1.5 hours to finish, because of the long integration time.)
 
-compare with depths.0
+compare with depths_fast2.0
 
 
 4. Run sphere1d_implicit
@@ -33,3 +33,12 @@ make sphere1d
 ./a.out
 
 compare output with depths_sphere.dat
+
+
+5. Run trojans_fast3
+
+make trojans_fast3
+./a.out 3
+
+compare output depths.3 with depths_trojan.3
+(takes about 10 minutes to finish)

@@ -86,8 +86,11 @@ psv_species.f90
 soithprop_trojan.f90:
 	thermal properties of icy regolith on Trojans
 
+lats.3:
+	example input file for trojans_fast3.f90
+	
 array_job.sh:
-	optional slurm script that queues same exectuable with different input parameters
+	optional slurm script that queues exectuable with different input parameters
 
 
 

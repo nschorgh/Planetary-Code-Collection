@@ -40,7 +40,6 @@ subroutine icelayer_asteroid(bigstep,z,porosity,icefrac,Tinit, &
   if (Tinit) then
      T(:) = spread(Tnominal,1,nz)
   else
-     !T(:) = ( Tmean1*(z(nz)-z(:)) + Tmean3*z(:) ) / z(nz)
      T(:) = Tmean(1:nz)
   end if
   call assignthermalproperties3(nz,z(:),T,porosity, &
@@ -62,10 +61,8 @@ subroutine icelayer_asteroid(bigstep,z,porosity,icefrac,Tinit, &
      elleff = ell0
   else
      deltaz = colint(spread(1d0,1,nz),z,nz,1,typeT-1)  ! for normalization
-     elleff = deltaz/colint(1./ell(:),z(:),nz,1,typeT-1) 
-     if (minval(ell(1:typeT-1))<=0.) then
-        stop 'ELL_EFF PROBLEM'
-     endif
+     elleff = deltaz / colint(1./ell(:),z(:),nz,1,typeT-1)
+     if (minval(ell(1:typeT-1))<=0.) stop 'ELL_EFF PROBLEM'
   endif
   call icechanges3(nz,z(:),avSice,elleff,bigstep,zdepthT,porosity,icefrac)
 
@@ -133,8 +130,6 @@ subroutine ajsub_asteroid(latitude, z, ti, rhocv, Orbit, S0, &
      Tsurf = Tmean0
      tmax = 3*EQUILTIME*nint(solsperorbit)
   else
-     !T(:) = ( Tmean1*(z(nz)-z(:)) + Tmean3*z(:) ) / z(nz)
-     !Tsurf = Tmean1
      T(:) = Tmean(1:nz)
      Tsurf = Tmean(0)
      tmax = EQUILTIME*nint(solsperorbit)
