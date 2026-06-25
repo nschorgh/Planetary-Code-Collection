@@ -7,7 +7,7 @@ PROGRAM trojans_fast3
 !  - ice loss by vapor diffusion through porous layer
 !  - mixture of silicates, ice, and void spaces
 !  - increasing solar luminosity
-!  x no deflation (ice fraction larger than porosity)  
+!  x no deflation
 !  x no redistribution of ice within ice-rich layer by vapor diffusion
 !  x no impact stirring
 !  x only a single location, NP=1

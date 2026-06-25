@@ -102,7 +102,7 @@ subroutine ajsub_asteroid(latitude, z, ti, rhocv, Orbit, S0, &
   type(orbitp), intent(IN) :: Orbit
   real(8), intent(IN) :: S0
   integer, intent(IN) :: typeT
-  real(8), intent(OUT) :: avSice, avSice0  ! annual mean sublimation rate [kg/m^2/s]
+  real(8), intent(OUT) :: avSice, avSice0 ! annual mean sublimation rate [kg/m^2/s]
   logical, intent(IN) :: Tinit
   real(8), intent(INOUT) :: Tmean(0:nz)
   real(8), intent(OUT) :: Tmini(0:nz), Tmaxi(0:nz)
@@ -196,9 +196,9 @@ end subroutine ajsub_asteroid
 
 
 subroutine icechanges3(nz,z,avSice,elleff,bigstep,zdepthT,porosity,icefrac)
-!***********************************************************************
+!************************************************************************
 ! advances ice interface, no deflation
-!***********************************************************************
+!************************************************************************
   use allinterfaces, only : getfirst
   implicit none
   integer, intent(IN) :: nz

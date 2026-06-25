@@ -70,7 +70,7 @@ subroutine assignthermalproperties3(nz,z,T,porosity,ti,rhocv,icefrac,zdepthT)
         do j=1,nz
            if (z(j)>zdepthT) then
               call iceproperties_species('H2O',T(j),icedensity,cice,kice)
-              ! linear addition of conductivities in the spirit of Siegler et al. (2012)
+     ! linear addition of conductivities in the spirit of Siegler et al. (2012)
               k(j) = k(j) + icefrac(j)*kice  ! icefrac <= porosity
               rhocv(j) = rhocv(j) + icedensity*cice*icefrac(j)
            endif
