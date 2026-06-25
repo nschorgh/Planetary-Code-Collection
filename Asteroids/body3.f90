@@ -29,7 +29,7 @@ module body
   !parameter(albedo = 0.092)  ! Polymele  
   !parameter(albedo = 0.043)  ! Leucus
   !parameter(albedo = 0.040)  ! Orus
-  ! none for Patroclus
+  !parameter(albedo = 0.05)   ! Patroclus
 
   parameter(emiss = 0.90d0)
   

@@ -30,7 +30,7 @@ subroutine icelayer_asteroid(bigstep,z,porosity,icefrac,Tinit, &
   
   integer typeT, j, jump
   real(8) ti(nz), rhocv(nz), T(nz)
-  real(8) ell0, elleff, deltaz, avSice
+  real(8) ell0, elleff, deltaz, avSice, avSice0
   real(8), dimension(nz) :: ell
   real(8), SAVE :: zdepth_old
 
@@ -55,7 +55,7 @@ subroutine icelayer_asteroid(bigstep,z,porosity,icefrac,Tinit, &
      
   ! run thermal model
   call ajsub_asteroid(latitude*d2r, z, ti, rhocv, Orbit, S0, &
-       &     typeT, avSice, Tinit, Tmean(:), Tmini(:), Tmaxi(:))
+       &     typeT, avSice, avSice0, Tinit, Tmean(:), Tmini(:), Tmaxi(:))
 
   ! run ice evolution model
   if (typeT<=1) then
@@ -78,8 +78,8 @@ subroutine icelayer_asteroid(bigstep,z,porosity,icefrac,Tinit, &
   else
      jump=-9
   endif
-  write(34,'(f12.2,1x,f6.2,1x,f11.5,1x,g11.4,1x,i3,1x,g10.4)') &
-       &        bigstep,latitude,zdepthT,avSice,jump,elleff
+  write(34,'(f12.2,1x,f6.2,1x,f4.0,1x,f11.5,2(1x,g11.4),1x,i3,1x,g10.4)') &
+       &  bigstep,latitude,Orbit%omega/d2r,zdepthT,avSice,avSice0,jump,elleff
   zdepth_old = zdepthT
 
 end subroutine icelayer_asteroid
@@ -87,7 +87,7 @@ end subroutine icelayer_asteroid
 
 
 subroutine ajsub_asteroid(latitude, z, ti, rhocv, Orbit, S0, &
-     &     typeT, avSice, Tinit, Tmean, Tmini, Tmaxi)
+     &     typeT, avSice, avSice0, Tinit, Tmean, Tmini, Tmaxi)
 !************************************************************************
 !  A 1D thermal model that also returns various time-averaged quantities
 !
@@ -102,13 +102,14 @@ subroutine ajsub_asteroid(latitude, z, ti, rhocv, Orbit, S0, &
   type(orbitp), intent(IN) :: Orbit
   real(8), intent(IN) :: S0
   integer, intent(IN) :: typeT
-  real(8), intent(OUT) :: avSice  ! annual mean sublimation rate [kg/m^2/s]
+  real(8), intent(OUT) :: avSice, avSice0  ! annual mean sublimation rate [kg/m^2/s]
   logical, intent(IN) :: Tinit
   real(8), intent(INOUT) :: Tmean(0:nz)
   real(8), intent(OUT) :: Tmini(0:nz), Tmaxi(0:nz)
   real(8), parameter :: sigSB=5.6704e-8
   real(8), parameter :: mmass = 18.  ! H2O
   !real(8), parameter :: mmass = 27.02  ! HCN
+  !real(8), parameter :: mmass = 44.01  ! CO2
   real(8), parameter :: zero = 0.
   integer nsteps, n, nm
   real(8) tmax, time, Qn, Qnp1, tdays
@@ -144,7 +145,7 @@ subroutine ajsub_asteroid(latitude, z, ti, rhocv, Orbit, S0, &
 
   nm=0
   Tmean(:) = 0.
-  avSice = 0.
+  avSice = 0.; avSice0 = 0.
   Tmini(:)=+1e32; Tmaxi(:)=-9.
 
   time=0.
@@ -169,9 +170,10 @@ subroutine ajsub_asteroid(latitude, z, ti, rhocv, Orbit, S0, &
         Tmean(0) = Tmean(0) + Tsurf
         Tmean(1:nz) = Tmean(1:nz) + T(1:nz)
         if (typeT>0 .and. typeT<=nz) then
-           !rhosatav = rhosatav+psv(T(typeT))/T(typeT)
            avSice = avSice + psv(T(typeT)) / sqrt(T(typeT))
+           avSice0 = avSice0 + psv(Tsurf) / sqrt(Tsurf)
            !avSice = avSice + psv_species(T(typeT),'HCN') / sqrt(T(typeT))
+           !avSice0 = avSice0 + psv_species(Tsurf,'HCN') / sqrt(Tsurf)
         end if
         nm = nm+1
 
@@ -184,10 +186,9 @@ subroutine ajsub_asteroid(latitude, z, ti, rhocv, Orbit, S0, &
   end do  ! end of time loop
   
   Tmean(:) = Tmean(:)/nm
-  !rhosatav = rhosatav/nm
-  !rhosatav = rhosatav*mmass/8314.46
   avSice = avSice/nm
   avSice = avSice*sqrt(mmass/(2*pi*8314.46))
+  avSice0 = avSice0*sqrt(mmass/(2*pi*8314.46))
   
   if (typeT<=0 .or. typeT>nz) avSice = -9999.
 end subroutine ajsub_asteroid
@@ -204,7 +205,10 @@ subroutine icechanges3(nz,z,avSice,elleff,bigstep,zdepthT,porosity,icefrac)
   real(8), intent(IN) :: z(nz), avSice, elleff, bigstep
   real(8), intent(IN) :: porosity(nz)
   real(8), intent(INOUT) :: zdepthT, icefrac(nz)
-  real(8), parameter :: icedensity = 933.  ! 120K  [kg/m^3]
+  ! icedensity should match number in subroutine iceproperties_species
+  real(8), parameter :: icedensity = 933.  ! H2O at 120K  [kg/m^3]
+  !real(8), parameter :: icedensity = 1037.  ! HCN
+  !real(8), parameter :: icedensity = 1680.  ! CO2
   integer typeT, typeTnew
   real(8) zdepthTnew, buf, bigdtsec, beta
 

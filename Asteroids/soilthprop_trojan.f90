@@ -47,10 +47,10 @@ subroutine assignthermalproperties3(nz,z,T,porosity,ti,rhocv,icefrac,zdepthT)
   real(8), intent(OUT) :: ti(nz), rhocv(nz)
   real(8), intent(IN), optional :: icefrac(nz), zdepthT
   real(8), parameter :: rhodry = 2500  ! [kg/m^3]
-  real(8), parameter :: icedensity = 933.  ! 120K  [kg/m^3]
   real(8), external :: heatcapacity
 
   integer j
+  real(8) icedensity
   real(8) cice  ! heat capacity of pure ice
   real(8) kice  ! thermal conductivity of pure ice
   real(8) k(nz) ! thermal conductivity
@@ -66,22 +66,58 @@ subroutine assignthermalproperties3(nz,z,T,porosity,ti,rhocv,icefrac,zdepthT)
      k(j) = thIn**2/buf
   end do
   if (present(icefrac) .and. present(zdepthT)) then
-     do j=1,nz
-        if (z(j)>zdepthT) then
-           ! cice = 7.8*T(j) 
-           cice = 7.49*T(j) + 90.  ! Klinger (1981), Shulman (2004)
-           !kice = 632./T(j)+0.38-1.97e-3*T(j)
-           kice = 612./T(j)  ! DOI:10.17632/ttzbgxs9fw.2
-           k(j) = k(j) + icefrac(j)*kice  ! icefrac <= porosity
-           rhocv(j) = rhocv(j) + icedensity*cice*icefrac(j)
-        endif
-     end do
+     if (zdepthT>=0.) then
+        do j=1,nz
+           if (z(j)>zdepthT) then
+              call iceproperties_species('H2O',T(j),icedensity,cice,kice)
+              ! linear addition of conductivities in the spirit of Siegler et al. (2012)
+              k(j) = k(j) + icefrac(j)*kice  ! icefrac <= porosity
+              rhocv(j) = rhocv(j) + icedensity*cice*icefrac(j)
+           endif
+        end do
+     end if
   end if
-
+  
   ti(1:nz) = sqrt(k(1:nz)*rhocv(1:nz))
   print *,'min thIn=',minval(ti)
 end subroutine assignthermalproperties3
 
+
+subroutine iceproperties_species(species,T,icedensity,cice,kice)
+  ! thermal properties of water ice and other ices
+  implicit none
+  character(*), intent(IN) :: species
+  real(8), intent(IN) :: T
+  real(8), intent(OUT) :: icedensity ! [kg/m^3]
+  real(8), intent(OUT) :: cice  ! heat capacity of pure ice
+  real(8), intent(OUT) :: kice  ! thermal conductivity of pure ice
+
+  select case (species)
+  case('H2O')
+     icedensity = 933.  ! at 120K
+     ! cice = 7.8*T
+     cice = 7.49*T + 90.  ! Klinger (1981), Shulman (2004)
+     !kice = 632./T+0.38-1.97e-3*T
+     kice = 612./T  ! DOI:10.17632/ttzbgxs9fw.2
+
+  case('HCN')  ! hydrogen cyanide
+     icedensity = 1037.  ! Gerakines et al. (2022)
+     ! 8.938 cal/K/mol at 120K (Giauque & Ruehrwein 1939)
+     cice = 1384. ! 8.938*4184./27.02 J/K/kg
+     kice = 3.  ! (assumed)
+
+  case('CO2')  ! carbon dioxide
+     icedensity = 1680.  ! approx. from Yu et al. (2023)
+     cice = 951. ! 10*4184./44.  for more detail see Giauque & Egan (1937)
+     kice = 0.7  ! approx. from Saiduzzaman et al. (2025), Fig. 8
+     
+  case default
+     error stop ('iceproperties_species: no species matches')
+     
+  end select
+  ! Note: icedensity should match number in subroutine icechanges3
+end subroutine iceproperties_species
+  
 
 elemental function porosityprofile(z)
   implicit none

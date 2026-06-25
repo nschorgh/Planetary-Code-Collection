@@ -80,6 +80,9 @@ fast_subs_airlessbody3.f90:
 psv4.f90:
 	vapor pressure of H2O
 
+psv_species.f90
+	vapor pressures of hypervolatiles
+
 soithprop_trojan.f90:
 	thermal properties of icy regolith on Trojans
 

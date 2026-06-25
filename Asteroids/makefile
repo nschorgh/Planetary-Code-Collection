@@ -25,7 +25,7 @@ asteroid_thermal: asteroid_thermal.f90 asteroid_thermal.o \
 
 
 trojans_fast3: fast_modules_airlessbody.o soilthprop_trojan.o common_subs3.o \
-	psv4.o makefile
+	psv4.o psv_species.o makefile
 
 	make -C $(SR) common
 

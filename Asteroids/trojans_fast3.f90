@@ -12,7 +12,7 @@ PROGRAM trojans_fast3
 !  x no impact stirring
 !  x only a single location, NP=1
 !
-! builds on asteroid_fast1
+! builds mostly on asteroid_fast1
 ! written by Norbert Schorghofer 2025-2026
 !*************************************************************************
   use body, only : pi, d2r, nz, zfac, zmax, Orbit
@@ -21,6 +21,7 @@ PROGRAM trojans_fast3
   integer SPINUPN   ! # number of spin-up steps
   real(8) spinupfac 
   parameter(SPINUPN=15, spinupfac=2.)
+  !parameter(SPINUPN=20, spinupfac=2.)
   integer i, earliest, ierr
   real(8) tstart  ! [Earth years]
   real(8) z(nz), icetime
@@ -62,6 +63,7 @@ PROGRAM trojans_fast3
   icefrac(:)  = 0.3d0   ! initial ice fraction relative to total volume
 
   !porosity(:) = porosityprofile(z)
+  !icefrac(:)  = 0.2d0
   
   if (maxval(icefrac + porosity)>1.) stop 'icefrac>porosity>1'
   
