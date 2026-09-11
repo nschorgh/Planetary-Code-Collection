@@ -18,15 +18,15 @@ module body
 
   type(orbitp) :: Orbit = &
        & orbitp(5.2, 0.07, 20.*d2r, 0., 12.*3600)  ! nominal Trojan
-       !& orbitp(5.20, 0.044, 158.*d2r, 0., 8.702724*3600.)  ! Eurybates  
+       !& orbitp(5.20, 0.044, 158.*d2r, 0., 8.702724*3600.)  ! Eurybates
        !& orbitp(5.17, 0.057, 20.*d2r, 0., 11.5*3600.) ! Polymele
-       !& orbitp(5.29, 0.024,  10.*d2r, 0., 445.683*3600.)  ! Leucus  
+       !& orbitp(5.29, 0.024,  10.*d2r, 0., 445.683*3600.)  ! Leucus
        !& orbitp(5.13, 0.013, 154.*d2r, 0., 13.48617*3600.)  ! Orus
-       !& orbitp(5.22, 0.101, 20.*d2r, 0., 102.784*3600.) ! Patroclus
+       !& orbitp(5.22, 0.101, 145.*d2r, 0., 102.784*3600.) ! Patroclus
   
   parameter(albedo = 0.05)   ! nominal
   !parameter(albedo = 0.044)  ! Eurybates
-  !parameter(albedo = 0.092)  ! Polymele  
+  !parameter(albedo = 0.092)  ! Polymele
   !parameter(albedo = 0.043)  ! Leucus
   !parameter(albedo = 0.040)  ! Orus
   !parameter(albedo = 0.05)   ! Patroclus

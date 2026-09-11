@@ -19,7 +19,7 @@ PROGRAM trojans_fast3
   use allinterfaces
   implicit none
   integer SPINUPN   ! # number of spin-up steps
-  real(8) spinupfac 
+  real(8) spinupfac
   parameter(SPINUPN=15, spinupfac=2.)
   !parameter(SPINUPN=20, spinupfac=2.)
   integer i, earliest, ierr
@@ -107,8 +107,7 @@ PROGRAM trojans_fast3
           & zdepthT,Tmean,Tmini,Tmaxi,latitude,Orbit,faintsun(icetime))
      print *,i,'of',SPINUPN,'  ',bigstep,zdepthT,orbit%omega/d2r
      ! variables were evaluated at previous time step
-     write(37,501) icetime,latitude,zdepthT, &
-          & Tmean(0),Tmean(nz),Tmini(0),Tmaxi(0)
+     write(37,501) icetime,latitude,zdepthT,Tmean(0),Tmean(nz),Tmini(0),Tmaxi(0)
      orbit%omega = mod(orbit%omega + 36.*d2r, 2*pi)  ! sweep
   end do
 
@@ -136,7 +135,7 @@ PROGRAM trojans_fast3
        write(38,502) latitude,z(j),Tmini(j),Tmean(j),Tmaxi(j)
     enddo
     close(38)
-502 format (f7.3,1x,f12.6,3(1x,f7.3)) 
+502 format (f7.3,1x,f12.6,3(1x,f7.3))
   end block
   
 END PROGRAM trojans_fast3
