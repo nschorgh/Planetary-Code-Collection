@@ -37,10 +37,6 @@ psv.f90:
 	psv: vapor pressure of H2O
 	frostpoint: inverse of psv
 
-psvco2.f90:
-       	psvco2: vapor pressure of CO2
-	tfrostpointco2: inverse of psvco2
-
 tridag.f90:
 	inversion of tridiagonal matrix
 
