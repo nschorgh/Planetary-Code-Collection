@@ -48,13 +48,13 @@ elemental function psv_species(T,species)
         ! Note: the two do not connect continuously at phase boundary
         psv_species = exp(b0-b1/T)
         
-     case('CH3OH') ! methanol
+     case('CH3OH') ! methanol, Lucas et al. (2005)
         if (T<157.4) then ! alpha-phase
-           b0=15.94; b1=2453
-        else ! beta-phase
-           b0=15.02; b1=2308
+           b0=13.33; b1=2453.
+        else ! beta-phase, 157.4...176.6K
+           b0=12.41; b1=2308.
         end if
-        psv_species = exp(b0-b1/T)
+        psv_species = 10**(b0-b1/T)
         
      case default
         error stop ('psv_species: no species matches')
