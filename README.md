@@ -51,7 +51,7 @@ No documentation has yet been written for the random walk model.
 ### Irradiance Model for Terrestrial Analog
 
 Clear-sky direct and indirect short-wave irradiance on Mauna Kea summit, based on optical path length but an otherwise 0-dimensional atmospheric model.
-The incoming irradiance can be calculated for a flat unobstructed surface, but also for a tilted suface with horizons, i.e., 3D sky irradiance.  
+The incoming irradiance can be calculated for a flat unobstructed surface, but also for a tilted surface with horizons, i.e., 3D sky irradiance.  
 
 Directory: `EarthAnalogs/`  
 *Documentation: User Guide Sections 3.1 and 2.5*  

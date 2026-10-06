@@ -105,6 +105,7 @@ subroutine ajsub_asteroid(latitude, z, ti, rhocv, Orbit, S0, &
   real(8), intent(OUT) :: Tmini(0:nz), Tmaxi(0:nz)
   real(8), parameter :: sigSB=5.6704e-8
   real(8), parameter :: mmass = 18.  ! H2O
+  !real(8), parameter :: mmass = 32.04 ! CH3OH
   !real(8), parameter :: mmass = 27.02  ! HCN
   !real(8), parameter :: mmass = 44.01  ! CO2
   real(8), parameter :: zero = 0.
@@ -202,6 +203,7 @@ subroutine icechanges3(nz,z,avSice,elleff,bigstep,zdepthT,porosity,icefrac)
   real(8), intent(INOUT) :: zdepthT, icefrac(nz)
   ! icedensity should match number in subroutine iceproperties_species
   real(8), parameter :: icedensity = 933.  ! H2O at 120K  [kg/m^3]
+  !real(8), parameter :: icedensity =  840. ! CH3OH at 130K
   !real(8), parameter :: icedensity = 1037.  ! HCN
   !real(8), parameter :: icedensity = 1680.  ! CO2
   integer typeT, typeTnew

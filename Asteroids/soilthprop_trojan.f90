@@ -100,6 +100,11 @@ subroutine iceproperties_species(species,T,icedensity,cice,kice)
      !kice = 632./T+0.38-1.97e-3*T
      kice = 612./T  ! DOI:10.17632/ttzbgxs9fw.2
 
+  case('CH3OH') ! methanol
+     icedensity = 840. ! at 130K, Luna et al. (2018)
+     cice = 3280.  ! 105000/32.04, NIST Chemistry Webbook
+     kice = 0.35  ! Korolyuk et al. (2009) DOI:10.1063/1.3115810
+     
   case('HCN')  ! hydrogen cyanide
      icedensity = 1037.  ! Gerakines et al. (2022)
      ! 8.938 cal/K/mol at 120K (Giauque & Ruehrwein 1939)
