@@ -1,6 +1,8 @@
 Log of major changes (goes back to times before git version control)
 ---------------------------------------------------------------------
 
+1 Nov 2026: Release v1.2.5
+
 25 Jun 2026: Release v1.2.4  doi:10.5281/zenodo.20884554
 
 Jun 2026: over the past half year I added an ice retreat model for Jovian Trojans

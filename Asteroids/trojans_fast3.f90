@@ -113,7 +113,7 @@ PROGRAM trojans_fast3
 
   icetime = -(earliest-1)*timestep
   print *,icetime
-  do 
+  do
      icetime = icetime + timestep
      call icelayer_asteroid(timestep,z,porosity,icefrac,.false., &
           & zdepthT,Tmean,Tmini,Tmaxi,latitude,Orbit,faintsun(icetime))
